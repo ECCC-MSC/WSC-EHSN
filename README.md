@@ -21,13 +21,16 @@ Packages:
 
 
 # EXCLUDED FILES
-This repository does not include the Aquaiurs Rating Extraction Tool which we have agreed with Aqutic Informatics not to distribute at this time.  
+This repository does not include the Rating Extraction Tool which extracts data from Aquarius as we have agreed with Aqutic Informatics not to distribute it at this time.  
 
 Rating curves can still be exported manually from Aquarius and imported using the provided sample format.
 
 # CONFIGURATION FILE
 A configuration file template (config.xml) is included in which you can specify:
 Aquarius Server and Login Information for some 
+
+# RUNNING IT
+Once the environment is created, the file 1_ElectronicFieldNotes.py runs the program.
 
 # COMPILING IT
 We use pyinstaller but of course you can use whatever you like.
