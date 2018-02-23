@@ -16,8 +16,8 @@ Packages:
   	requests  
   	qrcode  
   	lxml  
-  	html2pdf 0.0.6  
-	suds-jurko-0.6  
+  	html2pdf (version 0.0.6)  
+	suds-jurko (version 0.6)  
 
 
 # EXCLUDED FILES
