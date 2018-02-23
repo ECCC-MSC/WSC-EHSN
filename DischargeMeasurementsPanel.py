@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 import wx
 import wx.lib.masked as masked
 import NumberControl
@@ -474,7 +477,7 @@ class DischargeMeasurementsPanel(wx.Panel):
         
     # used to calculate mean time
     def onTimeChange(self, event):
-
+      
         try:
             event.GetEventObject().GetParent().UpdateTime(event.GetKeyCode())
         except:
@@ -588,6 +591,7 @@ class DischargeMeasurementsPanel(wx.Panel):
                 # and self.GetMghCtrl() == '':
             return True
         else:
+
             return False
 
 

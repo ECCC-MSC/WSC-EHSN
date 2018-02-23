@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 from InstrumentDeploymentInfoPanel import *
 
 
@@ -530,6 +533,15 @@ class InstrumentDeploymentInfoManager(object):
     def firmwareCmbo(self, firmwareCmbo):
         self.gui.SetFirmwareCmbo(firmwareCmbo)
 
+    #ControlCondition Ctrl
+    @property
+    def controlConditionRemarksCtrl(self):
+        return self.gui.GetControlConditionRemarksCtrl()
+
+    @controlConditionRemarksCtrl.setter
+    def SetControlConditionRemarksCtrl(self, val):
+        self.gui.SetControlConditionRemarksCtrl(val)
+
     def PrintEverything(self):
         checkList = self.methodCBListBox.GetCheckedStrings()
         
@@ -578,6 +590,7 @@ class InstrumentDeploymentInfoManager(object):
         print "Discharge Remarks: %s" % self.dischRemarksCtrl
         print "Stage Remarks: %s" % self.stageRemarksCtrl
         print "General Remarks: %s" % self.stationHealthRemarksCtrl
+        print "Control Condition Remarks: %s" % self.controlConditionRemarksCtrl
                                          
         
 
@@ -655,6 +668,12 @@ class InstrumentDeploymentInfoManager(object):
         return self.gui.stageRemarksCtrl
     def GetStationHealthRemarksCtrl(self):
         return self.gui.stationHealthRemarksCtrl
+
+
+
+    #Return TURE if discharge remarks is empty
+    def dischargeRemarkEmpty(self):
+        return self.gui.dischargeRemarkEmpty()
 
 
 def main():

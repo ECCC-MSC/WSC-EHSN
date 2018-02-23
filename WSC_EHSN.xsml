@@ -1499,21 +1499,34 @@
 
 <xsl:template match="EHSN/InstrumentDeployment/Control">
 <font size="0.05"><br/></font>
-	<table valign="middle" style="border:none; margin: 0 auto;">
+	<table class="noborder" valign="middle" style="border:none; margin: 0 auto;">
 		<tr style="border:none; margin: 0 auto;">
-			<td align="left" style="border:none; margin: 0 auto;"><font size="3"><b>Control Condition: </b> <xsl:value-of select="condition"/></font></td>
-
-			<td align="left" style="border:none; margin: 0 auto;">
-				<b>Site and/or control pictures were taken.   </b>
-				<xsl:choose>
-						<xsl:when test="pictured='True'">
-						<font size="4">&#x2714;</font>
-					</xsl:when>
-					<xsl:otherwise>
-						<font size="4">&#x2751;</font>
-						</xsl:otherwise>
-					</xsl:choose>
+			<td  class="noborder" align="left" style="border:none; margin: 0 auto;"><font size="3"><b>Control Condition: </b> <xsl:value-of select="condition"/></font></td>
+			<td class="noborder" style="text-align:left;vertical-align:top;word-wrap:break-word"><b>Control Condition Remarks: </b></td>
+		</tr>
+		<tr class="noborder">
+			<td class="noborder"></td>
+			<td class="noborder" style="text-align:left;vertical-align:top;word-wrap:break-word">
+				<!-- <xsl:value-of select="dischargeRemark"/> -->
+				<xsl:call-template name="LFsToBRs">
+					<xsl:with-param name="input" select="controlConditionRemark"/>
+				</xsl:call-template>
 			</td>
+		</tr>
+		<!-- <tr class="noborder"><td class="noborder"></td></tr> -->
+		<tr class="noborder">
+			<td class="noborder" align="left" style="border:none; margin: 0 auto;">
+			<b>Site and/or control pictures were taken.   </b>
+			<xsl:choose>
+					<xsl:when test="pictured='True'">
+					<font size="4">&#x2714;</font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font size="4">&#x2751;</font>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td class="noborder"></td>
 		</tr>
 	</table>
 	<font size="0.05"><br/></font>
@@ -1525,13 +1538,6 @@
 			<td colspan="3" align="left"><b>Control Condition: </b> <xsl:value-of select="condition"/></td>
 		</tr> -->
 		<tr>
-
-<!-- 			<td style="text-align:left;vertical-align:top;width:25%"><b>Remarks: </b> <br/>
-				<xsl:value-of select="controlRemark"/>
-				<xsl:call-template name="LFsToBRs">
-					<xsl:with-param name="input" select="controlRemark"/>
-				</xsl:call-template>
-			</td> -->
 			<td style="text-align:left;vertical-align:top;width:34%;word-wrap:break-word"><b>Discharge Activity &amp; Control Remarks: </b><br/>
 				<!-- <xsl:value-of select="dischargeRemark"/> -->
 				<xsl:call-template name="LFsToBRs">

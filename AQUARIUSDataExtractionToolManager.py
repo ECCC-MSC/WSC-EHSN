@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 from AQUARIUSDataExtractionToolFrame import *
 import subprocess
 import os
@@ -52,7 +55,6 @@ class AQUARIUSDataExtractionToolManager(object):
 
         self.rctUser = self.configFile.find('rctUser').text
         self.rctPassword = self.configFile.find('rctPassword').text
-
 
     def RunScript(self, path):
         # counter = 0
@@ -594,8 +596,6 @@ class AQUARIUSDataExtractionToolManager(object):
         stationList = self.GetStationList()
         url = self.gui.GetURL()
         path = self.gui.GetPath()
-        # username = self.gui.GetUsername()
-        # password = self.gui.GetPassword()
 
 
         base_arg = "\"" + self.scriptLoc + "\""

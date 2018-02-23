@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 from ftplib import FTP
 import wx
 import wx.lib.agw.genericmessagedialog as GMD

@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 from xml.etree.ElementTree import SubElement
 from MidSectionSubPanelObj import *
 import wx
@@ -1213,6 +1216,9 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     pictured = SubElement(Control, "pictured")
     pictured.text = str(instrDepManager.GetPicturedCkboxVal())
 
+    controlConditionRemark = SubElement(Control, 'controlConditionRemark')
+    controlConditionRemark.text = instrDepManager.SetControlConditionRemarksCtrl
+
 
 # Set Instrument and Deployment Information variables from existing XML structure
 def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
@@ -1384,6 +1390,14 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
 
     except:
         print "no pictured ckeckbox for field review in xml"
+
+
+    try:
+        controlConditionRemark = Control.find('controlConditionRemark').text
+    except:
+
+        controlConditionRemark = None
+    instrDepManager.SetControlConditionRemarksCtrl = "" if controlConditionRemark is None else controlConditionRemark
 
 
 # Create XML structure for Party Information

@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 from TitleHeaderPanel import *
 from GenInfoPanel import *
 from DischargeMeasurementsPanel import *
@@ -94,8 +97,6 @@ class EHSNGui(wx.Frame):
             self.scriptLoc = os.path.join(sys._MEIPASS, self.scriptLoc)
         else:
             self.scriptLoc = os.getcwd() + "\\" + self.scriptLoc
-
-        
         # Label variables
         self.fNewLabel = 'New\tCtrl+N'
         self.fNewDesc = 'Start a new eHSN application'
@@ -875,8 +876,8 @@ class EHSNGui(wx.Frame):
                 cont = warning.ShowModal()
                 if cont == wx.ID_OK:
                     return
-        if not self.disMeas.IsEmpty():
-            if self.disMeas.GetMmtValTxt() == "" or self.disMeas.GetMmtValTxt() == "00:00":
+
+            elif self.disMeas.GetMmtValTxt() == "" or self.disMeas.GetMmtValTxt() == "00:00":
                 # print self.disMeas.startTimeCtrl.GetValue()
                 warning = wx.MessageDialog(None,"Mmt Mean Time Error",
                                             "Upload Warning!", wx.OK | wx.ICON_EXCLAMATION)
@@ -1257,16 +1258,16 @@ class EHSNGui(wx.Frame):
         if VersionCheck.Check(self.version, self, False) > 2:
             return
 
-        # if self.manager.disMeasManager.mandatoryChecking():
-        #     return
+
         if self.UploadingChecking() == 1:
 
             # Save XML before uploading in case eHSN crashes.
             #if self.SaveBeforeUpload(evt):
             self.aquariusUploadDialog = AquariusUploadDialog(self.mode, self.uploadDir, self, title=self.fileAQUploadTitle, style=wx.RESIZE_BORDER)
-            if self.manager.disMeasManager.IsEmpty():
+            if self.manager.disMeasManager.IsEmpty() and self.manager.instrDepManager.dischargeRemarkEmpty():
                 self.aquariusUploadDialog.dischargeCkbox.Enable(False)
             else:
+                self.aquariusUploadDialog.dischargeCkbox.Enable(True)
                 self.aquariusUploadDialog.dischargeCkbox.SetValue(False)
                 self.aquariusUploadDialog.includeDischarge = False
 

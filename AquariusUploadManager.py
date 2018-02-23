@@ -1,3 +1,5 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 from suds.client import Client
 import suds
 import datetime
@@ -248,35 +250,36 @@ def CreateFieldVisitObject(mode, ver, aq, locid, EHSN, FIELDVISIT, discharge, le
 
     #Convert to DateTime
     start = datetime.datetime.strptime(str(EHSN.genInfoManager.datePicker), "%Y/%m/%d")
+    end = datetime.datetime.strptime(str(EHSN.genInfoManager.datePicker), "%Y/%m/%d")
+
+    startTime = None
+    endTime = None
+
+
+#End Time
+
+    if EHSN.disMeasManager.GetEndTimeCtrl().IsCompleted():
+        endTime = EHSN.disMeasManager.gui.endTimeCtrl#.GetWxDateTime()
+        end = end.replace(hour=int(endTime.GetHourVal()), minute=int(endTime.GetMinuteVal()))
+        isoEnd = str(end.isoformat()) + isoTail
+
+
+
+#Start time
     if EHSN.disMeasManager.GetStartTimeCtrl().IsCompleted():
         startTime = EHSN.disMeasManager.gui.startTimeCtrl#.GetWxDateTime()
-        if discharge:
-            endTime = EHSN.disMeasManager.gui.endTimeCtrl#.GetWxDateTime()
-            ##Here it assumes the date is the same day
-            end = datetime.datetime.strptime(str(EHSN.genInfoManager.datePicker), "%Y/%m/%d")
-            end = end.replace(hour=int(endTime.GetHourVal()), minute=int(endTime.GetMinuteVal()))
-            isoEnd = str(end.isoformat()) + isoTail
-
-
-
+        
+        ##Here it assumes the date is the same day
+        start = start.replace(hour=int(startTime.GetHourVal()), minute=int(startTime.GetMinuteVal()))
+        isoStart = str(start.isoformat()) + isoTail
+        
     else:
         startTime = EHSN.stageMeasManager.gui.GetFirstTime()
+
+
+#Initialize time if it is none
     if startTime is not None:
         start = start.replace(hour=int(startTime.GetHourVal()), minute=int(startTime.GetMinuteVal()))
-
-    #     endTime = EHSN.disMeasManager.gui.endTimeCtrl#.GetWxDateTime()
-    #     end = datetime.datetime.strptime(str(EHSN.genInfoManager.datePicker), "%Y/%m/%d")
-    #     end = end.replace(hour=int(endTime.GetHourVal()), minute=int(endTime.GetMinuteVal()))
-
-    #     if endTime < startTime:
-    #         end = end + datetime.timedelta(days=1)
-
-    #     #Results
-    #     meanTime = str(EHSN.disMeasManager.mmtValTxt) if str(EHSN.disMeasManager.mmtValTxt) != '' else "00:00"
-    #     meanTime = datetime.datetime.strptime(meanTime, "%H:%M")
-    #     meanTime = meanTime.replace(start.year, start.month, start.day)
-    #     meanTime = str(meanTime.isoformat()) + isoTail
-
     else:
         # start time is null, so set the time to 0
         start = start.replace(
@@ -287,8 +290,27 @@ def CreateFieldVisitObject(mode, ver, aq, locid, EHSN, FIELDVISIT, discharge, le
         )
 
 
+    if endTime is not None:
+        end = end.replace(hour=int(endTime.GetHourVal()), minute=int(endTime.GetMinuteVal()))
+    else:
+        # end time is null, so set the time to 0
+        end = end.replace(
+            hour = 0,
+            minute = 0,
+            second = 0,
+            microsecond = 0
+        )
+
+
     fvStartDate = str(start.isoformat()) + isoTail
+    fvEndDate = str(end.isoformat()) + isoTail
+
     isoStart = fvStartDate
+    isoEnd = fvEndDate
+
+
+
+
 
 
 
@@ -305,7 +327,6 @@ def CreateFieldVisitObject(mode, ver, aq, locid, EHSN, FIELDVISIT, discharge, le
     visit.StartDate = fvStartDate
 
 
-    # visit.EndDate = isoEnd
     visit.Party = EHSN.partyInfoManager.partyCtrl
 
     visit.Remarks = ""
@@ -330,18 +351,18 @@ def CreateFieldVisitObject(mode, ver, aq, locid, EHSN, FIELDVISIT, discharge, le
     ecMeas = 0
     lsMeas = 0
 
-    # # If old Field Visit has measurements, pass those measurements down
-    # if FIELDVISIT_ID != 0:
-    #      for i in range(len(FIELDVISIT.Measurements.FieldVisitMeasurement)):
-    #          if "discharge" in FIELDVISIT.Measurements.FieldVisitMeasurement[i].MeasurementType.lower():
-    #              dMeas = FIELDVISIT.Measurements.FieldVisitMeasurement[i]
+    if str(EHSN.disMeasManager.mmtValTxt) == "" or str(EHSN.disMeasManager.mmtValTxt) is None:
+        
+        if EHSN.stageMeasManager.CalculteMeanTime() != ":" and EHSN.stageMeasManager.CalculteMeanTime() != "0:0":
+            start = start.replace(hour=int(EHSN.stageMeasManager.GetFirstTime().GetHourVal()), minute=int(EHSN.stageMeasManager.GetFirstTime().GetMinuteVal()))
+            end = end.replace(hour=int(EHSN.stageMeasManager.GetLastTime().GetHourVal()), minute=int(EHSN.stageMeasManager.GetLastTime().GetMinuteVal()))
+            
+            isoStart = str(start.isoformat()) + isoTail
+            isoEnd = str(end.isoformat()) + isoTail
 
-    #         elif "stage" in FIELDVISIT.Measurements.FieldVisitMeasurement[i].MeasurementType.lower():
-    #             sMeas = FIELDVISIT.Measurements.FieldVisitMeasurement[i]
-    #         elif "stationhealth" in FIELDVISIT.Measurements.FieldVisitMeasurement[i].MeasurementType.lower():
-    #             shMeas = FIELDVISIT.Measurements.FieldVisitMeasurement[i]
-    #         elif "envcondition" in FIELDVISIT.Measurements.FieldVisitMeasurement[i].MeasurementType.lower():
-    #             ecMeas = FIELDVISIT.Measurements.FieldVisitMeasurement[i]
+
+
+
     if discharge:
 
         EHSN.gui.deleteProgressDialog()
@@ -625,10 +646,12 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
                 </DiscreteMeasurementDetails>"""
 
 
-        dmeasurement.Remarks = EHSN.instrDepManager.dischRemarksCtrl
-        dmeasurement.Remarks += "\n" if dmeasurement.Remarks != "" else ""
-        # dmeasurement.Remarks += EHSN.instrDepManager.controlRemarksCtrl
-        # dmeasurement.Remarks += "\n" if dmeasurement.Remarks != "" else ""
+        dmeasurement.Remarks == ""
+        if EHSN.instrDepManager.dischRemarksCtrl.strip() != "":
+            dmeasurement.Remarks = "Discharge Remarks: " + EHSN.instrDepManager.dischRemarksCtrl.strip() + "\n"
+            if EHSN.instrDepManager.controlConditionRemarksCtrl.strip() != "":
+                dmeasurement.Remarks += ("Control Condition Remarks: " + EHSN.instrDepManager.controlConditionRemarksCtrl.strip() + "\n")
+
 
         dmeasurement.Remarks += ("Depth Ref: " + EHSN.movingBoatMeasurementsManager.depthRefCmbo) if EHSN.movingBoatMeasurementsManager.depthRefCmbo != "" else ""
         if 0 in EHSN.instrDepManager.methodCBListBox.GetCheckedItems():

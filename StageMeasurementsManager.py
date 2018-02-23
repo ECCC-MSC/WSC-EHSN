@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 from StageMeasurementsPanel import *
 
 
@@ -399,7 +402,7 @@ class StageMeasurementsManager(object):
     #     self.hgButton = False
     #     self.gui.Refresh()
 
-    #Ckeck if there is an empty rows in stage measurament 
+    #Ckeck if there is an empty row in stage measurament 
     def emptyChecking(self):
         if self.gui.entryNum == 1:
             return True
@@ -518,6 +521,9 @@ class StageMeasurementsManager(object):
 
     def GetFirstTime(self):
         return self.gui.GetFirstTime()
+
+    def GetLastTime(self):
+        return self.gui.GetLastTime()
 
 
 

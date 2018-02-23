@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 import wx
 import wx.lib.masked as masked
 import wx.lib.scrolledpanel as scrolledpanel
@@ -2225,6 +2228,18 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
                 times.append(t)
                 indexTimes[t] = index
         times = sorted(times)
+        if len(times) > 0:
+            return self.GetTimePanel(indexTimes[times[0]])
+
+    def GetLastTime(self):
+        times = []
+        indexTimes = {}
+        for index, time in enumerate(self.timeValSizer.GetChildren()):
+            if time.GetWindow().IsCompleted():
+                t = self.GetTimeVal(index)
+                times.append(t)
+                indexTimes[t] = index
+        times = sorted(times, reverse=True)
         if len(times) > 0:
             return self.GetTimePanel(indexTimes[times[0]])
 

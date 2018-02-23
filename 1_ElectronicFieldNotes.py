@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 from ElectronicFieldNotesGUI import *
 from TitleHeaderManager import *
 from GenInfoManager import *
@@ -41,7 +44,6 @@ import suds
 import datetime
 import sys
 
-
 ###########################################
 #only used for generating excutable
 if 0:
@@ -62,6 +64,14 @@ if 0:
     import reportlab.graphics.barcode.test
     import reportlab.graphics.barcode.widgets
 ##########################################
+
+
+
+
+
+
+
+
 # import atexit
 
 ##mode = "DEBUG"
@@ -241,8 +251,13 @@ class ElectronicHydrometricSurveyNotes:
         # convert HTML to PDF
         pisa.CreatePDF(
                 src=result,                # the HTML to convert
-                dest=resultFile,           # file handle to receive result
-                encoding="UTF-8")
+                dest=resultFile, show_error_as_pdf = True)           # file handle to receive result
+
+
+                # pisa.CreatePDF(
+                # src=result,                # the HTML to convert
+                # dest=resultFile,           # file handle to receive result
+                # encoding="UTF-8")
         resultFile.close()
 
 
@@ -281,8 +296,14 @@ class ElectronicHydrometricSurveyNotes:
         # convert HTML to PDF
         pisa.CreatePDF(
                 src=result,                # the HTML to convert
-                dest=resultFile,           # file handle to receive result
-                encoding="UTF-8")
+                dest=resultFile, show_error_as_pdf = True)           # file handle to receive result
+
+        # pisa.CreatePDF(
+        #         src=result,                # the HTML to convert
+        #         dest=resultFile,           # file handle to receive result
+        #         encoding="UTF-8")
+        
+
         resultFile.close()
 
     #After generating the pdf from xml, open the pdf

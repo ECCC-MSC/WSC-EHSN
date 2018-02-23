@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 class SubPanelObj():
     def __init__(self, panelNum="", time="", panelId=-1, panelType=-1, index=-1, distance="", width="", depth="", \
         area="", discharge="", corrMeanVelocity="", flow=""):

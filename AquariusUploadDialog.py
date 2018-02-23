@@ -1,18 +1,13 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 import wx
 import os
 import sys
 
 from xml.etree import ElementTree
-
-
-
-
-
 class AquariusUploadDialog(wx.Dialog):
     def __init__(self, mode, dir, *args, **kwargs):
         super(AquariusUploadDialog, self).__init__(*args, **kwargs)
-
-
 
         self.config_path = "config.xml"
         if hasattr(sys, '_MEIPASS'):
@@ -28,14 +23,11 @@ class AquariusUploadDialog(wx.Dialog):
         self.product2 = self.configFile.find('product2').text
         self.product = self.configFile.find('product').text
 
+
         self.mode = mode
 
         self.servers = {'1: Staging Server 1' : self.stage1, '2: Production2 Server': self.product2,
                         '3: Production Server' : self.product}
-
-
-        # for i in self.servers:
-        #     print self.servers[i]
 
         self.serverLbl = "Server:"
         self.usernameLbl = "Username:"

@@ -1,3 +1,6 @@
+# All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
+# Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+
 import wx
 import NumberControl
 # import wx.lib.intctrl
@@ -113,7 +116,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
         self.contRemLbl = "Remarks"
-        self.dischLbl = "Discharge Activity && Control Remarks"
+        self.dischLbl = "Discharge Activity Remarks"
+        self.controlConditionRemLbl = "Control Condition Remarks"
         self.dischRemLbl = self.contRemLbl
         self.stageLbl = "Stage Activity Summary Remarks"
         self.stageRemLbl = self.contRemLbl
@@ -124,7 +128,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.manager = None
 
         self.InitUI()
-		#disable the event to be triggered
+        #disable the event to be triggered
     def do_nothing(self,evt):
           pass
 
@@ -301,7 +305,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
 
-		#Serial Number
+        #Serial Number
         serialSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.serialTxt = wx.StaticText(self, label=self.serialNumLbl, style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
         self.serialCmbo = wx.ComboBox(self, size=(75, 23), style=wx.CB_DROPDOWN, choices = self.serialNumList)
@@ -673,9 +677,30 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.controlConditionCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
         self.picturedCkbox = wx.CheckBox(controlConditionPanel, label=self.picturedLbl)
 
-        controlConditionSizer.Add(controlTxt, 0, wx.TOP|wx.BOTTOM, 10)
-        controlConditionSizer.Add(self.controlConditionCmbo, 0, wx.LEFT|wx.TOP|wx.BOTTOM, 10)
-        controlConditionSizer.Add(self.picturedCkbox, 0, wx.LEFT|wx.TOP|wx.BOTTOM, 10)
+
+        #control condition remarks
+        controlConditionRemarkSizer = wx.BoxSizer(wx.VERTICAL)
+        controlConditionTxt = wx.StaticText(controlConditionPanel, label=self.controlConditionRemLbl)
+        self.controlConditionRemarksCtrl = wx.TextCtrl(controlConditionPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, -1))
+        controlConditionRemarkSizer.Add(controlConditionTxt, 0, wx.EXPAND)
+        controlConditionRemarkSizer.Add(self.controlConditionRemarksCtrl, 1, wx.EXPAND)
+
+        controlConditionLeftSizer = wx.BoxSizer(wx.VERTICAL)
+        controlConditionRightSizer = wx.BoxSizer(wx.VERTICAL)
+
+        controlConditionLeftSizer.Add(controlTxt, 0)
+        controlConditionLeftSizer.Add(self.controlConditionCmbo, 0)
+        controlConditionLeftSizer.Add(self.picturedCkbox, 0)
+
+        controlConditionRightSizer.Add(controlConditionRemarkSizer, 1, wx.EXPAND)
+
+
+        # controlConditionSizer.Add(controlTxt, 0, wx.TOP|wx.BOTTOM, 10)
+        # controlConditionSizer.Add(self.controlConditionCmbo, 0, wx.LEFT|wx.TOP|wx.BOTTOM, 10)
+        # controlConditionSizer.Add(self.picturedCkbox, 0, wx.LEFT|wx.TOP|wx.BOTTOM, 10)
+
+        controlConditionSizer.Add(controlConditionLeftSizer, 0)
+        controlConditionSizer.Add(controlConditionRightSizer, 1, wx.EXPAND|wx.BOTTOM, 5)
 
         controlConditionPanel.SetSizer(controlConditionSizer)
 
@@ -689,6 +714,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.dischRemarksCtrl = wx.TextCtrl(remarksPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, 200))
         dischargeRemarkSizer.Add(dischTxt, 0)
         dischargeRemarkSizer.Add(self.dischRemarksCtrl, 0, wx.EXPAND)
+        
+        
 
         stageRemarkSizer = wx.BoxSizer(wx.VERTICAL)
         stageTxt = wx.StaticText(remarksPanel, label=self.stageLbl)
@@ -709,7 +736,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         remarksSizer.Add(stageRemarkSizer, 1, wx.EXPAND)
         remarksSizer.Add(stationRemarkSizer, 1, wx.EXPAND)
 
-        controlRemarksSizer.Add(controlConditionPanel, 0, wx.EXPAND)
+        controlRemarksSizer.Add(controlConditionPanel, 1, wx.EXPAND)
         controlRemarksSizer.Add(remarksPanel, 0, wx.EXPAND)
 
 
@@ -1580,6 +1607,14 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.firmwareCmbo.SetValue(firmwareCmbo)
 
 
+    #ControlCondition Ctrl
+    def GetControlConditionRemarksCtrl(self):
+        return self.controlConditionRemarksCtrl.GetValue()
+
+    def SetControlConditionRemarksCtrl(self, val):
+        self.controlConditionRemarksCtrl.SetValue(val)
+
+
 
     #allow only the Integer number type inputs
     def OnIntText(self, evt):
@@ -1619,6 +1654,14 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     #     self.numOfPanelsScroll.SetCurrentSelection("20")
     #     print "set default selection"
     #     event.Skip()
+
+
+    #Return TURE if discharge remarks is empty
+    def dischargeRemarkEmpty(self):
+        if self.GetDischRemarksCtrl() == '':
+            return True
+        else:
+            return False
 
 def main():
     app = wx.App()
