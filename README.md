@@ -18,7 +18,7 @@ Packages:
   	lxml  
   	html2pdf (version 0.0.6)  
 	suds-jurko (version 0.6)  
-
+	html5lib (version 1.0b8)
 
 # EXCLUDED FILES
 This repository does not include the Rating Extraction Tool which extracts data from Aquarius as we have agreed with Aqutic Informatics not to distribute it at this time.  
