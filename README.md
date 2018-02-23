@@ -11,7 +11,7 @@ Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 Python 2.7.14
 
 Packages:  
-  	wxpython (pheonix)  
+  	wxpython (this is the pheonix version)  
   	matplotlib  
   	requests  
   	qrcode  
