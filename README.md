@@ -32,6 +32,17 @@ Once the environment is created, the file 1_ElectronicFieldNotes.py runs the pro
 # COMPILING IT
 
 We use pyinstaller but of course you can use whatever you like.
+
+If using pyinstaller, navigate to your local clone of WSC-EHSN and use the command:   
+pyinstaller 1_ElectronicFieldNotes.py  
+
+Move the image files:  
+"downarrow.png"  
+"backarrow.png"  
+"icon_transparent.ico"   
+into the "1_ElectronicFieldNotes" folder (found in the newly created "dist" folder)
+
+You can now run the program using 1_ElectronicFieldNotes.exe
 # MANUAL
 
 User manual is available upon request.
