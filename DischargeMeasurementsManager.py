@@ -9,11 +9,16 @@ class DischargeMeasurementsManager(object):
         self.gui = gui
         self.gui.manager = self
         self.manager = manager
+        self.RCVTMan = None
 
         self.fieldMissingTitle = "Mandatory Field Missing"
         self.airTempMissingMessage = "Air temprature is missing"
         self.waterTempMissingMessage = "Water temprature is missing"
         self.widthMissingMessage = "Width is missing"
+
+        self.currentRC = None
+        self.curveIndex = None
+        self.curveProcessed = False
 
         self.mode = mode
 
@@ -182,6 +187,17 @@ class DischargeMeasurementsManager(object):
     def curveCtrl(self, curveCtrl):
         self.gui.SetCurveCtrl(curveCtrl)
 
+    def SetCurveList(self, rclist):
+        self.gui.SetCurveCombo(rclist)
+
+
+    def GetCurrentCurveIndexInList(self, curveList):
+        index = -1
+        if self.currentRC in curveList:
+            index = curveList.index(self.currentRC)
+
+        return index
+
 
     #Control Condition Combo
     @property
@@ -307,7 +323,120 @@ class DischargeMeasurementsManager(object):
         return self.gui.dischRemarksCtrl.GetValue() == ''
 
 
+    def OnRCText(self):
+        if self.curveCtrl != self.currentRC:
+            self.curveProcessed = False
 
+    # Update RC value to a known RC
+    def OnRCKillFocus(self):
+        if self.curveProcessed is False:
+            self.OnUpdateCurveValues()
+
+            self.curveProcessed = True
+
+        if self.currentRC is not None:
+            self.curveCtrl = self.currentRC
+
+
+    def OnRCCombo(self):
+        self.OnUpdateCurveValues()
+
+        if self.currentRC is not None:
+            self.curveCtrl = self.currentRC
+
+        self.curveProcessed = True
+
+
+    def CheckForValidHGQ(self):
+        if self.gui is None:
+            return -1
+
+        # Check if MGH and Discharge have any data
+        if self.gui.GetMghCtrl() == "" or self.gui.GetDischCtrl() == "":
+            self.gui.SetShiftCtrl("")
+            self.gui.SetDiffCtrl("")
+            return -1
+
+        return 1
+
+
+    def OnUpdateHGQValues(self):
+        if self.CheckForValidHGQ() < 0:
+            return
+
+        # If the curve ctrl is empty, auto-select the latest curve
+        if self.curveCtrl == "":
+            self.curveIndex = 0
+            self.gui.SetCurveIndex(self.curveIndex)
+
+        self.AutoCalculateShiftDiff()
+
+
+    def OnUpdateCurveValues(self):
+        self.ValidateCurve()
+
+        if self.CheckForValidHGQ() < 0:
+            return
+
+        self.AutoCalculateShiftDiff()
+
+
+    def AutoCalculateShiftDiff(self):
+        obsHG = self.gui.GetMghCtrl()
+        obsQ = self.gui.GetDischCtrl()
+
+        curveIndex = self.curveIndex
+
+        # try calculating shift and diff based on curve index found
+        error = None
+        if curveIndex is not None:
+            error = self.RCVTMan.CalculateShiftDisch(obsHG, obsQ, curveIndex)
+        elif self.curveCtrl.strip() is not "":
+            error = "Rating curve id is not listed"
+
+        self.HandleErrorDuringCalc(error)
+
+
+    def ValidateCurve(self):
+        # Check if the value exists in the list
+        curveVal = self.curveCtrl.strip()
+        curveList = self.RCVTMan.ratingCurveList
+        self.curveIndex = None
+        self.currentRC = None
+
+        if curveVal != "":
+            # try basic string comparison first
+            if curveVal in curveList:
+                # calculate values
+                self.curveIndex = curveList.index(curveVal)
+                self.currentRC = curveVal
+            else:
+                # enumerate through each rating curve id
+                # if it is possible, convert the id to a number
+                # compare numerical values
+                for i, rc in enumerate(curveList):
+                    if rc.startswith(curveVal) is True:
+                        self.curveIndex = i
+                        self.currentRC = rc
+                        break
+
+
+    def HandleErrorDuringCalc(self, error):
+        if self.manager is None:
+            return
+
+        if error is None:
+            self.manager.gui.SetStatusText("")
+
+            self.gui.SetShiftCtrl(str(self.RCVTMan.Shift))
+            self.gui.SetDiffCtrl(str(self.RCVTMan.Qdiff))
+
+        else:
+            self.manager.gui.SetStatusText(error)
+
+            if self.gui is not None:
+                self.gui.SetShiftCtrl("")
+                self.gui.SetDiffCtrl("")
 
         
 def main():

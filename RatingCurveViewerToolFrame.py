@@ -30,7 +30,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
     ##      stnNum: station number of the given station
     ##      disMeasManager: handle on DischargeMeasurementManager, used to send and pull data
     ##      lang: for displaying the dates in the Period of Applicability table
-    def __init__(self, mode, path, stnNum, disMeasManager, lang, *args, **kwargs):
+    def __init__(self, mode, path, stnNum, disMeasManager, lang, manager, *args, **kwargs):
         super(RatingCurveViewerToolFrame, self).__init__(*args, **kwargs)
 
         self.titleLbl = "Rating Curve Viewer Tool"
@@ -70,10 +70,9 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
         self.InitUI()
 
-        self.manager = RatingCurveViewerToolManager(self.mode, self.path, stnNum, disMeasManager, self.lang, self)
+        self.manager = manager # RatingCurveViewerToolManager(self.mode, self.path, stnNum, disMeasManager, self.lang, self)
+        self.manager.gui = self
         self.EnableXML(False)
-
-        self.manager.FindStationFile()
 
 
     def InitUI(self):
@@ -163,30 +162,25 @@ class RatingCurveViewerToolFrame(wx.Frame):
         obsStageDischLabel = wx.StaticText(self.basePanel, label=self.obsStageDischLbl)
         obsStageDischLabel.SetFont(self.titleFont)
 
-        #Refresh Button
-        self.refreshButton = wx.Button(self.basePanel, label=self.refreshButtonLbl)
-        self.refreshButton.Bind(wx.EVT_BUTTON, self.OnRefresh)
-
         obsStageDischSizer.Add(obsStageDischLabel, 0, wx.EXPAND|wx.TOP, 6)
-        obsStageDischSizer.Add(self.refreshButton, 0, wx.EXPAND|wx.LEFT, 10)
 
         #Observed Stage
         obsStageSizer = wx.BoxSizer(wx.HORIZONTAL)
         obsStageLabel = wx.StaticText(self.basePanel, label=self.obsStageLbl)
-        self.obsStageTextField = wx.TextCtrl(self.basePanel)
+        self.obsStageText = wx.StaticText(self.basePanel, size=(100, -1), style=wx.BORDER_SUNKEN|wx.ALIGN_RIGHT)
 
         obsStageSizer.Add((5, 0))
         obsStageSizer.Add(obsStageLabel, 0, wx.EXPAND|wx.TOP, 5)
-        obsStageSizer.Add(self.obsStageTextField, 0, wx.EXPAND|wx.LEFT, 10)
+        obsStageSizer.Add(self.obsStageText, 0, wx.EXPAND|wx.LEFT, 10)
 
         #Observed Discharge
         obsDischSizer = wx.BoxSizer(wx.HORIZONTAL)
         obsDischLabel = wx.StaticText(self.basePanel, label=self.obsDischLbl)
-        self.obsDischTextField = wx.TextCtrl(self.basePanel)
+        self.obsDischText = wx.StaticText(self.basePanel, size=(100, -1), style=wx.BORDER_SUNKEN|wx.ALIGN_RIGHT)
 
         obsDischSizer.Add((5, 0))
         obsDischSizer.Add(obsDischLabel, 0, wx.EXPAND|wx.TOP, 5)
-        obsDischSizer.Add(self.obsDischTextField, 0, wx.EXPAND|wx.LEFT, 10)
+        obsDischSizer.Add(self.obsDischText, 0, wx.EXPAND|wx.LEFT, 10)
 
 
         #Calculated Shift and Discharge Difference
@@ -223,8 +217,6 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
         #Buttons line
         buttonsSizer1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.calculateButton = wx.Button(self.basePanel, label=self.calculateButtonLbl)
-        self.calculateButton.Bind(wx.EVT_BUTTON, self.OnCalculate)
         self.plotButton = wx.Button(self.basePanel, label=self.plotButtonLbl)
         self.plotButton.Bind(wx.EVT_BUTTON, self.OnPlot)
         self.exitButton = wx.Button(self.basePanel, label=self.exitButtonLbl)
@@ -232,7 +224,6 @@ class RatingCurveViewerToolFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnExit)
 
         buttonsSizer1.Add((1, 0), 1, wx.EXPAND)
-        buttonsSizer1.Add(self.calculateButton, 0, wx.EXPAND|wx.RIGHT, 4)
         buttonsSizer1.Add(self.plotButton, 0, wx.EXPAND|wx.RIGHT|wx.LEFT, 4)
 
         buttonsSizer2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -305,6 +296,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
         self.basePanel.SetSizer(self.layoutSizer)
 
+        self.CreateStatusBar(style=wx.STB_SIZEGRIP|wx.STB_SHOW_TIPS|wx.STB_ELLIPSIZE_END|wx.FULL_REPAINT_ON_RESIZE)
+
 
 
     def OnColClick(self, event):
@@ -322,19 +315,23 @@ class RatingCurveViewerToolFrame(wx.Frame):
             fileOpenDialog.Destroy()
             return
 
-        self.OpenRatingFile(fileOpenDialog.GetPath())
+        self.OnOpenRatingFile(fileOpenDialog.GetPath())
 
         self.SetCalcShift("")
         self.SetDischDiff("")
+
+        evt.Skip()
 
     def OnRCUpdate(self, e):
         print "RC choice updated"
 
         self.RCUpdate()
 
+        e.Skip()
+
 
     def RCUpdate(self):
-        self.manager.OnRCUpdate()
+        self.manager.OnRCUpdate(self.GetSelectedCurveIndex())
 
 
     def OnSelectAppItem(self, evt):
@@ -347,6 +344,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
             self.periodOfAppList.SetItemState(item, 0, wx.LIST_STATE_SELECTED)
 
+        evt.Skip()
+
 
     def OnSelectHistDataItem(self, evt):
         item = -1
@@ -357,6 +356,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
                 break
 
             self.histDataList.SetItemState(item, 0, wx.LIST_STATE_SELECTED)
+
+        evt.Skip()
 
 
     def OnHistoricalData(self, evt):
@@ -379,26 +380,12 @@ class RatingCurveViewerToolFrame(wx.Frame):
         self.histDataList.SetColumnWidth(7, -2)
         self.histDataList.SetColumnWidth(8, -1)
 
+        evt.Skip()
 
-    def OpenRatingFile(self, filepath):
+
+    def OnOpenRatingFile(self, filepath):
         if self.manager is not None:
-
-            #filepath formatting for gui
-            splitFilepath = filepath.split("\\")
-            concatenatedFilepath = "...\\"
-            if len(splitFilepath) >= 2:
-                concatenatedFilepath += splitFilepath[-2] + "\\"
-            concatenatedFilepath += splitFilepath[-1]
-            self.ratingInfoText.SetLabel(concatenatedFilepath)
-
-            #determine what to do based on the extension
-            extension = self.manager.DetFileType(filepath)
-
-            if extension is not None:
-                if extension == "xml":
-                    self.manager.ParseRatingXMLFile(filepath)
-                elif extension == "txt":
-                    self.manager.ParseRatingTXTFile(filepath)
+            self.manager.OpenRatingFile(filepath)
 
             self.layoutSizer.Layout()
             self.Update()
@@ -407,20 +394,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
     def OpenHistDataFile(self, filepath):
         if self.manager is not None:
-
-            #filepath formatting for gui
-            splitFilepath = filepath.split("\\")
-            concatenatedFilepath = "...\\"
-            if len(splitFilepath) >= 2:
-                concatenatedFilepath += splitFilepath[-2] + "\\"
-            concatenatedFilepath += splitFilepath[-1]
-            self.histFieldDataText.SetLabel(concatenatedFilepath)
-
-            extension = self.manager.DetFileType(filepath)
-
-            if extension is not None:
-                if extension == "csv":
-                    self.manager.ParseHistCSVFile(filepath)
+            self.manager.OpenHistDataFile(filepath)
 
             self.layoutSizer.Layout()
             self.Update()
@@ -433,8 +407,6 @@ class RatingCurveViewerToolFrame(wx.Frame):
             print "REFRESH BUTTON CLICKED"
 
         self.GetStageDischarge()
-        self.SetCalcShift("")
-        self.SetDischDiff("")
 
     #Get the stage and discharge from the front page of the EHSN (call manager)
     def GetStageDischarge(self):
@@ -451,8 +423,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
             return
 
         try:
-
-            self.manager.CalculateShiftDisch(self.GetObsStage(), self.GetObsDisch())
+            self.manager.CalculateShiftDisch(self.GetObsStage(), self.GetObsDisch(), self.GetSelectedCurveIndex())
         except Exception as inst:
             errorFile = open(self.path + r"\ErrorFile.txt","ab")
             errorFile.write(str(inst) + "\n")
@@ -463,6 +434,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
             return
         # plt.close()
 
+        evt.Skip()
+
     #Plot the Rating Curve
     def OnPlot(self, evt):
 
@@ -472,7 +445,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
             return
         if self.GetObsStage() != "" and self.GetObsDisch() != "":
 
-            self.OnCalculate(evt)
+            self.manager.CalculateShiftDisch(self.GetObsStage(), self.GetObsDisch(), self.GetSelectedCurveIndex())
         else:
             self.manager.obsDisch = None
             self.manager.obsStage = None
@@ -493,11 +466,21 @@ class RatingCurveViewerToolFrame(wx.Frame):
         # self.isPlot = True
         # if self.isPlot:
         #     self.plotButton.Enable(False)
+        evt.Skip()
+
+
     def OnExit(self, evt):
         if self.mode == "DEBUG":
             print "EXIT BUTTON CLICKED"
         self.Destroy()
 
+        evt.Skip()
+
+
+    def EmptyCalculatedFields(self):
+        self.SetCalcShift("")
+        self.SetRatedDisch("")
+        self.SetDischDiff("")
 
     #Enable or Disable curve based on en
     def EnableXML(self, en):
@@ -717,24 +700,23 @@ class RatingCurveViewerToolFrame(wx.Frame):
         self.histDataList.DeleteAllItems()
 
     def SetObsStage(self, stage):
-        self.obsStageTextField.SetValue(stage)
+        self.obsStageText.SetLabel(stage)
 
     def SetObsDisch(self, disch):
-        self.obsDischTextField.SetValue(disch)
+        self.obsDischText.SetLabel(disch)
 
     def GetObsStage(self):
-        return self.obsStageTextField.GetValue()
+        return self.obsStageText.GetLabel()
 
     def GetObsDisch(self):
-        return self.obsDischTextField.GetValue()
+        return self.obsDischText.GetLabel()
 
-    def SetCurveCombo(self, curvelist):
-        self.ratingCurveCombo.Clear()
-        self.ratingCurveCombo.AppendItems(curvelist)
+    def SetCurveCombo(self, curvelist, index=0):
+        self.ratingCurveCombo.SetItems(curvelist)
         if len(curvelist) > 0:
-            self.ratingCurveCombo.SetValue(curvelist[0])
+            self.ratingCurveCombo.SetSelection(index)
 
-        self.RCUpdate()
+        # self.RCUpdate()
 
     def GetSelectedCurveIndex(self):
         return self.ratingCurveCombo.GetCurrentSelection()
@@ -762,11 +744,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
     #         self.fig = plt.gcf()
     #         self.fig.canvas.manager.window.raise_()
 
-    def CreateErrorDialog(self, message):
-        info = wx.MessageDialog(None, message, "Error",
-                                wx.OK | wx.ICON_ERROR)
-        info.ShowModal()
-
+    def SetStatus(self, message):
+        self.SetStatusText(message)
 
 def main():
     app = wx.App()

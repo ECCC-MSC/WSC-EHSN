@@ -116,6 +116,7 @@ class ElectronicHydrometricSurveyNotes:
         self.ctrlKeyDownFlag = False
         self.resizingLock = threading.Lock()
 
+        self.stationNumProcessed = False
 
         
         self.InitUI()
@@ -213,8 +214,8 @@ class ElectronicHydrometricSurveyNotes:
         self.movingBoatMeasurementsManager = MovingBoatMeasurementsManager(mode, self.gui.movingBoatMeasurements, self)
         self.midsecMeasurementsManager = MidSectionMeasurementsManager(mode, self.gui.midsecMeasurements, self)
         # self.ratingCurveExtractionToolmanager = RatingCurveExtractionToolManager()
-        # self.ratingCurveViewerToolManager = RatingCurveViewerToolManager(mode, self.gui.midsecMeasurements, self)
-
+        self.ratingCurveViewerToolManager = RatingCurveViewerToolManager(mode, self.gui.ratingFileDir, None, \
+                                            self.disMeasManager, wx.LANGUAGE_ENGLISH, None, self)
 
         # self.userConfigManager = UserConfigManager(mode, self.gui.userConfig, self)
 
@@ -880,6 +881,31 @@ class ElectronicHydrometricSurveyNotes:
 
     def GetGuiDir(self):
         return self.gui.dir
+
+    def OnStationNumSelect(self):
+        self.ProcessStationNum()
+
+        self.stationNumProcessed = True
+
+
+    def OnStationNumChange(self):
+        if self.stationNumProcessed is False:
+            self.ProcessStationNum()
+
+            self.stationNumProcessed = True
+
+
+    def ProcessStationNum(self):
+        # Update RCVTManager with station num, then load rating file
+        self.ratingCurveViewerToolManager.FindStationFile()
+
+        # update rating curve dropdown in discharge measurements panel
+        print self.ratingCurveViewerToolManager.ratingCurveList
+        self.disMeasManager.SetCurveList(self.ratingCurveViewerToolManager.ratingCurveList)
+
+        # attempt to calculate
+        self.disMeasManager.OnUpdateHGQValues()
+
 
 
     #Bind the auto save event to each field from each model

@@ -686,6 +686,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
         self.genInfo.stnNumCmbo.Bind(wx.EVT_TEXT, self.OnStationSelect)
+        self.genInfo.stnNumCmbo.Bind(wx.EVT_COMBOBOX, self.OnStationHasBeenSelected)
+        self.genInfo.stnNumCmbo.Bind(wx.EVT_KILL_FOCUS, self.OnStationKillFocus)
         self.genInfo.stnNameCtrl.Bind(wx.EVT_TEXT, self.OnStationNameSelect)
 
 
@@ -736,13 +738,14 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.AutoSave(None)
         if self.RatingCurveViewerToolFrame is None:
             self.RatingCurveViewerToolFrame = RatingCurveViewerToolFrame(self.mode, self.ratingFileDir, self.manager.genInfoManager.stnNumCmbo,\
-                                            self.manager.disMeasManager, wx.LANGUAGE_ENGLISH, self, size=(770, 578))
-
+                                            self.manager.disMeasManager, wx.LANGUAGE_ENGLISH, self.manager.ratingCurveViewerToolManager, self, size=(770, 578))
             self.RatingCurveViewerToolFrame.Bind(wx.EVT_CLOSE, self.closeRatingCurveViewWindow)
             self.RatingCurveViewerToolFrame.exitButton.Bind(wx.EVT_BUTTON, self.closeRatingCurveViewWindow)
             self.RatingCurveViewerToolFrame.Show()
+            self.manager.ratingCurveViewerToolManager.FindStationFile()
         else:
             self.RatingCurveViewerToolFrame.SetFocus()
+
 
 
 
@@ -781,6 +784,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         else:
             self.RatingCurveViewerToolFrame.Destroy() #This will close the app window.
             self.RatingCurveViewerToolFrame = None
+            self.manager.ratingCurveViewerToolManager.gui = None
 
 
     #On new menu button pressed
@@ -1710,7 +1714,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if self.genInfo.stnNumCmbo.GetValue() in self.numsRead:
                 self.genInfo.stnNameCtrl.SetValue(self.namesRead[self.numsRead.index(self.genInfo.stnNumCmbo.GetValue())])
                 self.genInfo.tzCmbo.SetValue(self.tz[self.numsRead.index(self.genInfo.stnNumCmbo.GetValue())])
-            #else:
+
+            elif self.manager is not None:
+                    self.manager.stationNumProcessed = False
             #    self.genInfo.stnNameCtrl.ChangeValue("")
             #    self.genInfo.tzCmbo.SetValue("")
         if len(self.stationLevel) > 0:
@@ -1724,13 +1730,26 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.locale = wx.Locale(wx.LANGUAGE_ENGLISH)
 
 
+    # Event handler for explicit selection from dropdown
+    def OnStationHasBeenSelected(self, event):
+        if self.manager is not None:
+            self.manager.OnStationNumSelect()
+
+        event.Skip()
+
+    # Event handler for kill focus if user types in a station Number
+    def OnStationKillFocus(self, event):
+        if self.manager is not None:
+            self.manager.OnStationNumChange()
+
+        event.Skip()
 
 
     def OnStationNameSelect(self, event):
         self.StationNameSelect()
 
+        
     def StationNameSelect(self):
-
         insertPoint = self.genInfo.stnNameCtrl.GetInsertionPoint()
         self.genInfo.stnNameCtrl.ChangeValue(unicode.upper(self.genInfo.stnNameCtrl.GetValue()))
         self.genInfo.stnNameCtrl.SetInsertionPoint(insertPoint)
@@ -1739,7 +1758,11 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if self.genInfo.stnNameCtrl.GetValue() in self.namesRead:
                 self.genInfo.stnNumCmbo.ChangeValue(self.numsRead[self.namesRead.index(self.genInfo.stnNameCtrl.GetValue())])
                 self.genInfo.tzCmbo.SetValue(self.tz[self.namesRead.index(self.genInfo.stnNameCtrl.GetValue())])
-            #else:
+
+                if self.manager is not None:
+                    self.manager.OnStationNumChange()
+            elif self.manager is not None:
+                    self.manager.stationNumProcessed = False
             #    self.genInfo.stnNumCmbo.ChangeValue("")
             #    self.genInfo.tzCmbo.SetValue("")
         if len(self.stationLevel) > 0:

@@ -20,12 +20,17 @@ class RatingCurveViewerToolManager(object):
     ##      disMeasManager: handle on DischargeMeasurementManager, used to send and pull data
     ##      lang: for displaying the dates in the Period of Applicability table
     ##      gui: handle on gui
-    def __init__(self, mode, path, stnNum, disMeasManager, lang, gui):
+    def __init__(self, mode, path, stnNum, disMeasManager, lang, gui, manager=None):
+        self.manager = manager
         self.gui = gui
-        self.gui.manager = self
+
+        if self.gui is not None:
+            self.gui.manager = self
+
         self.mode = mode
         self.stnNum = stnNum
         self.disMeasManager = disMeasManager
+        self.disMeasManager.RCVTMan = self
         self.lang = lang
 
         #variables to keep
@@ -50,8 +55,8 @@ class RatingCurveViewerToolManager(object):
         self.dischargeHist = None  ## Historical Discharge values
         self.stageHist = None  ## Historical Stage values
         self.validHistPoints = None  ## Historical points (includes label, discharge, and stage
-        self.obsDisch = None  ## observed Discharge value
-        self.obsStage = None  ## observed Stage value
+        self._obsDisch = None  ## observed Discharge value
+        self._obsStage = None  ## observed Stage value
         self.qrpa = None  ## list of discharge (qr) rating points
         self.hrpa = None  ## list of stage (hg) rating points
         self.Hr = None  ## used for shift calculations
@@ -61,6 +66,8 @@ class RatingCurveViewerToolManager(object):
         self.comment = "QDiff(%) > 5%."
         self.comment2 = "QDiff(%) < 5%."
 
+        self.ratingCurveList = []
+        self.rcIndex = 0
 
         self.Init()
 
@@ -70,28 +77,134 @@ class RatingCurveViewerToolManager(object):
 
         # self.locale = wx.Locale(self.lang)
 
-        #Set Observed Stage and Observed Discharge
-        self.FetchStageDischarge()
+    @property
+    def obsDisch(self):
+        return self._obsDisch
+
+    @obsDisch.setter
+    def obsDisch(self, val):
+        self._obsDisch = val
+
+        if self.gui is not None:
+            self.gui.SetObsDisch("" if self._obsDisch is None else str(self._obsDisch))
+
+    @property
+    def obsStage(self):
+        return self._obsStage
+
+    @obsStage.setter
+    def obsStage(self, val):
+        self._obsStage = val
+
+        if self.gui is not None:
+            self.gui.SetObsStage("" if self._obsStage is None else str(self._obsStage))
+
+
+    def GetFormattedRatedDischarge(self):
+        return float(format(self.Qr, ".3g"))
+    
+
+    def OpenRatingFile(self, filepath):
+        #filepath formatting for gui
+        splitFilepath = filepath.split("\\")
+        concatenatedFilepath = "...\\"
+        if len(splitFilepath) >= 2:
+            concatenatedFilepath += splitFilepath[-2] + "\\"
+        concatenatedFilepath += splitFilepath[-1]
+
+        if self.gui is not None:
+            self.gui.ratingInfoText.SetLabel(concatenatedFilepath)
+
+        #determine what to do based on the extension
+        extension = self.DetFileType(filepath)
+
+        if extension is not None:
+            if extension == "xml":
+                self.ParseRatingXMLFile(filepath)
+            elif extension == "txt":
+                self.ParseRatingTXTFile(filepath)
+
+
+    def OpenHistDataFile(self, filepath):
+        #filepath formatting for gui
+        splitFilepath = filepath.split("\\")
+        concatenatedFilepath = "...\\"
+        if len(splitFilepath) >= 2:
+            concatenatedFilepath += splitFilepath[-2] + "\\"
+        concatenatedFilepath += splitFilepath[-1]
+
+        if self.gui is not None:
+            self.gui.histFieldDataText.SetLabel(concatenatedFilepath)
+
+        extension = self.DetFileType(filepath)
+
+        if extension is not None:
+            if extension == "csv":
+                self.ParseHistCSVFile(filepath)
+
 
     def FindStationFile(self):
-        if self.stnNum is not None:
+        # try and grab station number from genInfoManager first
+        # updating the RatingCurve in the Fetch function will 
+        # automatically load the historical data
+        self.FetchStageDischarge()
+
+        self.LoadRatingFile()
+
+        if self.gui is not None:
+            self.LoadHistoricalData()
+
+
+    def LoadRatingFile(self):
+        shouldClearGui = False
+
+        if self.stnNum is not "":
             xmlfilepath = self.path + "\\" + self.stnNum + "_ratingcurves.xml"
             txtfilepath = self.path + "\\" + self.stnNum + "_RatingTable.txt"
-            fvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits.csv"
+            self.ratingCurveList = []
 
             print xmlfilepath
-            print fvFilePath
             if os.path.isfile(xmlfilepath):
-                self.gui.OpenRatingFile(os.path.abspath(xmlfilepath))
+                self.OpenRatingFile(os.path.abspath(xmlfilepath))
             elif os.path.isfile(txtfilepath):
-                self.gui.OpenRatingFile(os.path.abspath(txtfilepath))
-            if os.path.isfile(fvFilePath):
-                self.gui.OpenHistDataFile(os.path.abspath(fvFilePath))
+                self.OpenRatingFile(os.path.abspath(txtfilepath))
+            else:
+                shouldClearGui = True
+        else:
+            shouldClearGui = True
 
+        if self.gui is not None:
+            if shouldClearGui is True:
+                self.gui.EnableXML(False)
+                self.gui.ClearAllAppRows()
+                self.gui.EmptyCalculatedFields()
+                self.gui.ratingInfoText.SetLabel(concatenatedFilepath)
+            else:
+                self.gui.SetStatus("")
+
+
+    def LoadHistoricalData(self):
+        shouldClearGui = False
+
+        if self.stnNum is not "":
+            fvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits.csv"
             csvfilepath = self.path + "\\" + self.stnNum + "_FieldVisitExport.csv"
-            if os.path.isfile(csvfilepath):
-                self.gui.OpenHistDataFile(os.path.abspath(csvfilepath))
 
+            print fvFilePath
+            if os.path.isfile(fvFilePath):
+                self.OpenHistDataFile(os.path.abspath(fvFilePath))
+            elif os.path.isfile(csvfilepath):
+                self.OpenHistDataFile(os.path.abspath(csvfilepath))
+            else:
+                shouldClearGui = True
+        else:
+            shouldClearGui = True
+
+        if self.gui is not None:
+            if shouldClearGui is True:
+                self.gui.ClearAllHistRows()
+            else:
+                self.gui.SetStatus("")
 
 
     def DetFileType(self, filepath):
@@ -125,8 +238,9 @@ class RatingCurveViewerToolManager(object):
         self.shiftDiffDisch = None
 
         #Clear old table
-        self.gui.ClearAllAppRows()
-        self.gui.EnableXML(True)
+        if self.gui is not None:
+            self.gui.ClearAllAppRows()
+            self.gui.EnableXML(True)
 
         #Do Parsing
         Curves = ElementTree.parse(filepath).getroot()
@@ -150,31 +264,32 @@ class RatingCurveViewerToolManager(object):
 
         data.reverse()
         self.data = data
+        self.ratingCurveList = [str(x[0].get('id')) for x in data]
 
-        #Update the list on the GUI
-        #First format the dates
-        for i, curve in enumerate(data):
-            curveNum = str(curve[0].get('id'))
+        if self.gui is not None:
+            #Update the list on the GUI
+            #First format the dates
+            for i, curve in enumerate(data):
+                curveNum = str(curve[0].get('id'))
 
-            curve[1].reverse()
-            for j, period in enumerate(curve[1]):
-                curveFromDate = datetime.strptime(str(period.find('start').text), "%Y-%m-%dT%H:%M:%S")
-                curveToDate = datetime.strptime(str(period.find('end').text), "%Y-%m-%dT%H:%M:%S")
+                curve[1].reverse()
+                for j, period in enumerate(curve[1]):
+                    curveFromDate = datetime.strptime(str(period.find('start').text), "%Y-%m-%dT%H:%M:%S")
+                    curveToDate = datetime.strptime(str(period.find('end').text), "%Y-%m-%dT%H:%M:%S")
 
-                convertedFromDate = curveFromDate.strftime("%B %d %Y")
-                convertedToDate = curveToDate.strftime("%B %d %Y")
+                    convertedFromDate = curveFromDate.strftime("%B %d %Y")
+                    convertedToDate = curveToDate.strftime("%B %d %Y")
 
-                #Convert to "blank"
-                convertedFromDate = "" if convertedFromDate == "December 30 2382" else convertedFromDate
-                convertedToDate = "" if convertedToDate == "December 30 2382" else convertedToDate
+                    #Convert to "blank"
+                    convertedFromDate = "" if convertedFromDate == "December 30 2382" else convertedFromDate
+                    convertedToDate = "" if convertedToDate == "December 30 2382" else convertedToDate
 
-                curveNumStr = curveNum
-                if j > 0:
-                    curveNumStr += " (" + str(j+1) + ")"
-                self.gui.AddRowToAppRange(curveNumStr, convertedFromDate, convertedToDate)
+                    curveNumStr = curveNum
+                    if j > 0:
+                        curveNumStr += " (" + str(j+1) + ")"
+                    self.gui.AddRowToAppRange(curveNumStr, convertedFromDate, convertedToDate)
 
-        rcList = [str(x[0].get('id')) for x in data]
-        self.gui.SetCurveCombo(rcList)
+            self.gui.SetCurveCombo(self.ratingCurveList, self.rcIndex)
 
 
     def ParseRatingTXTFile(self, filepath):
@@ -186,9 +301,10 @@ class RatingCurveViewerToolManager(object):
         self.period = None
         self.curveNum = None
 
-        #Clear xml table before disabling
-        self.gui.ClearAllAppRows()
-        self.gui.EnableXML(False)
+        if self.gui is not None:
+            #Clear xml table before disabling
+            self.gui.ClearAllAppRows()
+            self.gui.EnableXML(False)
 
         textFile = open(filepath, "r")
         data = textFile.readlines()
@@ -200,19 +316,23 @@ class RatingCurveViewerToolManager(object):
 
         self.data = data
         self.SetupCurveFromTxt()
-        self.gui.SetCurveCombo([]) # triggers hist values update
+
+        self.ratingCurveList = []
+
+        if self.gui is not None:
+            self.gui.SetCurveCombo(self.ratingCurveList, self.rcIndex) # triggers hist values update
+
+        return self.ratingCurveList
 
 
-    def OnRCUpdate(self):
-        print "Update"
+    def OnRCUpdate(self, selectedCurveIndex):
+        if self.gui is not None:
+            self.gui.ClearAllHistRows()
 
         if self.histData is None:
             return
 
         print "Hist data is not None"
-
-        self.gui.ClearAllHistRows()
-
 
         # iterate through each hist value
         # for each, calc appropriate Shift and
@@ -235,8 +355,6 @@ class RatingCurveViewerToolManager(object):
                 error = ""
             else:
                 if self.extension == "xml":
-                    selectedCurveIndex = self.gui.GetSelectedCurveIndex()
-
                     RCType = self.data[selectedCurveIndex][0].get('type')
                     points = self.data[selectedCurveIndex][2]
 
@@ -275,6 +393,9 @@ class RatingCurveViewerToolManager(object):
 
             self.gui.AddRowToHistData(date, str(stage), str(disch), str(width), str(area), str(waterVelo), str(error), str(shift), str(remarks))
 
+        if self.gui is not None:
+            self.CalculateShiftDisch(self.obsStage, self.obsDisch, selectedCurveIndex)
+
 
     def CalcLinShiftQdiff(self, points, hg, q):
         a = None
@@ -291,7 +412,6 @@ class RatingCurveViewerToolManager(object):
                     a = float(equation.find('a').text)
                     b = float(equation.find('b').text)
 
-
                     break
 
 
@@ -305,9 +425,6 @@ class RatingCurveViewerToolManager(object):
                     a2 = float(equation.find('a').text)
                     b2 = float(equation.find('b').text)
                     break
-
-
-
 
         # Do Calculations
         Qr=(a * hg)+ b
@@ -336,7 +453,6 @@ class RatingCurveViewerToolManager(object):
                     beta = float(equation.find('beta').text)
                     c = float(equation.find('c').text)
                     break
-
 
 
         # find offset, beta, c to calculate Shift
@@ -380,9 +496,7 @@ class RatingCurveViewerToolManager(object):
                 break
 
         #calculate a and b for shift
-
         for j, row2 in enumerate(points):
-
             qpas = row[0]
             if q < qpas:
                 qhg1 = self.data[i-1][1]
@@ -415,7 +529,9 @@ class RatingCurveViewerToolManager(object):
         self.delHist = None
         self.minList = []
         self.maxList = []
-        self.gui.ClearAllHistRows()
+
+        if self.gui is not None:
+            self.gui.ClearAllHistRows()
 
         csvFile = open(filepath, "r")
         histData = csvFile.readlines()[1:]
@@ -439,33 +555,35 @@ class RatingCurveViewerToolManager(object):
         self.delHist = listToDel
         self.histData = histData
 
+        if self.gui is not None:
+            self.OnRCUpdate(self.gui.GetSelectedCurveIndex())
 
-        self.OnRCUpdate()
 
-
-    def CalculateShiftDisch(self, Hobserved, Qobserved):
-
+    def CalculateShiftDisch(self, Hobserved, Qobserved, selectedCurveIndex):
         if self.mode == "DEBUG":
             print "Calculating Shift and Discharge"
 
+        errorMessage = None
         if self.extension is None:
-            self.gui.CreateErrorDialog("Please use a valid Rating Curve File - it is an XML file best extracted from the ADET")
-            return
+            errorMessage = "Please use a valid Rating Curve File - it is an XML file best extracted from the ADET"
 
-        if Hobserved == "":
+        elif Hobserved == "":
             #show error dialog
-            self.gui.CreateErrorDialog("Observed Stage is empty. Please enter a value.")
-            return
+            errorMessage = "Observed Stage is empty. Please enter a value."
+
         elif Qobserved == "":
             #show error dialog
-            self.gui.CreateErrorDialog("Observed Discharge is empty. Please enter a value.")
-            return
+            errorMessage = "Observed Discharge is empty. Please enter a value."
 
-        if self.extension == "xml":
-            selectedCurveIndex = self.gui.GetSelectedCurveIndex()
-            if selectedCurveIndex < 0:
-                self.gui.CreateErrorDialog("Rating Curve file is invalid.")
-                return
+        elif self.extension == "xml":
+            if selectedCurveIndex < 0 or selectedCurveIndex >= len(self.ratingCurveList):
+                errorMessage = "Rating Curve file is invalid."
+
+        # Check if anything went wrong
+        if errorMessage is not None:
+            if self.gui is not None:
+                self.gui.SetStatus(errorMessage)
+            return errorMessage 
 
         # Reset shift/disch calculations
         self.shiftDiffDisch = None
@@ -475,18 +593,57 @@ class RatingCurveViewerToolManager(object):
         # Store obsDisch, obsStage
         self.obsDisch = float(Qobserved)
         self.obsStage = float(Hobserved)
+        self.rcIndex = selectedCurveIndex
+        
+        if self.gui is not None:
+            self.gui.ratingCurveCombo.SetSelection(self.rcIndex)
 
         if self.extension == "xml":
-            self.CalculateXMLShiftDisch()
+            return self.CalculateXMLShiftDisch(selectedCurveIndex)
         elif self.extension == "txt":
+            return self.CalculateTXTShiftDisch(selectedCurveIndex)
 
-            self.CalculateTXTShiftDisch()
+
+    def ValidateCalculations(self, hg_low, hg_high, q_low, q_high):
+        errorMessage = None
+        if self.obsStage < hg_low:
+            if self.mode == "DEBUG":
+                print "Observed Stage is below the minimum rating point"
+
+            errorMessage = "Observed Stage is below the minimum rating point"
+
+        elif self.obsStage > hg_high:
+            if self.mode == "DEBUG":
+                print "Observed Stage is above the maximum rating point"
+
+            errorMessage = "Observed Stage is above the maximum rating point"
+            
+        if self.obsDisch < q_low:
+            if self.mode == "DEBUG":
+                print "Observed Discharge is below the minimum rating point"
+
+            errorMessage = "Observed Discharge is below the minimum rating point"
+
+        elif self.obsDisch > q_high:
+            if self.mode == "DEBUG":
+                print "Observed Discharge is above the maximum rating point"
+
+            errorMessage = "Observed Discharge is above the maximum rating point"
+
+        # if there was an error, return 
+        if errorMessage is not None:
+            if self.gui is not None:
+                self.gui.SetCalcShift("")
+                self.gui.SetRatedDisch("")
+                self.gui.SetDischDiff("")
+
+                self.gui.SetStatus(errorMessage)
+            
+        return errorMessage
 
 
-    def CalculateXMLShiftDisch(self):
-        selectedCurveIndex = self.gui.GetSelectedCurveIndex()
+    def CalculateXMLShiftDisch(self, selectedCurveIndex):
         RCType = self.data[selectedCurveIndex][0].get('type')
-
         self.curveNum = self.data[selectedCurveIndex][0].get("id")
 
         # points list
@@ -530,46 +687,12 @@ class RatingCurveViewerToolManager(object):
         q_low = float(points[0].find('qr').text)
         q_high = float(points[-1].find('qr').text)
 
-        if self.obsStage < hg_low:
-            if self.mode == "DEBUG":
-                print "Observed Stage is below the minimum rating point"
-            self.gui.SetCalcShift("")
-            self.gui.SetDischDiff("")
-
-            #Have error dialog appear
-            self.gui.CreateErrorDialog("Observed Stage is below the minimum rating point")
-            return
-        elif self.obsStage > hg_high:
-            if self.mode == "DEBUG":
-                print "Observed Stage is above the maximum rating point"
-            self.gui.SetCalcShift("")
-            self.gui.SetDischDiff("")
-
-            #have error dialog appear
-            self.gui.CreateErrorDialog("Observed Stage is above the maximum rating point")
-            return
-        if self.obsDisch < q_low:
-            if self.mode == "DEBUG":
-                print "Observed Discharge is below the minimum rating point"
-            self.gui.SetCalcShift("")
-            self.gui.SetDischDiff("")
-
-            #Have error dialog appear
-            self.gui.CreateErrorDialog("Observed Discharge is below the minimum rating point")
-            return
-        elif self.obsDisch > q_high:
-            if self.mode == "DEBUG":
-                print "Observed Discharge is above the maximum rating point"
-            self.gui.SetCalcShift("")
-            self.gui.SetDischDiff("")
-
-            #have error dialog appear
-            self.gui.CreateErrorDialog("Observed Discharge is above the maximum rating point")
-            return
+        errorMessage = self.ValidateCalculations(hg_low, hg_high, q_low, q_high)
+        if errorMessage is not None:
+            return errorMessage
 
 
         #-----------------------Calculations: Shift and Discharge Diff(%)Shift and Discharge Diff(%)-----------------------#
-        print ">>>>>>> Rating Parameters based on the RC selected<<<<<<<<<<<<"
         #Calculations for Logarithmic Rating Curve Type.....
         if RCType == "Linear":
             self.CalculateLinearRC(points, selectedCurveIndex)
@@ -612,15 +735,16 @@ class RatingCurveViewerToolManager(object):
         self.Qdiff = float(format(((self.obsDisch-self.Qr)/self.Qr)*100,".3g"))
 
         # Set Text Fields in the gui
-        self.gui.SetCalcShift(str(self.Shift))
-        self.gui.SetRatedDisch(str(float(format(self.Qr, ".3g"))))
-        self.gui.SetDischDiff(str(self.Qdiff))
+        if self.gui is not None:
+            self.gui.SetCalcShift(str(self.Shift))
+            self.gui.SetRatedDisch(str(self.GetFormattedRatedDischarge()))
+            self.gui.SetDischDiff(str(self.Qdiff))
 
-        # Set values in Discharge Manager
-        if self.disMeasManager is not None:
-            self.disMeasManager.shiftCtrl = str(self.Shift)
-            self.disMeasManager.diffCtrl = str(self.Qdiff)
-            self.disMeasManager.curveCtrl = str(self.curveNum)
+        # # Set values in Discharge Manager
+        # if self.disMeasManager is not None:
+        #     self.disMeasManager.shiftCtrl = str(self.Shift)
+        #     self.disMeasManager.diffCtrl = str(self.Qdiff)
+            # self.disMeasManager.curveCtrl = str(self.curveNum)
 
 
     def CalculateLogRC(self, points, selectedCurveIndex):
@@ -640,8 +764,6 @@ class RatingCurveViewerToolManager(object):
                     beta = float(equation.find('beta').text)
                     c = float(equation.find('c').text)
                     break
-
-
 
 
         for i, qpas in enumerate(points):
@@ -664,15 +786,16 @@ class RatingCurveViewerToolManager(object):
 
 
         # Set Text Fields in the gui
-        self.gui.SetCalcShift(str(self.Shift))
-        self.gui.SetRatedDisch(str(float(format(self.Qr, ".3g"))))
-        self.gui.SetDischDiff(str(self.Qdiff))
+        if self.gui is not None:
+            self.gui.SetCalcShift(str(self.Shift))
+            self.gui.SetRatedDisch(str(self.GetFormattedRatedDischarge()))
+            self.gui.SetDischDiff(str(self.Qdiff))
 
-        # Set values in Discharge Manager
-        if self.disMeasManager is not None:
-            self.disMeasManager.shiftCtrl = str(self.Shift)
-            self.disMeasManager.diffCtrl = str(self.Qdiff)
-            self.disMeasManager.curveCtrl = str(self.curveNum)
+        # # Set values in Discharge Manager
+        # if self.disMeasManager is not None:
+        #     self.disMeasManager.shiftCtrl = str(self.Shift)
+        #     self.disMeasManager.diffCtrl = str(self.Qdiff)
+            # self.disMeasManager.curveCtrl = str(self.curveNum)
 
 
 
@@ -685,8 +808,6 @@ class RatingCurveViewerToolManager(object):
         self.hgta = self.hgpa
 
     def CalculateTXTShiftDisch(self):
-
-
         # assumes that the first point is lowest, last point is highest
         # checks against high and low points first
         hg_low = float(self.data[0][1])
@@ -694,43 +815,9 @@ class RatingCurveViewerToolManager(object):
         q_low = float(self.data[0][0])
         q_high = float(self.data[-1][0])
 
-        if self.obsStage < hg_low:
-            if self.mode == "DEBUG":
-                print "Observed Stage is below the minimum rating point"
-            self.gui.SetCalcShift("")
-            self.gui.SetDischDiff("")
-
-            #Have error dialog appear
-            self.gui.CreateErrorDialog("Observed Stage is below the minimum rating point")
-            return
-        elif self.obsStage > hg_high:
-            if self.mode == "DEBUG":
-                print "Observed Stage is above the maximum rating point"
-            self.gui.SetCalcShift("")
-            self.gui.SetDischDiff("")
-
-            #have error dialog appear
-            self.gui.CreateErrorDialog("Observed Stage is above the maximum rating point")
-            return
-        elif self.obsDisch < q_low:
-            if self.mode == "DEBUG":
-                print "Observed Discharge is below the minimum rating point"
-            self.gui.SetCalcShift("")
-            self.gui.SetDischDiff("")
-
-            #Have error dialog appear
-            self.gui.CreateErrorDialog("Observed Discharge is below the minimum rating point")
-            return
-        elif self.obsDisch > q_high:
-            if self.mode == "DEBUG":
-                print "Observed Discharge is above the maximum rating point"
-            self.gui.SetCalcShift("")
-            self.gui.SetDischDiff("")
-
-            #have error dialog appear
-            self.gui.CreateErrorDialog("Observed Discharge is above the maximum rating point")
-            return
-
+        errorMessage = self.ValidateCalculations(hg_low, hg_high, q_low, q_high)
+        if erroMessage is not None:
+            return errorMessage
 
         # Not above or below the RC
         hg1 = None
@@ -776,15 +863,15 @@ class RatingCurveViewerToolManager(object):
         self.Shift = float(format(self.Hr-self.obsStage,".3g"))
         self.Qdiff = float(format(((self.obsDisch-self.Qr)/self.Qr)*100,".3g"))
 
-
         # Set Text Fields in the gui
-        self.gui.SetCalcShift(str(self.Shift))
-        self.gui.SetRatedDisch(str(float(format(self.Qr, ".3g"))))
-        self.gui.SetDischDiff(str(self.Qdiff))
+        if self.gui is not None:
+            self.gui.SetCalcShift(str(self.Shift))
+            self.gui.SetRatedDisch(str(self.GetFormattedRatedDischarge()))
+            self.gui.SetDischDiff(str(self.Qdiff))
 
-        if self.disMeasManager is not None:
-            self.disMeasManager.shiftCtrl = str(self.Shift)
-            self.disMeasManager.diffCtrl = str(self.Qdiff)
+        # if self.disMeasManager is not None:
+        #     self.disMeasManager.shiftCtrl = str(self.Shift)
+        #     self.disMeasManager.diffCtrl = str(self.Qdiff)
 
 
     def PlotData(self):
@@ -865,12 +952,24 @@ class RatingCurveViewerToolManager(object):
         if self.disMeasManager is None:
             return
 
-        obsStage = self.disMeasManager.mghCtrl
-        obsDisch = self.disMeasManager.dischCtrl
+        if self.manager is not None:
+            self.stnNum = self.manager.genInfoManager.stnNumCmbo
+            self.stnNum = self.stnNum if self.stnNum != "" else ""
 
+        self.obsStage = self.disMeasManager.mghCtrl
+        self.obsDisch = self.disMeasManager.dischCtrl
 
-        self.gui.SetObsStage(obsStage)
-        self.gui.SetObsDisch(obsDisch)
+        # if the rating curve index from the discharge measurement manager was valid
+        # set the rcIndex to that index, if invalid then default to 0
+        self.rcIndex = self.disMeasManager.GetCurrentCurveIndexInList(self.ratingCurveList)
+        self.rcIndex = self.rcIndex if self.rcIndex >= 0 and self.rcIndex < len(self.ratingCurveList) else 0
+
+        if self.gui is not None:
+            self.gui.ratingCurveCombo.SetSelection(self.rcIndex)
+
+            self.gui.SetCalcShift("" if self.Shift is None else str(self.Shift))
+            self.gui.SetRatedDisch("" if self.Qr is None else str(self.GetFormattedRatedDischarge()))
+            self.gui.SetDischDiff("" if self.Qdiff is None else str(self.Qdiff))
 
 
 def main():

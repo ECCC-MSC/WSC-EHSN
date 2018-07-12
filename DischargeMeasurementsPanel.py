@@ -140,6 +140,7 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.curveLbl = "Curve #"
         self.mghChoices = ["", "  (HG)", "  (HG2)", "  (WLR1)", "  (WLR2)"]
         self.dischChoices = ["","E","B"]
+        self.curveList = [""]
 
         self.controlConditionRemLbl = "Control Condition Remarks"
         self.dischRemarkLbl = "Discharge Activity Remarks"
@@ -366,6 +367,7 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.dischCtrl.Bind(wx.EVT_TEXT, self.FloatNumberControl)
         self.dischCtrl.Bind(wx.EVT_TEXT, self.OnChangeUpdateMovingBoat)
         self.dischCtrl.Bind(wx.EVT_KILL_FOCUS, self.OnDischarge)
+        self.dischCtrl.Bind(wx.EVT_KILL_FOCUS, self.OnUpdateHGQValues)
         self.dischCombo = wx.ComboBox(dischPanel, choices=self.dischChoices, style=wx.CB_READONLY, size=(32, self.ctrlHeight))
 
         dischSizer.Add(dischTxt, 1, wx.EXPAND)
@@ -438,8 +440,12 @@ class DischargeMeasurementsPanel(wx.Panel):
 
         curveTxt = wx.StaticText(curvePanel, 25, label=self.curveLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(-1, self.height))
         curveTxt.Wrap(self.wrapLength)
-        self.curveCtrl = MyTextCtrl(curvePanel, 26, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(120, self.ctrlHeight))
+        
+        self.curveCtrl = wx.ComboBox(curvePanel, 26, choices=self.curveList, style=wx.CB_DROPDOWN|wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(120, self.ctrlHeight))
         self.curveCtrl.Bind(wx.EVT_TEXT, self.FloatNumberControl)
+        self.curveCtrl.Bind(wx.EVT_TEXT, self.OnRCText)
+        self.curveCtrl.Bind(wx.EVT_KILL_FOCUS, self.OnRCKillFocus)
+        self.curveCtrl.Bind(wx.EVT_COMBOBOX, self.OnRCCombo)
         curveSizerG.Add(curveTxt, pos=(0, 0), span=(1, 1), flag=wx.EXPAND)
         curveSizerG.Add(self.curveCtrl, pos=(0, 1), span=(1, 2), flag=wx.EXPAND)
 
@@ -755,7 +761,48 @@ class DischargeMeasurementsPanel(wx.Panel):
 
 
     def SetCurveCtrl(self, curveCtrl):
-        self.curveCtrl.SetValue(curveCtrl)
+        self.curveCtrl.ChangeValue(curveCtrl)
+
+
+    def SetCurveCombo(self, rcList):
+        curveList = list(rcList)
+        curveList.append("")
+
+        curveVal = self.GetCurveCtrl()
+        self.curveCtrl.SetItems(curveList)
+        self.SetCurveCtrl(curveVal)
+
+
+    def SetCurveIndex(self, index):
+        self.curveCtrl.SetSelection(index)
+
+    def OnUpdateHGQValues(self, event):
+        if self.manager is not None:
+            self.manager.OnUpdateHGQValues()
+
+        event.Skip()
+
+    def OnUpdateCurveValues(self, event):
+        if self.manager is not None:
+            self.manager.OnUpdateCurveValues()
+
+    def OnRCText(self, event):
+        if self.manager is not None:
+            self.manager.OnRCText()
+
+        event.Skip()
+
+    def OnRCKillFocus(self, event):
+        if self.manager is not None:
+            self.manager.OnRCKillFocus()
+
+        event.Skip()
+
+    def OnRCCombo(self, event):
+        if self.manager is not None:
+            self.manager.OnRCCombo()
+
+        event.Skip()
 
     #allow only the float number type inputs
     def FloatNumberControl(self, event):
@@ -852,6 +899,9 @@ class DischargeMeasurementsPanel(wx.Panel):
             val = val.split("  ")[0]
         
         self.mghCtrl.SetValue(val)
+
+        if self.manager is not None:
+            self.manager.OnUpdateHGQValues()
 
     def do_nothing(self,evt):
           pass
