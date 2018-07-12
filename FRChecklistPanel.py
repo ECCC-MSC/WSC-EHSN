@@ -121,7 +121,7 @@ class FRChecklistPanel(wx.Panel):
                          "No Panel Q > 10%?"]
 
         self.notesOnSiteCondLbl = "Notes on Site Conditions Affecting Measurement Quality:"
-        # self.picturedLbl = "Site and/or control pictures were taken."
+        self.picturedLbl = "Site and/or control pictures were taken."
         self.textHeaderColWidth = 223
         self.textLabelColWidth = 250
         self.textLabelRowHeight = 20
@@ -261,7 +261,7 @@ class FRChecklistPanel(wx.Panel):
         notesSizer.Add(siteNotesTxt, 0, wx.EXPAND|wx.LEFT|wx.TOP, 10)
         notesSizer.Add(self.siteNotesCtrl, 1, wx.EXPAND|wx.TOP, 3)
 
-        # self.picturedCkbox = wx.CheckBox(self, label=self.picturedLbl)
+        self.picturedCkbox = wx.CheckBox(self, label=self.picturedLbl)
 
         self.hintBar = wx.StaticText(self, label=self.hint, size=(-1, 20))
         self.hintBar.SetForegroundColour("Red")
@@ -273,7 +273,7 @@ class FRChecklistPanel(wx.Panel):
         self.layoutSizer.Add(self.hintBar, 0, wx.EXPAND)
         self.layoutSizer.Add(headerSizer, 0, wx.EXPAND)
         self.layoutSizer.Add(self.colSizer, 0, wx.EXPAND)
-        # self.layoutSizer.Add(self.picturedCkbox, 0)
+        self.layoutSizer.Add(self.picturedCkbox, 0)
         self.layoutSizer.Add(notesSizer, 1, wx.EXPAND)
 
         self.SetSizer(self.layoutSizer)
@@ -284,7 +284,7 @@ class FRChecklistPanel(wx.Panel):
         self.cbRevLabelPanel.Enable(en)
         self.cbCheckLabelPanel.Enable(en)
         self.ctrlHeaderPanel.Enable(en)
-        # self.picturedCkbox.Enable(en)
+        self.picturedCkbox.Enable(en)
 
     def enableColSizer(self, en):
         self.labelPanel.Enable(en)

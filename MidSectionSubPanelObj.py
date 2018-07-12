@@ -1,22 +1,24 @@
 # All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
 # Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 
+__metaclass__ = type
 class SubPanelObj():
-    def __init__(self, panelNum="", time="", panelId=-1, panelType=-1, index=-1, distance="", width="", depth="", \
-        area="", discharge="", corrMeanVelocity="", flow=""):
-
+    def __init__(self, panelNum="", time="", distance="", width="", depth="", \
+        area="", discharge="", corrMeanVelocity="", flow="", pid="", index=""):
+        self.pid = pid
         self.panelNum = panelNum
         self.distance = distance
         self.width = width
         self.depth = depth
+        self.index = index
         # self.bottomIce = bottomIce
         # self.depthUnderIce = depthUnderIce
         # self.obervationDepth = obervationDepth
         # self.revolutions = revolutions
         self.time = time
-        self.panelId = panelId
-        self.panelType = panelType
-        self.index = index
+
+        # self.panelType = panelType
+
         self.corrMeanVelocity = corrMeanVelocity
 
 
@@ -26,21 +28,19 @@ class SubPanelObj():
         self.flow = flow
         # self.flow = flow
 
-    def SetPanelId(self, num):
-        self.panelId = num
+
 
     def ToString(self):
         print "===============Print the object============="
-        print "panelId: ", self.panelId
+
         print "panelNum:", self.panelNum
         print "distance:", self.distance
         print "width:", self.width
         print "depth:", self.depth
-        print "panelType:", self.panelType
-        print "index:", self.index
+        print "pid:", self.pid
+
         print "corrMeanVelocity:", self.corrMeanVelocity
         print "============================================="
-
 
 
 
@@ -49,12 +49,12 @@ class PanelObj(SubPanelObj):
                     offset="", wldl="", dryAngle="", distWaterSurface="", dryCorrection="", wetCorrection="", \
                     openEffectiveDepth="", iceDepthRead="", iceAssembly="", aboveFoot="", belowFoot="", distAboveWeight="", \
                     wsBottomIce="", wsBottomSlush="", iceEffectiveDepth="", velocityMethod="", obliqueCorrection="", \
-                    velocityCorrFactor="", reverseFlow="", depths=[], depthObs=[], revs=[], revTimes=[], pointVels=[], \
-                    meanVelocity="", end=False, start=False, slopBtn1="", weight="", adjusted="", \
-                    slush="", thickness="", sequence=-1, iceThickness="", iceThicknessAdjusted="", \
+                    velocityCorrFactor="", reverseFlow=False, depths=[], depthObs=[], revs=[], revTimes=[], pointVels=[], \
+                    meanVelocity="", end=False, start=False, slopBtn1=True, weight="", adjusted="", \
+                    slush="", thickness="", sequence=-1, iceThickness="", iceThicknessAdjusted="", #depthPanelLock=False, \
                     *args, **kwargs):
         SubPanelObj.__init__(self, *args, **kwargs)
-        self.panelType = 1
+        # self.panelType = 1
         self.currentMeter = currentMeter
         self.slopBtn1 = slopBtn1
         self.slop = slop
@@ -87,7 +87,7 @@ class PanelObj(SubPanelObj):
         self.obliqueCorrection = obliqueCorrection
         self.velocityCorrFactor = velocityCorrFactor
         self.reverseFlow = reverseFlow
-
+        # self.depthPanelLock = depthPanelLock
         self.depths = depths
         self.depthObs = depthObs
         self.revs = revs
@@ -103,36 +103,24 @@ class PanelObj(SubPanelObj):
         # self.sequence = sequence
 
 
+    def ToString(self):
+        super(PanelObj, self).ToString()
+
+
+
 class EdgeObj(SubPanelObj):
-    def __init__(self, edgeType="", leftOrRight="", startOrEnd="", depth="", depthAdjacent="",\
-        velocityAdjacent="", *args, **kwargs):
+    def __init__(self, edgeType="", leftOrRight="", startOrEnd="", depthAdjacent=False,\
+        velocityAdjacent=False, *args, **kwargs):
         # super(EdgeObj, self).__init__(*args, **kwargs)
         SubPanelObj.__init__(self, *args, **kwargs)
-        self.panelType = 0
+        # self.panelType = 0
         self.edgeType = edgeType
         self.leftOrRight = leftOrRight
         # self.distanceFromPoint = distanceFromPoint
         self.startOrEnd = startOrEnd
         # self.estimatedVel = estimatedVel
-        self.depth = depth
         self.depthAdjacent = depthAdjacent
         self.velocityAdjacent = velocityAdjacent
 
 
 
-# class PierObj(SubPanelObj):
-#     def __init__(self, start="", end="", *args, **kwargs):
-#         # super(PierObj, self).__init__(*args, **kwargs)
-#         SubPanelObj.__init__(self, *args, **kwargs)
-#         self.start = start
-#         self.end = end
-
-
-
-
-
-# obj = SubPanelObj(panelNum="", time="")
-# obj = SubPanelObj()
-# obj = PanelObj(panelNum=123, distance=444)
-# print obj.panelNum
-# print obj.distance

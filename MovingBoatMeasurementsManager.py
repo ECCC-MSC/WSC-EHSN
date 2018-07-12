@@ -222,13 +222,13 @@ class MovingBoatMeasurementsManager(object):
         self.gui.mmntMeanTimeCtrl.SetValue(mmntMeanTimeCtrl)
 
 
-    @property
-    def rawDischMeanCtrl(self):
-        return self.gui.rawDischMeanCtrl.GetValue()
+    # @property
+    # def rawDischMeanCtrl(self):
+    #     return self.gui.rawDischMeanCtrl.GetValue()
 
-    @rawDischMeanCtrl.setter
-    def rawDischMeanCtrl(self, rawDischMeanCtrl):
-        self.gui.rawDischMeanCtrl.SetValue(rawDischMeanCtrl)
+    # @rawDischMeanCtrl.setter
+    # def rawDischMeanCtrl(self, rawDischMeanCtrl):
+    #     self.gui.rawDischMeanCtrl.SetValue(rawDischMeanCtrl)
 
 
     @property
@@ -363,6 +363,17 @@ class MovingBoatMeasurementsManager(object):
     @differenceCtrl.setter
     def differenceCtrl(self, differenceCtrl):
         self.gui.differenceCtrl.SetValue(differenceCtrl)
+
+
+
+    #extrapoloation uncertainty
+    @property
+    def extrapUncerCtrl(self):
+        return self.gui.extrapUncerCtrl.GetValue()
+
+    @extrapUncerCtrl.setter
+    def extrapUncerCtrl(self, val):
+        self.gui.extrapUncerCtrl.SetValue(val)
 
     #leftBankOtherCtrl
     @property
@@ -504,15 +515,19 @@ class MovingBoatMeasurementsManager(object):
                 self.baseCurveDischCtrl = format(baseCurveDisc, '.3f')
 
 
-    def clear(self):
-        self.corrMeanGHCtrl = ''
-        self.calcShiftBaseCurveCtrl = ''
-        self.dischDiffBaseCurveCtrl = ''
-        self.baseCurveGHCtrl = ''
-        self.baseCurveDischCtrl = ''
+    def Clear(self):
+        self.gui.Clear()
+        # self.corrMeanGHCtrl = ''
+        # self.calcShiftBaseCurveCtrl = ''
+        # self.dischDiffBaseCurveCtrl = ''
+        # self.baseCurveGHCtrl = ''
+        # self.baseCurveDischCtrl = ''
 
     def AddEntry(self):
         self.gui.AddEntry()
+
+    def GetDetectedCtrl(self):
+        return self.gui.detectedCtrl
 
 
     def GetBedMatCmbo(self):
@@ -549,8 +564,8 @@ class MovingBoatMeasurementsManager(object):
 
     def GetMmntStartTimeCtrl(self):
         return self.gui.mmntStartTimeCtrl
-    def GetRawDischMeanCtrl(self):
-        return self.gui.rawDischMeanCtrl
+    # def GetRawDischMeanCtrl(self):
+    #     return self.gui.rawDischMeanCtrl
     def GetCorrMeanGHCtrl(self):
         return self.gui.corrMeanGHCtrl
     def GetStandDevMeanDischCtrl(self):
@@ -571,6 +586,9 @@ class MovingBoatMeasurementsManager(object):
         return self.gui.baseCurveDischCtrl
     def GetDischDiffBaseCurveCtrl(self):
         return self.gui.dischDiffBaseCurveCtrl
+
+    def GetExtrapUncerCtrl(self):
+        return self.gui.extrapUncerCtrl
 
     def GetCommentsCtrl(self):
         return self.gui.commentsCtrl

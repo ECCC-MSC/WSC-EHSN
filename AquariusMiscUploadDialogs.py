@@ -24,6 +24,7 @@ class AquariusMultDisUploadDialog(wx.Dialog):
 
         self.sizeWidth = 380
         self.sizeHeight = 270
+        self.SetWindowStyleFlag(wx.RESIZE_BORDER)
         self.SetSize((self.sizeWidth, self.sizeHeight))
 
         self.InitUI()

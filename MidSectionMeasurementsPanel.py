@@ -19,7 +19,7 @@ class MidSectionMeasurementsPanel(wx.Panel):
         layout = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(layout)
 
-        self.header = MidSectionHeader(self)
+        self.header = MidSectionHeader(self.mode, self)
         self.table = MidSectionSummaryTable(self)
 
 

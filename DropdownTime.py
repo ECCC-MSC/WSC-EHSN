@@ -5,7 +5,10 @@ import wx
 from datetime import datetime as dt
 
 
-
+class MyComboBox(wx.ComboBox):
+    def __init__(self, *args, **kwargs):
+        super(MyComboBox, self).__init__(*args, **kwargs)
+        self.preValue = ""
 
 
 class DropdownTime(wx.Panel):
@@ -25,10 +28,11 @@ class DropdownTime(wx.Panel):
         mySizer = wx.BoxSizer(wx.HORIZONTAL)
         self.SetSizer(mySizer)
 
-        self.hourCmbox = wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.CB_READONLY, choices=self.hours)
-        self.minuteCmbox = wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.CB_READONLY, choices=self.minutes)
+        self.hourCmbox = MyComboBox(self, style=wx.CB_DROPDOWN, choices=self.hours)
+
+        self.minuteCmbox = MyComboBox(self, style=wx.CB_DROPDOWN, choices=self.minutes)
         if self.hasSecond:
-            self.secondCmbox = wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.CB_READONLY, choices=self.minutes)
+            self.secondCmbox = MyComboBox(self, style=wx.CB_DROPDOWN, choices=self.minutes)
             timeText2 = wx.StaticText(self, label=':')
         timeText1 = wx.StaticText(self, label=':')
 
@@ -40,8 +44,8 @@ class DropdownTime(wx.Panel):
             mySizer.Add(timeText2, 0, wx.TOP, 3)
             mySizer.Add(self.secondCmbox, 1, wx.RIGHT|wx.TOP, 3)
 
-        self.hourCmbox.Bind(wx.EVT_KEY_DOWN, self.OnTimeKeyDown)
-        self.minuteCmbox.Bind(wx.EVT_KEY_DOWN, self.OnTimeKeyDown)
+        self.hourCmbox.Bind(wx.EVT_KEY_UP, self.OnTimeKeyUp)
+        self.minuteCmbox.Bind(wx.EVT_KEY_UP, self.OnTimeKeyUp)
 
     def GenerateMinutes(self):
         a = list(range(60))
@@ -64,13 +68,31 @@ class DropdownTime(wx.Panel):
         return b
 
 
-    def OnTimeKeyDown(self, event):
-        self.UpdateTime(event.GetKeyCode())
+    def OnTimeKeyUp(self, event):
+        keycode = event.GetKeyCode()
+        self.NumberControl(event)
+        if keycode == ord('R') or keycode == ord('C'):
+            self.UpdateTime(keycode)      
+
         event.Skip()
 
 
     def UpdateTime(self, keycode):
-        # print keycode
+        if keycode == ord('R'):
+            self.Clear()
+        elif keycode == ord('C'):
+            self.SetToCurrent()
+
+
+    def Clear(self):
+        self.hourCmbox.ChangeValue("")
+        self.minuteCmbox.ChangeValue("")
+        if self.hasSecond:
+            self.secondCmbox.ChangeValue("")
+
+
+    def SetToCurrent(self):
+
         currentTime = dt.now()
         hour = str(currentTime.hour)
         minute = str(currentTime.minute)
@@ -82,25 +104,30 @@ class DropdownTime(wx.Panel):
         second = ("0" + second) if len(second) == 1 else second
 
         
-        hourCtrl = self.GetHourCtrl()
-        minCtrl = self.GetMinuteCtrl()
+        # hourCtrl = self.GetHourCtrl()
+        # minCtrl = self.GetMinuteCtrl()
         if self.hasSecond:
-            secCtrl = self.GetSecondCtrl()
-            secCtrl.Dismiss()
+            self.secondCmbox.Dismiss()
 
-        hourCtrl.Dismiss()
-        minCtrl.Dismiss()
-        if keycode == ord('R'):
-            hourCtrl.SetValue("")
-            minCtrl.SetValue("")
-            if self.hasSecond:
-                secCtrl.SetValue("")
-        elif keycode == ord('C'):
-            hourCtrl.SetValue(hour)
-            minCtrl.SetValue(minute)
-            if self.hasSecond:
-                secCtrl.SetValue(second)
+        # self.hourCmbox.Dismiss()
+        # self.minuteCmbox.Dismiss()
+        # if keycode == ord('R'):
+        #     hourCtrl.SetValue("")
+        #     minCtrl.SetValue("")
+        #     if self.hasSecond:
+        #         secCtrl.SetValue("")
+        # elif keycode == ord('C'):
+        #     hourCtrl.SetValue(hour)
+        #     minCtrl.SetValue(minute)
+        #     if self.hasSecond:
+        #         secCtrl.SetValue(second)
 
+
+
+        self.hourCmbox.ChangeValue(hour)
+        self.minuteCmbox.ChangeValue(minute)
+        if self.hasSecond:
+            self.secondCmbox.ChangeValue(second)
 
 
     def GetHourVal(self):
@@ -131,11 +158,28 @@ class DropdownTime(wx.Panel):
     def GetSecondCtrl(self):
         return self.secondCmbox
 
+    # #return the time in string format
+    # def GetValue(self):
+    #     if self.hasSecond:
+    #         if self.GetHourVal() == "" and self.GetMinuteVal() == "" and self.GetSecondVal() == "":
+    #             return ""
+    #         else:
+    #             return self.GetHourVal() + ":" + self.GetMinuteVal() + ":" + self.GetSecondVal()
+    #     else:
+    #         if self.GetHourVal() == "" and self.GetMinuteVal() == "":
+    #             return self.GetHourVal() + ":" + self.GetMinuteVal() 
+    #         else:
+    #             return ""
+
+
     #return the time in string format
     def GetValue(self):
         if self.hasSecond:
             return self.GetHourVal() + ":" + self.GetMinuteVal() + ":" + self.GetSecondVal()
-        return self.GetHourVal() + ":" + self.GetMinuteVal()
+        else:
+
+            return self.GetHourVal() + ":" + self.GetMinuteVal() 
+
 
     def SetValue(self, val):
         if val is None:
@@ -242,3 +286,44 @@ class DropdownTime(wx.Panel):
         else:
             return self.GetHourVal() != '' and self.GetMinuteVal() != '' and self.GetSecondVal() != ''
 
+
+
+    def SetBackgroundColour(self, color):
+        self.hourCmbox.SetBackgroundColour(color)
+        self.minuteCmbox.SetBackgroundColour(color)
+        self.hourCmbox.Refresh()
+        self.minuteCmbox.Refresh()
+
+
+
+    def NumberControl(self, evt): 
+        ctrl = evt.GetEventObject()
+        value = ctrl.GetValue().strip()
+        insertPoint = ctrl.GetInsertionPoint()
+        digits = len(value) - len(ctrl.preValue)
+
+        try:
+
+            temp = int(value)
+            temp = str(temp) if temp > 9 else "0" + str(temp)
+            if ((ctrl == self.hourCmbox and temp in self.hours) or ((ctrl == self.minuteCmbox or ctrl == self.secondCmbox) and temp in self.minutes)) and len(value) < 3:
+
+                ctrl.preValue = value  
+                # ctrl.ChangeValue(value)
+
+            else:
+                ctrl.ChangeValue(ctrl.preValue)
+                ctrl.SetInsertionPoint(insertPoint - digits)
+
+            
+        except:
+            if value == "":
+                ctrl.preValue = ""
+                ctrl.ChangeValue("")
+        
+            else:
+                ctrl.ChangeValue(ctrl.preValue)
+                ctrl.SetInsertionPoint(insertPoint - digits)
+
+
+        evt.Skip()

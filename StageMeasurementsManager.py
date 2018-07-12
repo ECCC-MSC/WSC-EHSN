@@ -363,6 +363,15 @@ class StageMeasurementsManager(object):
 
 
 
+    @property
+    def stageRemarksCtrl(self):
+        return self.gui.stageRemarksCtrl.GetValue()
+
+    @stageRemarksCtrl.setter
+    def stageRemarksCtrl(self, stageRemarksCtrl):
+        self.gui.stageRemarksCtrl.SetValue(stageRemarksCtrl)
+
+
 
 
 

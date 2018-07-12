@@ -139,6 +139,10 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.diffLbl = "Difference Base Curve (%)"
         self.curveLbl = "Curve #"
         self.mghChoices = ["", "  (HG)", "  (HG2)", "  (WLR1)", "  (WLR2)"]
+        self.dischChoices = ["","E","B"]
+
+        self.controlConditionRemLbl = "Control Condition Remarks"
+        self.dischRemarkLbl = "Discharge Activity Remarks"
 #         self.correctMGHBtnHint = "Attention! \n\nYou must enter your SRC in the stage summary table below if:\n\n\
 #         1.  SRC is not 0.000\n\
 #         2.  You are uploading logger information\n\n\
@@ -156,6 +160,16 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.mode = mode
         self.manager = None
 
+
+
+        self.controlLbl = "Control Condition"
+        self.contCondLbl = "Condition"
+        self.contCondList = ["", "Not Observed", "No Flow", "Clear", "Altered", "Debris", "Algae",
+                             "Weeds", "Fill", "Scour", "Shore Ice",
+                             "Complete Ice Cover", "Anchor Ice"]
+        # self.picturedLbl = "Site and/or control pictures were taken."
+
+
         #height for panels
         self.height = 40
         f = self.GetFont()
@@ -168,10 +182,14 @@ class DischargeMeasurementsPanel(wx.Panel):
 
         self.BGColour = (210, 210, 210)
 
+
         self.wrapLength = 80
         self.lang = lang
 
         self.InitUI()
+
+        # self.endTimeCtrl.SetToCurrent()
+        # self.airTempCtrl.SetValue("11111")
 
     def InitUI(self):
         if self.mode=="DEBUG":
@@ -325,19 +343,7 @@ class DischargeMeasurementsPanel(wx.Panel):
         mghTxt.Wrap(self.wrapLength)
         
         self.mghCtrl = MyTextCtrl(mghPanel, 16, style=wx.TE_READONLY|wx.TE_CENTRE, size=(-1, self.ctrlHeight))
-        # self.mghCtrl.Bind(wx.EVT_TEXT, self.FloatNumberControl)
-        # self.mghCtrl.Bind(wx.EVT_TEXT, self.OnChangeUpdateMovingBoat)
-        # self.mghCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
-        # self.mghCtrl = wx.ComboCtrl(mghPanel, 16, style=wx.CB_READONLY, size=(70, self.ctrlHeight))
-
-        # popupCtrl = ListCtrlComboPopup(mghPanel, self.mghCtrl)
-
-        # # It is important to call SetPopupControl() as soon as possible
-        # self.mghCtrl.SetPopupControl(popupCtrl)
-
-        # # Populate using wx.ListView methods
-        # popupCtrl.AppendItems(self.mghChoices)
 
 
         mghSizer.Add(cmghSizer, 3, wx.EXPAND)
@@ -351,6 +357,7 @@ class DischargeMeasurementsPanel(wx.Panel):
         dischPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
         dischPanel.SetBackgroundColour(self.BGColour)
         dischSizer = wx.BoxSizer(wx.VERTICAL)
+        dischSizer1 = wx.BoxSizer(wx.HORIZONTAL)
         dischSizerH = wx.BoxSizer(wx.HORIZONTAL)
 
         dischTxt = wx.StaticText(dischPanel, 17, label=self.dischLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(-1, self.height))
@@ -359,13 +366,15 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.dischCtrl.Bind(wx.EVT_TEXT, self.FloatNumberControl)
         self.dischCtrl.Bind(wx.EVT_TEXT, self.OnChangeUpdateMovingBoat)
         self.dischCtrl.Bind(wx.EVT_KILL_FOCUS, self.OnDischarge)
+        self.dischCombo = wx.ComboBox(dischPanel, choices=self.dischChoices, style=wx.CB_READONLY, size=(32, self.ctrlHeight))
 
         dischSizer.Add(dischTxt, 1, wx.EXPAND)
-        dischSizer.Add(self.dischCtrl, 1, wx.EXPAND)
+        dischSizer1.Add(self.dischCtrl, 1, wx.EXPAND)
+        dischSizer1.Add(self.dischCombo, 0, wx.EXPAND)
+        dischSizer.Add(dischSizer1, 1, wx.EXPAND)
         dischSizerH.Add(dischSizer, 1, wx.EXPAND)
 
         dischPanel.SetSizer(dischSizerH)
-
         #Mmt Mean Time Info
         mmtPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
         mmtPanel.SetBackgroundColour(self.BGColour)
@@ -440,8 +449,53 @@ class DischargeMeasurementsPanel(wx.Panel):
             curveSizerG.AddGrowableRow(i)
 
         curvePanel.SetSizer(curveSizerG)
-        
-        
+
+
+
+
+
+        #Control and Remarks
+        controlConditionSizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        controlConditionPanel = wx.Panel(self, style=wx.SIMPLE_BORDER, size=(-1, self.height))
+        controlConditionPanel.SetSizer(controlConditionSizer)
+
+        controlTxt = wx.StaticText(controlConditionPanel, label=self.controlLbl, size=(80, self.height), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        controlTxt.SetForegroundColour("blue")
+        controlTxt.SetBackgroundColour(self.BGColour)
+        # controlTxt.SetBackgroundColour("gold")
+        self.controlConditionCmbo = wx.ComboBox(controlConditionPanel, choices=self.contCondList, style=wx.CB_READONLY, size=(80, self.height))
+        self.controlConditionCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        # self.picturedCkbox = wx.CheckBox(controlConditionPanel, label=self.picturedLbl)
+
+        controlConditionSizer.Add(controlTxt, 1, wx.EXPAND)
+        controlConditionSizer.Add(self.controlConditionCmbo, 1, wx.EXPAND)
+
+
+
+
+        # #control condition remarks
+        controlConditionRemarkSizer = wx.BoxSizer(wx.HORIZONTAL)
+        controlConditionRemarkPanel = wx.Panel(self, style=wx.SIMPLE_BORDER, size=(-1, self.height * 1.2))
+        controlConditionRemarkPanel.SetSizer(controlConditionRemarkSizer)
+
+
+        controlConditionTxt = wx.StaticText(controlConditionRemarkPanel, label=self.controlConditionRemLbl, size=(200, self.height), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.controlConditionRemarksCtrl = wx.TextCtrl(controlConditionRemarkPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, self.height * 1.2))
+        controlConditionRemarkSizer.Add(controlConditionTxt, 0, wx.EXPAND)
+        controlConditionRemarkSizer.Add(self.controlConditionRemarksCtrl, 1, wx.EXPAND)
+
+
+        dischargeRemarkSizer = wx.BoxSizer(wx.HORIZONTAL)
+        dischargeRemarkPanel = wx.Panel(self, style=wx.SIMPLE_BORDER, size=(-1, self.height * 1.2))
+        dischargeRemarkPanel.SetSizer(dischargeRemarkSizer)
+
+        self.dischTxt = wx.StaticText(dischargeRemarkPanel, label=self.dischRemarkLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(200, self.height))
+        self.dischRemarksCtrl = wx.TextCtrl(dischargeRemarkPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, self.height * 1.2))
+        dischargeRemarkSizer.Add(self.dischTxt, 0)
+        dischargeRemarkSizer.Add(self.dischRemarksCtrl, 1, wx.EXPAND)
+
+
 
         self.layoutSizer.Add(startTimePanel, pos=(0, 0), span=(2, 1), flag=wx.EXPAND)
         self.layoutSizer.Add(endTimePanel, pos=(0, 1), span=(2, 1), flag=wx.EXPAND)
@@ -456,16 +510,25 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.layoutSizer.Add(shiftPanel, pos=(2, 2), span=(1, 2), flag=wx.EXPAND)
         self.layoutSizer.Add(diffPanel, pos=(2, 4), span=(1, 2), flag=wx.EXPAND)
         self.layoutSizer.Add(curvePanel, pos=(2, 6), span=(1, 3), flag=wx.EXPAND)
+
+
+        self.layoutSizer.Add(controlConditionPanel, pos=(3, 0), span=(1, 2), flag=wx.EXPAND)
+        self.layoutSizer.Add(controlConditionRemarkPanel, pos=(3, 2), span=(1, 7), flag=wx.EXPAND)
+        self.layoutSizer.Add(dischargeRemarkPanel, pos=(4, 0), span=(1, 9), flag=wx.EXPAND)
         
 
-        self.startTimeCtrl.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.onTimeChange)
-        self.startTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.onTimeChange)
-        self.startTimeCtrl.GetHourCtrl().Bind(wx.EVT_KEY_DOWN, self.onTimeChange)
-        self.startTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_KEY_DOWN, self.onTimeChange)
-        self.endTimeCtrl.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.onTimeChange)
-        self.endTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.onTimeChange)
-        self.endTimeCtrl.GetHourCtrl().Bind(wx.EVT_KEY_DOWN, self.onTimeChange)
-        self.endTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_KEY_DOWN, self.onTimeChange)
+        self.startTimeCtrl.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.OnTimeChange)
+        self.startTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.OnTimeChange)
+        self.startTimeCtrl.GetHourCtrl().Bind(wx.EVT_KEY_UP, self.OnTimeChange)
+        self.startTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_KEY_UP, self.OnTimeChange)
+        # self.startTimeCtrl.GetHourCtrl().Bind(wx.EVT_TEXT, self.OnTimeChange)
+        # self.startTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_TEXT, self.OnTimeChange)
+        self.endTimeCtrl.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.OnTimeChange)
+        self.endTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.OnTimeChange)
+        self.endTimeCtrl.GetHourCtrl().Bind(wx.EVT_KEY_UP, self.OnTimeChange)
+        self.endTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_KEY_UP, self.OnTimeChange)
+        # self.endTimeCtrl.GetHourCtrl().Bind(wx.EVT_TEXT, self.OnTimeChange)
+        # self.endTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_TEXT, self.OnTimeChange)
 
         for i in range(9):
             self.layoutSizer.AddGrowableCol(i)
@@ -476,23 +539,16 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.SetSizerAndFit(self.layoutSizer)
         
     # used to calculate mean time
-    def onTimeChange(self, event):
-      
+    def OnTimeChange(self, event):
+
         try:
-            event.GetEventObject().GetParent().UpdateTime(event.GetKeyCode())
+            # keycode = event.GetEventObject().GetValue()[-1]
+            keycode = event.GetKeyCode()
+            event.GetEventObject().GetParent().NumberControl(event)
+            if keycode == ord('R') or keycode == ord('C'):
+                event.GetEventObject().GetParent().UpdateTime(keycode)      
         except:
             pass
-        # startTime = self.startTimeCtrl.GetWxDateTime()
-        # endTime = self.endTimeCtrl.GetWxDateTime()
-
-        # endTimeHour = endTime.GetHour()
-        # endTimeMin = endTime.GetMinute()
-
-        # if startTime > endTime:
-        #     if endTimeHour - startTime.GetHour() < 0 \
-        #        or endTimeMin - startTime.GetMinute() < 0:
-        #         endTimeHour += 24
-
 
         startHour = self.startTimeCtrl.GetHourVal()
         startMinute = self.startTimeCtrl.GetMinuteVal()
@@ -527,52 +583,11 @@ class DischargeMeasurementsPanel(wx.Panel):
             self.SetMmtValTxt(str(meanHour) + ":" + str(meanMinute))
             self.layoutSizer.Layout()
 
-
-        # # If language is English, time is in 12HR format
-        # if self.lang == wx.LANGUAGE_ENGLISH:
-        #     if (startTime.GetHour() + endTimeHour) % 2 != 0:
-        #         endTimeMin += 60
-        #     midHour = (startTime.GetHour() + endTimeHour) / 2
-        #     midAmPm = "AM" if midHour - 12 < 0 else "PM"
-        #     midHour = 12 if midHour % 12 == 0 else midHour % 12
-
-        #     midMin = (startTime.GetMinute() + endTimeMin) / 2
-
-        #     midHour = "%02d" % midHour
-        #     midMin = "%02d" % midMin
-
-        #     self.mmtValTxt.SetLabel(midHour + ":" + midMin + " " + midAmPm)
-        #     self.layoutSizer.Layout()
-
-        # If language is French, time is in 24HR format
-        # if self.lang == wx.LANGUAGE_ENGLISH:
-        #     over = False
-            
-        #     if (startTime.GetHour() + endTimeHour) % 2 != 0:
-        #         endTimeMin += 60
-        #     if (startTime.GetMinute() + endTimeMin) > 59:
-        #         over = True
-        #         endTimeHour += 1
-                
-        #     midHour = ((startTime.GetHour() + endTimeHour) / 2) % 24
-        #     midMin = ((startTime.GetMinute() + endTimeMin) / 2) % 60
-
-        #     if (startTime.GetMinute() + endTime.GetMinute()) < 60 and over:
-        #         midHour -= 1
-
-
-        #     midHour %= 24
-
-        #     midHour = "%02d" % midHour
-        #     midMin = "%02d" % midMin
-
-        #     self.SetMmtValTxt(midHour + ":" + midMin)
-        #     self.layoutSizer.Layout()
-        # else:
-        #     if self.mode=="DEBUG":
-        #         print str(self.lang) + " is currently not supported"
+        # event.Skip()
         
 
+
+        
 
     # Any update will affect data on moving boat
     def OnChangeUpdateMovingBoat(self, event):
@@ -697,6 +712,12 @@ class DischargeMeasurementsPanel(wx.Panel):
     def SetDischCtrl(self, dischCtrl):
         self.dischCtrl.SetValue(dischCtrl)
 
+    #Discharge Combo
+    def GetDischCombo(self):
+        return self.dischCombo.GetValue()
+
+    def SetDischCombo(self,dischCombo):
+        self.dischCombo.SetValue()
 
 
     #Mmt Mean Time Ctrl
@@ -765,6 +786,9 @@ class DischargeMeasurementsPanel(wx.Panel):
                 insertPoint = ctrl.GetInsertionPoint() - 1
                 ctrl.SetValue(ctrl.preValue)
                 ctrl.SetInsertionPoint(insertPoint)
+
+        ctrl.SetBackgroundColour("white")
+        ctrl.Refresh()
         event.Skip()
 
     #Reset the time ctrl to "00:00" by pressing 'R'
@@ -829,6 +853,8 @@ class DischargeMeasurementsPanel(wx.Panel):
         
         self.mghCtrl.SetValue(val)
 
+    def do_nothing(self,evt):
+          pass
 
 
 

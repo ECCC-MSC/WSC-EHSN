@@ -31,6 +31,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
                                      "Tethered Cableway", "Cableway", "Manned Boat", "Ice Cover"]
         self.deploymentADCPList = ["", "Tethered Bridge Upstream", "Tethered Bridge Downstream",
                                    "Tethered Cableway", "Manned Boat", "Remote Control"]
+
+        self.white = "white"
         self.metresLbl = "metres"
         self.kilometresLbl = "kilometres"
         self.aboveLbl = "u/s"
@@ -76,7 +78,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.noweightLbl = "no weight"
 
         self.adcpInfoLbl = "ADCP Information"
-        self.freqLbl = "Frequency"
+        self.freqLbl = "Frequency(kHz)"
         self.firmwareLbl = "Firmware"
         self.softwareLbl = "Software"
         self.configLbl = "Config"
@@ -88,16 +90,16 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.compCaliLbl = "Compass Calibration"
         self.passedFieldRevLbl = "Passed Field Review"
         self.firmware = []
-        self.controlLbl = "Control Condition"
-        self.contCondLbl = "Condition"
+        # self.controlLbl = "Control Condition"
+        # self.contCondLbl = "Condition"
         self.contCondList = ["", "Not Observed", "No Flow", "Clear", "Altered", "Debris", "Algae",
                              "Weeds", "Fill", "Scour", "Shore Ice",
                              "Complete Ice Cover", "Anchor Ice"]
-        self.deploymentWarning = "Unchecking this will cause loss of entered data such as field review. Are you sure you want to uncheck this selection? "
+        self.deploymentWarning = "Unchecking %s will cause loss of entered data such as field review. Are you sure you want to uncheck this selection? "
         self.positionMethods = ["", "Tagline", "Marked bridge railing"]
         self.locatedList = ["On Rod"]
         self.numberOfPanelsList = []
-        self.picturedLbl = "Site and/or control pictures were taken."
+        # self.picturedLbl = "Site and/or control pictures were taken."
         self.numberRange = list(range(20, 51))
         for i in self.numberRange:
             self.numberOfPanelsList.append(str(i))
@@ -115,14 +117,14 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         #                           [""], [""]]
 
 
-        self.contRemLbl = "Remarks"
-        self.dischLbl = "Discharge Activity Remarks"
-        self.controlConditionRemLbl = "Control Condition Remarks"
-        self.dischRemLbl = self.contRemLbl
-        self.stageLbl = "Stage Activity Summary Remarks"
-        self.stageRemLbl = self.contRemLbl
-        self.stnLbl = "Station Health Remarks"
-        self.genRemLbl = self.contRemLbl
+        # self.contRemLbl = "Remarks"
+        # self.dischLbl = "Discharge Activity Remarks"
+        # self.controlConditionRemLbl = "Control Condition Remarks"
+        # self.dischRemLbl = self.contRemLbl
+        # self.stageLbl = "Stage Activity Summary Remarks"
+        # self.stageRemLbl = self.contRemLbl
+        # self.stnLbl = "Station Health Remarks"
+        # self.genRemLbl = self.contRemLbl
 
         self.mode=mode
         self.manager = None
@@ -130,6 +132,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.InitUI()
         #disable the event to be triggered
     def do_nothing(self,evt):
+
           pass
 
 
@@ -173,6 +176,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.deploymentTxt = wx.StaticText(self, label=self.deploymentLbl, style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
         self.deploymentCmbo = wx.ComboBox(self, size=(155, 23), style=wx.CB_DROPDOWN)
         self.deploymentCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        self.deploymentCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
+
         deploymentSizerV = wx.BoxSizer(wx.VERTICAL)
         deploymentSizer = wx.BoxSizer(wx.HORIZONTAL)
         deploymentSizer.Add(self.deploymentTxt, 0, wx.EXPAND|wx.RIGHT, 5)
@@ -310,6 +315,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.serialTxt = wx.StaticText(self, label=self.serialNumLbl, style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
         self.serialCmbo = wx.ComboBox(self, size=(75, 23), style=wx.CB_DROPDOWN, choices = self.serialNumList)
         self.serialCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        self.serialCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
         # self.serialCmbo = cb.ComboCtrl(self, style=wx.CB_SORT|wx.TE_LEFT, size=(80, -1))
         # self.serialPopup = ComboCtrlPopup.ComboCtrlPopup()
         # self.serialCmbo.SetPopupControl(self.serialPopup)
@@ -342,6 +348,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.instrumentCmbo = wx.ComboBox(self, size=(75, -1), choices=self.instrumentList, style=wx.CB_DROPDOWN)
         self.instrumentCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
         self.instrumentCmbo.Bind(wx.EVT_TEXT, self.OnInstrumentChange)
+        self.instrumentCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
 
         # instrumentSizer.Add(self.instrumentTxt, 1, wx.EXPAND|wx.RIGHT, 5)
         # instrumentSizer.Add(self.instrumentCmbo, 2, wx.EXPAND|wx.LEFT, 5)
@@ -354,6 +361,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.manufactureCmbo = wx.ComboBox(self, size=(75, -1), choices=self.manufactureList, style=wx.CB_DROPDOWN)
         self.manufactureCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
         self.manufactureCmbo.Bind(wx.EVT_TEXT, self.OnManufactruerChange)
+        self.manufactureCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
 
         # manufactureSizer.Add(self.manufactureTxt, 1, wx.EXPAND|wx.RIGHT, 5)
         # manufactureSizer.Add(self.manufactureCmbo, 2, wx.EXPAND|wx.LEFT, 5)
@@ -364,6 +372,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         # modelSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.modelTxt = wx.StaticText(self, label=self.modelLbl, style=wx.ALIGN_LEFT)
         self.modelCmbo = wx.ComboBox(self, size=(75, -1), choices=self.modelList, style=wx.CB_DROPDOWN)
+        self.modelCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
         # self.modelCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
 
         # modelSizer.Add(self.modelTxt, 1, wx.EXPAND|wx.RIGHT, 5)
@@ -390,15 +399,19 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
         #frequency text and ctrl
         self.frequencyTxt = wx.StaticText(self, label=self.freqLbl, style=wx.ALIGN_LEFT)
-        self.frequencyCmbo = wx.ComboBox(self, size=(180, -1), choices=self.frequnecies, style=wx.CB_DROPDOWN)
+        self.frequencyCmbo = MyComboBox(self, size=(180, -1), choices=self.frequnecies, style=wx.CB_DROPDOWN)
+        self.frequencyCmbo.Bind(wx.EVT_TEXT, self.OnIntText)
+        self.frequencyCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
 
         #firmware text and ctrl
         self.firmwareTxt = wx.StaticText(self, label=self.firmwareLbl, style=wx.ALIGN_LEFT)
         self.firmwareCmbo = wx.ComboBox(self, size=(180, -1), choices=self.firmware, style=wx.CB_DROPDOWN)
+        self.firmwareCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
 
         #software text and ctrl
         self.softwareTxt = wx.StaticText(self, label=self.softwareLbl, style=wx.ALIGN_LEFT)
         self.softwareCtrl = wx.TextCtrl(self, size=(180, -1), style=wx.TE_PROCESS_ENTER)
+        self.softwareCtrl.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
 
 
         horizontalSizer4.Add(self.frequencyTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
@@ -436,6 +449,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.numOfPanelsScroll = MyComboBox(self.midsectionMethodInfoPanel, choices=self.numberOfPanelsList, size=(50, -1), style=wx.CB_DROPDOWN)
         # self.numOfPanelsScroll = MyTextCtrl(self.midsectionMethodInfoPanel, size=(50, -1))
         self.numOfPanelsScroll.Bind(wx.EVT_TEXT, self.OnIntText)
+        self.numOfPanelsScroll.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
         # self.numOfPanelsScroll.Bind(wx.EVT_COMBOBOX_DROPDOWN, self.DefaultPanels)
         # self.numOfPanelsScroll.SetValue("20")
 
@@ -443,6 +457,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.flowAngleTxt = wx.StaticText(self.midsectionMethodInfoPanel, label=self.flowAngleLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.flowAngleCmbo = wx.ComboBox(self.midsectionMethodInfoPanel, choices=self.flowAngleList, size=(180, -1), style=wx.CB_DROPDOWN)
         self.flowAngleCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        self.flowAngleCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
 
         #coefficient text and ctrl
         self.coEffTxt = wx.StaticText(self.midsectionMethodInfoPanel, label=self.coEffLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
@@ -450,6 +465,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         # self.coEffCtrl = wx.TextCtrl(self.midsectionMethodInfoPanel, style=wx.TE_PROCESS_ENTER, size=(180, -1))
         # self.coEffCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.coEffCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+        self.coEffCtrl.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
         mmiHorizontalSizer1.Add(self.numOfPanelsTxt, 0, wx.EXPAND|wx.TOP|wx.RIGHT, 5)
         mmiHorizontalSizer1.Add(self.numOfPanelsScroll, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 5)
         mmiHorizontalSizer1.Add((-1, -1), 1, wx.EXPAND)
@@ -575,29 +591,6 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         adcpInfoSizer = wx.BoxSizer(wx.VERTICAL)
         self.adcpInfoPanel.SetSizer(adcpInfoSizer)
 
-        # #First row of adcp info
-        # adcpHorizontalSizer1 = wx.BoxSizer(wx.HORIZONTAL)
-
-        # #frequency text and ctrl
-        # self.frequencyTxt = wx.StaticText(self.adcpInfoPanel, label=self.freqLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
-        # self.frequencyCtrl = wx.TextCtrl(self.adcpInfoPanel, size=(180, -1), style=wx.TE_PROCESS_ENTER)
-
-        # #firmware text and ctrl
-        # self.firmwareTxt = wx.StaticText(self.adcpInfoPanel, label=self.firmwareLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
-        # self.firmwareCtrl = wx.TextCtrl(self.adcpInfoPanel, size=(180, -1), style=wx.TE_PROCESS_ENTER)
-
-        # #software text and ctrl
-        # self.softwareTxt = wx.StaticText(self.adcpInfoPanel, label=self.softwareLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
-        # self.softwareCtrl = wx.TextCtrl(self.adcpInfoPanel, size=(180, -1), style=wx.TE_PROCESS_ENTER)
-
-        # adcpHorizontalSizer1.Add(self.frequencyTxt, 0, wx.EXPAND|wx.TOP|wx.RIGHT, 5)
-        # adcpHorizontalSizer1.Add(self.frequencyCtrl, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 5)
-        # adcpHorizontalSizer1.Add((-1, -1), 1, wx.EXPAND)
-        # adcpHorizontalSizer1.Add(self.firmwareTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
-        # adcpHorizontalSizer1.Add(self.firmwareCtrl, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 5)
-        # adcpHorizontalSizer1.Add((-1, -1), 1, wx.EXPAND)
-        # adcpHorizontalSizer1.Add(self.softwareTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
-        # adcpHorizontalSizer1.Add(self.softwareCtrl, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 5)
 
 
         #Second row of adcp info
@@ -607,11 +600,15 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.configTxt = wx.StaticText(self.adcpInfoPanel, label=self.configLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.configCmbo = wx.ComboBox(self.adcpInfoPanel, choices=self.configList, size=(85, -1), style=wx.CB_DROPDOWN)
         self.configCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        self.configCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
         self.configCtrl = wx.TextCtrl(self.adcpInfoPanel, size=(180, -1), style=wx.TE_PROCESS_ENTER)
+        self.configCtrl.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
 
         #ADCP set to clock and diagnostic test check
         self.adcpSetToClockCB = wx.CheckBox(self.adcpInfoPanel, label=self.adcpSetToClockLbl, style=wx.ALIGN_LEFT)
         self.diagTestCB = wx.CheckBox(self.adcpInfoPanel, label=self.diagTestLbl, style=wx.ALIGN_LEFT)
+        self.diagTestCB.Bind(wx.EVT_CHECKBOX, self.OnChangeResetBGColour)
+        self.adcpSetToClockCB.Bind(wx.EVT_CHECKBOX, self.OnChangeResetBGColour)
 
 
         adcpHorizontalSizer2.Add(self.configTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
@@ -631,16 +628,20 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
         self.adcpDepthCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.adcpDepthCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        self.adcpDepthCtrl.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
 
         #magn decl text and ctrl
         self.magnDeclTxt = wx.StaticText(self.adcpInfoPanel, label=self.magnDeclLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.magnDeclCtrl = MyTextCtrl(self.adcpInfoPanel, size=(50, -1), style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE)
         self.magnDeclCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.magnDeclCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round1)
+        self.magnDeclCtrl.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
 
         #ADCP set to clock and diagnostic test check
         self.compassCaliCB = wx.CheckBox(self.adcpInfoPanel, label=self.compCaliLbl, style=wx.ALIGN_LEFT)
         self.passedFieldRevCB = wx.CheckBox(self.adcpInfoPanel, label=self.passedFieldRevLbl, style=wx.ALIGN_LEFT)
+        self.compassCaliCB.Bind(wx.EVT_CHECKBOX, self.OnChangeResetBGColour)
+        self.passedFieldRevCB.Bind(wx.EVT_CHECKBOX, self.OnChangeResetBGColour)
 
 
         adcpHorizontalSizer3.Add(self.adcpDepthTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
@@ -665,79 +666,62 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
 
-        #Control and Remarks
-        controlRemarksSizer = wx.BoxSizer(wx.VERTICAL)
+        # #Control and Remarks
+        # controlRemarksSizer = wx.BoxSizer(wx.VERTICAL)
 
-        controlConditionPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
-        controlConditionSizer = wx.BoxSizer(wx.HORIZONTAL)
-        controlTxt = wx.StaticText(controlConditionPanel, label=self.controlLbl, size=(-1, -1))
-        controlTxt.SetForegroundColour("blue")
-        # controlTxt.SetBackgroundColour("gold")
-        self.controlConditionCmbo = wx.ComboBox(controlConditionPanel, choices=self.contCondList, style=wx.CB_READONLY, size=(-1,-1))
-        self.controlConditionCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
-        self.picturedCkbox = wx.CheckBox(controlConditionPanel, label=self.picturedLbl)
+        # controlConditionPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
+        # controlConditionSizer = wx.BoxSizer(wx.HORIZONTAL)
+        # controlConditionPanel.SetSizer(controlConditionSizer)
 
+        # self.picturedCkbox = wx.CheckBox(controlConditionPanel, label=self.picturedLbl)
 
-        #control condition remarks
-        controlConditionRemarkSizer = wx.BoxSizer(wx.VERTICAL)
-        controlConditionTxt = wx.StaticText(controlConditionPanel, label=self.controlConditionRemLbl)
-        self.controlConditionRemarksCtrl = wx.TextCtrl(controlConditionPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, -1))
-        controlConditionRemarkSizer.Add(controlConditionTxt, 0, wx.EXPAND)
-        controlConditionRemarkSizer.Add(self.controlConditionRemarksCtrl, 1, wx.EXPAND)
+        # controlConditionSizer.Add(self.picturedCkbox, 1, wx.EXPAND|wx.BOTTOM, 5)
 
-        controlConditionLeftSizer = wx.BoxSizer(wx.VERTICAL)
-        controlConditionRightSizer = wx.BoxSizer(wx.VERTICAL)
-
-        controlConditionLeftSizer.Add(controlTxt, 0)
-        controlConditionLeftSizer.Add(self.controlConditionCmbo, 0)
-        controlConditionLeftSizer.Add(self.picturedCkbox, 0)
-
-        controlConditionRightSizer.Add(controlConditionRemarkSizer, 1, wx.EXPAND)
-
-
-        # controlConditionSizer.Add(controlTxt, 0, wx.TOP|wx.BOTTOM, 10)
-        # controlConditionSizer.Add(self.controlConditionCmbo, 0, wx.LEFT|wx.TOP|wx.BOTTOM, 10)
-        # controlConditionSizer.Add(self.picturedCkbox, 0, wx.LEFT|wx.TOP|wx.BOTTOM, 10)
-
-        controlConditionSizer.Add(controlConditionLeftSizer, 0)
-        controlConditionSizer.Add(controlConditionRightSizer, 1, wx.EXPAND|wx.BOTTOM, 5)
-
-        controlConditionPanel.SetSizer(controlConditionSizer)
-
-
-        remarksPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
-        remarksSizer = wx.BoxSizer(wx.HORIZONTAL)
-        remarksPanel.SetSizer(remarksSizer)
-
-        dischargeRemarkSizer = wx.BoxSizer(wx.VERTICAL)
-        dischTxt = wx.StaticText(remarksPanel, label=self.dischLbl)
-        self.dischRemarksCtrl = wx.TextCtrl(remarksPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, 200))
-        dischargeRemarkSizer.Add(dischTxt, 0)
-        dischargeRemarkSizer.Add(self.dischRemarksCtrl, 0, wx.EXPAND)
-        
         
 
-        stageRemarkSizer = wx.BoxSizer(wx.VERTICAL)
-        stageTxt = wx.StaticText(remarksPanel, label=self.stageLbl)
-        self.stageRemarksCtrl = wx.TextCtrl(remarksPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, 200))
-        stageRemarkSizer.Add(stageTxt, 0)
-        stageRemarkSizer.Add(self.stageRemarksCtrl, 0, wx.EXPAND)
 
-        stationRemarkSizer = wx.BoxSizer(wx.VERTICAL)
-        stationHealthTxt = wx.StaticText(remarksPanel, label=self.stnLbl)
-        self.stationHealthRemarksCtrl = wx.TextCtrl(remarksPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, 200))
-        stationRemarkSizer.Add(stationHealthTxt, 0)
-        stationRemarkSizer.Add(self.stationHealthRemarksCtrl, 0, wx.EXPAND)
+        # remarksPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
+        # remarksSizer = wx.BoxSizer(wx.HORIZONTAL)
+        # remarksPanel.SetSizer(remarksSizer)
+
+        # dischargeRemarkSizer = wx.BoxSizer(wx.VERTICAL)
+        # self.dischTxt = wx.StaticText(remarksPanel, label=self.dischLbl)
+        # self.dischRemarksCtrl = wx.TextCtrl(remarksPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, 200))
+        # dischargeRemarkSizer.Add(self.dischTxt, 0)
+        # dischargeRemarkSizer.Add(self.dischRemarksCtrl, 0, wx.EXPAND)
+        
+        
+        # #control condition remarks
+        # controlConditionRemarkSizer = wx.BoxSizer(wx.VERTICAL)
+        # controlConditionTxt = wx.StaticText(remarksPanel, label=self.controlConditionRemLbl)
+        # self.controlConditionRemarksCtrl = wx.TextCtrl(remarksPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, -1))
+        # controlConditionRemarkSizer.Add(controlConditionTxt, 0, wx.EXPAND)
+        # controlConditionRemarkSizer.Add(self.controlConditionRemarksCtrl, 1, wx.EXPAND)
+
+
+
+        # stageRemarkSizer = wx.BoxSizer(wx.VERTICAL)
+        # stageTxt = wx.StaticText(remarksPanel, label=self.stageLbl)
+        # self.stageRemarksCtrl = wx.TextCtrl(remarksPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, 200))
+        # stageRemarkSizer.Add(stageTxt, 0)
+        # stageRemarkSizer.Add(self.stageRemarksCtrl, 0, wx.EXPAND)
+
+        # stationRemarkSizer = wx.BoxSizer(wx.VERTICAL)
+        # stationHealthTxt = wx.StaticText(remarksPanel, label=self.stnLbl)
+        # self.stationHealthRemarksCtrl = wx.TextCtrl(remarksPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, 200))
+        # stationRemarkSizer.Add(stationHealthTxt, 0)
+        # stationRemarkSizer.Add(self.stationHealthRemarksCtrl, 0, wx.EXPAND)
 
 
 
 
-        remarksSizer.Add(dischargeRemarkSizer, 1, wx.EXPAND)
-        remarksSizer.Add(stageRemarkSizer, 1, wx.EXPAND)
-        remarksSizer.Add(stationRemarkSizer, 1, wx.EXPAND)
+        # remarksSizer.Add(dischargeRemarkSizer, 1, wx.EXPAND)
+        # remarksSizer.Add(controlConditionRemarkSizer, 1, wx.EXPAND)
+        # remarksSizer.Add(stageRemarkSizer, 1, wx.EXPAND)
+        # remarksSizer.Add(stationRemarkSizer, 1, wx.EXPAND)
 
-        controlRemarksSizer.Add(controlConditionPanel, 1, wx.EXPAND)
-        controlRemarksSizer.Add(remarksPanel, 0, wx.EXPAND)
+        # controlRemarksSizer.Add(controlConditionPanel, 1, wx.EXPAND)
+        # controlRemarksSizer.Add(remarksPanel, 0, wx.EXPAND)
 
 
 
@@ -792,7 +776,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 #         #Discharge
 #         dischSizer = wx.BoxSizer(wx.VERTICAL)
-#         dischTxt = wx.StaticText(self, label=self.dischLbl)
+#         self.dischTxt = wx.StaticText(self, label=self.dischLbl)
 
 #         dischPanel = wx.Panel(self, style=wx.SIMPLE_BORDER, size=(100, 200))
 #         dischPanelSizer = wx.BoxSizer(wx.VERTICAL)
@@ -804,7 +788,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 #         dischPanelSizer.Add(dischRemarksTxt, 0, wx.EXPAND|wx.LEFT, 10)
 #         dischPanelSizer.Add(self.dischRemarksCtrl, 1, wx.EXPAND)
 
-#         dischSizer.Add(dischTxt, 0, wx.EXPAND|wx.LEFT, 10)
+#         dischSizer.Add(self.dischTxt, 0, wx.EXPAND|wx.LEFT, 10)
 #         dischSizer.Add(dischPanel, 0, wx.EXPAND)
 
 #         #Stage
@@ -854,7 +838,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.layoutSizer.Add(horizontalSizer4, 0, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(midsectionMethodSizer, 0, wx.EXPAND|wx.LEFT|wx.BOTTOM|wx.RIGHT, 5)
         self.layoutSizer.Add(adcpSizer, 0, wx.EXPAND|wx.LEFT|wx.BOTTOM|wx.RIGHT, 5)
-        self.layoutSizer.Add(controlRemarksSizer, 0, wx.EXPAND|wx.LEFT|wx.BOTTOM|wx.RIGHT, 5)
+        # self.layoutSizer.Add(controlRemarksSizer, 0, wx.EXPAND|wx.LEFT|wx.BOTTOM|wx.RIGHT, 5)
 
         self.SetSizer(self.layoutSizer)
         self.InfoUpdate(None)
@@ -876,14 +860,83 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
         self.OnDeploymentCheckListCB(event)
 
+    #After import from the *.dis, double checking the overwriting, and updating corresponding instrument panel and Field reveiw checklist 
+    def DeploymentCheckListCBCkecking4MidSection(self):
+
+        if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
+            dlg = wx.MessageDialog(self, self.deploymentWarning%'Moving Boat', 'Warning',
+                              wx.YES_NO | wx.ICON_QUESTION)
+            res = dlg.ShowModal()
+            if res == wx.ID_YES:
+                dlg.Destroy()
+                self.methodCBListBox.Check(1)
+                self.methodCBListBox.Check(0, False)
+                self.DeploymentCheckListUpdate()
+
+                if self.manager is not None:
+                    self.manager.OnDeploymentUpdate()
+                return True
+
+            elif res == wx.ID_NO:
+                dlg.Destroy()
+                self.methodCBListBox.Check(0)
+                self.methodCBListBox.Check(1, False)
+
+                self.DeploymentCheckListUpdate()
+
+                if self.manager is not None:
+                    self.manager.OnDeploymentUpdate()
+                return False
+        else:
+            self.DeploymentCheckListUpdate()
+
+            if self.manager is not None:
+                self.manager.OnDeploymentUpdate()
+            return True
+
+
+    #After import from the *.dis, double checking the overwriting, and updating corresponding instrument panel and Field reveiw checklist 
+    def DeploymentCheckListCBCkecking4MovingBoat(self):
+
+        if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
+            dlg = wx.MessageDialog(self, self.deploymentWarning%'Midsection', 'Warning',
+                              wx.YES_NO | wx.ICON_QUESTION)
+            res = dlg.ShowModal()
+            if res == wx.ID_YES:
+                dlg.Destroy()
+                self.methodCBListBox.Check(0)
+                self.methodCBListBox.Check(1, False)
+                self.DeploymentCheckListUpdate()
+
+                if self.manager is not None:
+                    self.manager.OnDeploymentUpdate()
+                return True
+
+            elif res == wx.ID_NO:
+                dlg.Destroy()
+                self.methodCBListBox.Check(1)
+                self.methodCBListBox.Check(0, False)
+
+                self.DeploymentCheckListUpdate()
+
+                if self.manager is not None:
+                    self.manager.OnDeploymentUpdate()
+                return False
+        else:
+            self.DeploymentCheckListUpdate()
+
+            if self.manager is not None:
+                self.manager.OnDeploymentUpdate()
+            return True
 
 
     # Called when the deployment method is changed
     # update the FRChecklist to appropriate list
     # Enable the appropriate fields according to Deployment Type
     def OnDeploymentCheckListCB(self, e):
+        selection = [self.adcpByMovingBoatLbl, self.midsectionLbl]
         if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
-            dlg = wx.MessageDialog(self, self.deploymentWarning, 'Warning',
+            dlg = wx.MessageDialog(self, self.deploymentWarning%selection[(e.GetInt()+1)%2], 'Warning',
                               wx.YES_NO | wx.ICON_QUESTION)
             res = dlg.ShowModal()
             if res == wx.ID_YES:
@@ -892,11 +945,11 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             elif res == wx.ID_NO:
                 dlg.Destroy()
                 self.methodCBListBox.Check(e.GetInt(), check=False)
-                return
+                return False
 
 
         if len(list(self.methodCBListBox.GetCheckedItems())) == 0:
-            dlg = wx.MessageDialog(self, self.deploymentWarning, 'Warning',
+            dlg = wx.MessageDialog(self, self.deploymentWarning%selection[e.GetInt()], 'Warning',
                               wx.YES_NO | wx.ICON_QUESTION)
             res = dlg.ShowModal()
             if res == wx.ID_YES:
@@ -929,7 +982,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.manager.OnDeploymentUpdate()
 
         e.Skip()
-
+        return True
 
 
 
@@ -937,6 +990,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     # Enable appropriate fields according to Deployment Type
     # Update the Dropdown list of Deployment Methods
     def DeploymentCheckListUpdate(self):
+        # print "DeploymentCheckListUpdate"
         checked = list(self.methodCBListBox.GetCheckedItems())
         lenChecked = len(checked)
 
@@ -959,7 +1013,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
                         self.manager.manager.FlatNoteBook.GetPage(2).Enable(True)
                         self.manager.manager.FlatNoteBook.GetPage(3).Enable(False)
             elif check == 1: #MidSection
-                self.instrumentCmbo.SetValue('')
+                # self.instrumentCmbo.SetValue('')
                 self.UpdateComboBox(self.deploymentCmbo, self.deploymentMidsecList)
                 self.UpdateComboBox(self.modelCmbo, self.modelList)
                 self.UpdateComboBox(self.instrumentCmbo, self.instrumentList)
@@ -985,6 +1039,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
     # Called to enable the appropriate fields
     def InfoUpdate(self, check):
+
         if check is None:
             self.EnableGeneralInfo(False)
             self.EnableMidsectionInfo(False)
@@ -996,6 +1051,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
                 self.EnableMidsectionInfo(False)
 
             elif check == 1: #MidSection
+
                 self.EnableMidsectionInfo(True)
                 self.EnableAdcpInfo(True)
 
@@ -1016,6 +1072,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
     # Updates the view depending on which checkbox is clicked
     def DeploymentUpdate(self):
+
         selectedVal = str(self.deploymentCmbo.GetValue())
 
         if selectedVal != "":
@@ -1074,12 +1131,31 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.frequencyCmbo.ChangeValue("")
             self.firmwareCmbo.ChangeValue("")
             self.softwareCtrl.ChangeValue("")
+            self.ResetBGColorGeneralInfo()
 
     def EnableMidsectionInfo(self, en):
+
         self.midsectionMethodInfoPanel.Enable(en)
-        # self.weightRadButBox.Enable(en)
         self.midsectionMethodTxt.Enable(en)
+        
+
+        self.numOfPanelsTxt.Enable(en)
         self.numOfPanelsScroll.Enable(en)
+        self.flowAngleTxt.Enable(en)
+        self.flowAngleCmbo.Enable(en)
+        self.coEffTxt.Enable(en)
+        self.coEffCtrl.Enable(en)
+        self.methodTxt.Enable(en)
+        self.methodCmbo.Enable(en)
+        self.locatedTxt.Enable(en)
+        self.metresCtrl.Enable(en)
+        self.metresAboveTxt.Enable(en)
+        self.weightCtrl.Enable(en)
+        self.weightRadButBox.Enable(en)
+        self.weightTxt.Enable(en)
+        self.weightRadBut2.Enable(en)
+        self.weightRadBut1.Enable(en)
+
 
 
         if not en:
@@ -1088,9 +1164,13 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.methodCmbo.SetValue("")
             self.metresCtrl.ChangeValue("")
             self.weightCtrl.ChangeValue("")
+            self.numOfPanelsScroll.SetValue("")
+            self.ResetBGColorMidSectionInfo()
+
 
 
     def EnableAdcpInfo(self, en):
+
         self.adcpTxt.Enable(en)
         self.adcpInfoPanel.Enable(en)
         if not en:
@@ -1102,6 +1182,11 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.diagTestCB.SetValue(False)
             self.compassCaliCB.SetValue(False)
             self.passedFieldRevCB.SetValue(False)
+            self.ResetBGColorADCPInfo()
+
+
+
+
 
     def EnableWeight(self, en):
         self.weightCtrl.Enable(en)
@@ -1132,33 +1217,66 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
 
-    def EnableMidADCP(self, enable):
-        if not enable and self.methodCBListBox.IsChecked(1):
-            self.methodCmbo.SetValue("ADCP")
-            self.metresCtrl.SetValue("")
-            self.weightCtrl.SetValue("")
-        else:
-            self.methodCmbo.SetValue("")
+    # def EnableMidADCP(self, enable):
+    #     print "EnableMidADCP", enable
 
-        self.methodCmbo.Enable(enable)
-        self.locatedTxt.Enable(enable)
-        self.metresCtrl.Enable(enable)
-        self.metresAboveTxt.Enable(enable)
-        self.weightCtrl.Enable(enable)
-        self.weightTxt.Enable(enable)
-        self.weightRadBut2.Enable(enable)
-        self.weightRadBut1.Enable(enable)
-        self.weightRadButBox.Enable(enable)
+    #     if not enable and self.methodCBListBox.IsChecked(1):
+    #         self.methodCmbo.SetValue("ADCP")
+    #         self.metresCtrl.SetValue("")
+    #         self.weightCtrl.SetValue("")
+    #     else:
+    #         self.methodCmbo.SetValue("")
+
+    #     self.methodCmbo.Enable(enable)
+    #     self.locatedTxt.Enable(enable)
+    #     self.metresCtrl.Enable(enable)
+    #     self.metresAboveTxt.Enable(enable)
+    #     self.weightCtrl.Enable(enable)
+    #     self.weightTxt.Enable(enable)
+    #     self.weightRadBut2.Enable(enable)
+    #     self.weightRadBut1.Enable(enable)
+    #     self.weightRadButBox.Enable(enable)
 
 
+
+
+    def ResetBGColorADCPInfo(self):
+        self.configCmbo.SetBackgroundColour(self.white)
+        self.adcpDepthCtrl.SetBackgroundColour(self.white)
+        self.configCtrl.SetBackgroundColour(self.white)
+        self.magnDeclCtrl.SetBackgroundColour(self.white)
+        self.diagTestCB.SetBackgroundColour(self.white)
+
+
+    def ResetBGColorMidSectionInfo(self):
+        self.numOfPanelsScroll.SetBackgroundColour(self.white)
+        self.flowAngleCmbo.SetBackgroundColour(self.white)
+        self.coEffCtrl.SetBackgroundColour(self.white)
+        self.methodCmbo.SetBackgroundColour(self.white)
+        self.metresCtrl.SetBackgroundColour(self.white)
+        self.weightCtrl.SetBackgroundColour(self.white)
+
+
+    def ResetBGColorGeneralInfo(self):
+        self.deploymentCmbo.SetBackgroundColour(self.white)
+        self.positionMethodCmbo.SetBackgroundColour(self.white)
+        self.serialCmbo.SetBackgroundColour(self.white)
+        self.instrumentCmbo.SetBackgroundColour(self.white)
+        self.manufactureCmbo.SetBackgroundColour(self.white)
+        self.modelCmbo.SetBackgroundColour(self.white)
+        self.frequencyCmbo.SetBackgroundColour(self.white)
+        self.firmwareCmbo.SetBackgroundColour(self.white)
+        self.softwareCtrl.SetBackgroundColour(self.white)
 
 
 
     def OnInstrumentChange(self, event):
 
+
         if self.instrumentCmbo.GetValue() == 'ADCP':
             self.UpdateComboBox(self.modelCmbo, self.modelList1)
             self.EnableAdcpInfo(True)
+            self.EnableMidsectionInfo(False)
             if self.manager.manager.frChecklistManager.midsecType != 'ADCP':
                 self.manager.OnInstrumentChange(3)
 
@@ -1167,36 +1285,38 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.modelCmbo.SetValue('FlowTracker')
             self.manufactureCmbo.SetValue('SonTek')
             self.EnableAdcpInfo(False)
+            self.EnableMidsectionInfo(True)
             if self.manager.manager.frChecklistManager.midsecType != 'Flow Tracker':
                 self.manager.OnInstrumentChange(2)
         elif self.instrumentCmbo.GetValue() == 'Current Meter':
             self.UpdateComboBox(self.modelCmbo, self.modelList2)
             self.manufactureCmbo.SetValue('')
             self.EnableAdcpInfo(False)
+            self.EnableMidsectionInfo(True)
             if self.manager.manager.frChecklistManager.midsecType != 'Current Meter':
                 self.manager.OnInstrumentChange(1)
+
         else:
 
             self.UpdateComboBox(self.modelCmbo, self.modelList2)
             self.manufactureCmbo.SetValue('')
+            if self.methodCBListBox.IsChecked(1):
+                self.EnableAdcpInfo(True)
+                self.EnableMidsectionInfo(True)
+            else:
+                self.EnableAdcpInfo(False)
+                self.EnableMidsectionInfo(False)
             if self.manager is not None:
 
 
                 if self.manager.manager.frChecklistManager.midsecType != 'All':
                     self.manager.OnInstrumentChange(0)
-                    # for child in self.manager.manager.gui.frChecklist.labelPanel.GetSizer().GetChildren():
-                    #     child.GetWindow().Enable(False)
-                    # for child in self.manager.manager.gui.frChecklist.cbRevPanel.GetSizer().GetChildren():
-                    #     child.GetWindow().Enable(False)
-                    # for child in self.manager.manager.gui.frChecklist.cbCheckPanel.GetSizer().GetChildren():
-                    #     child.GetWindow().Enable(False)
-                    # for child in self.manager.manager.gui.frChecklist.ctrlValuePanel.GetSizer().GetChildren():
-                    #     child.GetWindow().Enable(False)
-        if self.instrumentCmbo.GetValue() == 'ADCP' and self.methodCBListBox.IsChecked(1) or \
-            not self.methodCBListBox.IsChecked(1):
-            self.EnableMidADCP(False)
-        else:
-            self.EnableMidADCP(True)
+
+        # if (self.instrumentCmbo.GetValue() == 'ADCP') or \
+        #     not self.methodCBListBox.IsChecked(1):
+        #     self.EnableAdcpInfo(True)
+        # else:
+        #     self.EnableAdcpInfo(False)
 
     def OnManufactruerChange(self, event):
         if self.instrumentCmbo.GetValue().lower() == 'adcp':
@@ -1215,7 +1335,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             if self.methodCBListBox.IsChecked(0):
                 self.manager.manager.movingBoatMeasurementsManager.recalculate()
             else:
-                self.manager.manager.movingBoatMeasurementsManager.clear()
+                self.manager.manager.movingBoatMeasurementsManager.Clear()
 
 
     #Method Type Checkbox
@@ -1648,7 +1768,23 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.weightCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         event.Skip()
 
-
+    def EnableMidsectionInfoGroup2(self, en):
+        self.numOfPanelsTxt.Enable(en)
+        self.numOfPanelsScroll.Enable(en)
+        self.flowAngleTxt.Enable(en)
+        self.flowAngleCmbo.Enable(en)
+        self.coEffTxt.Enable(en)
+        self.coEffCtrl.Enable(en)
+        self.methodTxt.Enable(en)
+        self.methodCmbo.Enable(en)
+        self.locatedTxt.Enable(en)
+        self.metresCtrl.Enable(en)
+        self.metresAboveTxt.Enable(en)
+        self.weightCtrl.Enable(en)
+        self.weightRadButBox.Enable(en)
+        self.weightTxt.Enable(en)
+        self.weightRadBut2.Enable(en)
+        self.weightRadBut1.Enable(en)
 
     # def DefaultPanels(self, event):
     #     self.numOfPanelsScroll.SetCurrentSelection("20")
@@ -1656,12 +1792,24 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     #     event.Skip()
 
 
-    #Return TURE if discharge remarks is empty
-    def dischargeRemarkEmpty(self):
-        if self.GetDischRemarksCtrl() == '':
-            return True
-        else:
-            return False
+    # #Return TURE if discharge remarks is empty
+    # def dischargeRemarkEmpty(self):
+    #     if self.GetDischRemarksCtrl() == '':
+    #         return True
+    #     else:
+    #         return False
+
+
+    def OnChangeResetBGColour(self, evt):
+        ctrl = evt.GetEventObject()
+        ctrl.SetBackgroundColour("white")
+        ctrl.Refresh()
+        evt.Skip()
+
+    # def OnDiagTestCB(self, evt):
+    #     ctrl = evt.GetEventObject()
+
+
 
 def main():
     app = wx.App()

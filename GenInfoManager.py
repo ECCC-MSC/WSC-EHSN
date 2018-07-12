@@ -13,7 +13,12 @@ class GenInfoManager(object):
 
         self.fieldMissingTitle = "Mandatory Field Missing"
         self.stnNameMissingMessage = "Station Name is missing"
-        self.stnNumMissingMessage = "Station Number is missing"
+        self.stnNumMissingMessage = "Station Number at the Front Page of eHSN is missing"
+        # self.stnNumMatchingMessage = "The station ID in the file you selected({0}) does not match the station ID of eHSN({1})."
+        self.stnNumMatchingMessage = "The Station Numbers don't match: \n\neHSN:\t{1}\nSelected Importing File:\t{0}"
+        self.stnNumMatchingTitle = "Station Number is not matching"
+        self.stnDateMatchingMessage = "The Measurement Dates don't match: \n\neHSN: {1}\nSelected Importing File: {0}\n\nContinue anyway?"
+        self.stnDateMatchingTitle = "Date is not matching"
         
         self.mode = mode
                                                             
@@ -85,8 +90,10 @@ class GenInfoManager(object):
 
     def mandatoryChecking(self):
         if (self.stnNumCmbo == ""):
-            empty = wx.MessageDialog(None, self.stnNumMissingMessage, self.fieldMissingTitle, wx.OK)
+            empty = wx.MessageDialog(None, self.stnNumMissingMessage, self.fieldMissingTitle, wx.OK | wx.ICON_ERROR)
+            empty.SetOKLabel("Close")
             empty.ShowModal()
+
             return True
         # elif (self.stnNameCtrl == ""):
         #     empty = wx.MessageDialog(None, self.stnNameMissingMessage, self.fieldMissingTitle, wx.OK)
@@ -94,6 +101,29 @@ class GenInfoManager(object):
         #     return True
         else:
             return False
+
+
+    def matchStation(self, stnId):
+
+        if (self.stnNumCmbo != stnId):
+            
+            dlg = wx.MessageDialog(None, self.stnNumMatchingMessage.format(stnId, self.stnNumCmbo), self.stnNumMatchingTitle, wx.OK | wx.ICON_ERROR)
+            dlg.SetOKLabel("Close")
+            dlg.ShowModal()
+            return True
+        else:
+
+            return False
+
+    def matchDate(self, date):
+
+        if (self.datePicker != date):
+
+            dlg = wx.MessageDialog(None, self.stnDateMatchingMessage.format(date, self.datePicker), self.stnDateMatchingTitle, wx.YES_NO | wx.ICON_EXCLAMATION)
+            dlg.SetYesNoLabels("&Yes", "&No")
+            res = dlg.ShowModal()
+
+            return res 
 
 
     def GetStnNumCmboCtrl(self):

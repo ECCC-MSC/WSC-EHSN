@@ -116,15 +116,15 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.startTimeLbl = "Start\nTime*"
         self.startDistLbl = "Start\nDistance (m)*"
         self.endDistLbl = "End\nDistance (m)*"
-        self.rawDischLbl = u"Raw Discharge\n(m\N{SUPERSCRIPT THREE}/s)"
+        self.rawDischLbl = u"Discharge\n(m\N{SUPERSCRIPT THREE}/s)"
         self.finalDisLbl = u"Final Discharge\n(m\N{SUPERSCRIPT THREE}/s)"
         self.remarksLbl = "Remarks"
         self.commentsLbl = "Comments"
         self.mmntStartTimeLbl = "Mmnt Start Time:"
         self.mmntEndTimeLbl = "Mmnt End Time*:"
         self.mmntMeanTimeLbl = "Mmnt Mean Time:"
-        self.rawDischMeanLbl = u"Raw Discharge\nMean (m\N{SUPERSCRIPT THREE}/s):"
-        self.mbCorrAppLbl = u"MB Correction\nApplied (m\N{SUPERSCRIPT THREE}/s):"
+        # self.rawDischMeanLbl = u"Discharge\nMean (m\N{SUPERSCRIPT THREE}/s):"
+        self.mbCorrAppLbl = u"MB Correction (%):"
         self.finalDischLbl = u"Final Discharge\nMean (m\N{SUPERSCRIPT THREE}/s):"
         self.corrMeanGHLbl = "Corrected Mean\nGauge Height (m):"
         self.baseCurveGHLbl = "Base Curve\nGauge Height (m):"
@@ -146,6 +146,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.compositeTracks = ["", "Off", "On"]
         self.depthRef = ["", "Bottom Track", "Vertical Beam", "Composite (BT)", "Composite (VB)", "Depth Sounder"]
         self.diffToolTip = "% difference in discharge from power, power, 0.1667."
+        self.extrapUncerLbl = "Extrapolation\nUncertainty (%)"
 
 
         self.headerHeight = 36
@@ -178,6 +179,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         # self.bedMatCtrl = wx.TextCtrl(bedMatPanel, style=wx.TE_PROCESS_ENTER, size=(10, 24))
         self.bedMatCmbo = wx.ComboBox(bedMatPanel, choices=self.bedMaterialList, style=wx.CB_DROPDOWN|wx.ALIGN_CENTRE_HORIZONTAL, size=(80, -1))
         self.bedMatCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        self.bedMatCmbo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
         bedMatSizer.Add((5, -1), 0)
         bedMatSizer.Add(bedMatTxt, 0, wx.EXPAND|wx.TOP|wx.BOTTOM, 5)
         bedMatSizer.Add(self.bedMatCmbo, 1, wx.EXPAND|wx.TOP|wx.BOTTOM, 5)
@@ -192,10 +194,12 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.mbCB = wx.CheckBox(mbPanel, label=self.mbTestDoneLbl, style=wx.ALIGN_RIGHT)
         self.mbCmbo = wx.ComboBox(mbPanel, choices=self.mbTestList, style=wx.CB_READONLY, size=(60, -1))
         self.mbCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        self.mbCmbo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
         detectedTxt = wx.StaticText(mbPanel, label=self.detectedLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.detectedCtrl = MyTextCtrl(mbPanel, style=wx.TE_PROCESS_ENTER, size=(50, -1))
         self.detectedCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.detectedCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        self.detectedCtrl.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
 
         
         mbSizer.Add(self.mbCB, 0, wx.EXPAND|wx.ALL, 3)
@@ -212,6 +216,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         trackRefTxt = wx.StaticText(trackRefPanel, label=self.trackRefSelLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
         self.trackRefCmbo = wx.ComboBox(trackRefPanel, choices=self.trackRefList, style=wx.CB_READONLY, size=(45, -1))
         self.trackRefCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        self.trackRefCmbo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
 
         trackRefSizer.Add((5, -1), 0)
         trackRefSizer.Add(trackRefTxt, 0, wx.EXPAND|wx.TOP|wx.BOTTOM, 5)
@@ -228,6 +233,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         compositeTrackTxt = wx.StaticText(compositeTrackPanel, label=self.compositeTracksLbl, size=(100, 30))
         self.compositeTrackCmbo = wx.ComboBox(compositeTrackPanel, choices=self.compositeTracks, style=wx.CB_READONLY, size=(45, -1))
         self.compositeTrackCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        self.compositeTrackCmbo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
         compositeTrackSizer.Add((5, -1), 0)
         compositeTrackSizer.Add(compositeTrackTxt, 0, wx.EXPAND)
         compositeTrackSizer.Add(self.compositeTrackCmbo, 1, wx.EXPAND|wx.TOP|wx.BOTTOM, 5)
@@ -266,6 +272,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.leftBankCmbo = wx.ComboBox(leftBankPanel, choices=self.bankList, style=wx.CB_READONLY, size=(65, -1))
         self.leftBankCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
         self.leftBankCmbo.Bind(wx.EVT_COMBOBOX, self.OnLeftBank)
+        self.leftBankCmbo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
         # self.leftBankOtherCtrl = wx.TextCtrl(leftBankPanel, size=(35, -1))
         self.leftBankOtherCtrl = wx.ComboBox(leftBankPanel, choices=self.otherList, style=wx.CB_DROPDOWN, size=(35, -1))
         # leftCoeffLbl = wx.StaticText(leftBankPanel, label=self.coeffLbl, size=(32, -1))
@@ -276,6 +283,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         # leftBankSizer.Add(leftCoeffLbl, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 6)
         leftBankSizer.Add(self.leftBankOtherCtrl, 2, wx.EXPAND|wx.ALL, 6)
         self.leftBankOtherCtrl.Hide()
+        self.leftBankOtherCtrl.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
         leftBankPanel.SetSizer(leftBankSizer)
 
         #Right bank
@@ -286,9 +294,11 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.rightBankCmbo = wx.ComboBox(rightBankPanel, choices=self.bankList, style=wx.CB_READONLY, size=(65, -1))
         self.rightBankCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
         self.rightBankCmbo.Bind(wx.EVT_COMBOBOX, self.OnRightBank)
+        self.rightBankCmbo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
         # self.rightBankOtherCtrl = wx.TextCtrl(rightBankPanel, size=(35, -1))
         self.rightBankOtherCtrl = wx.ComboBox(rightBankPanel, choices=self.otherList, style=wx.CB_DROPDOWN, size=(35, -1))
         self.rightBankOtherCtrl.Hide()
+        self.rightBankOtherCtrl.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
         # rifhtCoeffLbl = wx.StaticText(rightBankPanel, label=self.coeffLbl, size=(32, -1))
 
         rightBankSizer.Add(rightBankTxt, 3, wx.ALL, 5)
@@ -304,6 +314,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         edgeDistMmntTxt = wx.StaticText(edgeDistPanel, label=self.edgeDistMmntLbl)
         self.edgeDistMmntCmbo = wx.ComboBox(edgeDistPanel, choices=self.edgeDistMmntMethod, style=wx.CB_DROPDOWN)
         self.edgeDistMmntCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        self.edgeDistMmntCmbo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
 
         edgeDistSizer.Add(edgeDistMmntTxt, 0, wx.ALL, 5)
         edgeDistSizer.Add(self.edgeDistMmntCmbo, 1, wx.EXPAND|wx.ALL, 5)
@@ -317,6 +328,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         depthRefTxt = wx.StaticText(depthRefPanel, label=self.depthRefLbl)
         self.depthRefCmbo = wx.ComboBox(depthRefPanel, choices=self.depthRef, style=wx.CB_READONLY)
         self.depthRefCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        self.depthRefCmbo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
 
         depthRefSizer.Add(depthRefTxt, 0, wx.ALL, 5)
         depthRefSizer.Add(self.depthRefCmbo, 1, wx.EXPAND|wx.ALL, 5)
@@ -347,23 +359,26 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         velocityBottomTxt = wx.StaticText(velocityPanel, label=self.bottomLbl)
         velocityExponentTxt = wx.StaticText(velocityPanel, label=self.exponentLbl)
 
-        self.velocityTopCombo = wx.ComboBox(velocityPanel, choices=self.tops, style=wx.CB_READONLY)
+        self.velocityTopCombo = wx.ComboBox(velocityPanel, choices=self.tops, style=wx.CB_READONLY, size=(75, -1))
         self.velocityTopCombo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
-        self.velocityBottomCombo = wx.ComboBox(velocityPanel, choices=self.bottoms, style=wx.CB_READONLY)
+        self.velocityTopCombo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
+        self.velocityBottomCombo = wx.ComboBox(velocityPanel, choices=self.bottoms, style=wx.CB_READONLY, size=(75, -1))
         self.velocityBottomCombo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
-        self.velocityExponentCtrl = MyTextCtrl(velocityPanel)
+        self.velocityBottomCombo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
+        self.velocityExponentCtrl = MyTextCtrl(velocityPanel, size=(75, -1))
         self.velocityExponentCtrl.Bind(wx.EVT_TEXT, self.NumberControl)
         self.velocityExponentCtrl.Bind(wx.EVT_KILL_FOCUS, lambda event: self.OnKillFocus(event, 4))
+        self.velocityExponentCtrl.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
 
 
         velocitySizerH1.Add(velocityTxt, 1, wx.TOP|wx.LEFT, 5)
 
         velocitySizerH2.Add(velocityTopTxt, 0, wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
-        velocitySizerH2.Add(self.velocityTopCombo, 1, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
+        velocitySizerH2.Add(self.velocityTopCombo, 0, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
         velocitySizerH2.Add(velocityBottomTxt, 0, wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
-        velocitySizerH2.Add(self.velocityBottomCombo, 1, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
+        velocitySizerH2.Add(self.velocityBottomCombo, 0, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
         velocitySizerH2.Add(velocityExponentTxt, 0, wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
-        velocitySizerH2.Add(self.velocityExponentCtrl, 1, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
+        velocitySizerH2.Add(self.velocityExponentCtrl, 0, wx.EXPAND|wx.LEFT|wx.RIGHT|wx.BOTTOM, 5)
 
         velocitySizerV.Add(velocitySizerH1, 1, wx.EXPAND)
         velocitySizerV.Add(velocitySizerH2, 1, wx.EXPAND)
@@ -373,25 +388,38 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         differenceQSizer = wx.BoxSizer(wx.HORIZONTAL)
         differenceQPanel.SetSizer(differenceQSizer)
 
-        differenceTxt = wx.StaticText(differenceQPanel, label=self.differenceInQLbl)
-        self.differenceCtrl = MyTextCtrl(differenceQPanel)
+        differenceTxt = wx.StaticText(differenceQPanel, label=self.differenceInQLbl, size=(90, -1))
+        self.differenceCtrl = MyTextCtrl(differenceQPanel, size=(30, -1))
         self.differenceCtrl.Bind(wx.EVT_TEXT, self.NumberControl)
         self.differenceCtrl.Bind(wx.EVT_KILL_FOCUS, lambda event: self.OnKillFocus(event, 2))
+        self.differenceCtrl.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
+
+        extrapUncerTxt = wx.StaticText(differenceQPanel, label=self.extrapUncerLbl, size=(90, -1))
+        self.extrapUncerCtrl = MyTextCtrl(differenceQPanel, size=(30, -1))
+        self.extrapUncerCtrl.Bind(wx.EVT_TEXT, self.NumberControl)
+        self.extrapUncerCtrl.Bind(wx.EVT_KILL_FOCUS, lambda event: self.OnKillFocus(event, 2))
+        self.extrapUncerCtrl.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
+
 
 
         differenceCtrlSizer = wx.BoxSizer(wx.VERTICAL)
-        differenceCtrlSizer.Add(self.differenceCtrl, 1, wx.EXPAND|wx.TOP, 20)
+        differenceCtrlSizer.Add(self.differenceCtrl, 1, wx.EXPAND|wx.TOP, 5)
+
+        extraUncerSizer = wx.BoxSizer(wx.VERTICAL)
+        extraUncerSizer.Add(self.extrapUncerCtrl, 1, wx.EXPAND|wx.TOP, 5)
         # tooltipBS = wx.ToolTip(self.diffToolTip)
         # tooltipBS.SetDelay(10)
         # tooltipBS.SetAutoPop(30000)
         # differenceTxt.SetToolTip(tooltipBS)
 
-        differenceQSizer.Add(differenceTxt, 0, wx.LEFT|wx.TOP|wx.RIGHT, 5)
+        differenceQSizer.Add(differenceTxt, 1, wx.LEFT|wx.TOP|wx.RIGHT, 5)
         differenceQSizer.Add(differenceCtrlSizer, 1, wx.EXPAND|wx.ALL, 5)
+        differenceQSizer.Add(extrapUncerTxt, 1, wx.LEFT|wx.TOP|wx.RIGHT, 5)
+        differenceQSizer.Add(extraUncerSizer, 1, wx.EXPAND|wx.ALL, 5)
 
 
 
-        horizontalSizer7.Add(velocityPanel, 1, wx.EXPAND)
+        horizontalSizer7.Add(velocityPanel, 0, wx.EXPAND)
         horizontalSizer7.Add(differenceQPanel, 1, wx.EXPAND)
 
 
@@ -463,7 +491,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         endDistSizer.Add(endDistTxt, 1, wx.EXPAND)
         endDistPanel.SetSizer(endDistSizer)
 
-        #Raw Discharge
+        # Raw Discharge
         rawDischPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
         rawDischSizer = wx.BoxSizer(wx.HORIZONTAL)
 
@@ -583,7 +611,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         #Mmnt Start Time Label
         mmntStartTimePanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
         mmntStartTimeSizer = wx.BoxSizer(wx.HORIZONTAL)
-        mmntStartTimeTxt = wx.StaticText(mmntStartTimePanel, label=self.mmntStartTimeLbl, style=wx.ALIGN_RIGHT, size=(100, -1))
+        mmntStartTimeTxt = wx.StaticText(mmntStartTimePanel, label=self.mmntStartTimeLbl, style=wx.ALIGN_LEFT, size=(100, -1))
         mmntStartTimeSizer.Add(mmntStartTimeTxt, 1, wx.EXPAND)
         mmntStartTimePanel.SetSizer(mmntStartTimeSizer)
 
@@ -595,24 +623,43 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.mmntStartTimeCtrl.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
         self.mmntStartTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
         self.mmntStartTimeCtrl.GetSecondCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
-        self.mmntStartTimeCtrl.GetHourCtrl().Bind(wx.EVT_KEY_DOWN, self.OnEndTime)
-        self.mmntStartTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_KEY_DOWN, self.OnEndTime)
-        self.mmntStartTimeCtrl.GetSecondCtrl().Bind(wx.EVT_KEY_DOWN, self.OnEndTime)
+        self.mmntStartTimeCtrl.GetHourCtrl().Bind(wx.EVT_KEY_UP, self.OnEndTime)
+        self.mmntStartTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_KEY_UP, self.OnEndTime)
+        self.mmntStartTimeCtrl.GetSecondCtrl().Bind(wx.EVT_KEY_UP, self.OnEndTime)
+
+
+        #MB Correction
+        mbCorrAppPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
+        mbCorrAppSizer = wx.BoxSizer(wx.HORIZONTAL)
+        mbCorrAppTxt = wx.StaticText(mbCorrAppPanel, label=self.mbCorrAppLbl, style=wx.ALIGN_LEFT, size=(100, -1))
+        # mbCorrAppBtn = wx.Button(mbCorrAppPanel, label=self.mbCorrAppLbl, style=wx.ALIGN_LEFT, size=(100, -1))
+        mbCorrAppTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
+        # mbCorrAppBtn.Bind(wx.EVT_BUTTON, self.OnMBCorrApp)
+
+        mbCorrAppSizer.Add(mbCorrAppTxt, 1, wx.EXPAND)
+        mbCorrAppPanel.SetSizer(mbCorrAppSizer)
+
+        #MB Correction Val
+        self.mbCorrAppCtrl = MyTextCtrl(self, size=(40, -1))
+        # self.mbCorrAppCtrl.Bind(wx.EVT_TEXT, self.OnFinalDischargeMean)
+        self.mbCorrAppCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.mbCorrAppCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        self.mbCorrAppCtrl.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
 
         #Mmnt Raw Discharge Mean
-        rawDischMeanPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
-        rawDischMeanSizer = wx.BoxSizer(wx.HORIZONTAL)
-        rawDischMeanTxt = wx.StaticText(rawDischMeanPanel, label=self.rawDischMeanLbl, style=wx.ALIGN_LEFT, size=(100, -1))
+        # rawDischMeanPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
+        # rawDischMeanSizer = wx.BoxSizer(wx.HORIZONTAL)
+        # rawDischMeanTxt = wx.StaticText(rawDischMeanPanel, label=self.rawDischMeanLbl, style=wx.ALIGN_LEFT, size=(100, -1))
         # rawDischMeanBtn = wx.Button(rawDischMeanPanel, label=self.rawDischMeanLbl, style=wx.ALIGN_LEFT, size=(100, -1))
-        rawDischMeanTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
+        # rawDischMeanTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
         # rawDischMeanBtn.Bind(wx.EVT_BUTTON, self.OnBTDischargeMean)
-        rawDischMeanSizer.Add(rawDischMeanTxt, 1, wx.EXPAND)
-        rawDischMeanPanel.SetSizer(rawDischMeanSizer)
+        # rawDischMeanSizer.Add(rawDischMeanTxt, 1, wx.EXPAND)
+        # rawDischMeanPanel.SetSizer(rawDischMeanSizer)
 
         #Mmnt Raw Discharge Mean Val
-        self.rawDischMeanCtrl = MyTextCtrl(self, size=(40, -1))
-        self.rawDischMeanCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.rawDischMeanCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.rawDischMeanCtrl = MyTextCtrl(self, size=(40, -1))
+        # self.rawDischMeanCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        # self.rawDischMeanCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
         #Corrected Mean Gauge Height
         corrMeanGHPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
@@ -641,12 +688,17 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.standDevMeanDischCtrl = MyTextCtrl(self, size=(40, -1))
         self.standDevMeanDischCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.standDevMeanDischCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+        self.standDevMeanDischCtrl.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
 
         #Row 1
         horizontalSizer4.Add(mmntStartTimePanel, 1, wx.EXPAND)
         horizontalSizer4.Add(self.mmntStartTimeCtrl, 1, wx.EXPAND)
-        horizontalSizer4.Add(rawDischMeanPanel, 1, wx.EXPAND)
-        horizontalSizer4.Add(self.rawDischMeanCtrl, 1, wx.EXPAND)
+        # horizontalSizer4.Add(rawDischMeanPanel, 1, wx.EXPAND)
+        # horizontalSizer4.Add(self.rawDischMeanCtrl, 1, wx.EXPAND)
+        horizontalSizer4.Add(mbCorrAppPanel, 1, wx.EXPAND)
+        horizontalSizer4.Add(self.mbCorrAppCtrl, 1, wx.EXPAND)
+        # horizontalSizer4.Add((100, -1), 1, wx.EXPAND)
+        # horizontalSizer4.Add((40, -1), 1, wx.EXPAND)
         horizontalSizer4.Add(corrMeanGHPanel, 1, wx.EXPAND)
         horizontalSizer4.Add(self.corrMeanGHCtrl, 1, wx.EXPAND)
         horizontalSizer4.Add(standDevMeanDischPanel, 1, wx.EXPAND)
@@ -659,7 +711,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         #MmntEndTime
         mmntEndTimePanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
         mmntEndTimeSizer = wx.BoxSizer(wx.HORIZONTAL)
-        mmntEndTimeTxt = wx.StaticText(mmntEndTimePanel, label=self.mmntEndTimeLbl, style=wx.ALIGN_RIGHT, size=(100, -1))
+        mmntEndTimeTxt = wx.StaticText(mmntEndTimePanel, label=self.mmntEndTimeLbl, style=wx.ALIGN_LEFT, size=(100, -1))
         mmntEndTimeSizer.Add(mmntEndTimeTxt, 1, wx.EXPAND)
         mmntEndTimePanel.SetSizer(mmntEndTimeSizer)
 
@@ -671,26 +723,43 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.mmntEndTimeCtrl.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
         self.mmntEndTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
         self.mmntEndTimeCtrl.GetSecondCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
-        self.mmntEndTimeCtrl.GetHourCtrl().Bind(wx.EVT_KEY_DOWN, self.OnEndTime)
-        self.mmntEndTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_KEY_DOWN, self.OnEndTime)
-        self.mmntEndTimeCtrl.GetSecondCtrl().Bind(wx.EVT_KEY_DOWN, self.OnEndTime)
+        self.mmntEndTimeCtrl.GetHourCtrl().Bind(wx.EVT_KEY_UP, self.OnEndTime)
+        self.mmntEndTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_KEY_UP, self.OnEndTime)
+        self.mmntEndTimeCtrl.GetSecondCtrl().Bind(wx.EVT_KEY_UP, self.OnEndTime)
 
-        #MB Correction
-        mbCorrAppPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
-        mbCorrAppSizer = wx.BoxSizer(wx.HORIZONTAL)
-        mbCorrAppTxt = wx.StaticText(mbCorrAppPanel, label=self.mbCorrAppLbl, style=wx.ALIGN_LEFT, size=(100, -1))
-        # mbCorrAppBtn = wx.Button(mbCorrAppPanel, label=self.mbCorrAppLbl, style=wx.ALIGN_LEFT, size=(100, -1))
-        mbCorrAppTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
-        # mbCorrAppBtn.Bind(wx.EVT_BUTTON, self.OnMBCorrApp)
+        #Final Discharge 
+        finalDischPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
+        finalDischSizer = wx.BoxSizer(wx.HORIZONTAL)
+        finalDischTxt = wx.StaticText(finalDischPanel, label=self.finalDischLbl, style=wx.ALIGN_LEFT, size=(100, -1))
+        # finalDischBtn = wx.Button(finalDischPanel, label=self.finalDischLbl, style=wx.ALIGN_LEFT, size=(100, -1))
+        finalDischTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
+        # finalDischBtn.Bind(wx.EVT_BUTTON, self.OnFinalDischargeMean)
+        finalDischSizer.Add(finalDischTxt, 1, wx.EXPAND)
+        finalDischPanel.SetSizer(finalDischSizer)
 
-        mbCorrAppSizer.Add(mbCorrAppTxt, 1, wx.EXPAND)
-        mbCorrAppPanel.SetSizer(mbCorrAppSizer)
+        #Final Discharge Ctrl
+        self.finalDischCtrl = MyTextCtrl(self, size=(40, -1))
+        self.finalDischCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.finalDischCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        self.finalDischCtrl.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
 
-        #MB Correction Val
-        self.mbCorrAppCtrl = MyTextCtrl(self, size=(40, -1))
-        self.mbCorrAppCtrl.Bind(wx.EVT_TEXT, self.OnFinalDischargeMean)
-        self.mbCorrAppCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.mbCorrAppCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+
+        # #MB Correction
+        # mbCorrAppPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
+        # mbCorrAppSizer = wx.BoxSizer(wx.HORIZONTAL)
+        # mbCorrAppTxt = wx.StaticText(mbCorrAppPanel, label=self.mbCorrAppLbl, style=wx.ALIGN_LEFT, size=(100, -1))
+        # # mbCorrAppBtn = wx.Button(mbCorrAppPanel, label=self.mbCorrAppLbl, style=wx.ALIGN_LEFT, size=(100, -1))
+        # mbCorrAppTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
+        # # mbCorrAppBtn.Bind(wx.EVT_BUTTON, self.OnMBCorrApp)
+
+        # mbCorrAppSizer.Add(mbCorrAppTxt, 1, wx.EXPAND)
+        # mbCorrAppPanel.SetSizer(mbCorrAppSizer)
+
+        # #MB Correction Val
+        # self.mbCorrAppCtrl = MyTextCtrl(self, size=(40, -1))
+        # self.mbCorrAppCtrl.Bind(wx.EVT_TEXT, self.OnFinalDischargeMean)
+        # self.mbCorrAppCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        # self.mbCorrAppCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
         #Base Curve Gauge Height
         baseCurveGHPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
@@ -719,8 +788,10 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         #Row 2
         horizontalSizer5.Add(mmntEndTimePanel, 1, wx.EXPAND)
         horizontalSizer5.Add(self.mmntEndTimeCtrl, 1, wx.EXPAND)
-        horizontalSizer5.Add(mbCorrAppPanel, 1, wx.EXPAND)
-        horizontalSizer5.Add(self.mbCorrAppCtrl, 1, wx.EXPAND)
+        horizontalSizer5.Add(finalDischPanel, 1, wx.EXPAND)
+        horizontalSizer5.Add(self.finalDischCtrl, 1, wx.EXPAND)
+        # horizontalSizer5.Add(mbCorrAppPanel, 1, wx.EXPAND)
+        # horizontalSizer5.Add(self.mbCorrAppCtrl, 1, wx.EXPAND)
         horizontalSizer5.Add(baseCurveGHPanel, 1, wx.EXPAND)
         horizontalSizer5.Add(self.baseCurveGHCtrl, 1, wx.EXPAND)
         horizontalSizer5.Add(calcShiftBaseCurvePanel, 1, wx.EXPAND)
@@ -733,7 +804,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         #Mmnt Mean Time
         mmntMeanTimePanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
         mmntMeanTimeSizer = wx.BoxSizer(wx.HORIZONTAL)
-        mmntMeanTimeTxt = wx.StaticText(mmntMeanTimePanel, label=self.mmntMeanTimeLbl, style=wx.ALIGN_RIGHT, size=(100, -1))
+        mmntMeanTimeTxt = wx.StaticText(mmntMeanTimePanel, label=self.mmntMeanTimeLbl, style=wx.ALIGN_LEFT, size=(100, -1))
         mmntMeanTimeSizer.Add(mmntMeanTimeTxt, 1, wx.EXPAND)
         mmntMeanTimePanel.SetSizer(mmntMeanTimeSizer)
 
@@ -742,20 +813,20 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         # self.mmntMeanTimeCtrl.Bind(wx.EVT_KEY_DOWN, self.OnResetTime)
         self.mmntMeanTimeCtrl = DropdownTime(True, self, size=(-1, -1))
 
-        #Final Discharge 
-        finalDischPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
-        finalDischSizer = wx.BoxSizer(wx.HORIZONTAL)
-        finalDischTxt = wx.StaticText(finalDischPanel, label=self.finalDischLbl, style=wx.ALIGN_LEFT, size=(100, -1))
-        # finalDischBtn = wx.Button(finalDischPanel, label=self.finalDischLbl, style=wx.ALIGN_LEFT, size=(100, -1))
-        finalDischTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
-        # finalDischBtn.Bind(wx.EVT_BUTTON, self.OnFinalDischargeMean)
-        finalDischSizer.Add(finalDischTxt, 1, wx.EXPAND)
-        finalDischPanel.SetSizer(finalDischSizer)
+        # #Final Discharge 
+        # finalDischPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
+        # finalDischSizer = wx.BoxSizer(wx.HORIZONTAL)
+        # finalDischTxt = wx.StaticText(finalDischPanel, label=self.finalDischLbl, style=wx.ALIGN_LEFT, size=(100, -1))
+        # # finalDischBtn = wx.Button(finalDischPanel, label=self.finalDischLbl, style=wx.ALIGN_LEFT, size=(100, -1))
+        # finalDischTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
+        # # finalDischBtn.Bind(wx.EVT_BUTTON, self.OnFinalDischargeMean)
+        # finalDischSizer.Add(finalDischTxt, 1, wx.EXPAND)
+        # finalDischPanel.SetSizer(finalDischSizer)
 
-        #Final Discharge Ctrl
-        self.finalDischCtrl = MyTextCtrl(self, size=(40, -1))
-        self.finalDischCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.finalDischCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # #Final Discharge Ctrl
+        # self.finalDischCtrl = MyTextCtrl(self, size=(40, -1))
+        # self.finalDischCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        # self.finalDischCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
         #Base Curve Discharge
         baseCurveDischPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
@@ -784,8 +855,10 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         #Row 3
         horizontalSizer6.Add(mmntMeanTimePanel, 1, wx.EXPAND)
         horizontalSizer6.Add(self.mmntMeanTimeCtrl, 1, wx.EXPAND)
-        horizontalSizer6.Add(finalDischPanel, 1, wx.EXPAND)
-        horizontalSizer6.Add(self.finalDischCtrl, 1, wx.EXPAND)
+        # horizontalSizer6.Add(finalDischPanel, 1, wx.EXPAND)
+        # horizontalSizer6.Add(self.finalDischCtrl, 1, wx.EXPAND)
+        horizontalSizer6.Add((100, -1), 1, wx.EXPAND)
+        horizontalSizer6.Add((40, -1), 1, wx.EXPAND)
         horizontalSizer6.Add(baseCurveDischPanel, 1, wx.EXPAND)
         horizontalSizer6.Add(self.baseCurveDischCtrl, 1, wx.EXPAND)
         horizontalSizer6.Add(dischDiffBaseCurvePanel, 1, wx.EXPAND)
@@ -804,6 +877,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         commentsSizer.Add(commentsTxt, 0, wx.EXPAND|wx.ALL, 5)
 
         self.commentsCtrl = wx.TextCtrl(commentsPanel, style=wx.TE_MULTILINE|wx.TE_BESTWRAP)
+        # self.commentsCtrl.Bind(wx.EVT_TEXT, self.test)
         # self.commentsCtrl.Bind(wx.EVT_TEXT, self.OnTextType)
         commentsSizer.Add(self.commentsCtrl, 1, wx.EXPAND|wx.ALL, 5)
 
@@ -820,6 +894,10 @@ class MovingBoatMeasurementsPanel(wx.Panel):
 
         self.SetSizer(layoutSizer)
 
+
+
+    # def test(self, evt):
+    #     print self.commentsCtrl.GetValue()     
     def OnAddPress(self, evt):
         self.AddEntry()
 
@@ -843,6 +921,9 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         transectCtrl = wx.TextCtrl(self, size=(95, self.rowHeight), style=wx.TE_PROCESS_ENTER, name = str(self.entryNum))
         startBankCtrl = StartBankPanel(self, style=wx.SIMPLE_BORDER, size=(50, self.rowHeight), name = str(self.entryNum))
         startTimeCtrl = masked.TimeCtrl(self, displaySeconds=True, size=(65, self.rowHeight), fmt24hr=True)
+        startTimeCtrl.Bind(wx.EVT_TEXT, self.OnStartTime)
+
+
         startDistanceCtrl = MyTextCtrl(self, size=(76, self.rowHeight), style=wx.TE_PROCESS_ENTER, name = str(self.entryNum))
         startDistanceCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         startDistanceCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
@@ -973,6 +1054,16 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         if time is not None:
             self.mmntStartTimeCtrl.SetValue(time)
   
+
+    def OnStartTime(self, evt):
+
+        self.UpdateMmntStartTime()
+        self.UpdateMeanTime()
+
+        evt.Skip()
+
+
+
     def OnCheckbox(self, event):
         box = event.GetEventObject()
         index = -1
@@ -1009,65 +1100,28 @@ class MovingBoatMeasurementsPanel(wx.Panel):
             mean = '' if mean == 0 else mean/counter
         else:
             mean = ''
-        if mean != '':
-            self.rawDischMeanCtrl.SetValue(str(format(mean, '.3f')))
-        else:
-            self.rawDischMeanCtrl.SetValue('')
+        # if mean != '':
+        #     self.rawDischMeanCtrl.SetValue(str(format(mean, '.3f')))
+        # else:
+        #     self.rawDischMeanCtrl.SetValue('')
 
     def OnFinalDischargeMean(self, event):
-    	if self.rawDischMeanCtrl.GetValue() != '' and self.mbCorrAppCtrl.GetValue() != '':
-    		self.finalDischCtrl.SetValue(str(float(self.rawDischMeanCtrl.GetValue()) + float(self.mbCorrAppCtrl.GetValue())))
-    	elif self.rawDischMeanCtrl.GetValue() != '' and self.mbCorrAppCtrl.GetValue() == '':
-    		self.finalDischCtrl.SetValue(self.rawDischMeanCtrl.GetValue())
+        print "OnFinalDischargeMean"
+    	if self.mbCorrAppCtrl.GetValue() != '':
+    		self.finalDischCtrl.SetValue(str(float(self.mbCorrAppCtrl.GetValue())))
+    	# elif self.rawDischMeanCtrl.GetValue() != '' and self.mbCorrAppCtrl.GetValue() == '':
+    	# 	self.finalDischCtrl.SetValue(self.rawDischMeanCtrl.GetValue())
         event.Skip()
 
 
-    # def OnFinalDischargeMean(self, event):
-    #     counter = 0
-    #     mean = 0
-    #     for i in range(1, len(self.tableSizerV.GetChildren()) - 2):
-    #         row = self.tableSizerV.GetChildren()[i]
-    #         if row.GetSizer().GetChildren()[1].GetWindow().GetValue():
-    #             if row.GetSizer().GetChildren()[8].GetWindow().GetValue() != '':
-    #                 mean += float(row.GetSizer().GetChildren()[8].GetWindow().GetValue()) if \
-    #                             row.GetSizer().GetChildren()[8].GetWindow().GetValue() != '' else 0
-    #                 counter += 1
-    #     if counter > 0:
-    #         mean = '' if mean == 0 else mean/counter
-    #     else:
-    #         mean = ''
-    #     if mean != '':
-    #         self.finalDischCtrl.SetValue(str(format(mean, '.3f')))
-    #     else:
-    #         self.finalDischCtrl.SetValue('')
 
 
-    # def OnMBCorrApp(self, event):
-    # 	if (self.trackRefCmbo.GetValue() == 'BT') and self.finalDischCtrl.GetValue() != '' and self.rawDischMeanCtrl.GetValue() != '':
-    # 		corr = (float(self.finalDischCtrl.GetValue()) - float(self.rawDischMeanCtrl.GetValue()) )/ float(self.finalDischCtrl.GetValue()) * 100
-    # 		self.mbCorrAppCtrl.SetValue(str(format(corr, '.3f')))
-    # 	else:
-    # 		self.mbCorrAppCtrl.SetValue('')
-
-    # def OnStandardDev(self, evt):
-    #     discharges = []
-    #     for i in range(1, len(self.tableSizerV.GetChildren()) - 2):
-    #         row = self.tableSizerV.GetChildren()[i]
-    #         if row.GetSizer().GetChildren()[1].GetWindow().GetValue():
-    #             if row.GetSizer().GetChildren()[8].GetWindow().GetValue() != '':
-    #                 discharges.append(float(row.GetSizer().GetChildren()[8].GetWindow().GetValue())) if \
-    #                             row.GetSizer().GetChildren()[8].GetWindow().GetValue() != '' else 0
-
-    #     if len(discharges) > 0 and self.finalDischCtrl.GetValue() != '':
-    #         self.standDevMeanDischCtrl.SetValue(format(float(self.standardDeviation(discharges) / float(self.finalDischCtrl.GetValue()) * 100), '.3f'))
-    #     else:
-    #         self.standDevMeanDischCtrl.SetValue('')
 
     def UpdateSammury(self, event):
     	self.OnBTDischargeMean(event)
     	
     	# self.OnMBCorrApp(event)
-    	self.OnFinalDischargeMean(event)
+    	# self.OnFinalDischargeMean(event)
     	# self.OnStandardDev(event)
 
 
@@ -1089,12 +1143,21 @@ class MovingBoatMeasurementsPanel(wx.Panel):
 
     #On end time update mean time
     def OnEndTime(self, event):
+        # try:
+        #     event.GetEventObject().GetParent().UpdateTime(event.GetKeyCode())
+        # except:
+        #     pass
+
         try:
-            event.GetEventObject().GetParent().UpdateTime(event.GetKeyCode())
+            # keycode = event.GetEventObject().GetValue()[-1]
+            keycode = event.GetKeyCode()
+            event.GetEventObject().GetParent().NumberControl(event)
+            if keycode == ord('R') or keycode == ord('C'):
+                event.GetEventObject().GetParent().UpdateTime(keycode)      
         except:
             pass
         self.UpdateMeanTime()
-        event.Skip()
+        # event.Skip()
 
 
     def UpdateMeanTime(self):
@@ -1203,6 +1266,66 @@ class MovingBoatMeasurementsPanel(wx.Panel):
 
         self.Layout()
         event.Skip()
+
+
+
+
+    def Clear(self):
+        self.manager.mbCB = False
+        self.manager.mbCmbo = ''
+        self.manager.leftBankCmbo = ''
+        # movingBoatMeasurements.leftBankOtherCtrl = ''
+        self.manager.rightBankCmbo = ''
+        # movingBoatMeasurements.rightBankOtherCtrl = ''
+        self.manager.trackRefCmbo = ''
+        self.manager.mmntStartTimeCtrl = '00:00:00'
+        self.manager.mmntEndTimeCtrl = '00:00:00'
+        self.manager.mmntMeanTimeCtrl = '00:00:00'
+        # self.manager.rawDischMeanCtrl = ''
+        self.manager.finalDischCtrl = ''
+        self.manager.mbCorrAppCtrl = ''
+        self.manager.standDevMeanDischCtrl = ''
+        self.manager.corrMeanGHCtrl = ''
+        self.manager.calcShiftBaseCurveCtrl = ''
+        self.manager.dischDiffBaseCurveCtrl = ''
+        self.manager.baseCurveGHCtrl = ''
+        self.manager.baseCurveDischCtrl = ''
+        self.manager.commentsCtrl = ''
+
+        self.manager.bedMatCmbo = ""
+        self.manager.detectedCtrl = ""
+        self.manager.compositeTrackCmbo = ""
+        self.manager.edgeDistMmntCmbo = ""
+        self.manager.depthRefCmbo = ""
+        self.manager.velocityTopCombo = ""
+        self.manager.velocityBottomCombo = ""
+        self.manager.velocityExponentCtrl = ""
+        self.manager.differenceCtrl = ""
+        self.manager.extrapUncerCtrl = ""
+
+        for row in range(len(self.tableSizerV.GetChildren()) - 2):
+            self.manager.SetTableValue(row, 1, 'False')
+            self.manager.SetTableValue(row, 2, "")
+            self.manager.SetTableValue(row, 3, "")
+            self.manager.SetTableValue(row, 4, "00:00:00")
+            self.manager.SetTableValue(row, 5, "")
+            self.manager.SetTableValue(row, 6, "")
+            self.manager.SetTableValue(row, 7, "")
+            self.manager.SetTableValue(row, 8, "")
+            self.manager.SetTableValue(row, 9, "")
+            self.manager.SetTableValue(row, 10, "")
+
+
+        self.mmntStartTimeCtrl.Clear()
+        self.mmntEndTimeCtrl.Clear()
+        self.mmntMeanTimeCtrl.Clear()
+
+
+    def OnTextResetBGColour(self, evt):
+        ctrl = evt.GetEventObject()
+        ctrl.SetBackgroundColour("white")
+        ctrl.Refresh()
+        evt.Skip()
 def main():
     app = wx.App()
 

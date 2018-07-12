@@ -791,8 +791,8 @@ class RatingCurveViewerToolManager(object):
         if self.mode == "DEBUG":
             print "Plotting Data"
 
-        if self.extension is None:
-            self.gui.CreateErrorDialog("Please use a valid Rating Curve File")
+        # if self.extension is None:
+        #     self.gui.CreateErrorDialog("Please use a valid Rating Curve File")
             return None
         # if self.obsStage == "" or self.obsStage is None:
         #     #show error dialog

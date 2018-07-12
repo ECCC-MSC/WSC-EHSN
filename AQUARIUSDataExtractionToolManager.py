@@ -25,36 +25,43 @@ from operator import itemgetter
 
 from xml.etree import ElementTree
 
+
+
 class AQUARIUSDataExtractionToolManager(object):
     def __init__(self, mode, scriptLoc, gui, EHSNGui):
         self.gui = gui
-        self.gui.manager = self
+        self.config_path = None
+        if self.gui is not None:
+            self.gui.manager = self
+            if self.gui.GetParent() is not None:
+                self.config_path = self.gui.GetParent().config_path
 
-        self.timeZones = {'-08' : 'PST',
-                          '-07' : 'MST',
-                          '-06' : 'CST',
-                          '-05' : 'EST',
-                          '-04' : 'AST',
-                          '-03' : 'NST',
-                          '-00' : 'UTC'}
+        self.timeZones = {'-8' : 'PST',
+                          '-7' : 'MST',
+                          '-6' : 'CST',
+                          '-5' : 'EST',
+                          '-4' : 'AST',
+                          '-3' : 'NST',
+                          '-0' : 'UTC'}
 
         self.scriptLoc = scriptLoc
         self.EHSNGui = EHSNGui
         self.mode = mode
 
 
-        self.config_path = "config.xml"
-        if hasattr(sys, '_MEIPASS'):
-            self.config_path = os.path.join(sys._MEIPASS, self.config_path)
-        else:
-            self.config_path = os.getcwd() + "\\" + self.config_path
+        
+        # if hasattr(sys, '_MEIPASS'):
+        #     self.config_path = os.path.join(sys._MEIPASS, self.config_path)
+        # else:
+        #     self.config_path = os.getcwd() + "\\" + self.config_path
 
         # print self.config_path    
-        self.configFile = ElementTree.parse(self.config_path).getroot().find('AQUARIUSDataExtractionToolManager')
+        if self.config_path is not None:
+            self.configFile = ElementTree.parse(self.config_path).getroot().find('AQUARIUSDataExtractionToolManager')
 
 
-        self.rctUser = self.configFile.find('rctUser').text
-        self.rctPassword = self.configFile.find('rctPassword').text
+            self.rctUser = self.configFile.find('rctUser').text
+            self.rctPassword = self.configFile.find('rctPassword').text
 
     def RunScript(self, path):
         # counter = 0
@@ -79,7 +86,7 @@ class AQUARIUSDataExtractionToolManager(object):
             aq.set_options(headers={'AQAuthToken':aq.service.GetAuthToken(Login, Password)})
 
             authcode = aq.service.GetAuthToken(Login, Password)
-            # print "authcode value: " + str(authcode)
+
         except:
             self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
             return -1
@@ -205,6 +212,9 @@ class AQUARIUSDataExtractionToolManager(object):
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
         Server = self.gui.GetURL()
+
+
+
         authcode = None
 
         stationsList = []
@@ -230,6 +240,9 @@ class AQUARIUSDataExtractionToolManager(object):
         # For each station in the stationlist
         locations = self.GetStationList()
 
+
+
+        
         for station in locations:
             # Check if real station
             locid = aq.service.GetLocationId(station)
@@ -268,17 +281,10 @@ class AQUARIUSDataExtractionToolManager(object):
             # station name
             newStationLine.append(locationName)
 
-            # GetDataSetsList for station tz
-            command = ServerCall + "GetDataSetsList?token=" + MyAuthCode + "&locId=" + station
-            # print "Sending command: " + command
-            r = requests.get(command)
-
-            f = StringIO.StringIO(unicode(r.text).encode("utf8"))
-            reader = csv.reader(f, delimiter=',')
 
             # Check row count
             row_count = sum(1 for row in reader)
-            print row_count
+            # print row_count
 
             # reset position in file
             f.seek(0)
@@ -290,19 +296,22 @@ class AQUARIUSDataExtractionToolManager(object):
                 reader.next()
                 line = reader.next()
 
-                # if station does not have any Data Sets (like meteorology stations)
-                if not line:
-                    failedStations.append(station)
-                    continue
-
-                offset = str(line[7]).split('.')
-                offset = offset[-1][-6:]
-                offset = offset.split(':')[-2]
-                offsetVal = self.timeZones[offset]
+            #     # if station does not have any Data Sets (like meteorology stations)
+            #     if not line:
+            #         failedStations.append(station)
+            #         continue
+            #     # print line
+            #     offset = str(line[7]).split('.')
+            #     # print offset
+            #     offset = offset[-1][-6:]
+            #     offset = offset.split(':')[-2]
+            #     # print "offset: ", offset
+            #     # print self.timeZones[offset]
+            #     offsetVal = self.timeZones[offset]
 
 
             # offset for station
-            newStationLine.append(offsetVal)
+            newStationLine.append(self.timeZones[line[12]])
 
             stationsList.append(newStationLine)
 
@@ -332,24 +341,45 @@ class AQUARIUSDataExtractionToolManager(object):
 
         if exportFile is not None:
             if not fileExists:
-                exportFile.write("STATION ID,STATION NAME,TIMEZONE\n")
+                exportFile.write("STATION ID,STATION NAME,TIMEZONE")
+
             else:
                 # if file exists, read the file
-                reader = csv.reader(exportFile, delimiter=',')
+                # reader = csv.reader(exportFile, delimiter='\n')
+
+
+
+                readList = []
+
+                with open(path + '\\stations.txt', 'a+') as f:
+                    reader = csv.reader(f, delimiter=",")
+                    for i, line in enumerate(reader):
+                        if i > 0:
+                            readList.append(line[0])
+
+
+
+                # print "-----------------"
+                # for j in readList:
+                #     print j
+                # print "-----------------"
+
 
                 removeIndices = []
 
                 for i, line in enumerate(stationsList):
+
+
                     if len(line) > 2:
 
-                        for row in reader:
-                            if line[0] == row[0]:
+                        for row in readList:
+                            if line[0] == row:
                                 print line[0] + " is in file"
                                 removeIndices.append(i)
                                 break
 
-                        exportFile.seek(0)
-                        reader = csv.reader(exportFile, delimiter=',')
+                        # exportFile.seek(0)
+                        # reader = csv.reader(exportFile, delimiter=',')
 
                 removeIndices.reverse()
                 for i in removeIndices:
@@ -365,10 +395,13 @@ class AQUARIUSDataExtractionToolManager(object):
                     outputLine = stationid + "," + unicode(stationName) + "," + timezone
                     writeList.append(outputLine)
 
+
+            exportFile.close()
+            exportFile = open(path + '\\stations.txt', 'a+')
             for line in writeList:
-                print line
-                line += '\n'
+                exportFile.write("\n")
                 exportFile.write(line.encode('utf8'))
+
 
             exportFile.close()
 
@@ -408,7 +441,11 @@ class AQUARIUSDataExtractionToolManager(object):
         # login
         imp1 = Import('http://www.w3.org/2001/XMLSchema')
         doctor = ImportDoctor(imp1)
-        aq2 = Client(Server + '/AQUARIUS/AquariusDataService.svc?wsdl', doctor=doctor)
+        try:
+            aq2 = Client(Server + '/AQUARIUS/AquariusDataService.svc?wsdl', doctor=doctor)
+        except:
+            print "Client(Server + '/AQUARIUS/AquariusDataService.svc?wsdl', doctor=doctor)"
+            return
 
         # for each station
         locations = self.GetStationList()
@@ -417,7 +454,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
             # Check if real station
             locid = aq.service.GetLocationId(station)
-            print locid
+            # print locid
 
             # is not a real station
             if locid == 0:
@@ -579,7 +616,7 @@ class AQUARIUSDataExtractionToolManager(object):
             # Write to file
             exportFile.write("STATION,REFERENCE,ELEVATION,DESCRIPTION\n")
             for line in writeList:
-                print line.encode("utf8")
+                # print line.encode("utf8")
                 line += '\n'
                 exportFile.write(line.encode('utf8'))
 
@@ -617,7 +654,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
             # re = subprocess.call(arg, stdout=FNULL, stderr=FNULL, shell=False)
 
-            # self.gui.CreateMessageDialog(str(re), "WHAAAAAT")
+
 
             if re != 0:
                 failedStations.append(station)
@@ -649,7 +686,7 @@ class AQUARIUSDataExtractionToolManager(object):
         locations = self.GetStationList()
         for location in locations:
             locid = aq.service.GetLocationId(location)
-            print location, "\t", locid
+            # print location, "\t", locid
             locinf = aq.service.GetLocation(locid)
 
             if locinf is None:
@@ -682,17 +719,16 @@ class AQUARIUSDataExtractionToolManager(object):
             table = []
             if numMinMax is not None:
                 minMaxList = []
-                fv=aq.service.GetFieldVisitsByLocation(locid)
+                try:
+                    fv=aq.service.GetFieldVisitsByLocation(locid)
+                except:
+                    print "no fv in the location", locid
+                    continue
             else:
                 minMaxList = None
                 fv=aq.service.GetFieldVisitsByLocationChangedSince(locid, start)
 
-            try:
-                print len(fv[0])
-            except:
-                print fv
-                failedStations.append(location)
-                continue
+
 
             for i in range(len(fv[0])):
                 if fv[0][i].Measurements is not None:
@@ -706,11 +742,9 @@ class AQUARIUSDataExtractionToolManager(object):
                                 hg = None
                                 qr = None
                                 startTime = None
-                                # print mea.Results
+
                                 if mea.Results is not None:
-                                    # print mea.Results
-                                    # print mea.MeasurementEndTime
-                                    # print mea.MeasurementTime
+
                                     measurementMean = self.CalMean(mea.MeasurementEndTime, mea.MeasurementTime)
 
                                     for fvr in mea.Results.FieldVisitResult:
@@ -796,8 +830,9 @@ class AQUARIUSDataExtractionToolManager(object):
             # Find min/max, if they're not already in table, append it to table.
             # If they are already in table, iterate through table and append the appropriate remarks.
             if numMinMax is not None:
-                maxDischarge = heapq.nlargest(numMinMax, minMaxList, key=lambda x:x[2])
-                minDischarge = heapq.nsmallest(numMinMax, minMaxList, key=lambda x:x[2])
+
+                maxDischarge = heapq.nlargest(numMinMax, minMaxList, key=lambda x:float(x[2][:-1]))
+                minDischarge = heapq.nsmallest(numMinMax, minMaxList, key=lambda x:float(x[2][:-1]))
                 for line in maxDischarge:
                     if line not in table:
                         #line[-1].replace(" ", "Hist. max")
@@ -997,6 +1032,8 @@ def main():
                                            os.getcwd() + "\\EHSN_rating_curve.exe", None, None, size=(550, 470))
     frame.Show()
     app.MainLoop()
+
+
 
 
 if __name__ == "__main__":

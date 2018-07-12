@@ -3,19 +3,16 @@
 import wx
 import os
 import sys
+import datetime
+from xml.etree.ElementTree import Element
 
 from xml.etree import ElementTree
 class AquariusUploadDialog(wx.Dialog):
     def __init__(self, mode, dir, *args, **kwargs):
         super(AquariusUploadDialog, self).__init__(*args, **kwargs)
 
-        self.config_path = "config.xml"
-        if hasattr(sys, '_MEIPASS'):
-            self.config_path = os.path.join(sys._MEIPASS, self.config_path)
-        else:
-            self.config_path = os.getcwd() + "\\" + self.config_path
-
-        # print self.config_path    
+        self.config_path = self.GetParent().uploadDir + "\\config.xml"
+   
         self.configFile = ElementTree.parse(self.config_path).getroot().find('AquariusUploadDialog')
 
 
@@ -54,6 +51,9 @@ class AquariusUploadDialog(wx.Dialog):
         self.SetSize((610, 310))
 
         self.InitUI()
+
+
+
 
     def InitUI(self):
         if self.mode == "DEBUG":
@@ -168,14 +168,37 @@ class AquariusUploadDialog(wx.Dialog):
         self.SetSizer(self.layoutSizer)
 
     def OnChange(self, e):
-        fileOpenDialog = wx.FileDialog(self, self.changeTitleLbl, self.dir, self.GetParent().name.replace("xml", "pdf"), style=wx.FD_SAVE | wx.FD_CHANGE_DIR)
+        if self.GetParent().name=='':
+            date = datetime.datetime.strptime(str(self.GetParent().manager.genInfoManager.datePicker), self.GetParent().manager.DT_FORMAT)
+            date = date.strftime("%Y%m%d")
+            name = str(self.GetParent().manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.pdf"
+
+        else:
+            name = self.GetParent().name.replace("xml", "pdf")
+        fileOpenDialog = wx.FileDialog(self, self.changeTitleLbl, self.GetParent().uploadSaveDir, name, style=wx.FD_SAVE | wx.FD_CHANGE_DIR)
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
             fileOpenDialog.Destroy()
             return
 
         self.dir = fileOpenDialog.GetDirectory()
         self.GetParent().name = fileOpenDialog.GetFilename()
-        self.GetParent().uploadDir = self.dir
+        self.GetParent().uploadSaveDir = self.dir
+
+        # if self.GetParent().name == '':
+        #     defaultName = ''
+        #     if self.GetParent().manager is not None:
+        #         date = datetime.datetime.strptime(str(self.GetParent().manager.genInfoManager.datePicker), self.GetParent().manager.DT_FORMAT)
+        #         date = date.strftime("%Y%m%d")
+        #         defaultName = str(self.GetParent().manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.pdf"
+
+        # else:
+        #     defaultName = self.GetParent().name.split(".")[0] + ".pdf"
+
+
+        # if path != "":
+        #     path = path + '\\' + defaultName
+
+
         self.changeCtrl.SetValue(self.dir + "\\" + self.GetParent().name.replace("xml", "pdf"))
 
         self.layoutSizer.Layout()
@@ -195,13 +218,105 @@ class AquariusUploadDialog(wx.Dialog):
         self.cancelButton.Enable(en)
 
     def UploadToAquarius(self, evt):
+        try:
+            self.EnableButtons(False)
+            dlg = wx.MessageDialog(self, self.uploadConfirm, 'None', wx.YES_NO)
+            res = dlg.ShowModal()
+            if res == wx.ID_YES:
+                # self.EndModal(wx.ID_YES)
+                # self.Show(True)
+                
 
-        dlg = wx.MessageDialog(self, self.uploadConfirm, 'None', wx.YES_NO)
-        res = dlg.ShowModal()
-        if res == wx.ID_YES:
-            self.EndModal(wx.ID_YES)
-            self.Show(True)
-        dlg.Destroy()
+                
+
+                if self.GetParent().manager is not None:
+                    server = self.GetServer()
+                    username = self.usernameCtrl.GetValue()
+                    password = self.passwordCtrl.GetValue()
+                    fvDate = self.GetParent().manager.genInfoManager.datePicker
+                    withDischarge = self.includeDischarge
+
+                    withLevelNote = self.includeLevelNote
+
+
+                    result = self.GetParent().manager.ExportToAquarius(server, username, password, fvDate, withDischarge, withLevelNote)
+                    show_error = False
+                    uploadInfo = []
+                    if result is not None:
+                        if "password" in result:
+                            error = wx.MessageDialog(None, result, "Error",
+                                                wx.OK | wx.ICON_EXCLAMATION)
+                            re = error.ShowModal()
+                            if re == wx.ID_OK:
+                                self.EnableButtons(True)
+                                # self.aquariusUploadDialog.Destroy()
+
+                       
+                                return
+
+                        else:
+                            print "Error: %s" % result
+                            show_error = True
+                            uploadInfo.append("Failed")
+                            uploadInfo.append(str(datetime.datetime.now()))
+                            uploadInfo.append(username)
+                            # message = "Failed"
+                            if self.GetParent().manager.uploadRecord is None:
+                                self.GetParent().manager.uploadRecord = Element('AQ_Upload_Record')
+                            self.GetParent().manager.UploadInfoAsXMLTree(self.GetParent().manager.uploadRecord, uploadInfo)
+
+                            self.GetParent().SaveAsPDFAndXML4Upload(self.GetParent().uploadDir, False)
+                            self.EnableButtons(True)
+
+                            return
+
+    #######################################################
+                    
+
+                    else:
+                        self.GetParent().manager.ExportToAquariusSuccess()
+
+                        self.EnableButtons(True)
+
+                        self.GetParent().savedServer = self.serverCmbo.GetValue()
+                        self.GetParent().savedName = username
+                        self.GetParent().savedPassword = password
+                        self.GetParent().ResetUploadSaveIni(self.changeCtrl.GetValue())
+                        uploadInfo.append("Successful")
+                        uploadInfo.append(str(datetime.datetime.now()))
+                        uploadInfo.append(username)
+
+
+                        if self.GetParent().manager.uploadRecord is None:
+                            self.GetParent().manager.uploadRecord = Element('AQ_Upload_Record')
+                        self.GetParent().manager.UploadInfoAsXMLTree(self.GetParent().manager.uploadRecord, uploadInfo)
+
+                        self.GetParent().SaveAsPDFAndXML4Upload(self.GetParent().uploadSaveDir, True)
+                        self.EndModal(wx.ID_CANCEL)
+
+                        return
+
+                #Re enable access to dialog
+                self.EnableButtons(True)
+
+                if show_error:
+                    error = wx.MessageDialog(None, result, "Error",
+                                                wx.OK | wx.ICON_EXCLAMATION)
+                    error.ShowModal()
+                    show_error = False
+            else:
+
+                dlg.Destroy()
+                self.EnableButtons(True)
+
+
+        except Exception as e:
+            print str(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
+            self.EnableButtons(True)
+
 
 
     def Cancel(self, evt):
@@ -219,6 +334,9 @@ class AquariusUploadDialog(wx.Dialog):
             self.GetParent().uploadOpenPdf = False
 
 
+
+
+
 def main():
     app = wx.App()
 
@@ -233,7 +351,6 @@ def main():
             val = False
             AUD.Destroy()
 
-    print "TEST"
 
     AUD.Destroy()
 

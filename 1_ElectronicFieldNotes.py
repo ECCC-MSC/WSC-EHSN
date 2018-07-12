@@ -15,6 +15,7 @@ from WaterLevelRunManager import *
 from FRChecklistManager import *
 from MovingBoatMeasurementsManager import *
 from MidSectionMeasurementsManager import *
+# from RemarksManager import *
 
 from RatingCurveViewerToolManager import *
 
@@ -23,6 +24,13 @@ from AquariusMiscUploadDialogs import *
 import VersionCheck
 import XMLManager
 import AquariusUploadManager
+
+import IngestQRevManager
+import IngestFlowTrackerDisManager
+import IngestHfcManager
+import IngestFt2Manager
+import IngestSxsManager
+import IngestRSSLDisManager
 
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
@@ -43,6 +51,10 @@ import suds
 
 import datetime
 import sys
+import threading
+
+
+
 
 ###########################################
 #only used for generating excutable
@@ -67,29 +79,13 @@ if 0:
 
 
 
-
-
-
-
-
-# import atexit
-
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v1.2.3"
-# SERVER_EHSN = r"\\Ncr.int.ec.gc.ca\shares\H\HYDSTOR\Hydrometric Data Systems\Bin\Release"
-# files = os.listdir(SERVER_EHSN)
+EHSN_VERSION = "v1.3_Beta"
+eHSN_WINDOW_SIZE = (965, 730)
 
-
-# def resource_path(relative_path):
-#     """ Get absolute path to resource, works for dev and for PyInstaller """
-#     try:
-#         # PyInstaller creates a temp folder and stores path in _MEIPASS
-#         base_path = sys._MEIPASS
-#     except Exception:
-#         base_path = os.path.abspath(".")
-
-#     return os.path.join(base_path, relative_path)
+# import wx.lib.inspection
+# wx.lib.inspection.InspectionTool().Show()
 
 
 
@@ -117,15 +113,21 @@ class ElectronicHydrometricSurveyNotes:
         self.lockWarningTitle = "Are you sure?"
         self.lockWarningMessage = "If unlocked, it means that the user has made a decision to view or modify the uploaded xml file because any changes in the xml may not be reflected in AQUARIUS unless the file is uploaded again or modified manually in AQUARIUS."
 
+        self.ctrlKeyDownFlag = False
+        self.resizingLock = threading.Lock()
+
+
+        
         self.InitUI()
 
+        
 
     def InitUI(self):
         if mode == "DEBUG":
             print "EHSN"
         app = wx.App()
         self.uploadRecord = None
-        self.gui = EHSNGui(mode, EHSN_VERSION, None, title=self.headerTitle, size=(810, 790))
+        self.gui = EHSNGui(mode, EHSN_VERSION, None, title=self.headerTitle, size=eHSN_WINDOW_SIZE)
         self.SetupManagers()
         self.stageMeasManager.AddEntry()
         self.waterLevelRunManager.AddRun()
@@ -135,6 +137,8 @@ class ElectronicHydrometricSurveyNotes:
         self.BindAutoSave()
         self.BindCorrectedMGH()
         self.gui.LoadDefaultConfig()
+        self.midSectionDetailXml = {}
+        self.midSectionRawData = None
 
         self.gui.titleHeader.enteredInHWSCB.Bind(wx.EVT_CHECKBOX, self.LockEvent)
 
@@ -164,11 +168,14 @@ class ElectronicHydrometricSurveyNotes:
 
 ##        self.gui.Centre()
 
+        app.Bind(wx.EVT_KEY_DOWN, self.OnKeyDownEvent)
+        app.Bind(wx.EVT_KEY_UP, self.OnKeyUpEvent)
         self.gui.Show()
         # Muluken! if the new midsection is giving you problems, uncomment the below line!!
         #self.gui.form4.Disable()
 
         # atexit.register(self.OnExit())
+        # wx.lib.inspection.InspectionTool().Show()
         try:
             app.MainLoop()
         except:
@@ -198,6 +205,7 @@ class ElectronicHydrometricSurveyNotes:
         self.envCondManager = EnvironmentConditionsManager(mode, self.gui.envCond, self)
         self.measResultsManager = MeasurementResultsManager(mode, self.gui.measResults, self)
         self.instrDepManager = InstrumentDeploymentInfoManager(mode, self.gui.instrDep, self)
+        # self.remarksManager = RemarksManager(mode, self.gui.remarks, self)
         self.partyInfoManager = PartyInfoManager(mode, self.gui.partyInfo, self)
         self.waterLevelRunManager = WaterLevelRunManager(mode, self.gui.waterLevelRun, self)
         # self.annualLevelNotesManager = AnnualLevellingManager(mode, self.gui.annualLevelNotes, self)
@@ -458,7 +466,7 @@ class ElectronicHydrometricSurveyNotes:
             if res==wx.ID_YES:
                 for widget in self.gui.form.GetChildren():
                     widget.Enable()
-                self.gui.form2.Enable()
+                self.gui.form2_1.Enable()
                 self.gui.form3.Enable()
                 self.gui.form4.Enable()
                 self.gui.form5.Enable()
@@ -467,7 +475,7 @@ class ElectronicHydrometricSurveyNotes:
         else:
             for widget in self.gui.form.GetChildren():
                 widget.Enable()
-            self.gui.form2.Enable()
+            self.gui.form2_1.Enable()
             self.gui.form3.Enable()
             self.gui.form4.Enable()
             self.gui.form5.Enable()
@@ -476,7 +484,7 @@ class ElectronicHydrometricSurveyNotes:
         for widget in self.gui.form.GetChildren():
             widget.Disable()
         self.gui.titleHeader.Enable()
-        self.gui.form2.Disable()
+        self.gui.form2_1.Disable()
         self.gui.form3.Disable()
         self.gui.form4.Disable()
         self.gui.form5.Disable()
@@ -486,30 +494,6 @@ class ElectronicHydrometricSurveyNotes:
     def ExportAsXML(self, filePath, msg):
         if mode == "DEBUG":
             print "Saving File"
-        # try:
-        #     # raise Exception('*****Error Raised for Testing Only!*****') # don't, if you catch, likely to hide bugs.
-        #     pretty_xml = self.EHSNToXML() # Collects all info and puts into eTree
-
-        #     if mode == "DEBUG":
-        #         print pretty_xml
-        #         print filePath
-
-        #     output = open(filePath, 'w')
-        #     output.write( pretty_xml.encode('utf-8') )
-        #     output.close()
-        #     return pretty_xml
-        # except:
-        #     if msg != None:
-        #         desc = self.saveXMLErrorDesc + "\n " + msg + " may contain an invalid character"
-        #     else:
-        #         desc = self.saveXMLErrorDesc
-        #     dlg = wx.MessageDialog(self.gui, desc, self.saveXMLErrorTitle, wx.OK | wx.ICON_QUESTION)
-
-        #     res = dlg.ShowModal()
-        #     if res == wx.ID_OK:
-        #         dlg.Destroy()
-        #     else:
-        #         dlg.Destroy()
 
         #########################for testing without catching exceptions###################################
         pretty_xml = self.EHSNToXML() # Collects all info and puts into eTree
@@ -518,9 +502,10 @@ class ElectronicHydrometricSurveyNotes:
             print pretty_xml
             print filePath
 
-        output = open(filePath, 'w')
+        output = open(filePath, 'wb')
         output.write( pretty_xml.encode('utf-8') )
         output.close()
+
         return pretty_xml
         ##################################################################################################
 
@@ -603,6 +588,12 @@ class ElectronicHydrometricSurveyNotes:
         MidsecMeas = SubElement(EHSN, "MidsecMeas", empty="False")
         self.MidsecMeasAsXMLTree(MidsecMeas)
 
+        #Imported
+        #Midsection
+        if len(self.midSectionDetailXml) != 0:
+            Imported = SubElement(EHSN, "Imported")
+            self.ImportedMidsectionAsXMLTree(Imported)
+
         #save current upload record
         if self.uploadRecord is not None:
             UploadRecord = SubElement(EHSN, "AQ_Upload_Record")
@@ -638,7 +629,16 @@ class ElectronicHydrometricSurveyNotes:
         # dischargeSummary = winRiver.find('Project').find('Site_Discharge').find('Discharge_Summary')
         self.MovingBoatTransectFromMmt(winRiver)
 
+    def OpenEHSNMidsection(self, filePath):
 
+        if mode == "DEBUG":
+            print "Opening File"
+
+
+        EHSN = ElementTree.parse(filePath).getroot()
+
+        MidsecMeas = EHSN.find('MidsecMeas')
+        self.MidsecMeasFromXML(MidsecMeas)
 
 
 
@@ -653,9 +653,15 @@ class ElectronicHydrometricSurveyNotes:
         #First Page
         TitleHeader = EHSN.find('TitleHeader')
         self.TitleHeaderFromXML(TitleHeader)
+ 
+        try:
+            GenInfo = EHSN.find('GenInfo')
+            self.GenInfoFromXML(GenInfo)
+        except:
+            dlg = wx.MessageDialog(self.gui, "The format of selected XML file is invalid.", "Invalid eHSN XML!", wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            return
 
-        GenInfo = EHSN.find('GenInfo')
-        self.GenInfoFromXML(GenInfo)
 
 
 
@@ -700,10 +706,20 @@ class ElectronicHydrometricSurveyNotes:
         MidsecMeas = EHSN.find('MidsecMeas')
         self.MidsecMeasFromXML(MidsecMeas)
 
+        # for i in self.midsecMeasurementsManager.gui.table.panelObjs:
+        #     i.ToString()
+
         #Upload Record
 
         self.uploadRecord = EHSN.find('AQ_Upload_Record')
 
+
+        # try:
+        #     MidSectionDetail = EHSN.find('Imported')
+        #     if MidSectionDetail is not None:
+        #         self.MidSectionDetailsFromXML(MidSectionDetail)
+        # except Exception as e:
+        #     print e
 
 
     def TitleHeaderAsXMLTree(self, TitleHeader):
@@ -809,6 +825,15 @@ class ElectronicHydrometricSurveyNotes:
         date = self.genInfoManager.datePicker.split('/')
         convertedDate = date[1] + '/' + date[2] + '/' + date[0]
         XMLManager.OnImportMmt(winRiver, self.movingBoatMeasurementsManager, self.genInfoManager.stnNumCmbo, convertedDate, self.gui)
+
+
+    # def ImportedMidsectionAsXMLTree(self, imported):
+    #     XMLManager.MidSectionDetailsAsXMLTree(imported, self)
+
+    def MidSectionDetailsFromXML(self, MidSectionDetail):
+        XMLManager.MidSectionDetailsFromXML(MidSectionDetail, self)
+    # def GenMidSectionAsXMLTreeFromHfc(self):
+    #     self.midSectionDetailXml = IngestHfcManager.GenMidSectionAsXMLTree(self)
 
 
     def newEHSN(self):
@@ -995,11 +1020,11 @@ class ElectronicHydrometricSurveyNotes:
         self.instrDepManager.GetDiagTestCB().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.instrDepManager.GetAdcpDepthCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.instrDepManager.GetMagnDeclCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
-        self.instrDepManager.GetControlConditionCmbo().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
-        self.instrDepManager.GetDischRemarksCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
-        self.instrDepManager.GetStageRemarksCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
-        self.instrDepManager.GetStationHealthRemarksCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
-        self.instrDepManager.GetPicturedCkbox().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+        # self.instrDepManager.GetControlConditionCmbo().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+        # self.instrDepManager.GetDischRemarksCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+        # self.instrDepManager.GetStageRemarksCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+        # self.instrDepManager.GetStationHealthRemarksCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+        # self.instrDepManager.GetPicturedCkbox().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
 
         #partyInfoManager
         self.partyInfoManager.GetPartyCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
@@ -1030,7 +1055,7 @@ class ElectronicHydrometricSurveyNotes:
         self.movingBoatMeasurementsManager.GetVelocityExponentCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.movingBoatMeasurementsManager.GetDifferenceCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.movingBoatMeasurementsManager.GetMmntStartTimeCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
-        self.movingBoatMeasurementsManager.GetRawDischMeanCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+        # self.movingBoatMeasurementsManager.GetRawDischMeanCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.movingBoatMeasurementsManager.GetCorrMeanGHCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.movingBoatMeasurementsManager.GetStandDevMeanDischCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.movingBoatMeasurementsManager.GetMmntEndTimeCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
@@ -1059,6 +1084,320 @@ class ElectronicHydrometricSurveyNotes:
         self.disMeasManager.GetEndTimeCtrl().GetMinuteCtrl().Bind(wx.EVT_KEY_DOWN, self.stageMeasManager.gui.CalculateAllMGH)
 
 
+    #Ingest from QRev *.xml
+    def GetStationIDFromQRev(self):
+        return IngestQRevManager.GetStationID(self.GetQRevDir())
+
+    def GetDateFromQRev(self):
+        return IngestQRevManager.GetDate(self.GetQRevDir())
+
+
+
+
+
+    def AddMovingBoatFromQRev(self, evt):
+        IngestQRevManager.AddMovingBoat(self.GetQRevDir(), self.movingBoatMeasurementsManager, evt)
+
+    def AddDischargeSummaryFromQRev(self):
+        IngestQRevManager.AddDischargeSummary(self.GetQRevDir(), self.disMeasManager)
+
+    def AddDischargeDetailFromQRev(self):
+        IngestQRevManager.AddDischargeDetail(self.GetQRevDir(), self.instrDepManager)
+
+    # def OpenDisFromFlowTracker(self, evt):
+    #     IngestFlowTrackerDisManager.OpenDis(self.GetFlowTrackerDir(), self.disMeasManager, self.instrDepManager, evt)
+    #     self.gui.disMeas.onTimeChange(evt)
+
+
+    #Ingest from FlowTracker *.dis
+    def AddDischargeSummaryFromFT(self):
+        IngestFlowTrackerDisManager.AddDischargeSummary(self.GetFlowTrackerDir(), self.disMeasManager)
+
+    def AddDischargeDetailFromFT(self):
+        IngestFlowTrackerDisManager.AddDischargeDetail(self.GetFlowTrackerDir(), self.instrDepManager)
+
+
+    def GetStationIdFromFlowTrackerDis(self):
+        return IngestFlowTrackerDisManager.GetStationID(self.GetFlowTrackerDir())
+
+    def GetDateFromFlowTrackerDis(self):
+        return IngestFlowTrackerDisManager.GetDate(self.GetFlowTrackerDir())
+
+    def GetMidSectionInfoFromFT(self):
+        return IngestFlowTrackerDisManager.GetMidSectionInfo(self.GetFlowTrackerDir(), self)
+
+    def GetRawDataFromFT(self):
+        # rData = IngestFlowTrackerDisManager.GetRawData(self.GetFlowTrackerDir())
+        rData = IngestFlowTrackerDisManager.GetRawDataSet(self.GetFlowTrackerDir())
+        return rData
+
+
+
+
+    #Ingest from HFC *.MQ*
+    def AddDischargeSummaryFromHfc(self):
+        IngestHfcManager.AddDischargeSummary(self.GetHfcDir(), self.disMeasManager, self.instrDepManager)
+
+    def AddDischargeDetailFromHfc(self):
+        IngestHfcManager.AddDischargeDetail(self.GetHfcDir(), self.instrDepManager)
+
+
+    def GetStationIdFromHfc(self):
+        return IngestHfcManager.GetStationID(self.GetHfcDir())
+
+    def GetDateFromHfc(self):
+        return IngestHfcManager.GetDate(self.GetHfcDir())
+
+
+    def GetStationIdFromMidsection(self):
+        return IngestHfcManager.GetStationID(self.GetHfcDir())
+
+    def GetDateFromMidsection(self):
+        return IngestHfcManager.GetDate(self.GetHfcDir())
+
+
+
+    #HFC for MidSection
+    def GetDateSpreadsheetFormatFromHfc(self):
+        return IngestHfcManager.GetDateSpreadsheetFormat(self.GetHfcDir())
+
+
+    def GetDeploymentMethodFromHfc(self):
+        return IngestHfcManager.GetDeploymentMethod(self.GetHfcDir())
+    def GetMeasurementSectionConditionFromHfc(self):
+        return IngestHfcManager.GetMeasurementSectionCondition(self.GetHfcDir())
+    def GetTotalDischargeFromHfc(self):
+        return IngestHfcManager.GetTotalDischarge(self.GetHfcDir())
+    def GetTotalAreaFromHfc(self):
+        return IngestHfcManager.GetTotalArea(self.GetHfcDir())
+    def GetTotalWidthFromHfc(self):
+        return IngestHfcManager.GetTotalWidth(self.GetHfcDir())
+    def GetMeanVelocityFromHfc(self):
+        return IngestHfcManager.GetMeanVelocity(self.GetHfcDir())
+    def GetMeanDepthFromHfc(self):
+        return IngestHfcManager.GetMeanDepth(self.GetHfcDir())
+    def GetSerialNumberFromHfc(self):
+        return IngestHfcManager.GetSerialNumber(self.GetHfcDir())
+    def GetMeasuredByFromHfc(self):
+        return IngestHfcManager.GetMeasuredBy(self.GetHfcDir())
+    def GetCalculationMethodFromHfc(self):
+        return IngestHfcManager.GetCalculationMethod(self.GetHfcDir())
+
+    def GetWaterTemperatureFromHfc(self):
+        return IngestHfcManager.GetWaterTemperature(self.GetHfcDir())
+    def GetAirTemperatureFromHfc(self):
+        return IngestHfcManager.GetAirTemperature(self.GetHfcDir())
+    def GetInitialPointFromHfc(self):
+        return IngestHfcManager.GetInitialPoint(self.GetHfcDir())
+    def GetStartingPointFromHfc(self):
+        return IngestHfcManager.GetStartingPoint(self.GetHfcDir())
+    def GetConditionFromHfc(self):
+        return IngestHfcManager.GetCondition(self.GetHfcDir())
+    def GetImportFileSoftwareNameFromHfc(self):
+        return IngestHfcManager.GetImportFileSoftwareName(self.GetHfcDir())
+
+
+
+    def GetPanelDatesFromHfc(self):
+        return IngestHfcManager.GetPanelDates(self.GetHfcDir())
+    def GetTaglinePositionsFromHfc(self):
+        return IngestHfcManager.GetTaglinePositions(self.GetHfcDir())
+    def GetDistanceToShoresFromHfc(self):
+        return IngestHfcManager.GetDistanceToShores(self.GetHfcDir())
+    def GetDepthReadingsFromHfc(self):
+        return IngestHfcManager.GetDepthReadings(self.GetHfcDir())
+    def GetWidthsFromHfc(self):
+        return IngestHfcManager.GetWidths(self.GetHfcDir())
+    def GetAreasFromHfc(self):
+        return IngestHfcManager.GetAreas(self.GetHfcDir())
+    def GetAverageVelocitiesFromHfc(self):
+        return IngestHfcManager.GetAverageVelocities(self.GetHfcDir())
+    def GetDischargesFromHfc(self):
+        return IngestHfcManager.GetDischarges(self.GetHfcDir())
+    def GetMeterNamesFromHfc(self):
+        return IngestHfcManager.GetMeterNames(self.GetHfcDir())
+    def GetAmountOfWeightsFromHfc(self):
+        return IngestHfcManager.GetAmountOfWeights(self.GetHfcDir())
+    def GetDistanceAboveWeightsFromHfc(self):
+        return IngestHfcManager.GetDistanceAboveWeights(self.GetHfcDir())
+    def GetVelocityMethodsFromHfc(self):
+        return IngestHfcManager.GetVelocityMethods(self.GetHfcDir())
+    def GetDepthsFromHfc(self):
+        return IngestHfcManager.GetDepths(self.GetHfcDir())
+    def GetVelocitysFromHfc(self):
+        return IngestHfcManager.GetVelocitys(self.GetHfcDir())
+    def GetCountsFromHfc(self):
+        return IngestHfcManager.GetCounts(self.GetHfcDir(), self)
+    def GetIntervalsFromHfc(self):
+        return IngestHfcManager.GetIntervals(self.GetHfcDir())
+    def GetDistanceToNextShoresFromHfc(self):
+        return IngestHfcManager.GetDistanceToNextShores(self.GetHfcDir())
+    def GetIslandWidthsFromHfc(self):
+        return IngestHfcManager.GetIslandWidths(self.GetHfcDir(), self)
+
+    def GetMidSectionInfoFromHfc(self):
+        return IngestHfcManager.GetMidSectionInfo(self.GetHfcDir(), self)
+
+
+
+    #Ingest from FlowTracker2 (*.json)
+    def AddDischargeSummaryFromFt2(self):
+        IngestFt2Manager.AddDischargeSummary(self.GetFT2JsonDir(), self.disMeasManager)
+
+    def AddDischargeDetailFromFt2(self):
+        IngestFt2Manager.AddDischargeDetail(self.GetFT2JsonDir(), self.instrDepManager) 
+
+
+    def GetStationIdFromFt2(self):
+        return IngestFt2Manager.GetStationID(self.GetFT2JsonDir())
+
+    def GetDateFromFt2(self):
+        return IngestFt2Manager.GetDate(self.GetFT2JsonDir())
+
+    def GetLocalTimeUtcOffsetFromFt2(self):
+        return IngestFt2Manager.GetLocalTimeUtcOffset(self.GetFT2JsonDir())
+
+    #Ingest from Sxs (*.mmt)
+    def AddDischargeSummaryFromSxs(self):
+        IngestSxsManager.AddDischargeSummary(self.GetSxsDir(), self.disMeasManager)
+
+    def AddDischargeDetailFromSxs(self):
+        IngestSxsManager.AddDischargeDetail(self.GetSxsDir(), self.instrDepManager, self.disMeasManager) 
+
+
+    def GetStationIdFromSxs(self):
+        return IngestSxsManager.GetStationID(self.GetSxsDir())
+
+    def GetDateFromSxs(self):
+        return IngestSxsManager.GetDate(self.GetSxsDir())
+
+
+    #Ingest from RSSL (*.dis)
+    def AddDischargeSummaryFromRssl(self):
+        IngestRSSLDisManager.AddDischargeSummary(self.GetRsslDir(), self.disMeasManager)
+
+    def AddDischargeDetailFromRssl(self):
+        IngestRSSLDisManager.AddDischargeDetail(self.GetRsslDir(), self.instrDepManager, self.disMeasManager) 
+
+
+    def GetStationIdFromRssl(self):
+        return IngestRSSLDisManager.GetStationID(self.GetRsslDir())
+
+    def GetDateFromRssl(self):
+        return IngestRSSLDisManager.GetDate(self.GetRsslDir())
+
+
+    def GetStationIdFromEhsnMidsection(self):
+        EHSN = ElementTree.parse(self.GetEhsnMidDir()).getroot()
+
+        TitleHeader = EHSN.find('TitleHeader')
+        self.TitleHeaderFromXML(TitleHeader)
+ 
+        try:
+            GenInfo = EHSN.find('GenInfo')
+
+        except:
+            dlg = wx.MessageDialog(self.gui, "The format of selected XML file is invalid.", "Invalid eHSN XML!", wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+            return
+        return XMLManager.GetStationId(GenInfo)
+
+
+    def GetDateFromEhsnMidsection(self):
+        EHSN = ElementTree.parse(self.GetEhsnMidDir()).getroot()
+
+        TitleHeader = EHSN.find('TitleHeader')
+        self.TitleHeaderFromXML(TitleHeader)
+ 
+        return XMLManager.GetDate(EHSN.find('GenInfo'))
+
+
+
+    def GetQRevDir(self):
+        return self.gui.qRevDir
+
+    def GetFlowTrackerDir(self):
+        return self.gui.flowTrackerDir
+
+    def GetHfcDir(self):
+        return self.gui.hfcDir
+
+    def GetFT2JsonDir(self):
+        return self.gui.ft2JsonDir
+
+    def GetSxsDir(self):
+        return self.gui.sxsDir
+
+    def GetRsslDir(self):
+        return self.gui.rsslDir
+
+    def GetEhsnMidDir(self):
+        return self.gui.ehsnMidDir
+
+
+    # def SetMidSectionDetailXml(self, midSection):
+    #     self.midSectionDetailXml = midSection
+
+    def GetMidSectionDetailXml(self):
+        return self.midSectionDetailXml
+
+    def GetMidSectionRawData(self):
+        return self.midSectionRawData
+
+    def SetMidSectionRawData(self, midSectionRawData):
+        self.midSectionRawData = midSectionRawData
+        ####Write to local disk for uploading to NG#######
+        # f = open('C:\\Users\\zhangwen\\Desktop\\test.dis', 'w')
+        # for i in midSectionRawData:
+        #     for j in i:
+        #         f.write(str(j) + " ")
+        #     f.write("\n")
+        # f.close()
+        #######################################################
+
+
+
+    def Increament(self):
+        self.resizingLock.acquire()
+        self.gui.ApplyFontToChildren(self.gui, 1)
+        self.gui.ChangeFontToMidsectionGrid(1)
+        self.resizingLock.release()
+
+        
+
+
+
+    def Decreament(self):
+        self.resizingLock.acquire()
+        self.gui.ApplyFontToChildren(self.gui, -1)
+        self.gui.ChangeFontToMidsectionGrid(-1)
+        self.resizingLock.release()
+
+
+
+    def OnKeyDownEvent(self, event):
+        if event.GetKeyCode() == 308:
+            self.ctrlKeyDownFlag = True
+        elif event.GetKeyCode() == 45 and self.ctrlKeyDownFlag:
+            t = threading.Thread(target=self.Decreament(), args=(1,))
+            t.start()
+            
+        elif event.GetKeyCode() == 61 and self.ctrlKeyDownFlag:
+            t = threading.Thread(target=self.Increament(), args=(1,))
+            t.start()
+        event.Skip()
+            
+        return True
+
+
+
+    def OnKeyUpEvent(self, event):
+        if event.GetKeyCode() == 308:
+            self.ctrlKeyDownFlag = False
+        event.Skip()
+        return True
+
+
 
 
 # This is for the icon
@@ -1076,11 +1415,11 @@ else:
     filename = join(dirname(sys.argv[0]), filename)
 
 
-def main():
 
-        app = wx.App()
-        ElectronicHydrometricSurveyNotes()
-        app.MainLoop()
+
+
+def main():
+    gui = ElectronicHydrometricSurveyNotes()
 
 
 if __name__=='__main__':

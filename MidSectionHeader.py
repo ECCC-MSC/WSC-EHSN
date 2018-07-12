@@ -6,15 +6,22 @@ import sigfig
 
 import matplotlib.pyplot as plt
 import numpy as np
+import math
+import sys
+import os
 
 from DropdownTime import *
+import NumberControl
+from MidSectionSubPanelObj import *
+from MidSectionTransferFrame import *
 
 class MidSectionHeader(wx.Panel):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, mode, *args, **kwargs):
         super(MidSectionHeader, self).__init__(*args, **kwargs)
-        self.startTimeLbl = "Mmt. Start Time"
-        self.endTimeLbl = "Mmt. End Time"
+        self.mode = mode
+        self.startTimeLbl = "Start Time"
+        self.endTimeLbl = "End Time"
         self.measSectionLbl = "Measurement Section"
         self.deployMethodLbl = "Deployment Method"
         self.meterInfoLbl = "Meter Information"
@@ -37,6 +44,7 @@ class MidSectionHeader(wx.Panel):
         self.uncertLbl = "Uncertainty (ISO)(%)"
         self.plotLbl = "Plot"
         self.updateSummaryLbl = "Update Summary"
+        self.startBankLbl = "Start Bank"
         self.width = 50
 
 
@@ -51,6 +59,17 @@ class MidSectionHeader(wx.Panel):
         self.deployMethodsOpen = ["Wading", "Boat", "Cableway", "Bridge"]
         self.deployMethodsIce = ["Ice"]
         self.deployMethodsCombined = ["Ice_Wading", "Ice_Cableway", "Ice_Bridge"]
+        self.startBanks = ["Left", "Right"]
+        self.dir = self.GetParent().GetParent().GetParent().GetParent().dir
+        self.transferBtnLbl = "Transfer to Front Page"
+        self.transferFrameSize = (420, 300)
+
+        if hasattr(sys, '_MEIPASS'):
+            self.myBitmapFront = os.path.join(sys._MEIPASS, "backarrow.png")
+        else:
+            self.myBitmapFront = self.dir + "\\" + "backarrow.png"
+
+        self.transToFrontpicture = wx.Image(self.myBitmapFront, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 
         self.InitUI()
 
@@ -61,23 +80,21 @@ class MidSectionHeader(wx.Panel):
         leftSizer = wx.BoxSizer(wx.VERTICAL)
         rightSizer = wx.BoxSizer(wx.VERTICAL)
 
-        leftH1Sizer = wx.BoxSizer(wx.HORIZONTAL)
+        # leftH1Sizer = wx.BoxSizer(wx.HORIZONTAL)
         leftH2Sizer = wx.BoxSizer(wx.HORIZONTAL)
         leftH3Sizer = wx.BoxSizer(wx.HORIZONTAL)
         leftH4Sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        startTimeTxt = wx.StaticText(self, label=self.startTimeLbl)
-        # self.startTimeCtrl = wx.TextCtrl(self, size=(self.width, -1))
-        self.startTimeCtrl = DropdownTime(False, parent=self, size=(self.width, -1), style=wx.BORDER_NONE)
+        # startTimeTxt = wx.StaticText(self, label=self.startTimeLbl)
+        # self.startTimeCtrl = DropdownTime(False, parent=self, size=(self.width, -1), style=wx.BORDER_NONE)
 
-        endTimeTxt = wx.StaticText(self, label=self.endTimeLbl)
-        # self.endTimeCtrl = wx.TextCtrl(self, size=(self.width, -1))
-        self.endTimeCtrl = DropdownTime(False, parent=self, size=(self.width, -1), style=wx.BORDER_NONE)
+        # endTimeTxt = wx.StaticText(self, label=self.endTimeLbl)
+        # self.endTimeCtrl = DropdownTime(False, parent=self, size=(self.width, -1), style=wx.BORDER_NONE)
 
-        leftH1Sizer.Add(startTimeTxt, 1, wx.EXPAND|wx.TOP, 5)
-        leftH1Sizer.Add(self.startTimeCtrl, 1, wx.EXPAND|wx.BOTTOM, 5)
-        leftH1Sizer.Add(endTimeTxt, 1, wx.EXPAND|wx.LEFT|wx.TOP, 5)
-        leftH1Sizer.Add(self.endTimeCtrl, 1, wx.EXPAND|wx.BOTTOM, 5)
+        # leftH1Sizer.Add(startTimeTxt, 1, wx.EXPAND|wx.TOP, 5)
+        # leftH1Sizer.Add(self.startTimeCtrl, 1, wx.EXPAND|wx.BOTTOM, 5)
+        # leftH1Sizer.Add(endTimeTxt, 1, wx.EXPAND|wx.LEFT|wx.TOP, 5)
+        # leftH1Sizer.Add(self.endTimeCtrl, 1, wx.EXPAND|wx.BOTTOM, 5)
 
 
         measureSectionTxt = wx.StaticText(self, label=self.measSectionLbl)
@@ -140,6 +157,11 @@ class MidSectionHeader(wx.Panel):
         self.meter1InterceptCtrl2 = wx.TextCtrl(meterTableMeter1Panel, size=(self.width, -1))
         self.meter1CalibDateCtrl = wx.TextCtrl(meterTableMeter1Panel, size=(self.width, -1))
 
+        self.meter1SlopeCtrl1.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
+        self.meter1InterceptCtrl1.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
+        self.meter1SlopeCtrl2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
+        self.meter1InterceptCtrl2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
+
         # meterTableMeter1Sizer.Add(self.meter1Ckbox, 1, wx.EXPAND|wx.ALL, 5)
         # meterTableMeter1Sizer.Add(self.meter1Txt, 1, wx.EXPAND|wx.ALL, 5)
         meterTableMeter1Sizer.Add(self.meter1MeterNoCtrl, 1, wx.EXPAND|wx.ALL, 5)
@@ -167,6 +189,11 @@ class MidSectionHeader(wx.Panel):
         self.meter2InterceptCtrl2 = wx.TextCtrl(meterTableMeter2Panel, size=(self.width, -1))
         self.meter2CalibDateCtrl = wx.TextCtrl(meterTableMeter2Panel, size=(self.width, -1))
 
+        self.meter2SlopeCtrl1.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
+        self.meter2InterceptCtrl1.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
+        self.meter2SlopeCtrl2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
+        self.meter2InterceptCtrl2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
+
         # meterTableMeter2Sizer.Add(self.meter2Ckbox, 1, wx.EXPAND|wx.ALL, 5)
         # meterTableMeter2Sizer.Add(self.meter2Txt, 1, wx.EXPAND|wx.ALL, 5)
         meterTableMeter2Sizer.Add(self.meter2MeterNoCtrl, 1, wx.EXPAND|wx.ALL, 5)
@@ -176,13 +203,17 @@ class MidSectionHeader(wx.Panel):
         meterTableMeter2Sizer.Add(self.meter2InterceptCtrl2, 1, wx.EXPAND|wx.ALL, 5)
         meterTableMeter2Sizer.Add(self.meter2CalibDateCtrl, 1, wx.EXPAND|wx.ALL, 5)
 
+
+        bankSizer = wx.BoxSizer(wx.HORIZONTAL)
+
+
         meterTableSizer.Add(meterTableHeaderPanel, 1, wx.EXPAND)
         meterTableSizer.Add(meterTableMeter1Panel, 1, wx.EXPAND)
         meterTableSizer.Add(meterTableMeter2Panel, 1, wx.EXPAND)
 
 
 
-        leftSizer.Add(leftH1Sizer, 0, wx.EXPAND)
+        # leftSizer.Add(leftH1Sizer, 0, wx.EXPAND)
         leftSizer.Add(leftH2Sizer, 0, wx.EXPAND)
         leftSizer.Add(leftH3Sizer, 0, wx.EXPAND)
         leftSizer.Add(leftH4Sizer, 0, wx.EXPAND)
@@ -202,10 +233,45 @@ class MidSectionHeader(wx.Panel):
         rightH8Sizer = wx.BoxSizer(wx.HORIZONTAL)
         rightH9Sizer = wx.BoxSizer(wx.HORIZONTAL)
 
+        rightH10Sizer = wx.BoxSizer(wx.HORIZONTAL)
+        rightH11Sizer = wx.BoxSizer(wx.HORIZONTAL)
+
         measurementSummaryTxt = wx.StaticText(self, label=self.measSummLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
         headerFont = wx.Font(15, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.BOLD, False)
         measurementSummaryTxt.SetFont(headerFont)
+
+
+
+        
+        # self.transferBtn = wx.Button(self, label=self.transferBtnLbl, size=(20, 10))
+        
+        # transferBtnSizer = wx.BoxSizer(wx.VERTICAL)
+        self.transferBtn = wx.BitmapButton(self, size=(-1, 50), bitmap=self.transToFrontpicture)
+        self.transferBtn.Bind(wx.EVT_BUTTON, self.OnTransBtn)
+
+        transferTxt = wx.StaticText(self, label="\n\nTransfer to Front Page", style=wx.ST_ELLIPSIZE_END)
+        # transferBtnSizer.Add(self.transferBtn, 0, wx.EXPAND)
+
+
         rightH1Sizer.Add(measurementSummaryTxt, 1, wx.EXPAND)
+        rightH1Sizer.Add(self.transferBtn, 0, wx.EXPAND)
+        rightH1Sizer.Add(transferTxt, 0, wx.BOTTOM)
+
+        startTimeTxt = wx.StaticText(self, label=self.startTimeLbl, size=(70, -1))
+        self.startTimeCtrl = DropdownTime(False, parent=self, size=(150, -1), style=wx.BORDER_NONE)
+        self.startTimeCtrl.Enable(False)
+
+        endTimeTxt = wx.StaticText(self, label=self.endTimeLbl, size=(70, -1))
+        self.endTimeCtrl = DropdownTime(False, parent=self, size=(150, -1), style=wx.BORDER_NONE)
+        self.endTimeCtrl.Enable(False)
+
+        rightH10Sizer.Add(startTimeTxt, 0, wx.EXPAND)
+        rightH10Sizer.Add((-1,-1), 1, wx.EXPAND)
+        rightH10Sizer.Add(self.startTimeCtrl, 0, wx.ALIGN_RIGHT)
+
+        rightH11Sizer.Add(endTimeTxt, 0, wx.EXPAND)
+        rightH11Sizer.Add((-1,-1), 1, wx.EXPAND)
+        rightH11Sizer.Add(self.endTimeCtrl, 0, wx.ALIGN_RIGHT)
 
         numOfPanelTxt = wx.StaticText(self, label=self.numPanelLbl)
         self.numOfPanelCtrl = wx.TextCtrl(self)
@@ -260,7 +326,11 @@ class MidSectionHeader(wx.Panel):
         rightH9Sizer.Add(self.updateSummaryBtn, 1, wx.EXPAND)
         rightH9Sizer.Add(self.plotBtn, 1, wx.EXPAND)
 
+        
+
         rightSizer.Add(rightH1Sizer, 0, wx.EXPAND)
+        rightSizer.Add(rightH10Sizer, 0, wx.EXPAND)
+        rightSizer.Add(rightH11Sizer, 0, wx.EXPAND)
         rightSizer.Add(rightH2Sizer, 0, wx.EXPAND)
         rightSizer.Add(rightH3Sizer, 0, wx.EXPAND)
         rightSizer.Add(rightH4Sizer, 0, wx.EXPAND)
@@ -272,6 +342,13 @@ class MidSectionHeader(wx.Panel):
 
         self.layout.Add(leftSizer, 1, wx.EXPAND|wx.ALL, 10)
         self.layout.Add(rightSizer, 1, wx.EXPAND|wx.ALL, 10)
+        # self.layout.Add(transferBtnSizer, 0, wx.ALL, 10)
+
+    def OnTransBtn(self, evt):
+        frame = MidSectionTransferFrame(mode=self.mode, parent=self, title="Transfer to The Front Page", size=self.transferFrameSize)
+        frame.Show()
+
+        evt.Skip()
 
     def OnMeasurementSection(self, event):
         measureSection = self.measureSectionCtrl.GetValue()
@@ -290,28 +367,39 @@ class MidSectionHeader(wx.Panel):
     def OnUpdateSummary(self, evt):
         self.CalculateSummary()
 
-    def OnPlot(self, e):
+    def OnPlot(self, event):
         self.plotBtn.Disable()
+        # self.GeneratePlot()
         try:
             self.GeneratePlot()
             self.plotBtn.Enable()
-        except:
-            print e
+        except Exception as e:
+            print str(e)
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
             self.plotBtn.Enable()
-        e.Skip()
+        event.Skip()
 
     def GeneratePlot(self):
+
         panelObjs = self.GetParent().table.panelObjs
 
         isIncreasing = True
         if float(panelObjs[0].distance) > float(panelObjs[1].distance):
             isIncreasing = False
 
-        fig, ax = plt.subplots(2, facecolor="white", sharex=True, figsize=(10,10))
+
+        width, height = wx.GetDisplaySize()
+
+        fig, ax = plt.subplots(2, facecolor="white", sharex=True, figsize=(width/80*0.8,height/80*0.8))
         velo = ax[0].twinx()
+
+        
 
         for tk in ax[0].get_xticklabels():
             tk.set_visible(True)
+
         tagmarkList = []
         panelTagmarkList = [] # List of tagmarks just for panels
         edgeTagmarkList = [] # List of tagmarks just for edge
@@ -328,36 +416,49 @@ class MidSectionHeader(wx.Panel):
         iceTagList = []
         bottomSlushList = []
         slushTagList = []
-        pierTagLineList = [] # List of lists with index 0 being start pier tagmark, index 1 being end pier tagmark
-        pierDepthList = [] # List of lists with index 0 being start pier depth, index 1 being end pier depth
-        for i in range(len(panelObjs)):
-            if panelObjs[i].distance!="":
-                tagmarkList.append(panelObjs[i].distance)
-                if i != len(panelObjs)-1:
-                    #if isIncreasing:
-                    tagmarkLineList.append(float(panelObjs[i].distance) - abs((float(panelObjs[i+1].distance) - float(panelObjs[i].distance))/2))
-                    if panelObjs[i].panelType==0:
-                        if "start p" in panelObjs[i].panelNum.lower() or "end p" in panelObjs[i].panelNum.lower():
-                            pierTagLineList.append(float(panelObjs[i].distance) - abs((float(panelObjs[i+1].distance) - float(panelObjs[i].distance))/2))
-                            pierDepthList.append(float(panelObjs[i].depth))
-                    #else:
-                    #tagmarkLineList.append(float(panelObjs[i].distance) - (float(panelObjs[i].distance) - float(panelObjs[i+1].distance))/2)
-                # For end edge
-                if i == len(panelObjs)-1:
-                    #if isIncreasing:
-                    #    tagmarkLineList.append(float(panelObjs[i].distance) - (float(panelObjs[i].distance) - float(panelObjs[i-1].distance))/2)
-                    #else:
-                    tagmarkLineList.append(float(panelObjs[i].distance) - abs((float(panelObjs[i-1].distance) - float(panelObjs[i].distance))/2))
+
+        for i, obj in enumerate(panelObjs):
+            if isinstance(obj, EdgeObj):
+                if "Start P" in obj.panelNum or "End E" in obj.panelNum:
+                    tagmarkLineList.append((float(obj.distance) + float(panelObjs[i-1].distance))/2)
+                tagmarkLineList.append(float(obj.distance))
+                
+            else:
+                tagmarkLineList.append((float(obj.distance) + float(panelObjs[i-1].distance))/2)
+
+
             if panelObjs[i].flow!="":
                 flowList.append(panelObjs[i].flow)
                 flowTagList.append(float(panelObjs[i].distance))
             if panelObjs[i].corrMeanVelocity!="":
                 veloList.append(panelObjs[i].corrMeanVelocity)
                 veloTagList.append(float(panelObjs[i].distance))
-            if panelObjs[i].depth!="":
-                depthList.append(float(panelObjs[i].depth))
+            if isinstance(panelObjs[i], PanelObj):
+                if panelObjs[i].panelCondition == "Open" and panelObjs[i].openDepthRead != "":
+                    depthList.append(float(panelObjs[i].openDepthRead))
+                elif panelObjs[i].panelCondition == "Ice" and panelObjs[i].iceDepthRead != "":
+                    depthList.append(float(panelObjs[i].iceDepthRead))
+                else:
+                    depthList.append(0)
                 depthTagList.append(float(panelObjs[i].distance))
-            if panelObjs[i].panelType==1:
+            else:
+                if panelObjs[i].edgeType == "Edge":
+                    if panelObjs[i].depth != "":
+                        depthList.append(float(panelObjs[i].depth))
+                    else:
+                        depthList.append(0)
+                    
+                else:
+                    depthList.append(0)
+
+                if panelObjs[i].distance != "":
+                    depthTagList.append(float(panelObjs[i].distance))
+                else:
+                    depthTagList.append(0)
+
+
+
+            if isinstance(panelObjs[i], PanelObj):
                 if panelObjs[i].wsBottomIce!="":
                     bottomIceList.append(float(panelObjs[i].wsBottomIce))
                     iceTagList.append(float(panelObjs[i].distance))
@@ -374,24 +475,74 @@ class MidSectionHeader(wx.Panel):
                     if "" not in panelObjs[i].depthObs:
                         depthObsList.append(panelObjs[i].depthObs)
                         panelTagmarkList.append(panelObjs[i].distance)
-            if panelObjs[i].panelType==0:
+
+            if isinstance(panelObjs[i], EdgeObj):
                 bottomIceList.append(0)
                 iceTagList.append(float(panelObjs[i].distance))
                 bottomSlushList.append(0)
                 slushTagList.append(float(panelObjs[i].distance))
-                #edgeTagmarkList.append(panelObjs[i].distance)
-                #dgeDepthList.append(panelObjs[i].depth)
-                # Here, I assume if there is start pier, the next panel will be end pier ALWAYS
-                #if "start p" in panelObjs[i].panelNum.lower():
-                #    pierTagLineList.append([float(panelObjs[i].distance),float(panelObjs[i+1].distance)])
-                #    pierDepthList.append([float(panelObjs[i].depth),float(panelObjs[i+1].depth)])
+
+
+
         try:
             if panelObjs[0].leftOrRight!="":
                 leftOrRight = panelObjs[0].leftOrRight
-	        edgeTagmarkPos = float(panelObjs[0].distance)
-	        edgeDepthPos = float(panelObjs[0].depth)
-	except:
+            edgeTagmarkPos = float(panelObjs[0].distance)
+            edgeDepthPos = float(panelObjs[0].depth)
+        except:
             pass
+
+
+
+        #adding extra point on each side if ice coverd
+        counter = 0
+        for index, obj in enumerate(panelObjs):
+
+            if isinstance(obj, EdgeObj) and ("Start E" in obj.panelNum or "End P" in obj.panelNum) and panelObjs[index+1].wsBottomIce!="":
+                y=float(panelObjs[index+1].wsBottomIce)
+                if panelObjs[index+1].panelCondition == "Open" and panelObjs[index+1].openDepthRead != "":
+                    depth2 = float(panelObjs[index+1].openDepthRead)
+                elif panelObjs[index+1].panelCondition == "Ice" and panelObjs[index+1].iceDepthRead != "":
+                    depth2 = float(panelObjs[index+1].iceDepthRead)
+                else:
+                    depth2 = 0
+                depth1 = float(obj.depth)
+                tagMark2 = float(panelObjs[index+1].distance)
+                tagMark1 = float(obj.distance)
+                slop = (depth2-depth1) / (tagMark2-tagMark1)
+
+     
+
+                x = tagMark1 + (y - depth1) / slop
+
+
+                bottomIceList.insert(index+1+counter, y)
+                iceTagList.insert(index+1+counter, x)
+                counter += 1
+
+            elif isinstance(obj, EdgeObj) and ("End E" in obj.panelNum or "Start P" in obj.panelNum) and panelObjs[index-1].wsBottomIce!="":
+                y=float(panelObjs[index-1].wsBottomIce)
+
+                if panelObjs[index-1].panelCondition == "Open" and panelObjs[index-1].openDepthRead != "":
+                    depth2 = float(panelObjs[index-1].openDepthRead)
+                elif panelObjs[index-1].panelCondition == "Ice" and panelObjs[index-1].iceDepthRead != "":
+                    depth2 = float(panelObjs[index-1].iceDepthRead)
+                else:
+                    depth2 = 0
+                depth1 = float(obj.depth)
+                tagMark2 = float(panelObjs[index-1].distance)
+                tagMark1 = float(obj.distance)
+                slop = (depth2-depth1) / (tagMark2-tagMark1)
+
+
+
+                x = tagMark1 + (y - depth1) / slop
+
+
+                bottomIceList.insert(index+counter, y)
+                iceTagList.insert(index+counter, x)
+                counter += 1
+
 
 
         # Plot Flow
@@ -399,21 +550,38 @@ class MidSectionHeader(wx.Panel):
         # Plot Velocity
         lns2, = velo.plot(veloTagList, veloList, color="blue", label="Velocity")
 
+        maxTagFlow = float(max(flowTagList))
+        minTagFlow = float(min(flowTagList))
+        maxTagVel = float(max(veloTagList))
+        minTagVel = float(min(veloTagList))
+        maxTagFV = maxTagFlow if maxTagFlow > maxTagVel else maxTagVel
+        minTagFV = minTagFlow if minTagFlow < minTagVel else minTagVel
 
+        minX = float(min(tagmarkLineList))
+        maxX = float(max(tagmarkLineList))
+        difference = maxX - minX
+
+        newMinX = int(minX - math.ceil(difference / 20 * 0.5))
+        newMaxX = int(maxX + math.ceil(difference / 20 * 0.5))
+
+
+        
 
         ax[1].invert_yaxis()
-        if ("left" in leftOrRight.lower() and not isIncreasing) or ("right" in leftOrRight.lower() and isIncreasing):
-            ax[1].invert_xaxis()
+        if ("right" in leftOrRight.lower() and not isIncreasing) or ("left" in leftOrRight.lower() and isIncreasing):
+            ax[0].set_xlim(newMinX, newMaxX)
+
+        else:
+            ax[0].set_xlim(newMaxX, newMinX)
+
 
         # Depth curve
-        lns3 = ax[1].fill_between(depthTagList,depthList, facecolor="#91c7f7", edgecolor="#91c7f7", label="River Body")
-        # Ice
-        lns4 = ax[1].fill_between(iceTagList,bottomIceList, facecolor="#e5e5e5", edgecolor="#e5e5e5", label="Ice")
-        lns5 = ax[1].fill_between(slushTagList,bottomSlushList, facecolor="#c4c4c4", edgecolor="#c4c4c4", label="Slush Ice")
 
-        # observation points for edge
-        #for tagmark, depth in zip(edgeTagmarkList, edgeDepthList):
-        #    ax[1].plot(tagmark, depth, "ro", marker="s", label="Obsevation Points")
+        lns3 = ax[1].fill_between(np.array(depthTagList),np.array(depthList), facecolor="#91c7f7", edgecolor="#91c7f7", label="River Body")
+        # Ice
+        lns4 = ax[1].fill_between(iceTagList,bottomIceList, facecolor="#5b5858", edgecolor="#5b5858", label="Ice")
+        lns5 = ax[1].fill_between(slushTagList,bottomSlushList, facecolor="#e5e5e5", edgecolor="#e5e5e5", label="Slush Ice")
+
 
         # observation points for panel
         for tagmark, depthObs in zip(panelTagmarkList, depthObsList):
@@ -421,42 +589,26 @@ class MidSectionHeader(wx.Panel):
                 lns6, = ax[1].plot(tagmark, point, "ro", marker="s", label="Obsevation Points")
         # Lines
         if isIncreasing:
+            
             y = np.interp(tagmarkLineList, depthTagList, depthList)
+
         else:
             y = np.interp(tagmarkLineList, depthTagList[::-1], depthList[::-1])
+
+
         ax[1].stem(tagmarkLineList, y, markerfmt=" ", label="Panel Boundary", linefmt="#00143d")
         lns7, = ax[1].plot(1,1,color="#00143d") #This is a proxy; just for the legend
 
-        # Pier/Island
-        pierTagLineList = pierTagLineList[1::2]
-
-        if isIncreasing:
-            y = np.interp(pierTagLineList, depthTagList, depthList)
-        else:
-            y = np.interp(pierTagLineList, depthTagList[::-1], depthList[::-1])
+       
 
         lns = [lns1, lns2, lns3, lns4, lns5, lns6, lns7]
         labels=["Discharge(q/Q%)","Velocity","River Body","Ice","Slush Ice","Obsevation Points","Panel Boundary"]
 
-        lns8 = None
-        if len(pierTagLineList)>0 and len(y)>0:
-            markerline, stemlines, baseline = ax[1].stem(pierTagLineList, y, markerfmt=" ", linefmt="#844b0a", label="Pier/Island")
-            plt.setp(stemlines, 'linewidth', 3)
-            lns8, = ax[1].plot(1,1,color="#844b0a", linewidth=3)
-            lns.append(lns8)
-            labels.append("Pier/Island [graphical display still under development]")
 
-
-        #box = ax[0].get_position()
-        #ax[0].set_position([box.x0, box.y0 + box.height*0.6, box.width, box.height])
-        #box = ax[1].get_position()
-        #ax[1].set_position([box.x0, box.y0 + box.height *0.6, box.width, box.height])
-        #ax[1].legend(lns,labels,loc='upper center', bbox_to_anchor=(0.5, -0.15),fancybox=True, shadow=True, ncol=5, numpoints=1, borderaxespad=0.)
-        ax[1].legend(lns,labels,loc='best', numpoints=1, borderaxespad=0.)
+        ax[1].legend(lns,labels,prop={'size':9}, loc='lower left', numpoints=1, borderaxespad=0.)
 
         lns7.set_visible(False)
-        if lns8 is not None:
-            lns8.set_visible(False)
+
 
         ax[0].spines['left'].set_color('purple')
         ax[0].yaxis.label.set_color('purple')
@@ -465,14 +617,38 @@ class MidSectionHeader(wx.Panel):
         velo.yaxis.label.set_color('blue')
         velo.tick_params(axis='y', colors='blue')
 
+
+        maxFlow = float(max(flowList))
+        minFlow = float(min(flowList))
+        maxVel = float(max(veloList))
+        minVel = float(min(veloList))
+        maxFV = maxFlow if maxFlow > maxVel else maxVel
+        minFV = minFlow if minFlow < minVel else minVel
+        ax[0].set_ylim(minFV, maxFV * 1.1)
+
+        
+
+
+        maxY = float(max(y))
+        ax[1].set_ylim(maxY * 1.1, 0)
+
         ax[0].set_ylabel("Discharge (q/Q%)", fontsize=14, color="purple")
         velo.set_ylabel("Velocity (m/s)", fontsize=14, color="b")
         ax[1].set_xlabel("Tagmark (m)", fontsize=14)
         ax[1].set_ylabel("Depth (m)", fontsize=14)
 
-        #ax[0].locator_params(nbins=10)
         ax[1].locator_params(axis='both', nbins=10)
-        #velo.locator_params(nbins=10)
+        ax[1].yaxis.set_ticks_position('both')
+        ax[1].tick_params(labeltop=False, labelright=True)
+
+
+
+        if maxX - minX < 20:
+            plt.xticks(np.arange(newMinX,newMaxX, step=1))
+        else:
+            plt.xticks(np.arange(newMinX,newMaxX, step=(int((difference) / 20))))
+
+
 
         ax[0].grid('on')
         ax[1].grid('on')
@@ -480,8 +656,16 @@ class MidSectionHeader(wx.Panel):
         ax[0].autoscale_view(True,True,True)
         ax[1].autoscale_view(True,True,True)
 
-        #ax[1].annotate(leftOrRight, xy=(edgeTagmarkPos,edgeDepthPos), xycoords='data', textcoords='offset points')
+
+        pltManager = plt.get_current_fig_manager()
+        pltManager.window.wm_geometry("+50+0")
+
         plt.show()
+
+        self.plotBtn.Enable(True)
+
+    def CalculateSlop(self, x1, y1, x2, y2):
+        return (y2 - y1) / (x2 / x1)
 
     def CalculateSummary(self):
         table = self.GetParent().table
@@ -489,6 +673,9 @@ class MidSectionHeader(wx.Panel):
         totalWidth = 0
         totalArea = 0
         totalDischarge = 0
+        width = ""
+        area = ""
+        discharge = ""
         for obj in table.panelObjs:
             if obj.width!="":
                 width = obj.width
@@ -519,19 +706,52 @@ class MidSectionHeader(wx.Panel):
         else:
             summary.append("")
         summary.append(str(totalDischarge))
-        print summary
+        times = table.OrderedTimes()
+        if len(times) > 0:
+            summary.append(str(times[0]))
+            summary.append(str(times[-1]))
+        else:
+            summary.append("")
+            summary.append("")
+
+
         self.UpdateSummary(summary)
+
+        
+
 
 
     def UpdateSummary(self, values):
-        self.numOfPanelCtrl.SetValue(values[0])
-        self.widthCtrl.SetValue(str(round(float(values[1]),3)))
-        self.areaCtrl.SetValue(sigfig.round_sig(float(values[2]),3))
-        self.avgDepthCtrl.SetValue(str(round(float(values[3]),3)))
-        self.avgVelCtrl.SetValue(sigfig.round_sig(float(values[4]),3))
-        #self.avgVelCtrl.SetValue(str(round(float(values[4]),3)))
-        self.totalDisCtrl.SetValue(sigfig.round_sig(float(values[5]),3))
+        try:
+            self.numOfPanelCtrl.SetValue(values[0])
+        except:
+            pass
+        try:
+            self.widthCtrl.SetValue(str(round(float(values[1]),3)))
+        except:
+            pass
+        try:
+            self.areaCtrl.SetValue(sigfig.round_sig(float(values[2]),3))
+        except:
+            pass
+        try:
+            self.avgDepthCtrl.SetValue(str(round(float(values[3]),3)))
+        except:
+            pass
+        try:
+            self.avgVelCtrl.SetValue(sigfig.round_sig(float(values[4]),3))
+        except:
+            pass
+        try:
+            self.totalDisCtrl.SetValue(sigfig.round_sig(float(values[5]),3))
+        except:
+            pass
+
+        self.startTimeCtrl.SetValue(values[6])
+        self.endTimeCtrl.SetValue(values[7])
         #self.totalDisCtrl.SetValue(str(round(float(values[5]),3)))
+
+
 
     def UpdateMeterNo(self):
         self.meter1MeterNoCtrl.SetItems(self.meterNoList)

@@ -8,8 +8,7 @@ from sigfig import *
 #         self.preValue = ""
 
 #allow only the float number type inputs
-def FloatNumberControl(evt):
-    
+def FloatNumberControl(evt): 
     ctrl = evt.GetEventObject()
     value = ctrl.GetValue().strip()
     insertPoint = ctrl.GetInsertionPoint()
@@ -46,6 +45,7 @@ def FloatNumberControl(evt):
             # insertPoint = ctrl.GetInsertionPoint() - digits
             ctrl.SetValue(ctrl.preValue)
             ctrl.SetInsertionPoint(insertPoint - digits)
+            # print "go back"
     evt.Skip()
 
 #Rounding by significant number
@@ -79,8 +79,35 @@ def Round(digit, ctrl):
         return
     strDigit = '{0:.' + str(digit) + 'f}'
     val = strDigit.format(float(ctrl.GetValue()) + 10**(-10))
+    # print val
     ctrl.ChangeValue(val)
     ctrl.preValue = val
+
+def RoundByCtrl1(ctrl):
+    insertPoint = ctrl.GetInsertionPoint()
+    Round(1, ctrl)
+    ctrl.SetInsertionPoint(insertPoint)
+
+def RoundByCtrl2(ctrl):
+    insertPoint = ctrl.GetInsertionPoint()
+    Round(2, ctrl)
+    ctrl.SetInsertionPoint(insertPoint)
+
+def RoundByCtrl3(ctrl):
+    insertPoint = ctrl.GetInsertionPoint()
+    Round(3, ctrl)
+    ctrl.SetInsertionPoint(insertPoint)
+
+def RoundByCtrl4(ctrl):
+    insertPoint = ctrl.GetInsertionPoint()
+    Round(4, ctrl)
+    ctrl.SetInsertionPoint(insertPoint)
+
+def RoundByCtrl5(ctrl):
+    insertPoint = ctrl.GetInsertionPoint()
+    Round(5, ctrl)
+    ctrl.SetInsertionPoint(insertPoint)
+
 
 #round to 1 decimal points
 def Round1(event):
@@ -99,9 +126,6 @@ def Round2(event):
 
 #round to 3 decimal points
 def Round3(event):
-    # print  isinstance(event.GetEventObject(), MyTextCtrl)
-
-
     insertPoint = event.GetEventObject().GetInsertionPoint()
 
     Round(3, event.GetEventObject())
@@ -113,6 +137,13 @@ def Round3(event):
 def Round4(event):
     insertPoint = event.GetEventObject().GetInsertionPoint()
     Round(4, event.GetEventObject())
+    event.GetEventObject().SetInsertionPoint(insertPoint)
+    event.Skip()
+
+#round to 5 decimal points
+def Round5(event):
+    insertPoint = event.GetEventObject().GetInsertionPoint()
+    Round(5, event.GetEventObject())
     event.GetEventObject().SetInsertionPoint(insertPoint)
     event.Skip()
 
@@ -141,4 +172,34 @@ def Sig4(event):
     event.GetEventObject().preValue = str(RoundSigfigs(event.GetEventObject().GetValue(), 4))
     event.Skip()
 
+def SigByCtrl1(ctrl):
+    ctrl.ChangeValue(str(RoundSigfigs(ctrl.GetValue(), 1)))
+    ctrl.preValue = str(RoundSigfigs(ctrl.GetValue(), 1))
 
+def SigByCtrl2(ctrl):
+    ctrl.ChangeValue(str(RoundSigfigs(ctrl.GetValue(), 2)))
+    ctrl.preValue = str(RoundSigfigs(ctrl.GetValue(), 2))
+
+def SigByCtrl3(ctrl):
+    ctrl.ChangeValue(str(RoundSigfigs(ctrl.GetValue(), 3)))
+    ctrl.preValue = str(RoundSigfigs(ctrl.GetValue(), 3))
+
+def SigByCtrl4(ctrl):
+    ctrl.ChangeValue(str(RoundSigfigs(ctrl.GetValue(), 4)))
+    ctrl.preValue = str(RoundSigfigs(ctrl.GetValue(), 4))
+
+
+#Allow only integer
+def OnChar_int(event): 
+
+    key = event.GetKeyCode() 
+
+    acceptable_characters = "1234567890." 
+
+    if chr(key) in acceptable_characters: 
+        event.Skip() 
+        return 
+
+    else: 
+        event.Skip()
+        return False 

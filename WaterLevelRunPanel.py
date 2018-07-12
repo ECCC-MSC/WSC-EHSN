@@ -671,6 +671,7 @@ class WaterLevelRunPanel(wx.Panel):
 
 
         self.splitter.SplitHorizontally(self.runTablePanel, self.secondSplitPanel, 280)
+        self.splitter.SetMinimumPaneSize(2)
 
 
 

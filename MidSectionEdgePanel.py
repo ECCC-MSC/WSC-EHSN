@@ -13,10 +13,11 @@ class MyTextCtrl(wx.TextCtrl):
         self.preValue = ""
 
 class EdgePanel(wx.Panel):
-    def __init__(self, panelId, index, *args, **kwargs):
+    def __init__(self, modify, pid, nextTagMark="", *args, **kwargs):
         super(EdgePanel, self).__init__(*args, **kwargs)
-        self.panelId = panelId
-        self.index = index
+        self.nextTagMark = nextTagMark
+        self.modify = modify
+        self.pid = pid
         self.titleLbl = "Edge Information"
         self.panelLbl = "Panel #:"
         self.measurementTimeLbl = "Measurement Time:"
@@ -29,16 +30,18 @@ class EdgePanel(wx.Panel):
         self.edgeWidthLbl = "Edge Width:"
         self.edgeAreaLbl = "Edge Area:"
         self.qEdgeLbl = "Q at Edge:"
-        self.edgeTypeLbl = "Edge Type"
+        # self.edgeTypeLbl = "Edge Type"
         self.edgeTagmarkLbl = "Tagmark at Edge (m)"
 
         self.saveBtnLbl = "Save && Exit"
         self.cancelBtnLbl = "Cancel"
-        self.nextBtnLbl = "Next"
+        self.nextBtnLbl = ">>>"
+        self.saveNextBtnLbl = "Save && Next"
 
+        self.PreBtnLbl = "<<<"
         self.mandatoryFieldsMsg = "You are missing the field: "
 
-        self.types = ["Edge @ Bank", "Pier/Island"]
+        self.types = ["Edge", "Pier/Island"]
         self.locations = ["Start", "End"]
         self.leftRight = ["","Left Bank", "Right Bank"]
 
@@ -50,7 +53,13 @@ class EdgePanel(wx.Panel):
 
         self.InitUI()
 
+        # self.InitData()
+        # self.edgeTagmarkCtrl.SetFocus()
+
+
+
     def InitUI(self):
+
         sizerV = wx.BoxSizer(wx.VERTICAL)
         headerTxt = wx.StaticText(self, label=self.titleLbl, size=(self.lblWidth, self.height), style=wx.ALIGN_CENTRE_HORIZONTAL)
         headerFont = wx.Font(15, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.BOLD, False)
@@ -62,17 +71,18 @@ class EdgePanel(wx.Panel):
         measurementTimeSizer = wx.BoxSizer(wx.HORIZONTAL)
         measurementTimeTxt = wx.StaticText(self, label=self.measurementTimeLbl, size=(self.lblWidth, self.height))
         self.measurementTimeCtrl = DropdownTime(False, parent=self, size=(110, self.height + 9), style=wx.BORDER_NONE)
-        self.measurementTimeCtrl.UpdateTime(67)
+        # self.measurementTimeCtrl.UpdateTime(67)
+
         measurementTimeSizer.Add(measurementTimeTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
         measurementTimeSizer.Add(self.measurementTimeCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
 
-        #Edge Type
-        edgeTypeSizer = wx.BoxSizer(wx.HORIZONTAL)
-        edgeTypeTxt = wx.StaticText(self, label=self.edgeTypeLbl, size=(self.lblWidth, self.height))
-        self.panelNumberCtrl = wx.ComboBox(self, size=(-1, self.height), choices=self.types, style=wx.CB_READONLY)
-        edgeTypeSizer.Add(edgeTypeTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        edgeTypeSizer.Add(self.panelNumberCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
+        # #Edge Type
+        # edgeTypeSizer = wx.BoxSizer(wx.HORIZONTAL)
+        # edgeTypeTxt = wx.StaticText(self, label=self.edgeTypeLbl, size=(self.lblWidth, self.height))
+        # self.panelNumberCtrl = wx.ComboBox(self, size=(-1, self.height), choices=self.types, style=wx.CB_READONLY)
+        # edgeTypeSizer.Add(edgeTypeTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
+        # edgeTypeSizer.Add(self.panelNumberCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
         #Location Radio buttons
         locationSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -80,6 +90,9 @@ class EdgePanel(wx.Panel):
         self.endEdgeRdBtn = wx.RadioButton(self, label=self.locations[1])
         locationSizer.Add(self.startEdgeRdBtn, 0, wx.LEFT, 170)
         locationSizer.Add(self.endEdgeRdBtn, 0, wx.LEFT|wx.RIGHT, 20)
+        self.startEdgeRdBtn.Enable(False)
+        self.endEdgeRdBtn.Enable(False)
+        
 
         #River Bank
         riverBankSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -88,13 +101,20 @@ class EdgePanel(wx.Panel):
         riverBankSizer.Add(riverBankTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
         riverBankSizer.Add(self.riverBankCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
+        # if self.modify == 2:
+        #     self.riverBankCtrl.Enable(False)
+
+
+
         #Tagmark at edge (m)
         edgeTagmarkSizer = wx.BoxSizer(wx.HORIZONTAL)
         edgeTagmarkTxt = wx.StaticText(self, label=self.edgeTagmarkLbl, size=(self.lblWidth, self.height))
         self.edgeTagmarkCtrl = MyTextCtrl(self, size=(-1, self.height))
         self.edgeTagmarkCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.edgeTagmarkCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
-        self.edgeTagmarkCtrl.SetFocus()
+        self.edgeTagmarkCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+        # self.edgeTagmarkCtrl.SetFocus()
+        
+        # self.edgeTagmarkCtrl.SetSelection(-1, -1)
         edgeTagmarkSizer.Add(edgeTagmarkTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
         edgeTagmarkSizer.Add(self.edgeTagmarkCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
@@ -103,9 +123,9 @@ class EdgePanel(wx.Panel):
         depthSizer = wx.BoxSizer(wx.HORIZONTAL)
         depthTxt = wx.StaticText(self, label=self.depthEdgeLbl, size=(self.lblWidth, self.height))
         self.depthCtrl = MyTextCtrl(self, size=(-1, self.height))
-        self.depthCtrl.SetValue("0")
+        
         self.depthCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.depthCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        self.depthCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
         self.depthAdjacentCkbox = wx.CheckBox(self, label=self.adjacentLbl)
         self.depthAdjacentCkbox.Bind(wx.EVT_CHECKBOX, self.OnDepthAdjacent)
         depthSizer.Add(depthTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
@@ -117,9 +137,9 @@ class EdgePanel(wx.Panel):
         estimatedVelSizer = wx.BoxSizer(wx.HORIZONTAL)
         estimatedVelTxt = wx.StaticText(self, label=self.estimatedVelLbl, size=(self.lblWidth, self.height))
         self.estimatedVelCtrl = MyTextCtrl(self, size=(-1, self.height))
-        self.estimatedVelCtrl.SetValue("0")
+        
         self.estimatedVelCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.estimatedVelCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig3)
+        self.estimatedVelCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         self.velAdjacentCkbox = wx.CheckBox(self, label=self.adjacentLbl)
         self.velAdjacentCkbox.Bind(wx.EVT_CHECKBOX, self.OnVelAdjacent)
         estimatedVelSizer.Add(estimatedVelTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
@@ -133,67 +153,37 @@ class EdgePanel(wx.Panel):
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
         buttonPanel.SetSizer(buttonSizer)
 
-        self.saveBtn = wx.Button(buttonPanel, label=self.saveBtnLbl, size=(100, 30))
-        self.nextBtn = wx.Button(buttonPanel, label=self.nextBtnLbl, size=(50, 30))
-        self.cancelBtn = wx.Button(buttonPanel, label=self.cancelBtnLbl, size=(50, 30))
 
+        self.cancelBtn = wx.Button(buttonPanel, label=self.cancelBtnLbl, size=(50, 30))
+        self.preBtn = wx.Button(buttonPanel, label=self.PreBtnLbl, size=(50,30))
+        self.nextBtn = wx.Button(buttonPanel, label=self.nextBtnLbl, size=(50, 30))
+        self.saveNextBtn = wx.Button(buttonPanel, label=self.saveNextBtnLbl, size=(100, 30))
+        self.saveBtn = wx.Button(buttonPanel, label=self.saveBtnLbl, size=(100, 30))
+
+        if self.modify == 0 or self.modify == 1:
+            self.preBtn.Hide()
+            self.nextBtn.Hide()
+        if self.modify == 1 or self.modify == 2 or self.endEdgeRdBtn.GetValue():
+            self.saveNextBtn.Hide()
+
+    
         self.saveBtn.Bind(wx.EVT_BUTTON, self.OnSave)
         self.cancelBtn.Bind(wx.EVT_BUTTON, self.OnCancel)
         self.nextBtn.Bind(wx.EVT_BUTTON, self.OnNext)
+        self.preBtn.Bind(wx.EVT_BUTTON, self.OnPrevious)
+        self.saveNextBtn.Bind(wx.EVT_BUTTON, self.OnSaveAddNext)
 
-        buttonSizer.Add(self.cancelBtn, 0, wx.LEFT, 250)
+        buttonSizer.Add(self.cancelBtn, 0, wx.LEFT, 100)
+        buttonSizer.Add(self.preBtn, 0, wx.LEFT, 5)
         buttonSizer.Add(self.nextBtn, 0, wx.LEFT, 5)
+        buttonSizer.Add(self.saveNextBtn, 0, wx.LEFT, 5)
         buttonSizer.Add(self.saveBtn, 0, wx.LEFT, 5)
-
-
-
-        # panelNumberSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # panelNumberTxt = wx.StaticText(self, label=self.panelLbl, size=(self.lblWidth, self.height))
-        # self.panelNumberCtrl = wx.ComboBox(self, size=(-1, self.height), choices=self.types, style=wx.CB_READONLY)
-        # panelNumberSizer.Add(panelNumberTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        # panelNumberSizer.Add(self.panelNumberCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-
-        # panelConditionSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # panelConditionTxt = wx.StaticText(self, label=self.panelConditionLbl, size=(self.lblWidth, self.height))
-        # # self.measurementTimeCtrl = wx.TextCtrl(self, size=(-1, self.height))
-        # self.measurementTimeCtrl = wx.ComboBox(self, size=(-1, self.height), choices=self.conditions, style=wx.CB_READONLY)
-        # panelConditionSizer.Add(panelConditionTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        # panelConditionSizer.Add(self.measurementTimeCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-
-        # channelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # channelTxt = wx.StaticText(self, label=self.channelEdgeLbl, size=(self.lblWidth, self.height))
-        # # self.channelCtrl = wx.TextCtrl(self, size=(-1, self.height))
-        # self.channelCtrl = wx.ComboBox(self, size=(-1, self.height), choices=self.edges, style=wx.CB_READONLY)
-        # channelSizer.Add(channelTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        # channelSizer.Add(self.channelCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-
-        # edgeWidthSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # edgeWidthTxt = wx.StaticText(self, label=self.edgeWidthLbl, size=(self.lblWidth, self.height))
-        # self.edgeWidthCtrl = wx.TextCtrl(self, size=(-1, self.height))
-        # edgeWidthSizer.Add(edgeWidthTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        # edgeWidthSizer.Add(self.edgeWidthCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-
-        # edgeAreaSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # edgeAreaTxt = wx.StaticText(self, label=self.edgeAreaLbl, size=(self.lblWidth, self.height))
-        # self.edgeAreaCtrl = wx.TextCtrl(self, size=(-1, self.height))
-        # edgeAreaSizer.Add(edgeAreaTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        # edgeAreaSizer.Add(self.edgeAreaCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-
-        # qEdgeSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # qEdgeTxt = wx.StaticText(self, label=self.qEdgeLbl, size=(self.lblWidth, self.height))
-        # self.qEdgeCtrl = wx.TextCtrl(self, size=(-1, self.height))
-        # qEdgeSizer.Add(qEdgeTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        # qEdgeSizer.Add(self.qEdgeCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-
-
-
-
 
 
 
         sizerV.Add(headerTxt, 0, wx.EXPAND)
         sizerV.Add(measurementTimeSizer, 0, wx.TOP|wx.EXPAND, 5)
-        sizerV.Add(edgeTypeSizer, 0, wx.TOP|wx.EXPAND, 5)
+        # sizerV.Add(edgeTypeSizer, 0, wx.TOP|wx.EXPAND, 5)
         sizerV.Add(locationSizer, 0, wx.TOP|wx.EXPAND, 5)
         sizerV.Add(riverBankSizer, 0, wx.TOP|wx.EXPAND, 5)
         sizerV.Add(edgeTagmarkSizer, 0, wx.TOP|wx.EXPAND, 5)
@@ -204,6 +194,14 @@ class EdgePanel(wx.Panel):
 
         self.SetSizerAndFit(sizerV)
         #self.SetSize(100, 80)
+
+    def InitData(self):
+        self.measurementTimeCtrl.SetToCurrent()
+        self.edgeTagmarkCtrl.SetValue(self.nextTagMark)
+        self.depthCtrl.SetValue("0")
+        self.estimatedVelCtrl.SetValue("0")
+
+
 
 
     def OnSave(self, event):
@@ -219,16 +217,12 @@ class EdgePanel(wx.Panel):
         measurementTime = self.measurementTimeCtrl.GetValue()
         startOrEndVal = self.startEdgeRdBtn.GetValue()
         depthEdge = self.depthCtrl.GetValue()
-        edgeType = self.panelNumberCtrl.GetValue()
+        # edgeType = self.panelNumberCtrl.GetValue()
         velEdge = self.estimatedVelCtrl.GetValue()
         depthAdjacentCkbox = self.depthAdjacentCkbox.GetValue()
         velocityAdjacentCkbox = self.velAdjacentCkbox.GetValue()
 
         # MANDATORY FIELDS FOR EDGE
-        if edgeType=='':
-            dlg = wx.MessageDialog(None, self.mandatoryFieldsMsg + "[Edge Type]", "Warning!", wx.OK | wx.ICON_EXCLAMATION)
-            dlg.ShowModal()
-            return -1
         if dist=='':
             dlg = wx.MessageDialog(None, self.mandatoryFieldsMsg + "[Tagmark at Edge]", "Warning!", wx.OK | wx.ICON_EXCLAMATION)
             dlg.ShowModal()
@@ -246,10 +240,20 @@ class EdgePanel(wx.Panel):
             dlg.ShowModal()
             return -1
 
+        arrayIndex = -1
+        for index, obj in enumerate(table.panelObjs):
+            if obj.pid == self.pid:
+                arrayIndex = index
+                break
+
+        if table.IsValidTagMark(dist, arrayIndex=arrayIndex, startEdge=(startOrEndVal), endEdge=(not startOrEndVal), modify=self.modify) != 0:
+
+            return -1
+
         if len(table.panelObjs) > 0:
             for i in range(len(table.panelObjs)):
                 if float(table.panelObjs[i].distance) == float(dist):
-                    if self.panelId == -1:
+                    if self.modify != 2:
                         dlg = wx.MessageDialog(None, "Panel tagmark value already exists", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
                         dlg.ShowModal()
                         return -1
@@ -269,23 +273,24 @@ class EdgePanel(wx.Panel):
                     pass
 
         if startOrEndVal:
-            if "Edge" in edgeType:
-                panelNum = "Start Edge"
-            else:
-                panelNum = "Start P / ISL"
+            panelNum = "Start Edge"
+
+            if len(table.panelObjs) > 1 and isinstance(table.panelObjs[-1], EdgeObj) and table.panelObjs[-1].panelNum == "End Edge":
+                table.panelObjs[-1].leftOrRight = "Left Bank" if self.riverBankCtrl.GetValue() == "Right Bank" else "Right Bank"
+
         else:
-            if "Edge" in edgeType:
-                panelNum = "End Edge"
-            else:
-                panelNum = "End P / ISL"
+            panelNum = "End Edge"
 
 
-        obj = EdgeObj(edgeType=edgeType, time=measurementTime, distance=dist, startOrEnd=startOrEndVal, panelNum=panelNum,\
+
+        obj = EdgeObj(edgeType="Edge", time=measurementTime, distance=dist, startOrEnd=startOrEndVal, panelNum=panelNum,\
             depth=depthEdge, corrMeanVelocity=velEdge, depthAdjacent=depthAdjacentCkbox, velocityAdjacent=velocityAdjacentCkbox,\
-                     panelId=self.panelId, index=self.index, leftOrRight=self.riverBankCtrl.GetValue())
+                       leftOrRight=self.riverBankCtrl.GetValue(), pid=self.pid)
 
-        print "***panelId***", obj.panelId
-        if obj.panelId == -1:
+
+
+
+        if self.modify != 2:
             table.AddRow(obj, self.GetScreenPosition())
         else:
             table.UpdateRow(obj, self.GetScreenPosition())
@@ -305,15 +310,33 @@ class EdgePanel(wx.Panel):
         else:
             self.estimatedVelCtrl.Enable()
 
-    def OnNext(self, event):
+    def OnSaveAddNext(self, event):
         failed = self.SaveToObj()
         if not failed==-1:
             self.GetParent().GetParent().GetParent().Adding()
+
+    def OnNext(self, evnet):
+        failed = self.SaveToObj()
+        if not failed == -1:
+            self.GetParent().GetParent().GetParent().modifiedPanelArrayIndex += 1
+            self.GetParent().GetParent().GetParent().Modify()
+
+    def OnPrevious(self, event):
+        failed = self.SaveToObj()
+        if failed != -1:
+            self.GetParent().GetParent().GetParent().modifiedPanelArrayIndex -= 1
+            self.GetParent().GetParent().GetParent().Modify()
 
     def OnCancel(self, event):
         self.GetParent().GetParent().Close()
         event.Skip()
 
+
+    # def SetNextBtnLabel(self, tag):
+    #     if tag == 1:
+    #         self.nextBtn.SetLabel(self.nextBtnLbl2)
+    #     else:
+    #         self.nextBtn.SetLabel(self.nextBtnLbl)
 
 
 def main():

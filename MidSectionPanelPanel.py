@@ -8,6 +8,7 @@ import NumberControl
 import sigfig
 from DropdownTime import *
 from MidSectionSubPanelObj import *
+from win32api import GetSystemMetrics
 
 #Overwrite the TextCtrl Class in order to control the float input
 class MyTextCtrl(wx.TextCtrl):
@@ -17,10 +18,11 @@ class MyTextCtrl(wx.TextCtrl):
 
 
 class MidSectionPanelPanel(wx.Panel):
-    def __init__(self, panelNum, panelId, modify, index, *args, **kwargs):
+    def __init__(self, panelNum, modify, pid, nextTagMark="", *args, **kwargs):
         super(MidSectionPanelPanel, self).__init__(*args, **kwargs)
-        self.panelId = panelId
-        self.index=index
+        self.nextTagMark = nextTagMark
+        self.pid = pid
+  
         self.panelNum = panelNum
         self.modify = modify
         self.titleLbl = "Panel #:"
@@ -59,9 +61,10 @@ class MidSectionPanelPanel(wx.Panel):
         self.slushLbl = "Slush:                                                    "
 
         self.velocityMethodLbl = "Velocity Method:"
-        self.obliqueLbl = "Angle of Flow Correction:"
+        self.obliqueLbl = "Angle of Flow Coefficient:"
         self.velocityCorrLbl = "Velocity Corr. Factor:"
         self.reverseFlowLbl = "Reverse Flow:"
+        # self.depthPanelLockLbl = "Lock the Depth Panel"
 
         self.mandatoryFieldsMsg = "You are missing the field: "
 
@@ -76,6 +79,9 @@ class MidSectionPanelPanel(wx.Panel):
         self.rawAtPointVel = ["", "", ""]
         self.rawMeanVal = ""
 
+        self.preVel02 = None
+        self.preVel08 = None
+
         self.height = 21
         self.headerHeight = 28
         self.ctrlWidth = 60
@@ -84,7 +90,7 @@ class MidSectionPanelPanel(wx.Panel):
 
         self.summaryLblWidth = 132
         self.summaryHeight = 20
-        self.summaryCtrlWidth = 100
+        self.summaryCtrlWidth = 70
 
         self.openWidth = 150
 
@@ -94,19 +100,28 @@ class MidSectionPanelPanel(wx.Panel):
         self.textColour = (54,96,146)
 
         self.saveBtnLbl = "Save && Exit"
+        self.preBtnLbl = "<<<"
         self.cancelBtnLbl = "Cancel"
-        self.nextBtnLbl = "Next"
+        self.nextBtnLbl = ">>>"
+        self.saveNextBtnLbl = "Save && Next"
 
         self.newPanel = True
 
 
         self.InitUI()
 
+
+        # GridUpdateLocker(self.velocityGrid)
+
+
     def InitUI(self):
         #Header
         sizerV = wx.BoxSizer(wx.VERTICAL)
-        self.headerTxt = wx.StaticText(self, label=self.titleLbl + " " + str(self.panelNum), size=(-1, 22), style=wx.ALIGN_CENTRE_HORIZONTAL)
-        headerFont = wx.Font(15, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.BOLD, False)
+        self.headerTxt = wx.StaticText(self, label=self.titleLbl + " " + str(self.panelNum), size=(-1, -1), style=wx.ALIGN_CENTRE_HORIZONTAL)
+        if GetSystemMetrics(11) < 33:
+            headerFont = wx.Font(15, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.BOLD, False)
+        else:
+            headerFont = wx.Font(15, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.BOLD, False)
         self.headerTxt.SetFont(headerFont)
         self.headerTxt.SetBackgroundColour('grey')
 
@@ -114,15 +129,15 @@ class MidSectionPanelPanel(wx.Panel):
         summarySizer = wx.BoxSizer(wx.HORIZONTAL)
         summaryLeftSizer = wx.BoxSizer(wx.VERTICAL)
         summaryRightSizer = wx.BoxSizer(wx.VERTICAL)
-        summarySizer.Add(summaryLeftSizer, 1, wx.EXPAND)
-        summarySizer.Add(summaryRightSizer, 1, wx.EXPAND)
+        summarySizer.Add(summaryLeftSizer, 0, wx.EXPAND)
+        summarySizer.Add(summaryRightSizer, 0, wx.EXPAND|wx.LEFT, 20)
 
 
 
         #Panel #
         panelNumberSizer = wx.BoxSizer(wx.HORIZONTAL)
         panelNumberTxt = wx.StaticText(self, label=self.panelLbl, size=(self.summaryLblWidth, self.summaryHeight))
-        self.panelNumberCtrl = wx.TextCtrl(self, size=(self.summaryCtrlWidth, self.summaryHeight))
+        self.panelNumberCtrl = MyTextCtrl(self, size=(self.summaryCtrlWidth, self.summaryHeight))
         self.panelNumberCtrl.SetValue(str(self.panelNum))
         self.panelNumberCtrl.Disable()
 
@@ -132,28 +147,243 @@ class MidSectionPanelPanel(wx.Panel):
         #Measurement Time
         measurementTimeSizer = wx.BoxSizer(wx.HORIZONTAL)
         measurementTimeTxt = wx.StaticText(self, label=self.measurementTimeLbl, size=(self.summaryLblWidth, self.headerHeight))
-        # self.measurementTimeCtrl = wx.TextCtrl(self, size=(-1, self.height))
-        self.measurementTimeCtrl = DropdownTime(False, parent=self, size=(self.summaryCtrlWidth, self.headerHeight), style=wx.BORDER_NONE)
-        self.measurementTimeCtrl.UpdateTime(67)
+        # self.measurementTimeCtrl = MyTextCtrl(self, size=(-1, self.height))
+        self.measurementTimeCtrl = DropdownTime(False, parent=self, size=(-1, self.headerHeight), style=wx.BORDER_NONE)
+        # self.measurementTimeCtrl.SetToCurrent()
+        
+        # self.measurementTimeCtrl.hourCmbox.SetSelection(-1, -1)
+        # self.Refresh()
+        # self.Layout()
         measurementTimeSizer.Add(measurementTimeTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        measurementTimeSizer.Add(self.measurementTimeCtrl, 1, wx.EXPAND)
-        # print self.measurementTimeCtrl.GetSize()
+        measurementTimeSizer.Add(self.measurementTimeCtrl, 0, wx.EXPAND)
+
 
         #panel TagMark Distance (m)
         panelTagMarkSizer = wx.BoxSizer(wx.HORIZONTAL)
         panelTagMarkTxt = wx.StaticText(self, label=self.panelTagMarkLbl, size=(self.summaryLblWidth, self.summaryHeight))
-        self.panelTagMarkCtrl = MyTextCtrl(self, size=(self.summaryCtrlWidth, self.summaryHeight), style=wx.TE_PROCESS_ENTER|wx.TE_PROCESS_TAB)
-        self.panelTagMarkCtrl.Bind(wx.EVT_TEXT_ENTER, self.OnTagmarkTabEnter)
-        self.panelTagMarkCtrl.Bind(wx.EVT_NAVIGATION_KEY, self.OnTagmarkTabEnter)
+        self.panelTagMarkCtrl = MyTextCtrl(self, size=(self.summaryCtrlWidth, self.summaryHeight), style=wx.TE_PROCESS_ENTER)#|wx.TE_PROCESS_TAB)
+        # self.panelTagMarkCtrl.Bind(wx.EVT_TEXT_ENTER, self.OnTagmarkTabEnter)
+        # self.panelTagMarkCtrl.Bind(wx.EVT_NAVIGATION_KEY, self.OnTagmarkTabEnter)
         self.panelTagMarkCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.panelTagMarkCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        self.panelTagMarkCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+        
+        # self.panelTagMarkCtrl.SetSelection(-1, -1)
+
+
+
+
+
+
         panelTagMarkSizer.Add(panelTagMarkTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
         panelTagMarkSizer.Add(self.panelTagMarkCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
+        self.openWaterPanel = wx.Panel(self, style=wx.BORDER_SIMPLE, size=(220, -1))
+        self.openWaterPanel.Bind(wx.EVT_NAVIGATION_KEY, self.OnNavigate2Velocity)
+
+        self.icePanel = wx.Panel(self, style=wx.BORDER_SIMPLE, size=(340, -1))
+        self.icePanel.Bind(wx.EVT_NAVIGATION_KEY, self.OnNavigate2Velocity)
+
+        self.velocityPanel = wx.Panel(self)
+        self.velocityPanel.Bind(wx.EVT_NAVIGATION_KEY, self.OnNavigate2Velocity)
+        #First Panel
+        if self.panelNum == 1:
+
+            #############################START##############################           
+            #Open
+            
+
+            # self.openDepthReadCtrl = wx.lib.masked.numctrl.NumCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            # self.openDepthReadCtrl.SetFractionWidth(2)
+            # self.openDepthReadCtrl.SetAllowNone(True)
+            self.openDepthReadCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            
+            self.openDepthReadCtrl.Bind(wx.EVT_TEXT, self.OnUpdateOpenEffectiveDepth)
+            self.openDepthReadCtrl.Bind(wx.EVT_TEXT, self.UpdateWetLineCorrection)
+            self.openDepthReadCtrl.Bind(wx.EVT_TEXT, self.OnUpdateDepthOfObs)
+            self.openDepthReadCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+            self.openDepthReadCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+
+            self.amountWeightCmbox = wx.ComboBox(self.openWaterPanel, size=(self.ctrlWidth, self.height), choices=self.weights, style=wx.CB_READONLY)               
+            self.wldlCorrectionCmbox = wx.ComboBox(self.openWaterPanel, size = (self.ctrlWidth, self.height), choices=self.corrections, style=wx.CB_READONLY)
+            self.dryLineAngleCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            self.distWaterCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            
+
+            
+            #Ice
+            
+            self.iceAssemblyCmbbox = wx.ComboBox(self.icePanel, size = (90, self.height), choices=self.iceAssemblySelections, style=wx.CB_READONLY)            
+            self.iceThickCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.waterSurfaceIceCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+
+
+            # self.iceDepthReadCtrl = wx.lib.masked.numctrl.NumCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            # self.iceDepthReadCtrl.SetFractionWidth(2)
+            # self.iceDepthReadCtrl.SetAllowNone(True)
+            self.iceDepthReadCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.iceDepthReadCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+            self.iceDepthReadCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+        
+            #Velocity Method
+
+            self.velocityCombo = wx.ComboBox(self.velocityPanel, style=wx.CB_READONLY, choices=self.velocityMethods, size=(-1, self.height))
+
+            #Velocity table
+            self.velocityGrid = Grid(self.velocityPanel, size=(1, -1))
+            self.velocityGrid.CreateGrid(3, 7)
+            self.velocityGrid.TabBehaviour(Grid.Tab_Leave)
+
+            #####################After Grid######################
+            #Open
+            self.weightOffsetCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            self.dryLineCorrectionCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            self.wetLineCorrectionCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+
+
+
+            # self.OpenEffectiveDepthCtrl = wx.lib.masked.numctrl.NumCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            # self.OpenEffectiveDepthCtrl.SetFractionWidth(2)
+            # self.OpenEffectiveDepthCtrl.SetAllowNone(True)
+            self.OpenEffectiveDepthCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            self.OpenEffectiveDepthCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+            self.OpenEffectiveDepthCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+
+            #Ice
+
+            # self.iceEffectiveDepthCtrl = wx.lib.masked.numctrl.NumCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            # self.iceEffectiveDepthCtrl.SetFractionWidth(2)
+            # self.iceEffectiveDepthCtrl.SetAllowNone(True)
+            self.iceEffectiveDepthCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.iceEffectiveDepthCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+            self.iceEffectiveDepthCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+
+            self.meterAboveCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.meterBelowCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.distanceAboveCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.slushCkbox = wx.CheckBox(self.icePanel, label=self.slushLbl, style=wx.ALIGN_RIGHT)
+            self.waterSurfaceSlushCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+
+            self.iceThickAdjustedCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.waterIceAdjustCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.slushThicknessCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+
+            ###########################END#################################
+
+
+        #Quick
+        else:
+            #############################START##############################
+            #Privious Panel
+
+            # tabOrderWldl = True
+            # for index, obj in enumerate(self.GetParent().GetParent().GetParent().panelObjs):
+            #     if isinstance(obj, PanelObj) and obj.panelNum == self.panelNum - 1:
+            #         if obj.panelCondition == "Open" and obj.wldl == "No":
+            #             tabOrderWldl = False
+            #         break
+
+
+
+
+            #Open
+            # self.openWaterPanel = wx.Panel(self, style=wx.BORDER_SIMPLE, size=(220, -1))
+            # self.openDepthReadCtrl = wx.lib.masked.numctrl.NumCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            # self.openDepthReadCtrl.SetFractionWidth(2)
+            # self.openDepthReadCtrl.SetAllowNone(True)
+            self.openDepthReadCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            
+            self.openDepthReadCtrl.Bind(wx.EVT_TEXT, self.OnUpdateOpenEffectiveDepth)
+            self.openDepthReadCtrl.Bind(wx.EVT_TEXT, self.UpdateWetLineCorrection)
+            self.openDepthReadCtrl.Bind(wx.EVT_TEXT, self.OnUpdateDepthOfObs)
+            self.openDepthReadCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+            self.openDepthReadCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+            # if tabOrderWldl:
+            self.wldlCorrectionCmbox = wx.ComboBox(self.openWaterPanel, size = (self.ctrlWidth, self.height), choices=self.corrections, style=wx.CB_READONLY)
+            self.dryLineAngleCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            self.distWaterCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+
+            
+            #Ice
+            # self.icePanel = wx.Panel(self, style=wx.BORDER_SIMPLE, size=(340, -1))   
+
+            self.iceThickCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.waterSurfaceIceCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+
+            self.iceDepthReadCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.iceDepthReadCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+            self.iceDepthReadCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+            
+        
+            #Velocity Method
+            # self.velocityPanel = wx.Panel(self)
+            self.velocityCombo = wx.ComboBox(self.velocityPanel, style=wx.CB_READONLY, choices=self.velocityMethods, size=(-1, self.height))
+
+            #Velocity table
+            self.velocityGrid = Grid(self.velocityPanel, size=(1, -1))
+            self.velocityGrid.CreateGrid(3, 7)
+            self.velocityGrid.TabBehaviour(Grid.Tab_Leave)
+
+            #####################After Grid######################
+            #Open
+            self.amountWeightCmbox = wx.ComboBox(self.openWaterPanel, size=(self.ctrlWidth, self.height), choices=self.weights, style=wx.CB_READONLY)               
+            self.weightOffsetCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            self.dryLineCorrectionCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            self.wetLineCorrectionCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            
+
+            # self.OpenEffectiveDepthCtrl = wx.lib.masked.numctrl.NumCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            # self.OpenEffectiveDepthCtrl.SetFractionWidth(2)
+            # self.OpenEffectiveDepthCtrl.SetAllowNone(True)
+            self.OpenEffectiveDepthCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+            self.OpenEffectiveDepthCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+            self.OpenEffectiveDepthCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+            
+
+            # if not tabOrderWldl:
+                # self.wldlCorrectionCmbox = wx.ComboBox(self.openWaterPanel, size = (self.ctrlWidth, self.height), choices=self.corrections, style=wx.CB_READONLY)
+                # self.dryLineAngleCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+                # self.distWaterCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+
+            #Ice
+            self.iceAssemblyCmbbox = wx.ComboBox(self.icePanel, size = (90, self.height), choices=self.iceAssemblySelections, style=wx.CB_READONLY)
+            
+
+            # self.iceDepthReadCtrl = wx.lib.masked.numctrl.NumCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            # self.iceDepthReadCtrl.SetFractionWidth(2)
+            # self.iceDepthReadCtrl.SetAllowNone(True)
+            
+            
+
+            # self.iceEffectiveDepthCtrl = wx.lib.masked.numctrl.NumCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            # self.iceEffectiveDepthCtrl.SetFractionWidth(2)
+            # self.iceEffectiveDepthCtrl.SetAllowNone(True)
+            self.iceEffectiveDepthCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+
+            self.iceEffectiveDepthCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+            self.iceEffectiveDepthCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+
+
+            self.meterAboveCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.meterBelowCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.distanceAboveCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.slushCkbox = wx.CheckBox(self.icePanel, label=self.slushLbl, style=wx.ALIGN_RIGHT)
+            self.waterSurfaceSlushCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+
+            self.iceThickAdjustedCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.waterIceAdjustCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+            self.slushThicknessCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+
+            ###########################END#################################
+
+
+
+
         #Panel Condition
+        self.panelConditionCombox = wx.ComboBox(self, style=wx.CB_READONLY, choices=self.panelConditions, size=(self.summaryCtrlWidth, self.summaryHeight))
         panelConditionSizer = wx.BoxSizer(wx.HORIZONTAL)
         panelConditionTxt = wx.StaticText(self, label=self.panelConditionLbl, size=(self.summaryLblWidth, self.summaryHeight))
-        self.panelConditionCombox = wx.ComboBox(self, style=wx.CB_READONLY, choices=self.panelConditions, size=(self.summaryCtrlWidth, self.summaryHeight))
+
+
         panelConditionSizer.Add(panelConditionTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
         panelConditionSizer.Add(self.panelConditionCombox, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
@@ -165,14 +395,15 @@ class MidSectionPanelPanel(wx.Panel):
         summaryLeftSizer.Add(panelConditionSizer, 1, wx.EXPAND)
 
 
+
         #Current Meter
         currentMeterSizer = wx.BoxSizer(wx.HORIZONTAL)
         currentMeterTxt = wx.StaticText(self, label=self.currentMeterLbl, size=(-1, self.summaryHeight))
-        # self.currentMeterCtrl = wx.TextCtrl(self, size=(-1, self.summaryHeight))
+        # self.currentMeterCtrl = MyTextCtrl(self, size=(-1, self.summaryHeight))
         self.currentMeterCtrl = wx.ComboBox(self, size=(-1, self.summaryHeight), choices=self.currentMeters)
         self.currentMeterCtrl.Bind(wx.EVT_COMBOBOX, self.OnCurrMeterCtrl)
-        currentMeterSizer.Add(currentMeterTxt, 1, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        currentMeterSizer.Add(self.currentMeterCtrl, 1, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
+        currentMeterSizer.Add(currentMeterTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
+        currentMeterSizer.Add(self.currentMeterCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
 
         # #Meter Equation
@@ -181,7 +412,7 @@ class MidSectionPanelPanel(wx.Panel):
         # meterEquationSizer.Add(meterEquationTxt, 1, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
 
-        slopInterceptSizer = wx.BoxSizer(wx.HORIZONTAL)
+        slopeInterceptSizer = wx.BoxSizer(wx.HORIZONTAL)
         #Radio button 1
         self.slopBtn1 = wx.RadioButton(self, style=wx.RB_GROUP)
         self.slopBtn1.Bind(wx.EVT_RADIOBUTTON, self.OnSlopeRadioBtn)
@@ -190,52 +421,61 @@ class MidSectionPanelPanel(wx.Panel):
         #Slope
         slopeSizer = wx.BoxSizer(wx.HORIZONTAL)
         slopeTxt = wx.StaticText(self, label=self.slopeLbl1, size=(50, self.summaryHeight))
-        self.slopeCtrl = wx.TextCtrl(self, size=(50, self.summaryHeight))
+        self.slopeCtrl = MyTextCtrl(self, size=(50, self.summaryHeight))
+        self.slopeCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.slopeCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
 
         slopeSizer.Add(slopeTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        slopeSizer.Add(self.slopeCtrl, 1, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
+        slopeSizer.Add(self.slopeCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
         #Intercept
         interceptSizer = wx.BoxSizer(wx.HORIZONTAL)
         interceptTxt = wx.StaticText(self, label=self.interceptLbl1, size=(70, self.summaryHeight))
-        self.interceptCtrl = wx.TextCtrl(self, size=(50, self.summaryHeight))
+        self.interceptCtrl = MyTextCtrl(self, size=(50, self.summaryHeight))
+        self.interceptCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.interceptCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
 
         interceptSizer.Add(interceptTxt, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        interceptSizer.Add(self.interceptCtrl, 1, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
+        interceptSizer.Add(self.interceptCtrl, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
-        slopInterceptSizer.Add(self.slopBtn1, 0)
-        slopInterceptSizer.Add(slopeSizer, 1)
-        slopInterceptSizer.Add(interceptSizer, 1)
+        slopeInterceptSizer.Add(self.slopBtn1, 0)
+        slopeInterceptSizer.Add(slopeSizer, 0)
+        slopeInterceptSizer.Add(interceptSizer, 0)
 
         #second slop and intercept pair
-        slopInterceptSizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        slopeInterceptSizer2 = wx.BoxSizer(wx.HORIZONTAL)
         #Radio button 2
         self.slopBtn2 = wx.RadioButton(self)
         self.slopBtn2.Bind(wx.EVT_RADIOBUTTON, self.OnSlopeRadioBtn)
+        # self.slopBtn2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
 
 
         #Slop
         slopeSizer2 = wx.BoxSizer(wx.HORIZONTAL)
         slopeTxt2 = wx.StaticText(self, label=self.slopeLbl2, size=(50, self.summaryHeight))
-        self.slopeCtrl2 = wx.TextCtrl(self, size=(50, self.summaryHeight))
+        self.slopeCtrl2 = MyTextCtrl(self, size=(50, self.summaryHeight))
+        self.slopeCtrl2.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.slopeCtrl2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
         self.slopeCtrl2.Enable(False)
 
         slopeSizer2.Add(slopeTxt2, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        slopeSizer2.Add(self.slopeCtrl2, 1, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
+        slopeSizer2.Add(self.slopeCtrl2, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
         #Intercept
         interceptSizer2 = wx.BoxSizer(wx.HORIZONTAL)
         interceptTxt2 = wx.StaticText(self, label=self.interceptLbl2, size=(70, self.summaryHeight))
-        self.interceptCtrl2 = wx.TextCtrl(self, size=(50, self.summaryHeight))
+        self.interceptCtrl2 = MyTextCtrl(self, size=(50, self.summaryHeight))
+        self.interceptCtrl2.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.interceptCtrl2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round4)
         self.interceptCtrl2.Enable(False)
 
         interceptSizer2.Add(interceptTxt2, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
-        interceptSizer2.Add(self.interceptCtrl2, 1, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
+        interceptSizer2.Add(self.interceptCtrl2, 0, wx.LEFT|wx.RIGHT, 4, wx.EXPAND)
 
 
-        slopInterceptSizer2.Add(self.slopBtn2, 0)
-        slopInterceptSizer2.Add(slopeSizer2, 1)
-        slopInterceptSizer2.Add(interceptSizer2, 1)
+        slopeInterceptSizer2.Add(self.slopBtn2, 0)
+        slopeInterceptSizer2.Add(slopeSizer2, 0)
+        slopeInterceptSizer2.Add(interceptSizer2, 0)
 
 
 
@@ -244,8 +484,8 @@ class MidSectionPanelPanel(wx.Panel):
 
         summaryRightSizer.Add(currentMeterSizer, 0, wx.EXPAND)
         # summaryRightSizer.Add(meterEquationSizer, 1, wx.EXPAND)
-        summaryRightSizer.Add(slopInterceptSizer, 0, wx.EXPAND|wx.TOP, 5)
-        summaryRightSizer.Add(slopInterceptSizer2, 0, wx.EXPAND|wx.TOP, 5)
+        summaryRightSizer.Add(slopeInterceptSizer, 0, wx.EXPAND|wx.TOP, 5)
+        summaryRightSizer.Add(slopeInterceptSizer2, 0, wx.EXPAND|wx.TOP, 5)
         # summaryRightSizer.Add(interceptSizer, 1, wx.EXPAND)
 
 
@@ -253,15 +493,14 @@ class MidSectionPanelPanel(wx.Panel):
 
 
         #Depth table for open water
-        self.openWaterPanel = wx.Panel(self, style=wx.BORDER_SIMPLE, size=(220, -1))
+        # self.openWaterPanel = wx.Panel(self, style=wx.BORDER_SIMPLE, size=(220, -1))
         openWaterSizer = wx.BoxSizer(wx.VERTICAL)
         self.openWaterPanel.SetSizer(openWaterSizer)
 
         openDepthReadSizer = wx.BoxSizer(wx.HORIZONTAL)
         openDepthReadTxt = wx.StaticText(self.openWaterPanel, label=self.depthLbl, size = (self.openWidth, self.height))
-        self.openDepthReadCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
-        self.openDepthReadCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.openDepthReadCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+
+        
 
 
         openDepthReadSizer.Add(openDepthReadTxt, 0, wx.EXPAND)
@@ -269,17 +508,17 @@ class MidSectionPanelPanel(wx.Panel):
 
         amountWeightSizer = wx.BoxSizer(wx.HORIZONTAL)
         amountWeightTxt = wx.StaticText(self.openWaterPanel, label=self.amountWeightLbl, size = (self.openWidth, self.height))
-        self.amountWeightCmbox = wx.ComboBox(self.openWaterPanel, size=(self.ctrlWidth, self.height), choices=self.weights, style=wx.CB_READONLY)
+        # self.amountWeightCmbox = wx.ComboBox(self.openWaterPanel, size=(self.ctrlWidth, self.height), choices=self.weights, style=wx.CB_READONLY)
 
-        self.amountWeightCmbox.SetValue("0")
+        
         amountWeightSizer.Add(amountWeightTxt, 0, wx.EXPAND)
         amountWeightSizer.Add(self.amountWeightCmbox, 0, wx.EXPAND)
 
         weightOffsetSizer = wx.BoxSizer(wx.HORIZONTAL)
         weightOffsetTxt = wx.StaticText(self.openWaterPanel, label=self.weightOffsetLbl, size = (self.openWidth, self.height))
-        # print weightOffsetTxt.GetSize()
-        self.weightOffsetCtrl = wx.TextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
-        self.weightOffsetCtrl.SetValue("0")
+
+        # self.weightOffsetCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+        
         self.weightOffsetCtrl.SetBackgroundColour(self.backgrounColour)
         self.weightOffsetCtrl.SetForegroundColour(self.textColour)
         weightOffsetSizer.Add(weightOffsetTxt, 0, wx.EXPAND)
@@ -287,23 +526,26 @@ class MidSectionPanelPanel(wx.Panel):
 
         wldlCorrectionSizer = wx.BoxSizer(wx.HORIZONTAL)
         wldlCorrectionTxt = wx.StaticText(self.openWaterPanel, label=self.wldlLbl, size = (self.openWidth, self.height))
-        self.wldlCorrectionCmbox = wx.ComboBox(self.openWaterPanel, size = (self.ctrlWidth, self.height), choices=self.corrections, style=wx.CB_READONLY)
+        # self.wldlCorrectionCmbox = wx.ComboBox(self.openWaterPanel, size = (self.ctrlWidth, self.height), choices=self.corrections, style=wx.CB_READONLY)
 
         wldlCorrectionSizer.Add(wldlCorrectionTxt, 0, wx.EXPAND)
         wldlCorrectionSizer.Add(self.wldlCorrectionCmbox, 0, wx.EXPAND)
 
         dryLineSizer = wx.BoxSizer(wx.HORIZONTAL)
         dryLineTxt = wx.StaticText(self.openWaterPanel, label=self.dryLineAngleLbl, size = (self.openWidth, self.height))
-        self.dryLineAngleCtrl = wx.TextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+        # self.dryLineAngleCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+        self.dryLineAngleCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl) 
         self.dryLineAngleCtrl.Enable(False)
 
-        # self.dryLineAngleCtrl.SetValue("0")
+ 
         dryLineSizer.Add(dryLineTxt, 0, wx.EXPAND)
         dryLineSizer.Add(self.dryLineAngleCtrl, 0, wx.EXPAND)
 
         distWaterSizer = wx.BoxSizer(wx.HORIZONTAL)
         distWaterTxt = wx.StaticText(self.openWaterPanel, label=self.distSurfaceLbl, size = (self.openWidth, self.height))
-        self.distWaterCtrl = wx.TextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+        # self.distWaterCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+        self.distWaterCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.distWaterCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
         self.distWaterCtrl.Enable(False)
 
         distWaterSizer.Add(distWaterTxt, 0, wx.EXPAND)
@@ -311,8 +553,9 @@ class MidSectionPanelPanel(wx.Panel):
 
         dryLineCorrectionSizer = wx.BoxSizer(wx.HORIZONTAL)
         dryLineCorrectionTxt = wx.StaticText(self.openWaterPanel, label=self.dryCorrectionLbl, size = (self.openWidth, self.height))
-        self.dryLineCorrectionCtrl = wx.TextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+        # self.dryLineCorrectionCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
         self.dryLineCorrectionCtrl.Enable(False)
+        self.dryLineCorrectionCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.dryLineCorrectionCtrl.SetBackgroundColour(self.backgrounColour)
         self.dryLineCorrectionCtrl.SetForegroundColour(self.textColour)
         dryLineCorrectionSizer.Add(dryLineCorrectionTxt, 0, wx.EXPAND)
@@ -320,8 +563,9 @@ class MidSectionPanelPanel(wx.Panel):
 
         wetLineCorrectionSizer = wx.BoxSizer(wx.HORIZONTAL)
         wetLineCorrectionTxt = wx.StaticText(self.openWaterPanel, label=self.wetCorretionLbl, size = (self.openWidth, self.height))
-        self.wetLineCorrectionCtrl = wx.TextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+        # self.wetLineCorrectionCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
         self.wetLineCorrectionCtrl.Enable(False)
+        self.wetLineCorrectionCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.wetLineCorrectionCtrl.SetBackgroundColour(self.backgrounColour)
         self.wetLineCorrectionCtrl.SetForegroundColour(self.textColour)
         wetLineCorrectionSizer.Add(wetLineCorrectionTxt, 0, wx.EXPAND)
@@ -329,9 +573,8 @@ class MidSectionPanelPanel(wx.Panel):
 
         effectiveDepthSizer = wx.BoxSizer(wx.HORIZONTAL)
         effectiveDepthLbl = wx.StaticText(self.openWaterPanel, label=self.effectiveDepthLbl, size = (self.openWidth, self.height))
-        self.OpenEffectiveDepthCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
-        self.OpenEffectiveDepthCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.OpenEffectiveDepthCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.OpenEffectiveDepthCtrl = MyTextCtrl(self.openWaterPanel, size = (self.ctrlWidth, self.height))
+        
         self.OpenEffectiveDepthCtrl.SetBackgroundColour(self.backgrounColour)
         self.OpenEffectiveDepthCtrl.SetForegroundColour(self.textColour)
         effectiveDepthSizer.Add(effectiveDepthLbl, 0, wx.EXPAND)
@@ -350,30 +593,31 @@ class MidSectionPanelPanel(wx.Panel):
         # self.openWaterPanel.Hide()
 
         #Depth table for Ice
-        self.icePanel = wx.Panel(self, style=wx.BORDER_SIMPLE, size=(340, -1))
+        # self.icePanel = wx.Panel(self, style=wx.BORDER_SIMPLE, size=(340, -1))
         iceSizer = wx.BoxSizer(wx.VERTICAL)
         self.icePanel.SetSizer(iceSizer)
 
         iceDepthReadSizer = wx.BoxSizer(wx.HORIZONTAL)
         iceDepthReadTxt = wx.StaticText(self.icePanel, label=self.depthLbl, size = (self.lblWidth, self.height))
-        self.iceDepthReadCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
-        self.iceDepthReadCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.iceDepthReadCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.iceDepthReadCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        # self.iceDepthReadCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        # self.iceDepthReadCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
         iceDepthReadSizer.Add(iceDepthReadTxt, 0, wx.EXPAND)
         iceDepthReadSizer.Add(self.iceDepthReadCtrl, 0, wx.EXPAND)
 
         iceAssemblySizer = wx.BoxSizer(wx.HORIZONTAL)
         iceAssemblyTxt = wx.StaticText(self.icePanel, label=self.iceAssemblyLbl, size = (self.lblWidth, self.height))
-        self.iceAssemblyCmbbox = wx.ComboBox(self.icePanel, size = (90, self.height), choices=self.iceAssemblySelections, style=wx.CB_READONLY)
-
+        # self.iceAssemblyCmbbox = wx.ComboBox(self.icePanel, size = (90, self.height), choices=self.iceAssemblySelections, style=wx.CB_READONLY)
+        # self.iceAssemblyCmbbox.MoveAfterInTabOrder(self.panelConditionCombox)
         iceAssemblySizer.Add(iceAssemblyTxt, 0, wx.EXPAND)
         iceAssemblySizer.Add(self.iceAssemblyCmbbox, 0, wx.EXPAND)
 
         meterAboveSizer = wx.BoxSizer(wx.HORIZONTAL)
         meterAboveTxt = wx.StaticText(self.icePanel, label=self.meterAboveLbl, size = (self.lblWidth, self.height))
-        self.meterAboveCtrl = wx.TextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
-        self.meterAboveCtrl.SetValue("0")
+        # self.meterAboveCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        self.meterAboveCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+        
 
         self.meterAboveCtrl.SetBackgroundColour(self.backgrounColour)
         self.meterAboveCtrl.SetForegroundColour(self.textColour)
@@ -383,8 +627,9 @@ class MidSectionPanelPanel(wx.Panel):
 
         meterBelowSizer = wx.BoxSizer(wx.HORIZONTAL)
         meterBelowTxt = wx.StaticText(self.icePanel, label=self.meterBelowLbl, size = (self.lblWidth, self.height))
-        self.meterBelowCtrl = wx.TextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
-        self.meterBelowCtrl.SetValue("0")
+        # self.meterBelowCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        self.meterBelowCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+        
         self.meterBelowCtrl.SetBackgroundColour(self.backgrounColour)
         self.meterBelowCtrl.SetForegroundColour(self.textColour)
         meterBelowSizer.Add(meterBelowTxt, 0, wx.EXPAND)
@@ -392,8 +637,9 @@ class MidSectionPanelPanel(wx.Panel):
 
         distanceAboveSizer = wx.BoxSizer(wx.HORIZONTAL)
         distanceAboveTxt = wx.StaticText(self.icePanel, label=self.distanceAboveLbl, size = (self.lblWidth, self.height))
-        self.distanceAboveCtrl = wx.TextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
-        self.distanceAboveCtrl.SetValue("0")
+        # self.distanceAboveCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        self.distanceAboveCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+        
         self.distanceAboveCtrl.SetBackgroundColour(self.backgrounColour)
         self.distanceAboveCtrl.SetForegroundColour(self.textColour)
         distanceAboveSizer.Add(distanceAboveTxt, 0, wx.EXPAND)
@@ -403,10 +649,12 @@ class MidSectionPanelPanel(wx.Panel):
         iceThickSizer = wx.BoxSizer(wx.HORIZONTAL)
         iceThickTxt = wx.StaticText(self.icePanel, label=self.iceThickLbl, size=(self.lblWidth, self.height))
         iceThickAdjustedSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.iceThickCtrl = wx.TextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        # self.iceThickCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        self.iceThickCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
 
         iceThickAdjustedTxt = wx.StaticText(self.icePanel, label=self.adjustedLbl)
-        self.iceThickAdjustedCtrl = wx.TextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        # self.iceThickAdjustedCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        self.iceThickAdjustedCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
         self.iceThickAdjustedCtrl.SetBackgroundColour(self.backgrounColour)
         self.iceThickAdjustedCtrl.SetForegroundColour(self.textColour)
 
@@ -425,12 +673,14 @@ class MidSectionPanelPanel(wx.Panel):
         waterSurfaceIceSizer = wx.BoxSizer(wx.HORIZONTAL)
         waterSurfaceIceTxt = wx.StaticText(self.icePanel, label=self.waterSurfaceIceLbl, size = (self.lblWidth, self.height))
         waterAdjustSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.waterSurfaceIceCtrl = wx.TextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        # self.waterSurfaceIceCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        self.waterSurfaceIceCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
 
 
 
         waterIceAdjustTxt = wx.StaticText(self.icePanel, label=self.adjustedLbl, size = (-1, self.height))
-        self.waterIceAdjustCtrl = wx.TextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        # self.waterIceAdjustCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        self.waterIceAdjustCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
         self.waterIceAdjustCtrl.SetBackgroundColour(self.backgrounColour)
         self.waterIceAdjustCtrl.SetForegroundColour(self.textColour)
 
@@ -450,15 +700,16 @@ class MidSectionPanelPanel(wx.Panel):
 
 
 
-        self.slushCkbox = wx.CheckBox(self.icePanel, label=self.slushLbl, style=wx.ALIGN_RIGHT)
+        # self.slushCkbox = wx.CheckBox(self.icePanel, label=self.slushLbl, style=wx.ALIGN_RIGHT)
         self.slushCkbox.Bind(wx.EVT_CHECKBOX, self.OnSlushCkbox)
 
 
 
         waterSurfaceSlushSizer = wx.BoxSizer(wx.HORIZONTAL)
         waterSurfaceSlushTxt = wx.StaticText(self.icePanel, label=self.waterSurfaceSlushLbl, size = (self.lblWidth, self.height))
-        # print waterSurfaceSlushTxt.GetSize()
-        self.waterSurfaceSlushCtrl = wx.TextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+
+        # self.waterSurfaceSlushCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        self.waterSurfaceSlushCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
         self.waterSurfaceSlushCtrl.Enable(False)
 
         waterSurfaceSlushSizer.Add(waterSurfaceSlushTxt, 0, wx.EXPAND)
@@ -466,7 +717,7 @@ class MidSectionPanelPanel(wx.Panel):
 
         slushThicknessSizer = wx.BoxSizer(wx.HORIZONTAL)
         slushThicknessTxt = wx.StaticText(self.icePanel, label=self.slushThicknessLbl, size = (self.lblWidth, self.height))
-        self.slushThicknessCtrl = wx.TextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        # self.slushThicknessCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
         self.slushThicknessCtrl.SetBackgroundColour(self.backgrounColour)
         self.slushThicknessCtrl.SetForegroundColour(self.textColour)
 
@@ -475,15 +726,15 @@ class MidSectionPanelPanel(wx.Panel):
 
         effectiveDepthSizer = wx.BoxSizer(wx.HORIZONTAL)
         effectiveDepthLbl = wx.StaticText(self.icePanel, label=self.effectiveDepthLbl, size = (self.lblWidth, self.height))
-        self.iceEffectiveDepthCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
-        self.iceEffectiveDepthCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.iceEffectiveDepthCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.iceEffectiveDepthCtrl = MyTextCtrl(self.icePanel, size = (self.ctrlWidth, self.height))
+        # self.iceEffectiveDepthCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        # self.iceEffectiveDepthCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
         self.iceEffectiveDepthCtrl.SetBackgroundColour(self.backgrounColour)
         self.iceEffectiveDepthCtrl.SetForegroundColour(self.textColour)
         effectiveDepthSizer.Add(effectiveDepthLbl, 0, wx.EXPAND)
         effectiveDepthSizer.Add(self.iceEffectiveDepthCtrl, 0, wx.EXPAND)
 
-        iceSizer.Add(iceDepthReadSizer, 0, wx.EXPAND)
+        
         iceSizer.Add(iceAssemblySizer, 0, wx.EXPAND)
         iceSizer.Add(meterAboveSizer, 0, wx.EXPAND)
         iceSizer.Add(meterBelowSizer, 0, wx.EXPAND)
@@ -494,6 +745,7 @@ class MidSectionPanelPanel(wx.Panel):
         iceSizer.Add(self.slushCkbox, 0)
         iceSizer.Add(waterSurfaceSlushSizer, 0, wx.EXPAND)
         iceSizer.Add(slushThicknessSizer, 0, wx.EXPAND)
+        iceSizer.Add(iceDepthReadSizer, 0, wx.EXPAND)
         iceSizer.Add(effectiveDepthSizer, 0, wx.EXPAND)
 
         self.icePanel.Hide()
@@ -501,21 +753,28 @@ class MidSectionPanelPanel(wx.Panel):
 
 
         #Velocity Summary
-        self.velocityPanel = wx.Panel(self)
-        velocitySizer = wx.BoxSizer(wx.VERTICAL)
-        self.velocityPanel.SetSizer(velocitySizer)
+        
 
         velocitySummarySizer = wx.BoxSizer(wx.HORIZONTAL)
 
         velocityLeftSizer = wx.BoxSizer(wx.VERTICAL)
 
         velocityMethodSizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        velocitySizer = wx.BoxSizer(wx.VERTICAL)
+        self.velocityPanel.SetSizer(velocitySizer)
         velocityLbl = wx.StaticText(self.velocityPanel, label=self.velocityMethodLbl, size = (-1, self.height))
-        self.velocityCombo = wx.ComboBox(self.velocityPanel, style=wx.CB_READONLY, choices=self.velocityMethods, size=(-1, self.height))
+        
 
-        velocityMethodSizer.Add(velocityLbl, 1, wx.EXPAND)
-        velocityMethodSizer.Add(self.velocityCombo, 1, wx.EXPAND)
+        velocityMethodSizer.Add(velocityLbl, 0, wx.EXPAND)
+        velocityMethodSizer.Add(self.velocityCombo, 0, wx.EXPAND|wx.LEFT, 10)
 
+
+        # self.depthPanelLockCkbox = wx.CheckBox(self.velocityPanel, label=self.depthPanelLockLbl)
+        # self.depthPanelLockCkbox.Bind(wx.EVT_CHECKBOX, self.OnDepthPanelLockCkbox)
+
+
+        # velocityLeftSizer.Add(self.depthPanelLockCkbox, 1, wx.EXPAND|wx.TOP, 5)
         velocityLeftSizer.Add((-1, -1), 1, wx.EXPAND|wx.TOP, 5)
         velocityLeftSizer.Add((-1, -1), 1, wx.EXPAND|wx.TOP, 5)
         velocityLeftSizer.Add(velocityMethodSizer, 1, wx.EXPAND|wx.TOP, 5)
@@ -524,15 +783,17 @@ class MidSectionPanelPanel(wx.Panel):
 
         obliqueSizer = wx.BoxSizer(wx.HORIZONTAL)
         obliqueLbl = wx.StaticText(self.velocityPanel, label=self.obliqueLbl, size = (self.lblWidth, self.height))
-        self.obliqueCtrl = wx.TextCtrl(self.velocityPanel, size = (self.ctrlWidth, self.height))
-        self.obliqueCtrl.SetValue("1")
+        self.obliqueCtrl = MyTextCtrl(self.velocityPanel, size = (self.ctrlWidth, self.height))
+        self.obliqueCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.obliqueCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+
         obliqueSizer.Add(obliqueLbl, 0, wx.EXPAND)
         obliqueSizer.Add(self.obliqueCtrl, 0, wx.EXPAND)
 
         velocityCorrectionSizer = wx.BoxSizer(wx.HORIZONTAL)
         velocityCorrectionLbl = wx.StaticText(self.velocityPanel, label=self.velocityCorrLbl, size = (self.lblWidth, self.height))
         # self.velocityCorrectionCtrl = wx.ComboBox(self.velocityPanel, size = (-1, self.height), choices=self.velocityCorrFactors, style=wx.CB_DROPDOWN)
-        self.velocityCorrectionCtrl = wx.TextCtrl(self.velocityPanel, size = (self.ctrlWidth, self.height))
+        self.velocityCorrectionCtrl = MyTextCtrl(self.velocityPanel, size = (self.ctrlWidth, self.height))
         self.velocityCorrectionCtrl.SetBackgroundColour(self.backgrounColour)
         self.velocityCorrectionCtrl.SetForegroundColour(self.textColour)
         velocityCorrectionSizer.Add(velocityCorrectionLbl, 0, wx.EXPAND)
@@ -555,9 +816,7 @@ class MidSectionPanelPanel(wx.Panel):
         velocitySizer.Add(velocitySummarySizer, 0, wx.EXPAND)
 
 
-        #Velocity table
-        self.velocityGrid = Grid(self.velocityPanel, size=(-1, -1))
-        self.velocityGrid.CreateGrid(3, 7)
+        
 
         self.velocityGrid.SetColLabelValue(0, "%Depth")
         self.velocityGrid.SetColLabelValue(1, "Depth\n of Obs (m)")
@@ -605,19 +864,20 @@ class MidSectionPanelPanel(wx.Panel):
         self.velocityGrid.SetCellSize(0, 5, 3, 1)
         self.velocityGrid.SetCellSize(0, 6, 3, 1)
 
-        self.velocityGrid.SetColFormatFloat(1, precision=3)
+        self.velocityGrid.SetColFormatFloat(1, precision=2)
+        self.velocityGrid.SetColFormatFloat(2, precision=0)
         self.velocityGrid.SetColFormatFloat(3, precision=1)
         # Below are now commented out because I manually put 3sigfig each time I set values for those columns
-        #self.velocityGrid.SetColFormatFloat(4, precision=7)
-        #self.velocityGrid.SetColFormatFloat(5, precision=7)
-        # self.velocityGrid.SetColFormatFloat(6, precision=3)
+        self.velocityGrid.SetColFormatFloat(4, precision=3)
+        self.velocityGrid.SetColFormatFloat(5, precision=3)
+        self.velocityGrid.SetColFormatFloat(6, precision=3)
 
         # self.velocityGrid.GetCellEditor(2, 0).SetControl(wx.Control(self))
-        # print self.velocityGrid.GetCellEditor(2, 0).IsCreated()
 
 
 
-        self.velocityGrid.SetRowLabelSize(1)
+
+        self.velocityGrid.SetRowLabelSize(0)
         velocitySizer.Add(self.velocityGrid, 0, wx.EXPAND|wx.TOP, 5)
 
 
@@ -627,16 +887,32 @@ class MidSectionPanelPanel(wx.Panel):
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
         buttonPanel.SetSizer(buttonSizer)
 
-        self.saveBtn = wx.Button(buttonPanel, label=self.saveBtnLbl, size=(100, 30))
-        self.nextBtn = wx.Button(buttonPanel, label=self.nextBtnLbl, size=(50, 30))
         self.cancelBtn = wx.Button(buttonPanel, label=self.cancelBtnLbl, size=(50, 30))
+        self.preBtn = wx.Button(buttonPanel, label=self.preBtnLbl, size=(50, 30))
+        self.nextBtn = wx.Button(buttonPanel, label=self.nextBtnLbl, size=(50, 30))
+        self.saveNextBtn = wx.Button(buttonPanel, label=self.saveNextBtnLbl, size=(100, 30))
+        self.saveBtn = wx.Button(buttonPanel, label=self.saveBtnLbl, size=(100, 30))
+
+
+
+        if self.modify == 0 or self.modify == 1:
+            self.preBtn.Hide()
+            self.nextBtn.Hide()
+        if self.modify == 1 or self.modify == 2:
+            self.saveNextBtn.Hide()
+
+                
 
         self.saveBtn.Bind(wx.EVT_BUTTON, self.OnSave)
         self.cancelBtn.Bind(wx.EVT_BUTTON, self.OnCancel)
         self.nextBtn.Bind(wx.EVT_BUTTON, self.OnNext)
+        self.preBtn.Bind(wx.EVT_BUTTON, self.OnPrevious)
+        self.saveNextBtn.Bind(wx.EVT_BUTTON, self.OnSaveAddNext)
 
-        buttonSizer.Add(self.cancelBtn, 0, wx.LEFT, 250)
+        buttonSizer.Add(self.cancelBtn, 0, wx.LEFT, 200)
+        buttonSizer.Add(self.preBtn, 0, wx.LEFT, 5)
         buttonSizer.Add(self.nextBtn, 0, wx.LEFT, 5)
+        buttonSizer.Add(self.saveNextBtn, 0, wx.LEFT, 5)
         buttonSizer.Add(self.saveBtn, 0, wx.LEFT, 5)
 
         sizerV.Add(self.headerTxt, 0, wx.EXPAND)
@@ -651,6 +927,13 @@ class MidSectionPanelPanel(wx.Panel):
         # self.SetSize(100, 80)
 
 
+        # self.BindingEvents()
+
+        self.wldlCorrectionCmbox.SetValue(self.corrections[0])
+        self.iceAssemblyCmbbox.SetValue(self.iceAssemblySelections[5])
+
+
+    def BindingEvents(self):
         self.obliqueCtrl.Bind(wx.EVT_TEXT, self.OnUpdateAdjVelocity)
         self.velocityCombo.Bind(wx.EVT_COMBOBOX, self.OnUpdateMeanVel)
         self.slopeCtrl.Bind(wx.EVT_TEXT, self.OnUpdateMeanVel)
@@ -664,9 +947,7 @@ class MidSectionPanelPanel(wx.Panel):
         self.slopeCtrl.Bind(wx.EVT_TEXT, self.OnUpdateAllPointVel)
         self.slopeCtrl2.Bind(wx.EVT_TEXT, self.OnUpdateAllPointVel)
         self.interceptCtrl.Bind(wx.EVT_TEXT, self.OnUpdateAllPointVel)
-        self.openDepthReadCtrl.Bind(wx.EVT_TEXT, self.OnUpdateOpenEffectiveDepth)
-        self.openDepthReadCtrl.Bind(wx.EVT_TEXT, self.UpdateWetLineCorrection)
-        self.openDepthReadCtrl.Bind(wx.EVT_TEXT, self.OnUpdateDepthOfObs)
+
         self.amountWeightCmbox.Bind(wx.EVT_COMBOBOX, self.OnUpdateMeterOffset)
         self.weightOffsetCtrl.Bind(wx.EVT_TEXT, self.OnUpdateDepthOfObs)
         self.waterIceAdjustCtrl.Bind(wx.EVT_TEXT, self.OnUpdateDepthOfObs)
@@ -699,11 +980,39 @@ class MidSectionPanelPanel(wx.Panel):
 
         self.velocityGrid.Bind(wx.grid.EVT_GRID_CELL_CHANGED, self.OnUpdateAtPointVel)
         self.velocityGrid.Bind(wx.grid.EVT_GRID_TABBING, self.OnRevTimeTab)
+        # self.velocityGrid.Bind(wx.grid.EVT_GRID_CELL_LEFT_DCLICK, self.OnDoubleClick)
+        # self.velocityGrid.Bind(wx.grid.EVT_GRID_CELL_CHANGING, self.OnDoubleClick)
 
-        self.wldlCorrectionCmbox.SetValue(self.corrections[0])
-        self.iceAssemblyCmbbox.SetValue(self.iceAssemblySelections[5])
+    # def OnDoubleClick(self, evt):
+    #     # if evt.GetCellValue() == "0":
+    #     #     evt.SetCellValue()
+    #     print evt.GetCol()
+    #     print evt.GetRow()
+    #     print evt.GetEventObject()
+    #     print evt.Selecting()
+
+    #     grid = evt.GetEventObject()
+    #     row = evt.GetRow()
+    #     col = evt.GetCol()
+
+    #     if grid.GetCellValue(row, col) != "" and float(grid.GetCellValue(row, col)) == 0.0:
+    #         grid.SetCellValue(row, col, "")
+
+    #     evt.Skip()
+
+
+    def InitData(self):
+        self.measurementTimeCtrl.SetToCurrent()
+        self.panelTagMarkCtrl.SetValue(self.nextTagMark)
+        self.amountWeightCmbox.SetValue("0")
+        self.weightOffsetCtrl.SetValue("0")
+        self.meterAboveCtrl.SetValue("0")
+        self.meterBelowCtrl.SetValue("0")
+        self.distanceAboveCtrl.SetValue("0")
+        self.obliqueCtrl.SetValue("1")
 
     def OnRevTimeTab(self, event):
+
         totalRows = self.velocityGrid.GetNumberRows()
         col = event.GetCol()
         row = event.GetRow()
@@ -713,11 +1022,12 @@ class MidSectionPanelPanel(wx.Panel):
             if row!=totalRows-1:
                 self.velocityGrid.GoToCell(row+1,2)
 
-    def OnTagmarkTabEnter(self, event):
-        if "open" in self.panelConditionCombox.GetValue().lower():
-            self.openDepthReadCtrl.SetFocus()
-        if "ice" in self.panelConditionCombox.GetValue().lower():
-            self.iceDepthReadCtrl.SetFocus()
+    # def OnTagmarkTabEnter(self, event):
+    #     if "open" in self.panelConditionCombox.GetValue().lower():
+    #         self.openDepthReadCtrl.SetFocus()
+    #     if "ice" in self.panelConditionCombox.GetValue().lower():
+    #         self.iceDepthReadCtrl.SetFocus()
+    #     event.Skip()
 
     def OnUpdateIceThickAdjusted(self, event):
         self.UpdateIceThickAdjusted()
@@ -736,7 +1046,7 @@ class MidSectionPanelPanel(wx.Panel):
         event.Skip()
 
     def UpdateDepthOfObs(self, row):
-        # print "UpdateDepthOfObs"
+
         coef = self.velocityGrid.GetCellValue(row, 0)
         if self.velocityCombo.GetValue() == "Surface" or coef == "":
             val = ""
@@ -749,7 +1059,7 @@ class MidSectionPanelPanel(wx.Panel):
                 val = float(coef) * (float(self.openDepthReadCtrl.GetValue()) + float(offset))
         elif self.panelConditionCombox.GetValue() == "Ice":
             effectiveDepth = self.iceEffectiveDepthCtrl.GetValue()
-            #print effectiveDepth
+
             if effectiveDepth == "":
                     val = ""
             elif self.slushCkbox.IsChecked():
@@ -765,7 +1075,7 @@ class MidSectionPanelPanel(wx.Panel):
         if val == "":
             self.velocityGrid.SetCellValue(row, 1, val)
         else:
-            self.velocityGrid.SetCellValue(row, 1, sigfig.round_sig(val,3))
+            self.velocityGrid.SetCellValue(row, 1, str(round(val,2)))
 
 
 
@@ -773,67 +1083,113 @@ class MidSectionPanelPanel(wx.Panel):
 
 
     def OnUpdateAtPointVel(self, event):
-        # print "OnUpdateAtPointVel"
+
+        for i in range(3):
+            if self.velocityGrid.GetCellValue(i, 1) == "0.00":
+                self.velocityGrid.SetCellValue(i, 1, "")
+
+            if self.velocityGrid.GetCellValue(i, 2) == "0":
+                self.velocityGrid.SetCellValue(i, 2, "")
+
+            if self.velocityGrid.GetCellValue(i, 3) == "0.0":
+                self.velocityGrid.SetCellValue(i, 3, "")
+
+            if self.velocityGrid.GetCellValue(i, 4) == "0.000":
+                self.velocityGrid.SetCellValue(i, 4, "")
+
         if event.GetCol() == 2 or event.GetCol() == 3:
             row = event.GetRow()
-            self.UpdateAtPointVelByRow(row)
+            if self.UpdateAtPointVelByRow(row):
+
+                self.ShowWarning()
 
         if event.GetCol() == 0:
             self.OnUpdateDepthOfObs(event)
 
-        self.OnUpdateMeanVel(event)
+        self.UpdateMeanVel()
+
         event.Skip()
 
 
+    def CalculateVel(self, rev, time, slope, intercept, reverse):
+
+        if rev == "0":
+            return "0"
+        elif rev == "" or time == "" or slope == "" or intercept == "":
+            return ""
+        elif reverse:
+            return - (float(rev) / float(time) * float(slope) + float(intercept))
+        else:
+            return float(rev) / float(time) * float(slope) + float(intercept)
+
 
     def UpdateAtPointVelByRow(self, row):
+        temp02 = self.preVel02
+        temp08 = self.preVel08
+
+
         rev = self.velocityGrid.GetCellValue((row, 2))
         time = self.velocityGrid.GetCellValue((row, 3))
         if self.slopBtn1.GetValue():
-            slop = self.slopeCtrl.GetValue()
+            slope = self.slopeCtrl.GetValue()
             intercept = self.interceptCtrl.GetValue()
         else:
-            slop = self.slopeCtrl2.GetValue()
+            slope = self.slopeCtrl2.GetValue()
             intercept = self.interceptCtrl2.GetValue()
         reverse = self.reverseCkbox.IsChecked()
 
-        if rev != "" and time != "" and slop != '' and intercept != "":
-            if rev == "0":
-                val = "0"
-            elif reverse:
-                val = -(float(rev) / float(time) * float(slop) + float(intercept))
-            else:
-                val = float(rev) / float(time) * float(slop) + float(intercept)
+        if rev != "" and time != "" and slope != '' and intercept != "":
+            val = self.CalculateVel(rev, time, slope, intercept, reverse)
 
             # apply 3sigfig
-            print "row", row
+
             if isinstance(val, str):
                 self.velocityGrid.SetCellValue((row, 4), val)
                 self.rawAtPointVel[row] = val
-                self.openWaterPanel.Disable()
-                self.icePanel.Disable()
+
             else:
                 self.velocityGrid.SetCellValue((row, 4), sigfig.round_sig(val,3))
                 self.rawAtPointVel[row] = val
                 #self.velocityGrid.SetCellValue((row, 4), str(val))
-                self.openWaterPanel.Disable()
-                self.icePanel.Disable()
+            # self.openWaterPanel.Disable()
+            # self.icePanel.Disable()
+            # self.depthPanelLockCkbox.SetValue(True)
         else:
             self.velocityGrid.SetCellValue((row, 4), "")
 
+        if self.velocityCombo.GetValue() == self.velocityMethods[2] and self.velocityGrid.GetCellValue((0, 4)) != "" and self.velocityGrid.GetCellValue((1, 4)) != "":
+            vel02 = float(self.velocityGrid.GetCellValue((0, 4)))
+            vel08 = float(self.velocityGrid.GetCellValue((1, 4)))
+            self.preVel02 = vel02
+            self.preVel08 = vel08
+            if vel02 / vel08 > 2 and (temp02 != vel02 or temp08 != vel08):
+
+                return True
+                
+
     def UpdateAllPointVel(self):
+
+        showWarning = False
         for i in range(3):
-            self.UpdateAtPointVelByRow(i)
+            showWarning = self.UpdateAtPointVelByRow(i) if not showWarning else True
+
+        if showWarning:
+            self.ShowWarning()
         self.UpdateMeanVel()
 
 
+    def ShowWarning(self):
+        dlg = wx.MessageDialog(None, "Warning\nIt is highly recommended to use 0.2/0.6/0.8 method.", "Warning!", wx.OK | wx.ICON_EXCLAMATION)
+        dlg.ShowModal()
+
     def OnUpdateAllPointVel(self, event):
+      
         self.UpdateAllPointVel()
         event.Skip()
 
 
     def OnPanelCondition(self, event):
-        # print "OnPanelCondition"
+
 
         self.PanelConditionUpdate()
         self.OnVelMethod(event)
@@ -888,9 +1244,13 @@ class MidSectionPanelPanel(wx.Panel):
         event.Skip()
 
     def VelMethod(self):
+
         self.UpdateGrid()
         for i in range(3):
             self.UpdateDepthOfObs(i)
+
+
+        self.UpdateAllPointVel()
         self.Layout()
 
     def OnVelMethod(self, event):
@@ -898,6 +1258,10 @@ class MidSectionPanelPanel(wx.Panel):
         event.Skip()
 
     def UpdateGrid(self):
+        row0 = [self.velocityGrid.GetCellValue(0,0), self.velocityGrid.GetCellValue(0,2), self.velocityGrid.GetCellValue(0,3)]
+        row1 = [self.velocityGrid.GetCellValue(1,0), self.velocityGrid.GetCellValue(1,2), self.velocityGrid.GetCellValue(1,3)]
+        row2 = [self.velocityGrid.GetCellValue(2,0), self.velocityGrid.GetCellValue(2,2), self.velocityGrid.GetCellValue(2,3)]
+        rows = [row0, row1, row2]
         if self.velocityCombo.GetValue() == "0.5":
             self.velocityGrid.SetCellValue((0,0), "0.5")
             self.velocityGrid.SetCellValue((1,0), "")
@@ -958,6 +1322,17 @@ class MidSectionPanelPanel(wx.Panel):
             self.velocityGrid.HideRow(1)
             self.velocityGrid.HideRow(2)
 
+        for i in range(3):
+            for index, val in enumerate(rows):
+                self.velocityGrid.SetCellValue((i, 2), "")
+                self.velocityGrid.SetCellValue((i, 3), "")
+                if self.velocityGrid.GetCellValue(i, 0) == val[0]:
+                    self.velocityGrid.SetCellValue((i, 2), val[1])
+                    self.velocityGrid.SetCellValue((i, 3), val[2])
+                    break
+
+
+
     def OnIceAssmeblyNoEvent(self):
         iceVal = self.iceAssemblyCmbbox.GetValue()
         if iceVal == self.iceAssemblySelections[0]:
@@ -1009,15 +1384,15 @@ class MidSectionPanelPanel(wx.Panel):
         if iceDepth != "" and meterAbove != "" and waterIce != "":
             if self.slushCkbox.IsChecked():
                 if slushThick != "":
-                    self.iceEffectiveDepthCtrl.SetValue(str(round(float(iceDepth) + float(meterAbove) - float(waterIce) + float(meterBelow) - float(slushThick),3)))
+                    self.iceEffectiveDepthCtrl.SetValue(str(round(float(iceDepth) + float(meterAbove) - float(waterIce) + float(meterBelow) - float(slushThick),2)))
                 else:
-                    self.iceEffectiveDepthCtrl.SetValue(str(round(float(iceDepth) + float(meterAbove) - float(waterIce) + float(meterBelow),3)))
+                    self.iceEffectiveDepthCtrl.SetValue(str(round(float(iceDepth) + float(meterAbove) - float(waterIce) + float(meterBelow),2)))
             else:
-                self.iceEffectiveDepthCtrl.SetValue(str(round(float(iceDepth) + float(meterAbove) - float(waterIce) + float(meterBelow),3)))
+                self.iceEffectiveDepthCtrl.SetValue(str(round(float(iceDepth) + float(meterAbove) - float(waterIce) + float(meterBelow),2)))
         else:
             self.iceEffectiveDepthCtrl.SetValue("")
 
-        if self.iceEffectiveDepthCtrl.GetValue() != "" and not self.modify:
+        if self.iceEffectiveDepthCtrl.GetValue() != "" and self.modify != 2:
             if float(self.iceEffectiveDepthCtrl.GetValue()) < 0.75 and "open" in self.panelConditionCombox.GetValue().lower():
                 self.velocityCombo.SetValue("0.6")
                 self.UpdateMeanVel()
@@ -1079,14 +1454,11 @@ class MidSectionPanelPanel(wx.Panel):
             offset = float(offset) if offset != "" else 0
             dryLine = float(dryLine) if dryLine != ""  and self.dryLineCorrectionCtrl.IsEnabled() else 0
             wetLine = float(wetLine) if wetLine != "" and self.wetLineCorrectionCtrl.IsEnabled() else 0
-            effectiveDepth = str(round(float(depthRead) + offset - dryLine - wetLine,3))
-            # print  depthRead
-            # print  offset
-            # print dryLine
-            # print wetLine
+            effectiveDepth = str(round(float(depthRead) + offset - dryLine - wetLine,2))
+
         else:
             effectiveDepth = ""
-        if effectiveDepth != "" and not self.modify:
+        if effectiveDepth != "" and self.modify != 2:
             if offset < 0.2:
                 if float(effectiveDepth) < 0.75:
                     self.velocityCombo.SetValue("0.6")
@@ -1100,7 +1472,7 @@ class MidSectionPanelPanel(wx.Panel):
                     self.VelMethod()
             else:
                 cutOffDepth = offset/0.2
-                print cutOffDepth
+
                 if float(effectiveDepth) < cutOffDepth:
                     self.velocityCombo.SetValue("0.6")
                     self.UpdateMeanVel()
@@ -1144,10 +1516,7 @@ class MidSectionPanelPanel(wx.Panel):
                 angle = float(angle)
                 depthRead = float(depthRead)
                 wetLineCorrection = depthRead - (depthRead * ((0.000313*angle) + (0.000075*angle*angle) + (0.998015*(math.cos(math.radians(angle))))))
-                # print 0.000313*angle
-                # print 0.000075*angle*angle
-                # print math.cos(math.radians(angle))
-                # print 0.998015*(math.cos(math.radians(angle)))
+
             else:
                 wetLineCorrection = ""
 
@@ -1198,53 +1567,59 @@ class MidSectionPanelPanel(wx.Panel):
         self.velocityCorrectionCtrl.SetValue(vcf)
 
     def UpdateMeanVel(self):
-        # print "OnUpdateMeanVel"
+
         try:
+
             #self.velocityMethods = ["0.5", "0.6", "0.2/0.8", "0.2/0.6/0.8", "Surface"]
             if self.velocityCombo.GetValue() == self.velocityMethods[0] \
                 or self.velocityCombo.GetValue() == self.velocityMethods[1]\
                 or self.velocityCombo.GetValue() == self.velocityMethods[4]:
+
                 meanVal = self.rawAtPointVel[0] * float(self.velocityCorrectionCtrl.GetValue())
             elif self.velocityCombo.GetValue() == self.velocityMethods[2]:
+
+
                 meanVal = (self.rawAtPointVel[0] + self.rawAtPointVel[1]) / 2 * float(self.velocityCorrectionCtrl.GetValue())
             else:
+
                 meanVal = ((self.rawAtPointVel[0] + self.rawAtPointVel[1] * 2 + self.rawAtPointVel[2])) / 4 * float(self.velocityCorrectionCtrl.GetValue())
             self.rawMeanVal = meanVal
-            print self.rawMeanVal
-            print self.rawAtPointVel
+
             ## apply 3 sigfigs
             self.velocityGrid.SetCellValue(0, 5, sigfig.round_sig(meanVal,3))
             #self.velocityGrid.SetCellValue(0, 5, str(meanVal))
         except:
-            self.velocityGrid.SetCellValue(0, 5, "")
-        # if self.velocityCombo.GetValue() == self.velocityMethods[0] \
-        #     or self.velocityCombo.GetValue() == self.velocityMethods[1]\
-        #     or self.velocityCombo.GetValue() == self.velocityMethods[4]:
-        #     meanVal = float(self.velocityGrid.GetCellValue(0, 4)) * float(self.velocityCorrectionCtrl.GetValue())
-        # elif self.velocityCombo.GetValue() == self.velocityMethods[2]:
-        #     meanVal = float(self.velocityGrid.GetCellValue(0, 4)) + float(self.velocityGrid.GetCellValue(1, 4)) / 2 * float(self.velocityCorrectionCtrl.GetValue())
-        # else:
-        #     meanVal = (float(self.velocityGrid.GetCellValue(0, 4)) + float(self.velocityGrid.GetCellValue(1, 4)) * 2 + float(self.velocityGrid.GetCellValue(2, 4))) / 4 * float(self.velocityCorrectionCtrl.GetValue())
 
-        # self.velocityGrid.SetCellValue(0, 5, str(meanVal))
+            self.velocityGrid.SetCellValue(0, 5, "")
+
+
         self.UpdateAdjVelocity()
 
     def UpdateAdjVelocity(self):
-        # print "OnUpdateAdjVelocity"
+
         try:
             #meanVal = self.velocityGrid.GetCellValue(0, 5)
             obliqueCorrection = self.obliqueCtrl.GetValue()
-            if self.rawMeanVal!="" and obliqueCorrection:
+
+            rawMeanVal = self.velocityGrid.GetCellValue(0, 5)
+            if rawMeanVal != "" and obliqueCorrection:
+
                 try:
-                    self.velocityGrid.SetCellValue(0, 6, sigfig.round_sig(float(self.rawMeanVal) * float(obliqueCorrection),3))
+                    self.velocityGrid.SetCellValue(0, 6, sigfig.round_sig(float(rawMeanVal) * float(obliqueCorrection),3))
+
                 except:
                     self.velocityGrid.SetCellValue(0, 6, "")
+
                 #self.velocityGrid.SetCellValue(0, 6, str(float(meanVal) * float(obliqueCorrection)))
             else:
+
                 self.velocityGrid.SetCellValue(0, 6, "")
         except Exception as e:
-            print e
+    
             self.velocityGrid.SetCellValue(0, 6, "")
+
+
+
 
     def OnUpdateMeanVel(self, event):
         self.UpdateMeanVel()
@@ -1263,19 +1638,50 @@ class MidSectionPanelPanel(wx.Panel):
         event.Skip()
 
     def OnSave(self, event):
-        print "OnSave_Panel"
 
-        # summaryTable = self.GetParent().GetParent().GetParent().summaryTable
         self.SaveToObj()
         event.Skip()
 
+    def OnPrevious(self, event):
+        failed = self.SaveToObj()
+        table = self.GetParent().GetParent().GetParent()
+        if failed != -1:
+            for index, obj in enumerate(table.panelObjs):
+                if float(obj.distance) == float(self.panelTagMarkCtrl.GetValue()):
+                    table.modifiedPanelArrayIndex = index
+                    break
+            table.modifiedPanelArrayIndex -= 1
+            table.Modify()
 
     def OnNext(self, event):
         failed = self.SaveToObj()
-        if not failed==-1:
-            self.GetParent().GetParent().GetParent().Adding()
+        table = self.GetParent().GetParent().GetParent()
+        if failed != -1:
+            for index, obj in enumerate(table.panelObjs):
+                if float(obj.distance) == float(self.panelTagMarkCtrl.GetValue()):
+                    table.modifiedPanelArrayIndex = index
+                    break
+
+            table.modifiedPanelArrayIndex += 1
+            table.Modify()
+
+
+
+    def OnSaveAddNext(self, event):
+        failed = self.SaveToObj()
+        table = self.GetParent().GetParent().GetParent()
+        if failed != -1:
+            table.Adding()
+        
+
+        
+            
+
+        
 
     def SaveToObj(self):
+        # self.UpdateAllPointVel()
+
         table = self.GetParent().GetParent().GetParent()
 
         num = self.panelNumberCtrl.GetValue()
@@ -1287,32 +1693,19 @@ class MidSectionPanelPanel(wx.Panel):
             dlg.ShowModal()
             return -1
 
-        #if self.OpenEffectiveDepthCtrl.GetValue()=="" and self.iceEffectiveDepthCtrl.GetValue()=="":
-        #    dlg = wx.MessageDialog(None, "You need to enter in the values for [Effective Depth] to be calculated", "Warning!", wx.OK | wx.ICON_EXCLAMATION)
-        #    dlg.ShowModal()
-        #    return -1
+        arrayIndex = -1
+        for index, obj in enumerate(table.panelObjs):
+            if obj.pid == self.pid:
+                arrayIndex = index
+                break
 
-        #if self.velocityGrid.GetCellValue(0,6)=="":
-        #    dlg = wx.MessageDialog(None, "You need to enter in the values for [Corr. mean vel] to be calculated", "Warning!", wx.OK | wx.ICON_EXCLAMATION)
-        #    dlg.ShowModal()
-        #    return -1
-
-        #if len(table.panelObjs) > 0 and table.panelObjs[0].panelType==0:
-        #    if float(dist) < float(table.panelObjs[0].distance):
-        #        dlg = wx.MessageDialog(None, "Panel tagmark value must be GREATER than Start Edge", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
-        #        dlg.ShowModal()
-        #        return -1
-
-        #if len(table.panelObjs) > 1 and table.panelObjs[-1].panelType==0:
-        #    if float(dist) > float(table.panelObjs[-1].distance):
-        #        dlg = wx.MessageDialog(None, "Panel tagmark value must be LESS than End Edge", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
-        #        dlg.ShowModal()
-        #        return -1
+        if table.IsValidTagMark(dist, arrayIndex=arrayIndex, modify=self.modify) != 0:
+            return -1
 
         if len(table.panelObjs) > 0:
             for i in range(len(table.panelObjs)):
                 if float(table.panelObjs[i].distance) == float(dist):
-                    if self.panelId == -1:
+                    if self.modify != 2:
                         dlg = wx.MessageDialog(None, "Panel tagmark value already exists", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
                         dlg.ShowModal()
                         return -1
@@ -1421,7 +1814,7 @@ class MidSectionPanelPanel(wx.Panel):
                 dryCorrection=self.dryLineCorrectionCtrl.GetValue(), wetCorrection=self.wetLineCorrectionCtrl.GetValue(), \
                 openEffectiveDepth=self.OpenEffectiveDepthCtrl.GetValue(),\
                 obliqueCorrection=self.obliqueCtrl.GetValue(), velocityCorrFactor=self.velocityCorrectionCtrl.GetValue(), \
-                reverseFlow=self.reverseCkbox.GetValue(), panelId=self.panelId, index=self.index)
+                reverseFlow=self.reverseCkbox.GetValue(), pid=self.pid)#, depthPanelLock=self.depthPanelLockCkbox.GetValue())
 
 
         else:
@@ -1444,20 +1837,20 @@ class MidSectionPanelPanel(wx.Panel):
             wsBottomSlush=self.waterSurfaceSlushCtrl.GetValue(), thickness=self.slushThicknessCtrl.GetValue(), \
             iceEffectiveDepth=self.iceEffectiveDepthCtrl.GetValue(),\
             obliqueCorrection=self.obliqueCtrl.GetValue(), velocityCorrFactor=self.velocityCorrectionCtrl.GetValue(), \
-            reverseFlow=self.reverseCkbox.GetValue(), panelId=self.panelId, index=self.index, \
-            iceThickness = self.iceThickCtrl.GetValue(), iceThicknessAdjusted = self.iceThickAdjustedCtrl.GetValue())
+            reverseFlow=self.reverseCkbox.GetValue(), #depthPanelLock=self.depthPanelLockCkbox.GetValue(), \
+            iceThickness = self.iceThickCtrl.GetValue(), iceThicknessAdjusted = self.iceThickAdjustedCtrl.GetValue(), pid=self.pid)
 
 
+        if self.modify != 2:
 
-
-        if obj.panelId == -1:
-            print "**AddRow**"
             table.AddRow(obj, self.GetScreenPosition())
             table.nextPanelNum += 1
         else:
-            print "**UpdateRow**"
+
             table.UpdateRow(obj, self.GetScreenPosition())
         self.GetParent().GetParent().Close()
+
+
 
     def OnCancel(self, event):
         self.GetParent().GetParent().Close()
@@ -1465,10 +1858,12 @@ class MidSectionPanelPanel(wx.Panel):
         event.Skip()
 
     def OnSlopeRadioBtn(self, event):
+
         self.SlopeRadioUpdate()
         event.Skip()
 
     def SlopeRadioUpdate(self):
+
         if self.slopBtn1.GetValue():
             self.slopeCtrl.Enable(True)
             self.interceptCtrl.Enable(True)
@@ -1505,6 +1900,44 @@ class MidSectionPanelPanel(wx.Panel):
             self.interceptCtrl.SetValue(header.meter2InterceptCtrl1.GetValue())
             self.slopeCtrl2.SetValue(header.meter2SlopeCtrl2.GetValue())
             self.interceptCtrl2.SetValue(header.meter2InterceptCtrl2.GetValue())
+
+
+    def OnNavigate2Velocity(self, evt):
+        evtProc = False
+        if evt.IsFromTab():
+            if (self.wldlCorrectionCmbox.GetValue() == self.corrections[0] and evt.GetEventObject().FindFocus() == self.wldlCorrectionCmbox)\
+                or (self.wldlCorrectionCmbox.GetValue() == self.corrections[1] and evt.GetEventObject().FindFocus() == self.distWaterCtrl)\
+                or (self.wldlCorrectionCmbox.GetValue() == self.corrections[2] and evt.GetEventObject().FindFocus() == self.dryLineAngleCtrl)\
+                or (evt.GetEventObject().FindFocus() == self.iceDepthReadCtrl):# and self.panelNum == 1)\
+                # or (evt.GetEventObject().FindFocus() == self.waterSurfaceIceCtrl and self.panelNum != 1):
+                self.velocityCombo.SetFocus()
+                evtProc = True
+            elif self.panelNum != 1 and evt.GetEventObject().FindFocus() == self.openDepthReadCtrl:
+                for index, obj in enumerate(self.GetParent().GetParent().GetParent().panelObjs):
+                    if isinstance(obj, PanelObj) and obj.panelNum == self.panelNum - 1:
+                        if obj.panelCondition == "Open" and obj.wldl == "No":
+                            self.velocityCombo.SetFocus()
+                            evtProc = True
+            elif evt.GetEventObject().FindFocus() == self.velocityCombo:
+                self.velocityGrid.SetFocus()
+                self.velocityGrid.GoToCell(0,2)
+                evtProc = True
+
+
+        if (not evtProc):
+            evt.Skip()
+
+
+
+    # def OnDepthPanelLockCkbox(self, evt):
+    #     if self.depthPanelLockCkbox.GetValue():
+    #         self.openWaterPanel.Disable()
+    #         self.icePanel.Disable()
+    #     else:
+    #         self.openWaterPanel.Enable()
+    #         self.icePanel.Enable()
+    #     evt.Skip()
+
 
 
 def main():

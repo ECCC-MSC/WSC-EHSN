@@ -34,14 +34,14 @@ class InstrumentDeploymentInfoManager(object):
         self.gui.SetMethodCBListBox(method)
 
 
-    def GetPicturedCkboxVal(self):
-        return self.gui.picturedCkbox.IsChecked()
+    # def GetPicturedCkboxVal(self):
+    #     return self.gui.picturedCkbox.IsChecked()
 
-    def SetPicturedCkboxVal(self, val):
-        self.gui.picturedCkbox.SetValue(val)
+    # def SetPicturedCkboxVal(self, val):
+    #     self.gui.picturedCkbox.SetValue(val)
 
-    def GetPicturedCkbox(self):
-        return self.gui.picturedCkbox
+    # def GetPicturedCkbox(self):
+    #     return self.gui.picturedCkbox
 
 
 
@@ -80,18 +80,7 @@ class InstrumentDeploymentInfoManager(object):
 
             self.manager.DeploymentUpdate(str(check))
 
-            # if not self.gui.methodCBListBox.IsChecked(0) and not self.gui.methodCBListBox.IsChecked(1) or \
-            # (self.gui.methodCBListBox.IsChecked(1) and self.instrumentCmbo.lower() != 'adcp' and \
-            #     self.instrumentCmbo.lower() != 'adv' and self.instrumentCmbo.lower() != 'current meter'):
-            #     print 'for loops'
-            #     for child in self.manager.gui.frChecklist.labelPanel.GetSizer().GetChildren():
-            #         child.GetWindow().Enable(False)
-            #     for child in self.manager.gui.frChecklist.cbRevPanel.GetSizer().GetChildren():
-            #         child.GetWindow().Enable(False)
-            #     for child in self.manager.gui.frChecklist.cbCheckPanel.GetSizer().GetChildren():
-            #         child.GetWindow().Enable(False)
-            #     for child in self.manager.gui.frChecklist.ctrlValuePanel.GetSizer().GetChildren():
-            #         child.GetWindow().Enable(False)
+
 
 
     #Deployment Combo
@@ -365,13 +354,13 @@ class InstrumentDeploymentInfoManager(object):
 
     #Control and Remarks
     #Control Condition Combo
-    @property
-    def controlConditionCmbo(self):
-        return self.gui.GetControlConditionCmbo()
+    # @property
+    # def controlConditionCmbo(self):
+    #     return self.gui.GetControlConditionCmbo()
 
-    @controlConditionCmbo.setter
-    def controlConditionCmbo(self, controlConditionCmbo):
-        self.gui.SetControlConditionCmbo(controlConditionCmbo)
+    # @controlConditionCmbo.setter
+    # def controlConditionCmbo(self, controlConditionCmbo):
+    #     self.gui.SetControlConditionCmbo(controlConditionCmbo)
 
     #Control Effect Category and Sub-Categories not currently stored
     #Control Effect Cat
@@ -404,30 +393,30 @@ class InstrumentDeploymentInfoManager(object):
 
 
     #Discharge, Stage, Station Health Remarks
-    @property
-    def dischRemarksCtrl(self):
-        return self.gui.GetDischRemarksCtrl()
+    # @property
+    # def dischRemarksCtrl(self):
+    #     return self.gui.GetDischRemarksCtrl()
 
-    @dischRemarksCtrl.setter
-    def dischRemarksCtrl(self, dischRemarksCtrl):
-        self.gui.SetDischRemarksCtrl(dischRemarksCtrl)
+    # @dischRemarksCtrl.setter
+    # def dischRemarksCtrl(self, dischRemarksCtrl):
+    #     self.gui.SetDischRemarksCtrl(dischRemarksCtrl)
 
-    @property
-    def stageRemarksCtrl(self):
-        return self.gui.GetStageRemarksCtrl()
+    # @property
+    # def stageRemarksCtrl(self):
+    #     return self.gui.GetStageRemarksCtrl()
 
-    @stageRemarksCtrl.setter
-    def stageRemarksCtrl(self, stageRemarksCtrl):
-        self.gui.SetStageRemarksCtrl(stageRemarksCtrl)
+    # @stageRemarksCtrl.setter
+    # def stageRemarksCtrl(self, stageRemarksCtrl):
+    #     self.gui.SetStageRemarksCtrl(stageRemarksCtrl)
 
-    #General
-    @property
-    def stationHealthRemarksCtrl(self):
-        return self.gui.GetStationHealthRemarksCtrl()
+    # #General
+    # @property
+    # def stationHealthRemarksCtrl(self):
+    #     return self.gui.GetStationHealthRemarksCtrl()
 
-    @stationHealthRemarksCtrl.setter
-    def stationHealthRemarksCtrl(self, stationHealthRemarksCtrl):
-        self.gui.SetStationHealthRemarksCtrl(stationHealthRemarksCtrl)
+    # @stationHealthRemarksCtrl.setter
+    # def stationHealthRemarksCtrl(self, stationHealthRemarksCtrl):
+    #     self.gui.SetStationHealthRemarksCtrl(stationHealthRemarksCtrl)
 
     #Gauge or other
     @property
@@ -583,14 +572,14 @@ class InstrumentDeploymentInfoManager(object):
         print "Passed Field Rev: %s" % self.passedFieldRevCB
 
         print "\nControl"
-        print "Condition: %s" % self.controlConditionCmbo
+        # print "Condition: %s" % self.controlConditionCmbo
         print "Effect Cat: %s" % self.controlEffCatCmbo
         print "Effect Sub-Cat: %s" % self.controlEffSubCatCmbo
         # print "Control Remarks: %s" % self.controlRemarksCtrl
-        print "Discharge Remarks: %s" % self.dischRemarksCtrl
-        print "Stage Remarks: %s" % self.stageRemarksCtrl
-        print "General Remarks: %s" % self.stationHealthRemarksCtrl
-        print "Control Condition Remarks: %s" % self.controlConditionRemarksCtrl
+        # print "Discharge Remarks: %s" % self.dischRemarksCtrl
+        # print "Stage Remarks: %s" % self.stageRemarksCtrl
+        # print "General Remarks: %s" % self.stationHealthRemarksCtrl
+        # print "Control Condition Remarks: %s" % self.controlConditionRemarksCtrl
                                          
         
 
@@ -660,20 +649,22 @@ class InstrumentDeploymentInfoManager(object):
         return self.gui.adcpDepthCtrl
     def GetMagnDeclCtrl(self):
         return self.gui.magnDeclCtrl
-    def GetControlConditionCmbo(self):
-        return self.gui.controlConditionCmbo
-    def GetDischRemarksCtrl(self):
-        return self.gui.dischRemarksCtrl
-    def GetStageRemarksCtrl(self):
-        return self.gui.stageRemarksCtrl
-    def GetStationHealthRemarksCtrl(self):
-        return self.gui.stationHealthRemarksCtrl
+    # def GetControlConditionCmbo(self):
+    #     return self.gui.controlConditionCmbo
+    # def GetDischRemarksCtrl(self):
+    #     return self.gui.dischRemarksCtrl
+    # def GetStageRemarksCtrl(self):
+    #     return self.gui.stageRemarksCtrl
+    # def GetStationHealthRemarksCtrl(self):
+    #     return self.gui.stationHealthRemarksCtrl
+    # def GetDischTxt(self):
+    #     return self.gui.dischTxt
 
 
 
     #Return TURE if discharge remarks is empty
-    def dischargeRemarkEmpty(self):
-        return self.gui.dischargeRemarkEmpty()
+    # def dischargeRemarkEmpty(self):
+    #     return self.gui.dischargeRemarkEmpty()
 
 
 def main():

@@ -52,6 +52,14 @@ class AQUARIUSDataExtractionToolFrame(wx.Frame):
         self.iconName = "icon_transparent.ico"
 
         self.isoTail = ".000"
+        self.openStationHelpDesc = "The station list file can be in csv or txt format, but the first row is reserved \
+for headers and the 'Station ID' should always be in the first column \n\n\
+For example:\n\
+        STATION ID,STATION NAME\n\
+        05EF001,NORTH SASKATCHEWAN RIVER NEAR DEER CREEK\n\
+        05FE004,BATTLE RIVER NEAR THE SASKATCHEWAN BOUNDARY\n\
+        00XX000,----\n\
+        00XX000,----\n\n(*Station name is not mandatory!)"
         self.progressIsOpen = False
 
         self.path = path
@@ -100,6 +108,20 @@ class AQUARIUSDataExtractionToolFrame(wx.Frame):
         self.stationCtrl.SetHint("02KF015, 01CC002, 07EF001, ....")
         stationSizer.Add(stationLabel, 0, wx.EXPAND|wx.TOP, 5)
         stationSizer.Add(self.stationCtrl, 1, wx.EXPAND|wx.LEFT, 6)
+
+        # stationBtnSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.statoinBtn = wx.Button(basePanel, label="Stations List From File", size=(-1, -1))
+        self.statoinBtn.Bind(wx.EVT_BUTTON, self.OnStationBrowse)
+
+        self.stationListHelpBtn = wx.Button(basePanel, size=(15, 15), label="!")
+        self.stationListHelpBtn.SetForegroundColour('red')
+        self.stationListHelpBtn.Bind(wx.EVT_BUTTON, self.OnOpenStationHelp)
+
+
+        stationSizer.Add(self.statoinBtn, 0, wx.EXPAND|wx.LEFT, 6)
+        stationSizer.Add(self.stationListHelpBtn, 0)
+
+        # stationBtnSizer.Add(self.statoinBtn, 0, wx.EXPAND, 5)
 
 
         # Import list
@@ -265,6 +287,7 @@ class AQUARIUSDataExtractionToolFrame(wx.Frame):
         self.layoutSizer.Add(pathSizer, 0, wx.EXPAND|wx.ALL, 4)
         self.layoutSizer.Add((-1, 5), 0, wx.EXPAND)
         self.layoutSizer.Add(stationSizer, 0, wx.EXPAND|wx.ALL, 4)
+        # self.layoutSizer.Add(stationBtnSizer, 0, wx.EXPAND|wx.ALL, 4)
         self.layoutSizer.Add((-1, 10), 0, wx.EXPAND)
 
         self.layoutSizer.Add(importSizer, 0, wx.EXPAND|wx.ALL, 4)
@@ -318,10 +341,10 @@ class AQUARIUSDataExtractionToolFrame(wx.Frame):
         # self.CacheBestSize(self.GetBestSize())
         if self.foldBool:
 
-            self.SetSize((555, 500))
+            self.SetSize((555, 560))
             self.foldBool = False
         else:
-            self.SetSize((555, 630))
+            self.SetSize((555, 690))
             self.foldBool = True
         self.Layout()
         event.Skip()
@@ -541,6 +564,74 @@ class AQUARIUSDataExtractionToolFrame(wx.Frame):
 
     def GetNumOfMinMax(self):
         return self.minMaxSpinCtrl.GetValue()
+
+    #Select the file contains the station IDs to be extracted
+    def OnStationBrowse(self, event):
+        fileOpenDialog = wx.FileDialog(self, 'Select Stations File', os.getcwd(), '',
+                            'Uploading Stations (*.txt)|*.txt|Uploading Stations (*.csv)|*.csv',
+                                       style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+
+        if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
+            fileOpenDialog.Destroy()
+            return
+
+
+        path = fileOpenDialog.GetPath()
+
+        if self.mode == "DEBUG":
+            print "path open"
+            print path
+
+        if path != "":
+
+            fileName = fileOpenDialog.GetFilename()
+            self.OpenStationFile(fileName)
+
+
+        fileOpenDialog.Destroy()
+
+
+
+    #Read the station IDs from the file specisifed
+    def OpenStationFile(self, file):
+
+        self.numsRead = []
+
+        if os.path.isfile(file):
+
+            with open(file) as stations:
+                lines = stations.readlines()
+                # lines = [unicode(x) for y in lines for x in y]
+
+            for item in lines:
+                items = item.split(',')
+                self.numsRead.append(items[0])
+
+
+            self.numsRead = self.numsRead[1:]
+            newNums = sorted(self.numsRead)
+
+        text = ""
+
+        for i, item in enumerate(newNums):
+            if i != len(newNums) - 1:
+                text += (item + ", ")
+            else:
+                text += item
+
+        self.stationCtrl.SetValue(text)
+
+
+    def OnOpenStationHelp(self, event):
+        dlg = wx.MessageDialog(self, self.openStationHelpDesc, 'Hint', wx.OK)
+
+        res = dlg.ShowModal()
+        if res == wx.ID_OK:
+            dlg.Destroy()
+        else:
+            dlg.Destroy()
+        return
+
 
 
 

@@ -18,7 +18,7 @@ class GenInfoPanel(wx.Panel):
         self.stnNameTxtLbl = "Station Name:"
         self.tzTxtLbl = "Time Zone:"
         self.timeZones = ['', 'PST', 'MST', 'CST',
-                          'EST', 'AST', 'NST', 'UTC']
+                          'EST', 'AST', 'NST']
         self.numbers = []
         self.names = []
         self.mode = mode
@@ -127,7 +127,7 @@ class GenInfoPanel(wx.Panel):
         self.stnNameCtrl.Clear()
         self.stnNameCtrl.AppendItems(names)
         if name != '':
-            self.stnNumCmbo.ChangeValue(name)
+            self.stnNameCtrl.ChangeValue(name)
 
     #vbox sizer
     def GetVbox(self):

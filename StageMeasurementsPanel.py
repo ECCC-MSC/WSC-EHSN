@@ -121,6 +121,7 @@ class StageMeasurementsPanel(wx.Panel):
         self.incompleteDischargeTimeMsg = """The discharge mmt time is not complete. As a result, the MGH calculation has not
                      taken the discharge mmt time into account."""
         self.incompleteDischargeTimeTitle = "Warning"
+        self.stageLbl = "Stage Activity\nSummary Remarks"
         self.checkDischargeTime = True
 
         self.frame = self.GetParent()
@@ -612,12 +613,23 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         # self.CMGHWLRefL.Enable(False)
         # self.CMGHWLRefR.Enable(False)
 
+
+        stageRemarkPanel = wx.Panel(preSummaryPanel, style=wx.SIMPLE_BORDER, size=(-1, -1))
+        stageRemarkSizer = wx.BoxSizer(wx.HORIZONTAL)
+        stageRemarkPanel.SetSizer(stageRemarkSizer)
+        stageTxt = wx.StaticText(stageRemarkPanel, label=self.stageLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(120, -1))
+        self.stageRemarksCtrl = wx.TextCtrl(stageRemarkPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, self.PreSummRowHeight * 1.7))
+        stageRemarkSizer.Add(stageTxt, 0)
+        stageRemarkSizer.Add(self.stageRemarksCtrl, 1, wx.EXPAND)
+
+
+
+
         #Bind rounding
-        self.MGHHG.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
-        # self.MGHHG.Bind(wx.EVT_SET_FOCUS, self.OnKillFocus)
-        self.MGHHG2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
-        self.MGHWLRefL.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
-        self.MGHWLRefR.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.MGHHG.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.MGHHG2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.MGHWLRefL.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.MGHWLRefR.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
         self.SRCHG.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         self.SRCHG2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
@@ -627,10 +639,10 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.GCWLRefL.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         self.GCWLRefR.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
-        self.CMGHHG.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
-        self.CMGHHG2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
-        self.CMGHWLRefL.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
-        self.CMGHWLRefR.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.CMGHHG.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.CMGHHG2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.CMGHWLRefL.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        # self.CMGHWLRefR.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
 
 
@@ -711,6 +723,9 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         preSummarySizer.Add(self.CMGHHG2, pos=(4, 2), span=(1, 1), flag=wx.EXPAND)
         preSummarySizer.Add(self.CMGHWLRefL, pos=(4, 3), span=(1, 1), flag=wx.EXPAND)
         preSummarySizer.Add(self.CMGHWLRefR, pos=(4, 4), span=(1, 1), flag=wx.EXPAND)
+
+
+        preSummarySizer.Add(stageRemarkPanel, pos=(5, 0), span=(1, 9), flag=wx.EXPAND)
 
 
 
@@ -967,7 +982,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.bmLeft.Clear()
 
         self.bmRight.Clear()
-        print items
+        # print items
 
 
         if len(indexList) > 0:
@@ -1719,6 +1734,13 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
             # result = float(self.MGHHG.GetValue()) + float(self.SRCHG.GetValue()) if self.SRCHG.GetValue() != "" else float(self.MGHHG.GetValue())
             result = float(self.MGHHG.GetValue()) + float(self.SRCHG.GetValue()) + float(self.GCHG.GetValue())
+   
+            result = float(str(result))
+            result = str(round(result,3))
+            digits = 3 - len(result.split(".")[-1])
+            for i in range(digits):
+                result += "0"
+
             self.CMGHHG.SetValue(str(result))
         else:
             self.CMGHHG.SetValue("")
@@ -1730,6 +1752,11 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
             # result = float(self.MGHHG2.GetValue()) + float(self.SRCHG2.GetValue()) if self.SRCHG2.GetValue() != "" else float(self.MGHHG2.GetValue())
             result = float(self.MGHHG2.GetValue()) + float(self.SRCHG2.GetValue()) + float(self.GCHG2.GetValue())
+            result = float(str(result))
+            result = str(round(result,3))
+            digits = 3 - len(result.split(".")[-1])
+            for i in range(digits):
+                result += "0"
             self.CMGHHG2.SetValue(str(result))
         else:
             self.CMGHHG2.SetValue("")
@@ -1740,6 +1767,11 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         if self.MGHWLRefL.GetValue() != "" and self.GCWLRefL.GetValue() != "":
 
             result = float(self.MGHWLRefL.GetValue()) + float(self.GCWLRefL.GetValue())
+            result = float(str(result))
+            result = str(round(result,3))
+            digits = 3 - len(result.split(".")[-1])
+            for i in range(digits):
+                result += "0"
             self.CMGHWLRefL.SetValue(str(result))
         else:
             self.CMGHWLRefL.SetValue("")
@@ -1751,6 +1783,11 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         if self.MGHWLRefR.GetValue() != "" and self.GCWLRefR.GetValue() != "":
 
             result = float(self.MGHWLRefR.GetValue()) + float(self.GCWLRefR.GetValue())
+            result = float(str(result))
+            result = str(round(result,3))
+            digits = 3 - len(result.split(".")[-1])
+            for i in range(digits):
+                result += "0"
             self.CMGHWLRefR.SetValue(str(result))
         else:
             self.CMGHWLRefR.SetValue("")
@@ -1850,11 +1887,11 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             times = sorted(timeValues.keys())
             if startTimeCtrl.IsCompleted() and endTimeCtrl.IsCompleted():
                 slop = (timeValues[times[1]] - timeValues[times[0]]) / self.GetIntervalMinute(times[0], times[1])
-                print "Slop: ", slop
+                # print "Slop: ", slop
                 start = slop * (self.GetIntervalMinute(times[0], startTime)) + timeValues[times[0]]
                 end = slop * (self.GetIntervalMinute(times[0], endTime)) + timeValues[times[0]]
-                print start
-                print end
+                # print start
+                # print end
                 return (start + end) / 2
             else:
                 return (timeValues[times[1]] + timeValues[times[0]]) / 2
@@ -2188,8 +2225,16 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
             if result is not None:
 
-                resultCtrl.SetValue(str(round(result,3)))
-                # self.OnAggComboChangeMGHColor()
+                result = float(str(result))
+                result = str(round(result,3))
+                digits = 3 - len(result.split(".")[-1])
+                for i in range(digits):
+                    result += "0"
+
+
+                resultCtrl.SetValue(result)
+
+
         else:
             if resultCtrl is not None:
                 resultCtrl.SetValue("")

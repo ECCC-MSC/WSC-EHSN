@@ -22,6 +22,15 @@ from ConfigPanel import *
 from AQUARIUSDataExtractionToolFrame import *
 from RatingCurveViewerToolFrame import *
 # from AquariusUploadDialog2 import *
+from IngestOptionFrame import *
+from ConfigParser import SafeConfigParser
+from ZoomPanel import *
+# from RemarksPanel import *
+
+
+
+
+
 import VersionCheck
 import wx.lib.scrolledpanel as scrolledpanel
 import wx.lib.agw.flatnotebook as fnb
@@ -36,6 +45,14 @@ import csv
 from xml.etree.ElementTree import Element
 import wx.lib.agw.zoombar as zb
 import qrcode
+import zipfile
+import shutil
+from win32api import GetSystemMetrics
+import subprocess
+# import pyHook
+# import pythoncom, win32api
+# import threading, time
+# from time import sleep
 # import painting
 
 ID_FILE_NEW = wx.NewId()
@@ -53,12 +70,35 @@ ID_HELP_EHELP = wx.NewId()
 ID_HELP_UPDATE = wx.NewId()
 ID_CONF_CONF = wx.NewId()
 ID_CONF_ADET = wx.NewId()
+
 # ID_IMPORT_DIS = wx.NewId()
 # ID_IMPORT_XML = wx.NewId()
+
+ID_IMPORT_HFC = wx.NewId()
+ID_IMPORT_FTDIS = wx.NewId()
+ID_IMPORT_FT2 = wx.NewId()
+ID_IMPORT_QRXML = wx.NewId()
+ID_IMPORT_SXSMMT = wx.NewId()
+ID_IMPORT_RSSDIS = wx.NewId()
+
+
 ID_TOOLS_CALC = wx.NewId()
 ID_TOOLS_RCVT = wx.NewId()
+ID_TOOLS_MAGN = wx.NewId()
+
+ID_TOOLS_SCALING_SUB1 = wx.NewId()
+ID_TOOLS_SCALING_SUB2 = wx.NewId()
+# ID_TOOLS_SCALING_SUB3 = wx.NewId()
 ID_FILE_SAVE_EXIT = wx.NewId()
+
+ID_IMPORT_EHSN = wx.NewId()
 # ID_TOOLS_DRAW = wx.NewId()
+
+
+eHSN_WINDOW_SIZE = (500, 400)
+
+
+
 
 
 # def resource_path(relative):
@@ -66,7 +106,30 @@ ID_FILE_SAVE_EXIT = wx.NewId()
 #         return os.path.join(sys._MEIPASS, relative)
 #     return os.path.join(relative)
 
+# # Define File Drop Target class
+# class FileDropTarget(wx.FileDropTarget):
+#    """ This object implements Drop Target functionality for Files """
+#    def __init__(self, obj):
+#       """ Initialize the Drop Target, passing in the Object Reference to
+#           indicate what should receive the dropped files """
+#       # Initialize the wxFileDropTarget Object
+#       wx.FileDropTarget.__init__(self)
+#       # Store the Object Reference for dropped files
+#       self.obj = obj
 
+#    def OnDropFiles(self, x, y, filenames):
+#       # """ Implement File Drop """
+#       # # For Demo purposes, this function appends a list of the files dropped at the end of the widget's text
+#       # # Move Insertion Point to the end of the widget's text
+#       # self.obj.SetInsertionPointEnd()
+#       # # append a list of the file names dropped
+#       # self.obj.WriteText("%d file(s) dropped at %d, %d:\n" % (len(filenames), x, y))
+#       # for file in filenames:
+#       #    self.obj.WriteText(file + '\n')
+#       # self.obj.WriteText('\n')
+
+#       print filenames
+#       return True
 
 class SpecialScrolledPanel(scrolledpanel.ScrolledPanel):
     def OnChildFocus(event, other):
@@ -97,6 +160,17 @@ class EHSNGui(wx.Frame):
             self.scriptLoc = os.path.join(sys._MEIPASS, self.scriptLoc)
         else:
             self.scriptLoc = os.getcwd() + "\\" + self.scriptLoc
+
+
+        self.config_path = "config.xml"
+        if hasattr(sys, '_MEIPASS'):
+            self.config_path = os.path.join(sys._MEIPASS, self.config_path)
+        else:
+            self.config_path = os.getcwd() + "\\" + self.config_path
+
+
+
+
         # Label variables
         self.fNewLabel = 'New\tCtrl+N'
         self.fNewDesc = 'Start a new eHSN application'
@@ -122,23 +196,60 @@ class EHSNGui(wx.Frame):
         self.fSaveExitLabel = 'Save && Exit\tCtrl+E'
         self.fSaveExitDesc = 'Save and Exit'
         self.heHelpDesc = "Instructions for the completion of eHSN"
-        self.tCalcLabel = "Calculator"
+        self.tCalcLabel = "Calculator\tCtrl+L"
+        self.tMagnDesc = "Windows Magnifier"
+        self.tMagnLabel = "Magnifier\tCtrl+M"
         self.tCalcDesc = "A simple calculator."
+        self.tScalLabel = "Scaling"
+        self.tScalDesc = "Scaling"
+        self.tScalSub1Label = "Size ++\tCtrl+="
+        self.tScalSub1Desc = "Size ++"
+        self.tScalSub2Label = "Size --\tCtrl+-"
+        self.tScalSub2Desc = "Size --"
+        # self.scalLbl = "100%-------------"
+        # self.tScalSub3Label = "80%"
+        # self.tScalSub3Desc = "80%"
         self.iDisLabel = 'Import MB ADCP (*.dis) Files'
         self.iDisDesc = 'Import MB ADCP (*.dis) Files'
         self.iMmtLabel = 'Import MB ADCP (*.mmt) Files'
         self.iMmtDesc = 'Import MB ADCP (*.mmt) Files'
         self.cConfLabel = 'Configure Stations, Meters and BM/Ref file locations'
         self.cConfDesc = 'Optionally set the file locations for the stations metadata, meters, and Bench Mark configuration Files.'
-        self.tRcvtLabel = 'Rating Curve Viewer Tool'
+        self.tRcvtLabel = 'Rating Curve Viewer Tool\tCtrl+R'
         self.tRcvtDesc = 'use this tool to view your measurement in comparison to previous discharge measurements graphically, as well as the shift and % differences from the curve.'
-        self.cAdetLabel = 'AQUARIUS Data Extraction Tool'
+        self.cAdetLabel = 'AQUARIUS Data Extraction Tool\tCtrl+D'
         self.cAdetDesc = 'Run this tool first while in the office. It will extract data from AQUARIUS so you can take it into the field.'
         self.hUpdatelabel = 'Updates/Messages'
         self.hUpdateDesc = 'Update eHSN'
+
+
+        self.iHfcLabel = "Import HFC Files (*.mq*)"
+        self.iHfcDesc = "Import HFC Files (*.mq*)"
+        self.iFtDisLabel = "Import FlowTracker (*.dis)"
+        self.iFtDisDesc = "Import FlowTracker (*.dis)"
+        self.iQrXmlLabel = "Import QRev (*.xml)"
+        self.iQrXmlDesc = "Import QRev (*.xml)"
+        self.iSxsProMmtLabel = "Import SxS Pro mmt (*.xml)"
+        self.iSxsProMmtDesc = "Import SxS Pro mmt (*.xml)"
+        self.iRsslDisLabel = "Import RSSL (*.dis)"
+        self.iRsslDisDesc = "Import RSSL (*.dis)"
+        self.iFt2Label = "Import FlowTracker2 (*.ft)"
+        self.iFt2Desc = "Import FlowTracker2 (*.ft)"
+        self.iEhsnLabel = "Merge eHSN Midsection (*.xml)"
+        self.iEhsnDesc = "Merge eHSN Midsection (*.xml)"
+
         self.fullStyleSheetFileName = 'WSC_EHSN.xsml'
         self.summStyleSheetFileName = 'WSC_EHSN_Summary.xsml'
         self.viewStyleSheetFileName = 'WSC_EHSN_VIEW.xsml'
+
+        if hasattr(sys, '_MEIPASS'):
+            self.fullStyleSheetFilePath = os.path.join(sys._MEIPASS, self.fullStyleSheetFileName)
+            self.summStyleSheetFilePath = os.path.join(sys._MEIPASS, self.summStyleSheetFileName)
+            self.viewStyleSheetFilePath = os.path.join(sys._MEIPASS, self.viewStyleSheetFileName)
+        else:
+            self.fullStyleSheetFilePath = os.getcwd() + "\\" + self.fullStyleSheetFileName
+            self.summStyleSheetFilePath = os.getcwd() + "\\" + self.summStyleSheetFileName
+            self.viewStyleSheetFilePath = os.getcwd() + "\\" + self.viewStyleSheetFileName
         # self.stylesheetPath = "Saved Field Visits"
 
         self.fileSaveTitle = 'Save As'
@@ -185,6 +296,7 @@ class EHSNGui(wx.Frame):
         self.path = ''
         self.savedName = ''
         self.savedPassword = ''
+        self.savedServer = ""
 
         self.savedStationsPath = ''
         self.savedMetersPath = ''
@@ -192,6 +304,41 @@ class EHSNGui(wx.Frame):
 
 
         self.notReviewedUploadWarning = """There is no indication that this field note has been reviewed. Please ensure this field note has been reviewed, and that the "Reviewed" checkbox at the bottom of the Front Page has been checked."""
+        # self.importQRevMsg = "Upon importing all eHSN data entered in the following sections will be overwritten by data imported from measurement file. you can uncheck one or more of these measuremehnts if you opt for the eHSN data not to be overwritten by the imported data."
+        # self.importQRevOption1 = "Discharge Measurements Summary"
+        # self.importQRevOption2 = "Discharge Measurement and Equipment Details"
+        # self.importQRevOption3 = "Moving Boat Page"
+        self.fileErrMsg = "Unable to read the station ID from the external file specified"
+        self.fileErrTitle = "Station ID reading error"
+
+        self.overwriteMsg = "Some of the information will be overwritten by the imported data. Countinue?"
+        self.iverwriteTitle = "Overwrite"
+
+
+        self.tzEhsnMissErrMsg = "Missing TimeZone from eHSN"
+        self.tzEhsnMissErrTitle = "Missing TimeZone from eHSN"
+
+
+        self.tzFt2MissErrMsg = """Missing TimeZone from FlowTracker2\n
+The FlowTracker2 date and time is stored as Coordinated Universal Time (UTC) 
+along with an offset for local time. Make sure the 'Offset From UTC' time is 
+correct for your location. If the time offset is not correct, the times imported 
+into eHSN will be in error."""
+
+        self.tzFt2MissErrTitle = "Missing TimeZone from FlowTracker2"
+
+        self.tzMatchErrMsg = """The time zone (TZ) entered in eHSN is different from the TZ detected in Flowtracker2 file. The file will not be imported unless this difference is reconciled.\n
+Hint!
+-   Check the TZ selected at the front page of eHSN, Or
+-   Check the 'offset from UTC' time entered in Flowtracker2 file.
+Note: The FlowTracker2 date and time is stored as UTC along with an offset for local time. Make sure the 'Offset From UTC' time is correctly entered for your location."""
+        self.tzMatchErrTitle = "TimeZones are not matching"
+
+        self.readFT2ErrMsg = "Error during reading ft file(FlowTracker2). It may caused by do not have enough user rights. Please try log in by another account."
+        self.readFT2ErrTitle = "Error during reading ft file(FlowTracker2)"
+
+        self.sxsImportAttentionMsg = "Attention!\n\nThe xml file displays discharge in two decimal places, and the calculated discharge and average velocity might be slightly different from the values view in SxS Pro software."
+        self.sxsImportAttentionTitle = "Attention"
 
         self.RatingCurveViewerToolFrame = None
         self.ratingCurveExtraction = None
@@ -229,8 +376,29 @@ class EHSNGui(wx.Frame):
         self.emptyMeter = False
         self.emptyLevel = False
 
-        self.InitUI()
+        # self.qRevFileName = ""
 
+
+        self.qRevDir = ""
+        self.flowTrackerDir = ""
+        self.hfcDir = ""
+        self.ft2FtDir = ""
+        self.ft2JsonDir = ""
+        self.sxsDir = ""
+        self.rsslDir = ""
+        self.ehsnMidDir = ""
+
+        self.importSucessMsg = "Data imported succesfully!"
+        self.importSucessTitle = "Succesful"
+
+
+        self.saveAsDirectory = os.getcwd()
+        self.inipath = self.saveAsDirectory + r'\AQ_Extracted_Data\iniPath.ini'
+        self.uploadSaveDir = os.getcwd()
+
+        self.importedBGColor = "#48C9B0"
+
+        self.InitUI()
 
         self.Show(True)
 
@@ -245,6 +413,11 @@ class EHSNGui(wx.Frame):
             print "Setup the Frame"
 
         self.locale = wx.Locale(self.lang)
+        myFont = wx.Font(10, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.NORMAL, False)
+        if GetSystemMetrics(11) > 39:
+            myFont = wx.Font(8, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.NORMAL, False)
+
+        self.SetFont(myFont)
 
         self.CreateStatusBar(style=wx.STB_SIZEGRIP|wx.STB_SHOW_TIPS|wx.STB_ELLIPSIZE_END|wx.FULL_REPAINT_ON_RESIZE)
         self.SetStatusText("Welcome to the Hydrometric Survey Notes")
@@ -274,15 +447,24 @@ class EHSNGui(wx.Frame):
 
         cConfig = configMenu.Append(ID_CONF_CONF, self.cConfLabel, self.cConfDesc)
 
-        # importMenu.AppendSeparator()
-        # iMmt = importMenu.Append(ID_IMPORT_XML, self.iMmtLabel, self.iMmtDesc)
-        # iDis = importMenu.Append(ID_IMPORT_DIS, self.iDisLabel, self.iDisDesc)
+        scalingSubMenu = wx.Menu()
+        configMenu.AppendSubMenu(scalingSubMenu,self.tScalLabel, self.tScalDesc)
+        tScal1 = scalingSubMenu.Append(ID_TOOLS_SCALING_SUB1, self.tScalSub1Label, self.tScalSub1Desc)
+        tScal2 = scalingSubMenu.Append(ID_TOOLS_SCALING_SUB2, self.tScalSub2Label, self.tScalSub2Desc)
 
         toolMenu = wx.Menu()
         cAdet = toolMenu.Append(ID_CONF_ADET, self.cAdetLabel, self.cAdetDesc)
         tRcvt = toolMenu.Append(ID_TOOLS_RCVT, self.tRcvtLabel, self.tRcvtDesc)
         toolMenu.AppendSeparator()
         tCalc = toolMenu.Append(ID_TOOLS_CALC, self.tCalcLabel, self.tCalcDesc)
+        tMagn = toolMenu.Append(ID_TOOLS_MAGN, self.tMagnLabel, self.tMagnDesc)
+
+
+
+        
+
+
+        
         # tSkatch = toolMenu.Append(ID_TOOLS_DRAW, "Paint", "Draw")
 
 
@@ -299,11 +481,25 @@ class EHSNGui(wx.Frame):
         hupdate = helpMenu.Append(ID_HELP_UPDATE, self.hUpdatelabel, self.hUpdateDesc)
 
 
+        menuImport = wx.Menu()
+
+        iHfc = menuImport.Append(ID_IMPORT_HFC, self.iHfcLabel, self.iHfcDesc)
+        iFtdis = menuImport.Append(ID_IMPORT_FTDIS, self.iFtDisLabel, self.iFtDisDesc)
+        iFt2 = menuImport.Append(ID_IMPORT_FT2, self.iFt2Label, self.iFt2Desc)
+        iQrxml = menuImport.Append(ID_IMPORT_QRXML, self.iQrXmlLabel, self.iQrXmlDesc)
+        iSxsmmt = menuImport.Append(ID_IMPORT_SXSMMT, self.iSxsProMmtLabel, self.iSxsProMmtDesc)
+        iRssdis = menuImport.Append(ID_IMPORT_RSSDIS, self.iRsslDisLabel, self.iRsslDisDesc)
+        menuImport.AppendSeparator()
+        iEhsn = menuImport.Append(ID_IMPORT_EHSN, self.iEhsnLabel, self.iEhsnDesc)
+        
+
+
 
         menuBar = wx.MenuBar()
         menuBar.Append(fileMenu, '&File')
         menuBar.Append(configMenu, '&Configuration')
         menuBar.Append(toolMenu, '&Tools')
+        menuBar.Append(menuImport, '&Import')
         # menuBar.Append(editMenu, '&Edit')
         menuBar.Append(helpMenu, '&Help')
 
@@ -322,6 +518,14 @@ class EHSNGui(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnHelpEHelp, hehelp)
         self.Bind(wx.EVT_CLOSE, self.OnFileExit)
         self.Bind(wx.EVT_MENU, self.OnCalc, tCalc)
+        self.Bind(wx.EVT_MENU, self.OnMagn, tMagn)
+
+        self.Bind(wx.EVT_MENU, self.OnScal1, tScal1)
+        self.Bind(wx.EVT_MENU, self.OnScal2, tScal2)
+        # self.Bind(wx.EVT_MENU, self.OnScal3, tScal3)
+        
+
+
         # self.Bind(wx.EVT_MENU, self.OnImportMovingBoaiMmt, iMmt)
         self.Bind(wx.EVT_MENU, self.OnConfig, cConfig)
         # self.Bind(wx.EVT_MENU, self.OnMovingBoaiDis, iDis)
@@ -330,6 +534,16 @@ class EHSNGui(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnUpdate, hupdate)
         self.Bind(wx.EVT_MENU, self.OnSaveExit, fsexit)
         # self.Bind(wx.EVT_MENU, self.OnDraw, tSkatch)
+
+        self.Bind(wx.EVT_MENU, self.OnImport, iHfc)
+        self.Bind(wx.EVT_MENU, self.OnImport, iFtdis)
+        self.Bind(wx.EVT_MENU, self.OnImport, iFt2)
+        self.Bind(wx.EVT_MENU, self.OnImport, iQrxml)
+        self.Bind(wx.EVT_MENU, self.OnImport, iSxsmmt)
+        self.Bind(wx.EVT_MENU, self.OnImport, iRssdis)
+
+        self.Bind(wx.EVT_MENU, self.OnImport, iEhsn)
+
         self.layout = None
 
         #Icon Path
@@ -348,21 +562,33 @@ class EHSNGui(wx.Frame):
             png = wx.Image(self.icon_path, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
             self.icon = wx.Icon(png)
             self.SetIcon(self.icon)
+
+
+        
+        # self.IniSaveAsPath()
+        self.IniUploadSavePath()
         self.CreateFrames()
 
 
 
     def CreateFrames(self):
+        mainSizer = wx.BoxSizer(wx.VERTICAL)
+        self.SetSizer(mainSizer)
 
         if self.layout is not None:
             self.layout.Show(False)
             self.layout.Destroy()
 
-        self.layout = fnb.FlatNotebook(self, style=wx.NB_TOP, agwStyle=fnb.FNB_NO_X_BUTTON|fnb.FNB_NO_NAV_BUTTONS)
+        self.layout = fnb.FlatNotebook(self, style=wx.NB_TOP, agwStyle=fnb.FNB_NO_X_BUTTON|fnb.FNB_NO_NAV_BUTTONS, size=eHSN_WINDOW_SIZE)
+
+        # # Create a File Drop Target object
+        # fileDrop = FileDropTarget(self.layout)
+        # # Link the Drop Target Object to the Text Control
+        # self.layout.SetDropTarget(fileDrop)
 
         #First Page
         formSizer = wx.BoxSizer(wx.VERTICAL)
-        self.form = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER|wx.VSCROLL)
+        self.form = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER)
         self.form.SetupScrolling()
 
         self.titleHeader = TitleHeaderPanel(self.mode, self.form, style=wx.NO_BORDER)
@@ -373,17 +599,17 @@ class EHSNGui(wx.Frame):
         self.stageMeas = StageMeasurementsPanel(self.mode, self.lang, self.form, style=wx.BORDER_NONE, size=(-1, -1))
 
 
-        self.envCond = EnvironmentConditionsPanel(self.mode, self.form, style=wx.SIMPLE_BORDER, size=(1, -1))
+        self.envCond = EnvironmentConditionsPanel(self.mode, self.form, style=wx.SIMPLE_BORDER, size=(-1, -1))
 
-        midSizer.Add(self.stageMeas, 14, wx.EXPAND)
-        midSizer.Add(self.envCond, 6, wx.EXPAND)
+        midSizer.Add(self.stageMeas, 29, wx.EXPAND)
+        midSizer.Add(self.envCond, 20, wx.EXPAND)
 
         self.measResults = MeasurementResultsPanel(self.mode, self.lang, self.form, style=wx.SIMPLE_BORDER, size=(1, -1))
 
         self.instrDep = InstrumentDeploymentInfoPanel(self.mode, self.form, style=wx.SIMPLE_BORDER, size=(720, -1))
-        # self.instrDep.methodCBListBox.Bind(wx.EVT_CHECKLISTBOX, self.OnAdcpMid)
-        # self.instrDep.instrumentCmbo.Bind(wx.EVT_COMBOBOX, self.OnAdcpMid)
-        # self.instrDep.methodCBListBox.Bind(wx.EVT_CHECKLISTBOX, self.instrDep.OnDeploymentCheckListCB)
+
+        # self.remarks = RemarksPanel(self.mode, self.form, style=wx.SIMPLE_BORDER, size=(720, -1))
+
 
         self.partyInfo = PartyInfoPanel(self.mode, self.form, style=wx.BORDER_NONE, size=(-1, 32))
 
@@ -393,56 +619,40 @@ class EHSNGui(wx.Frame):
         formSizer.Add(midSizer, 0, wx.EXPAND|wx.ALL, 3)
         formSizer.Add(self.measResults, 0, wx.EXPAND|wx.ALL, 3)
         formSizer.Add(self.instrDep, 0, wx.EXPAND|wx.ALL, 3)
+        # formSizer.Add(self.remarks, 0, wx.EXPAND|wx.ALL, 3)
         formSizer.Add(self.partyInfo, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 3)
 
         self.form.SetSizerAndFit(formSizer)
 
 
-        #Second Page
-        self.form2 = fnb.FlatNotebook(self.layout, style=wx.NB_TOP, agwStyle=fnb.FNB_NO_X_BUTTON|fnb.FNB_NO_NAV_BUTTONS)
-        #Hidding Annual Levelling tabs
-        self.form2.HideTabs()
-
-        form2_1 = wx.Panel(self.form2, style=wx.SIMPLE_BORDER)
         form2_1Sizer = wx.BoxSizer(wx.VERTICAL)
+        self.form2_1 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER)
+        self.form2_1.SetupScrolling()
 
-        self.waterLevelRun = WaterLevelRunPanel(self.mode, self.lang, self.dir, form2_1, style=wx.BORDER_NONE)
+        self.waterLevelRun = WaterLevelRunPanel(self.mode, self.lang, self.dir, self.form2_1, style=wx.BORDER_NONE, size = (900, -1))
 
         form2_1Sizer.Add(self.waterLevelRun, 1, wx.EXPAND)
-        form2_1.SetSizerAndFit(form2_1Sizer)
-
-
-        # form2_2 = SpecialScrolledPanel(form2, style=wx.SIMPLE_BORDER)
-        # form2_2.SetupScrolling()
-
-        # form2_2Sizer = wx.BoxSizer(wx.VERTICAL)
-        # self.annualLevelNotes = AnnualLevellingPanel(self.mode, form2_2, style=wx.SIMPLE_BORDER, size=(1, -1))
-        # form2_2Sizer.Add(self.annualLevelNotes, 0, wx.EXPAND)
-        # form2_2.SetSizerAndFit(form2_2Sizer)
-
-
-        self.form2.AddPage(form2_1, "Level Checks")
-        # form2.AddPage(form2_2, "Annual levelling")
+        self.form2_1.SetSizerAndFit(form2_1Sizer)
 
 
 
 
         #Moving Boat Page
         form3Sizer = wx.BoxSizer(wx.VERTICAL)
-        self.form3 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER|wx.VSCROLL)
+        self.form3 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER)
         self.form3.SetupScrolling()
 
-        self.movingBoatMeasurements = MovingBoatMeasurementsPanel(self.mode, self.lang, self.form3, style=wx.SIMPLE_BORDER, size=(1, -1))
+        self.movingBoatMeasurements = MovingBoatMeasurementsPanel(self.mode, self.lang, self.form3, style=wx.SIMPLE_BORDER, size=(780, -1))
 
         form3Sizer.Add(self.movingBoatMeasurements, 1, wx.EXPAND)
         self.form3.SetSizerAndFit(form3Sizer)
 
         #Midsec Page
         form4Sizer = wx.BoxSizer(wx.VERTICAL)
-        self.form4 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER|wx.VSCROLL)
+        self.form4 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER)
         self.form4.SetupScrolling()
 
-        self.midsecMeasurements = MidSectionMeasurementsPanel(self.mode, self.lang, self.form4, style=wx.SIMPLE_BORDER, size=(1, -1))
+        self.midsecMeasurements = MidSectionMeasurementsPanel(self.mode, self.lang, self.form4, style=wx.SIMPLE_BORDER, size=(920, -1))
 
         form4Sizer.Add(self.midsecMeasurements, 1, wx.EXPAND)
         self.form4.SetSizerAndFit(form4Sizer)
@@ -450,7 +660,7 @@ class EHSNGui(wx.Frame):
 
         #Checklist third page
         form5Sizer = wx.BoxSizer(wx.VERTICAL)
-        self.form5 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER|wx.VSCROLL)
+        self.form5 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER)
         self.form5.SetupScrolling()
 
         self.frChecklist = FRChecklistPanel(self.mode, self.form5, style=wx.SIMPLE_BORDER, size=(1, -1))
@@ -458,19 +668,9 @@ class EHSNGui(wx.Frame):
         form5Sizer.Add(self.frChecklist, 1, wx.EXPAND)
         self.form5.SetSizerAndFit(form5Sizer)
 
-        # #Config page
-        # form6Sizer = wx.BoxSizer(wx.VERTICAL)
-        # form6 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER|wx.VSCROLL)
-        # form6.SetupScrolling()
-
-        # self.userConfig = UserConfigPanel(self.mode, self.lang, form6, style=wx.SIMPLE_BORDER, size=(1, -1))
-        # self.userConfig.stationOpenButton.Bind(wx.EVT_BUTTON, self.OnOpenPress)
-
-        # form6Sizer.Add(self.userConfig, 1, wx.EXPAND)
-        # form6.SetSizerAndFit(form6Sizer)
 
         self.layout.AddPage(self.form, "Front Page")
-        self.layout.AddPage(self.form2, "Level Notes")
+        self.layout.AddPage(self.form2_1, "Level Notes")
         self.layout.AddPage(self.form3, "Moving Boat")
         self.layout.AddPage(self.form4, "Mid-section")
         self.layout.AddPage(self.form5, "Field Review")
@@ -488,9 +688,13 @@ class EHSNGui(wx.Frame):
         self.genInfo.stnNumCmbo.Bind(wx.EVT_TEXT, self.OnStationSelect)
         self.genInfo.stnNameCtrl.Bind(wx.EVT_TEXT, self.OnStationNameSelect)
 
-        # self.LoadDefaultConfig()
 
+        self.zoomPanel = ZoomPanel(self.mode, self, size=(-1,20))
+        
 
+        mainSizer.Add(self.layout, 1, wx.EXPAND)
+        mainSizer.Add(self.zoomPanel, 0, wx.EXPAND)
+        # mainSizer.Add((-1,20), 0, wx.EXPAND)
 
     #Auto save an xml file in the the same directory of the eHSN folder for every seperate model
     #(the event will be placed on each common filed for each model, after the focus leaving the event will be triggered)
@@ -501,6 +705,7 @@ class EHSNGui(wx.Frame):
         event.Skip()
 
     def AutoSave(self, msg):
+
         self.manager.ExportAsXML(self.dir + "\\AutoSave.xml", msg)
 
 
@@ -520,9 +725,9 @@ class EHSNGui(wx.Frame):
     def OnAQUARIUSDataExtractionToolFrame(self, event):
         self.AutoSave(None)
         VersionCheck.Check(self.version, self, False)
-        self.ratingCurveExtraction = AQUARIUSDataExtractionToolFrame(self.mode, self.ratingFileDir, self.scriptLoc, self, self, size=(555, 500))
+        self.ratingCurveExtraction = AQUARIUSDataExtractionToolFrame(self.mode, self.ratingFileDir, self.scriptLoc, self, self, size=(555, 560))
         self.ratingCurveExtraction.Show()
-        #self.LoadDefaultConfig()
+        #self.LoadDefaultCbonfig()
 
         # app.MainLoop()
 
@@ -538,6 +743,18 @@ class EHSNGui(wx.Frame):
             self.RatingCurveViewerToolFrame.Show()
         else:
             self.RatingCurveViewerToolFrame.SetFocus()
+
+
+
+    #Call subprocess for Windows Magnifier
+    def OnMagn(self, event):
+        try:
+            subprocess.call("C:\\windows\\system32\\magnify.exe", shell=True)
+        except:
+            dlg = wx.MessageDialog(None, "Error\nWindowsError: [Error 740] The requested operation requires elevation.", "Error!", wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
+
+
     #Calling the calculator
     def OnCalc(self,e):
         if self.calc is None:
@@ -593,6 +810,7 @@ class EHSNGui(wx.Frame):
 
     #Reset user interface from scratch
     def ResetGUI(self):
+        self.Unbind(wx.EVT_SIZE)
         self.DestroySubWindows()
         self.CreateFrames()
         self.manager.SetupManagers()
@@ -606,6 +824,10 @@ class EHSNGui(wx.Frame):
         # 6 Entries
         for i in range(9):
             self.manager.movingBoatMeasurementsManager.AddEntry()
+
+        self.Layout()
+
+        
 
 
     def OnConfig(self, event):
@@ -655,14 +877,15 @@ class EHSNGui(wx.Frame):
 
         if self.OnFileSave(event):
             self.Destroy()
+            return True
+
+        else:
+            return False
 
 
 
     def OnFileSave(self, e):
-
-        # if self.manager.disMeasManager.mandatoryChecking():
-        #     return
-        if self.name == "":
+        if self.fullname == "":
             if self.OnFileSaveAs(e):
                 return True
             else:
@@ -694,16 +917,15 @@ class EHSNGui(wx.Frame):
             date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
             date = date.strftime("%Y%m%d")
             self.name = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV"
-        directory = os.getcwd()#self.saveDir
-        # directory = self.saveDir + "\\" + str(self.manager.genInfoManager.stnNumCmbo)
-        # if not os.path.exists(directory):
-        #     os.makedirs(directory)
-        fileSaveDialog = wx.FileDialog(self, self.fileSaveTitle, directory, str(self.name),
+
+        fileSaveDialog = wx.FileDialog(self, self.fileSaveTitle, self.saveAsDirectory, str(self.name),
                             'Hydrometric Survey Notes (*.xml)|*.xml',
                                          style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
         # print self.fileSaveTitle, os.getcwd() + "\\" + str(self.manager.genInfoManager.stnNumCmbo)
         if fileSaveDialog.ShowModal() == wx.ID_CANCEL:
             fileSaveDialog.Destroy()
+            fileSaveDialog = None
+            return False
 
 
         if self.manager is not None:
@@ -717,8 +939,10 @@ class EHSNGui(wx.Frame):
                 self.SetTitle(self.noteHeaderTxt + "   " + path)
                 self.name = fileName
                 self.fullname = path
+                # self.ResetSaveAsIni(path)
                 print "XML file saved"
                 return True
+
 
         fileSaveDialog.Destroy()
 
@@ -733,14 +957,14 @@ class EHSNGui(wx.Frame):
 	            self.createProgressDialog('In Progress', 'Uploading Successful. Saving Field Visit to pdf & xml.........')
 	            name = self.SaveAsXMLAtUpload(path, success).split('.')[0]
 	            self.deleteProgressDialog()
-	            info = wx.MessageDialog(None, "Upload: Successful\nThe xml and pdf files has also been saved.\n" \
+	            info = wx.MessageDialog(self, "Upload: Successful\nThe xml and pdf files has also been saved.\n" \
                     + name + ".xml\n" + name + ".pdf", "Done!",
 	                                wx.OK)
 	        else:
 	            self.createProgressDialog('In Progress', 'Uploading failed. Saving Field Visit to pdf & xml.........')
 	            name = self.SaveAsXMLAtUpload(path, success).split('.')[0]
 	            self.deleteProgressDialog()
-	            info = wx.MessageDialog(None, "Upload: Failed\nThe xml and pdf files has also been have saved.\n" \
+	            info = wx.MessageDialog(self, "Upload: Failed\nThe xml and pdf files has also been have saved.\n" \
                     + name + ".xml\n" + name + ".pdf", "Done!",
 	                                wx.OK)
 
@@ -761,17 +985,10 @@ class EHSNGui(wx.Frame):
                 date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
                 date = date.strftime("%Y%m%d")
                 defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.xml"
-##                if success:
-##                    defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_eHSN_Upload.xml"
-##                else:
-##                    defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_eHSN_Failed.xml"
+
         else:
             defaultName = self.name.split(".")[0] + ".xml"
-##
-##            if success:
-##                defaultName = self.name.split(".")[0] + "_Upload.xml"
-##            else:
-##                defaultName = self.name.split(".")[0] + "_Failed.xml"
+
 
 
 
@@ -789,19 +1006,8 @@ class EHSNGui(wx.Frame):
 
     #Save as PDF before uploading to AQ
     def SaveAsPDFAtUpload(self, path, success, xml):
-        stylesheet_path = self.fullStyleSheetFileName
-
-        # determine if application is a script file or frozen exe
-
-        if hasattr(sys, '_MEIPASS'):
-            stylesheet_path = os.path.join(sys._MEIPASS, stylesheet_path)
-
-        # else:
-            # stylesheet_path = self.stylesheetPath + os.sep + stylesheet_path
-
-
         # Locate stylesheet based on stylesheet_path
-        found_stylesheet = os.path.exists(stylesheet_path)
+        found_stylesheet = os.path.exists(self.fullStyleSheetFilePath)
 
         # If it exists, run fileSaveDialog
         # Else, run fileOpenDialog, then fileSaveDialog
@@ -825,7 +1031,7 @@ class EHSNGui(wx.Frame):
                     print "styleSheetPath exp"
                     print styleSheetPath
                 if styleSheetPath != "":
-                    stylesheet_path = styleSheetPath
+                    self.fullStyleSheetFilePath = styleSheetPath
 
             fileOpenDialog.Destroy()
 
@@ -840,23 +1046,17 @@ class EHSNGui(wx.Frame):
                 date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
                 date = date.strftime("%Y%m%d")
                 defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.pdf"
-##                if success:
-##                    defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_eHSN_Uploaded.pdf"
-##                else:
-##                    defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_eHSN_Uploaded_Failed.pdf"
+
         else:
             defaultName = self.name.split(".")[0] + ".pdf"
-##            if success:
-##                defaultName = self.name.split(".")[0] + "_Uploaded.pdf"
-##            else:
-##                defaultName = self.name.split(".")[0] + "_Uploaded_Failed.pdf"
+
 
         if path != "":
             path = path + '\\' + defaultName
             if self.uploadOpenPdf:
-                self.manager.ExportAsPDFFromXMLOpen(path, stylesheet_path, xml)
+                self.manager.ExportAsPDFFromXMLOpen(path, self.fullStyleSheetFilePath, xml)
             else:
-                self.manager.ExportAsPDFFromXML(path, stylesheet_path, xml)
+                self.manager.ExportAsPDFFromXML(path, self.fullStyleSheetFilePath, xml)
         self.uploadOpenPdf = False
 
 
@@ -937,19 +1137,8 @@ class EHSNGui(wx.Frame):
     # Prompts user to locate stylesheet if the default is not in same folder
     # default name is STATIONNUM_YYYYMMDD_eHSN.pdf
     def OnFileSaveAsPDF(self, evt):
-        stylesheet_path = self.fullStyleSheetFileName
-
-        # determine if application is a script file or frozen exe
-
-        if hasattr(sys, '_MEIPASS'):
-            stylesheet_path = os.path.join(sys._MEIPASS, stylesheet_path)
-
-        # else:
-            # stylesheet_path = self.stylesheetPath + os.sep + stylesheet_path
-
-
         # Locate stylesheet based on stylesheet_path
-        found_stylesheet = os.path.exists(stylesheet_path)
+        found_stylesheet = os.path.exists(self.fullStyleSheetFilePath)
 
         # If it exists, run fileSaveDialog
         # Else, run fileOpenDialog, then fileSaveDialog
@@ -973,7 +1162,7 @@ class EHSNGui(wx.Frame):
                     print "path exp"
                     print path
                 if path != "":
-                    stylesheet_path = path
+                    self.fullStyleSheetFilePath = path
 
             fileOpenDialog.Destroy()
 
@@ -1001,7 +1190,7 @@ class EHSNGui(wx.Frame):
                 print "path exp"
                 print path
             if path != "":
-                self.manager.ExportAsPDF(path, stylesheet_path)
+                self.manager.ExportAsPDF(path, self.fullStyleSheetFilePath)
 
         fileSaveDialog.Destroy()
 
@@ -1011,21 +1200,8 @@ class EHSNGui(wx.Frame):
     # Stylesheet to be used to is be only the first page
     # default name is STATIONNUM_YYYYMMDD_eHSN_SUMMARY.pdf
     def OnFileSaveAsPDFSumm(self, evt):
-        stylesheet_path = self.summStyleSheetFileName
-
-        # determine if application is a script file or frozen exe
-
-        if hasattr(sys, '_MEIPASS'):
-            stylesheet_path = os.path.join(sys._MEIPASS, stylesheet_path)
-
-        # else:
-            # stylesheet_path = self.stylesheetPath + os.sep + stylesheet_path
-
-
-
-
         # Locate stylesheet based on stylesheet_path
-        found_stylesheet = os.path.exists(stylesheet_path)
+        found_stylesheet = os.path.exists(self.summStyleSheetFilePath)
 
         # If it exists, run fileSaveDialog
         # Else, run fileOpenDialog, then fileSaveDialog
@@ -1048,7 +1224,7 @@ class EHSNGui(wx.Frame):
                     print "path exp"
                     print path
                 if path != "":
-                    stylesheet_path = path
+                    self.summStyleSheetFilePath = path
 
             fileOpenDialog.Destroy()
 
@@ -1074,7 +1250,7 @@ class EHSNGui(wx.Frame):
                 print path
             if path != "":
                 self.CreateQR()
-                self.manager.ExportAsPDF(path, stylesheet_path)
+                self.manager.ExportAsPDF(path, self.summStyleSheetFilePath)
 
         fileSaveDialog.Destroy()
 
@@ -1082,21 +1258,9 @@ class EHSNGui(wx.Frame):
 
 
     def OnFileSaveAsPDFView(self, evt):
-        stylesheet_path = self.viewStyleSheetFileName
-
-        # determine if application is a script file or frozen exe
-
-        if hasattr(sys, '_MEIPASS'):
-            stylesheet_path = os.path.join(sys._MEIPASS, stylesheet_path)
-
-        # else:
-            # stylesheet_path = self.stylesheetPath + os.sep + stylesheet_path
-
-
-
 
         # Locate stylesheet based on stylesheet_path
-        found_stylesheet = os.path.exists(stylesheet_path)
+        found_stylesheet = os.path.exists(self.viewStyleSheetFilePath)
 
         # If it exists, run fileSaveDialog
         # Else, run fileOpenDialog, then fileSaveDialog
@@ -1120,7 +1284,7 @@ class EHSNGui(wx.Frame):
                     print "path exp"
                     print path
                 if path != "":
-                    stylesheet_path = path
+                    self.viewStyleSheetFilePath = path
 
             fileOpenDialog.Destroy()
 
@@ -1145,7 +1309,7 @@ class EHSNGui(wx.Frame):
                 print "path exp"
                 print path
             if path != "":
-                self.manager.ExportAsPDF(path, stylesheet_path)
+                self.manager.ExportAsPDF(path, self.viewStyleSheetFilePath)
 
         fileSaveDialog.Destroy()
 
@@ -1226,8 +1390,8 @@ class EHSNGui(wx.Frame):
         res = dlg.ShowModal()
         if res == wx.ID_YES:
             dlg.Destroy()
-            re = self.OnFileSaveAs(evt)
-            if re is None:
+            re = self.OnSaveExit(evt)
+            if re:
                 if self.calc is not None:
                     if not self.calc.quitFlag:
                         self.calc.quit()
@@ -1264,12 +1428,12 @@ class EHSNGui(wx.Frame):
             # Save XML before uploading in case eHSN crashes.
             #if self.SaveBeforeUpload(evt):
             self.aquariusUploadDialog = AquariusUploadDialog(self.mode, self.uploadDir, self, title=self.fileAQUploadTitle, style=wx.RESIZE_BORDER)
-            if self.manager.disMeasManager.IsEmpty() and self.manager.instrDepManager.dischargeRemarkEmpty():
+            if self.manager.disMeasManager.IsEmpty() and self.manager.disMeasManager.dischargeRemarkEmpty():
                 self.aquariusUploadDialog.dischargeCkbox.Enable(False)
             else:
                 self.aquariusUploadDialog.dischargeCkbox.Enable(True)
-                self.aquariusUploadDialog.dischargeCkbox.SetValue(False)
-                self.aquariusUploadDialog.includeDischarge = False
+                self.aquariusUploadDialog.dischargeCkbox.SetValue(True)
+                self.aquariusUploadDialog.includeDischarge = True
 
             if not self.manager.waterLevelRunManager.IsEmpty():
                 self.aquariusUploadDialog.levelNoteCkbox.SetValue(True)
@@ -1278,124 +1442,31 @@ class EHSNGui(wx.Frame):
                 self.aquariusUploadDialog.levelNoteCkbox.Enable(False)
             self.aquariusUploadDialog.usernameCtrl.SetValue(self.savedName)
             self.aquariusUploadDialog.passwordCtrl.SetValue(self.savedPassword)
+            self.aquariusUploadDialog.serverCmbo.SetValue(self.savedServer)
+
+
             # Set name of changeCtrl in upload dialog.
             if self.name=='':
                 date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
                 date = date.strftime("%Y%m%d")
                 defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.pdf"
-                self.aquariusUploadDialog.changeCtrl.SetValue(self.dir +"\\" + defaultName)
+                self.aquariusUploadDialog.changeCtrl.SetValue(self.uploadSaveDir +"\\" + defaultName)
             else:
-                self.aquariusUploadDialog.changeCtrl.SetValue(self.dir + "\\" + self.name.replace("xml", "pdf"))
-            # self.aquariusUploadDialog.usernameCtrl.SetValue("wenbin.zhang")
-            # self.aquariusUploadDialog.passwordCtrl.SetValue("wenbin1")
+                print "self.uploadsaveDir", self.uploadSaveDir
+                print "self.name", self.name
+                self.aquariusUploadDialog.changeCtrl.SetValue(self.uploadSaveDir + "\\" + self.name.replace("xml", "pdf"))
+
             show_dialog = True
             show_error = False
             result = "Error occured during upload to AQUARIUS "
 
-            while show_dialog:
-                re = self.aquariusUploadDialog.ShowModal()
-
-                if re == wx.ID_CANCEL:
-                    break
-
-                self.aquariusUploadDialog.EnableButtons(False)
-
-                if self.manager is not None:
-                    server = self.aquariusUploadDialog.GetServer()
-                    username = self.aquariusUploadDialog.usernameCtrl.GetValue()
-                    password = self.aquariusUploadDialog.passwordCtrl.GetValue()
-                    fvDate = self.manager.genInfoManager.datePicker
-                    withDischarge = self.aquariusUploadDialog.includeDischarge
-                    withLevelNote = self.aquariusUploadDialog.includeLevelNote
-################################################################################
-
-                    # Let manager take care of all AquariusManager calls
-                    # try:
-    	               #  result = self.manager.ExportToAquarius(server, username, password, fvDate, withDischarge)
-
-    	               #  if result is not None:
-    		              #   if "password" in result:
-    		            		# error = wx.MessageDialog(None, result, self.errorTitle,
-    		              #                           wx.OK | wx.ICON_EXCLAMATION)
-    		            		# re = error.ShowModal()
-    		            		# if re == wx.ID_OK:
-
-    		            		# 	aquariusUploadDialog.Destroy()
-    		            		# 	return
-
-                    # except:
-                    #     print "Error during the uploading"
-############################################################################
-
-                    result = self.manager.ExportToAquarius(server, username, password, fvDate, withDischarge, withLevelNote)
-
-                    if result is not None:
-                        if "password" in result:
-                            error = wx.MessageDialog(None, result, self.errorTitle,
-                                                wx.OK | wx.ICON_EXCLAMATION)
-                            re = error.ShowModal()
-                            if re == wx.ID_OK:
-
-                                self.aquariusUploadDialog.Destroy()
-                                return
-
-#######################################################
-
-                    uploadInfo = []
-
-                    if result is None:
-                        self.manager.ExportToAquariusSuccess()
-
-                        self.aquariusUploadDialog.EnableButtons(True)
-
-
-                        # message = "Successful"
-                        # success = wx.MessageDialog(None, self.fileAQUpSuccessMessage, self.fileAQUpSuccessTitle, wx.OK)
-                        # success.ShowModal()
-
-                        self.savedName = username
-                        self.savedPassword = password
-
-                        uploadInfo.append("Successful")
-                        uploadInfo.append(str(datetime.datetime.now()))
-                        uploadInfo.append(username)
-
-
-                        if self.manager.uploadRecord is None:
-                            self.manager.uploadRecord = Element('AQ_Upload_Record')
-                        self.manager.UploadInfoAsXMLTree(self.manager.uploadRecord, uploadInfo)
-
-                        self.SaveAsPDFAndXML4Upload(self.uploadDir, True)
-
-                        break
-                    else:
-                        print "Error: %s" % result
-                        show_error = True
-                        uploadInfo.append("Failed")
-                        uploadInfo.append(str(datetime.datetime.now()))
-                        uploadInfo.append(username)
-                        # message = "Failed"
-                        if self.manager.uploadRecord is None:
-                            self.manager.uploadRecord = Element('AQ_Upload_Record')
-                        self.manager.UploadInfoAsXMLTree(self.manager.uploadRecord, uploadInfo)
-
-                        self.SaveAsPDFAndXML4Upload(self.uploadDir, False)
-                        break
-                #Re enable access to dialog
-                self.aquariusUploadDialog.EnableButtons(True)
+            # while show_dialog:
+            re = self.aquariusUploadDialog.ShowModal()
 
 
 
 
-
-                if show_error:
-                    error = wx.MessageDialog(None, result, self.errorTitle,
-                                                wx.OK | wx.ICON_EXCLAMATION)
-                    error.ShowModal()
-                    show_error = False
-                    # aquariusUploadDialog.Destroy()
-
-            self.aquariusUploadDialog.Destroy()
+            # self.aquariusUploadDialog.Destroy()
 
     def createProgressDialog(self, title, message):
         self.dialog = wx.ProgressDialog(title, message, 1, parent=self.aquariusUploadDialog, style=wx.PD_AUTO_HIDE|wx.PD_APP_MODAL)
@@ -1455,11 +1526,7 @@ class EHSNGui(wx.Frame):
                                      wx.OK | wx.ICON_INFORMATION)
         info.ShowModal()
 
-        # panel = wx.Panel(info)
-        # sizer = wx.BoxSizer(wx.VERTICAL)
-        # zoombar = zb.ZoomBar(panel, size=(300, 60))
-        # sizer.Add(zoombar)
-        # panel.SetSizer(sizer)
+
 
 
     def OnImportMovingBoaiMmt(self, event):
@@ -1627,6 +1694,14 @@ class EHSNGui(wx.Frame):
 
     def OnStationSelect(self, event):
 
+        self.StationSelect()
+
+
+
+
+    def StationSelect(self):
+
+
         insertPoint = self.genInfo.stnNumCmbo.GetInsertionPoint()
         self.genInfo.stnNumCmbo.ChangeValue(unicode.upper(self.genInfo.stnNumCmbo.GetValue()))
         self.genInfo.stnNumCmbo.SetInsertionPoint(insertPoint)
@@ -1652,6 +1727,9 @@ class EHSNGui(wx.Frame):
 
 
     def OnStationNameSelect(self, event):
+        self.StationNameSelect()
+
+    def StationNameSelect(self):
 
         insertPoint = self.genInfo.stnNameCtrl.GetInsertionPoint()
         self.genInfo.stnNameCtrl.ChangeValue(unicode.upper(self.genInfo.stnNameCtrl.GetValue()))
@@ -1741,6 +1819,7 @@ class EHSNGui(wx.Frame):
 
     def OpenStationFile(self, file):
 
+
         self.numsRead = []
         self.namesRead = []
         self.tz = []
@@ -1775,10 +1854,17 @@ class EHSNGui(wx.Frame):
 
 
             self.genInfo.updateNumbers(self.numsRead)
+
             self.genInfo.UpdateNames(sorted(self.namesRead))
-            self.genInfo.stnNumCmbo.Bind(wx.EVT_TEXT, self.OnStationSelect)
-            self.genInfo.stnNameCtrl.Bind(wx.EVT_TEXT, self.OnStationNameSelect)
+
+            # self.genInfo.stnNumCmbo.Bind(wx.EVT_TEXT, self.OnStationSelect)
+            # self.genInfo.stnNameCtrl.Bind(wx.EVT_TEXT, self.OnStationNameSelect)
+
+            self.StationSelect()
+            self.StationNameSelect()
             self.emptyStation = False
+
+
 
 
 
@@ -2121,230 +2207,381 @@ class EHSNGui(wx.Frame):
         self.img = qrcode.make(code)
         self.img.save(self.qr_path, "jpeg")
 
-    # def OpenMovingBoaiDis(self, path, evt):
-    #     locked = self.movingBoatMeasurements.lockCB.GetValue()
+
+    #Import any external file from the menu list
+    def OnImport(self, evt):
+        if self.manager.genInfoManager.mandatoryChecking():
+                return
+
+        stId = -1
+        if evt.GetId() == ID_IMPORT_QRXML:
+            if not self.QRevFileOpen():
+                return
+
+            stId = self.manager.GetStationIDFromQRev()
+            startDate = self.manager.GetDateFromQRev()
+        elif evt.GetId() == ID_IMPORT_FTDIS:
+            if not self.FlowTrackerOpen():
+                return
+            stId = self.manager.GetStationIdFromFlowTrackerDis()
+            startDate = self.manager.GetDateFromFlowTrackerDis()
+
+        elif evt.GetId() == ID_IMPORT_HFC:
+            if not self.HfcFileOpen():
+                return
+            stId = self.manager.GetStationIdFromHfc()
+            startDate = self.manager.GetDateFromHfc()
+
+        elif evt.GetId() == ID_IMPORT_FT2:
+            if not self.FtFileOpen():
+                return 
+            stId = self.manager.GetStationIdFromFt2()
+            startDate = self.manager.GetDateFromFt2()
+
+        elif evt.GetId() == ID_IMPORT_SXSMMT:
+            if not self.SxsFileOpen():
+                return
+            stId = self.manager.GetStationIdFromSxs()
+            startDate = self.manager.GetDateFromSxs()
+
+        elif evt.GetId() == ID_IMPORT_RSSDIS:
+            if not self.RsslFileOpen():
+                return
+            stId = self.manager.GetStationIdFromRssl()
+            startDate = self.manager.GetDateFromRssl()
+
+
+        elif evt.GetId() == ID_IMPORT_EHSN:
+            if not self.EhsnMidsectionOpen():
+                return
+
+
+
+            stId = self.manager.GetStationIdFromEhsnMidsection()
+            startDate = self.manager.GetDateFromEhsnMidsection()
+
+            if not self.manager.genInfoManager.matchStation(stId):
+                res = self.manager.genInfoManager.matchDate(startDate)
+                if res == wx.ID_NO:
+                    return
+
+
+                self.manager.instrDepManager.GetMethodCBListBox().Check(1)
+                if self.instrDep.DeploymentCheckListCBCkecking4MidSection():
+
+
+                    self.manager.OpenEHSNMidsection(self.ehsnMidDir)
+
+                    info = wx.MessageDialog(self, self.importSucessMsg, self.importSucessTitle,
+                                         wx.OK | wx.ICON_INFORMATION)
+                    info.ShowModal()
+
+                # else:
+                #     self.manager.instrDepManager.GetMethodCBListBox().Check(1, False)
+            return
+            
+
+        
+        if stId == -1:
+            info = wx.MessageDialog(self, self.fileErrMsg, self.fileErrTitle,
+                                     wx.OK | wx.ICON_ERROR)
+            info.ShowModal()
+
+        else:
+            #station ID not matching
+            if self.manager.genInfoManager.matchStation(stId):
+                if evt.GetId() == ID_IMPORT_FT2:
+                    if self.ft2FtDir != '':
+                        shutil.rmtree(self.ft2FtDir.split('.')[0])
+                return
+
+            #Measurement date not matching and "not import" select from the user
+            res = self.manager.genInfoManager.matchDate(startDate)
+            if res == wx.ID_NO:
+                if evt.GetId() == ID_IMPORT_FT2:
+                    if self.ft2FtDir != '':
+                        shutil.rmtree(self.ft2FtDir.split('.')[0])
+                return
+
+            #Timezone if invalid (eHSN or external file or not matching)
+            if evt.GetId() == ID_IMPORT_FT2:
+                if not self.TimeZoneValidationImportFt2():
+                    if self.ft2FtDir != '':
+                        shutil.rmtree(self.ft2FtDir.split('.')[0])
+                    return
+
+            if evt.GetId() == ID_IMPORT_SXSMMT:
+                info = wx.MessageDialog(None, self.sxsImportAttentionMsg, self.sxsImportAttentionTitle,
+                                     wx.YES_NO | wx.ICON_INFORMATION)
+                info.SetYesNoLabels("Continue", "Cancel")
+                result = info.ShowModal()
+                if result != wx.ID_YES:
+                    return
+
+            frame = IngestOptionFrame(mode=self.mode, parent=self, title="External File Ingest", inType=evt.GetId(), size=(550, 250))
+            frame.Show()
+
+
+
+            
+    
+
+    #Open the QRev file and save the directory of the file
+    def QRevFileOpen(self):
+        self.DestroySubWindows()
+
+        fileOpenDialog = wx.FileDialog(self, "Open QRev", os.getcwd(), '',
+                            'QRev (*.xml)|*.xml',
+                                       style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+
+        if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
+            # print "dialog cancelled"
+            fileOpenDialog.Destroy()
+            return  False
+
+        if self.manager is not None:
+            path = fileOpenDialog.GetPath()
+            if self.mode == "DEBUG":
+                print "path open"
+                print path
+
+            if path != "":
+                fileName = fileOpenDialog.GetFilename()
+                # self.qRevFileName = fileName
+                self.qRevDir = path
+                self.flowTrackerDir = ""
+                self.hfcDir = ""
+                self.ft2FtDir = ""
+                self.ft2JsonDir = ""
+                self.sxsDir = ""
+                self.rsslDir = ""
+                self.ehsnMidDir = ""
+
+        fileOpenDialog.Destroy()
+        return True
+
+
+    #Open the dis file and save the directory of the file
+    def FlowTrackerOpen(self):
+        self.DestroySubWindows()
+
+        fileOpenDialog = wx.FileDialog(self, "Open FlowTracker *.dis", os.getcwd(), '',
+                            'FlowTracker (*.dis)|*.dis',
+                                       style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+
+        if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
+            fileOpenDialog.Destroy()
+            return False
+
+        if self.manager is not None:
+            path = fileOpenDialog.GetPath()
+            if self.mode == "DEBUG":
+                print "path open"
+                print path
+
+            if path != "":
+                fileName = fileOpenDialog.GetFilename()
+                # self.qRevFileName = fileName
+                self.flowTrackerDir = path
+                self.qRevDir = ""
+                self.hfcDir = ""
+                self.ft2FtDir = ""
+                self.ft2JsonDir = ""
+                self.sxsDir = ""
+                self.rsslDir = ""
+                self.ehsnMidDir = ""
+        fileOpenDialog.Destroy()
+        return True
+
+
+    #Open the *.MQ* file and save the directory of the file
+    def HfcFileOpen(self):
+        self.DestroySubWindows()
+
+        fileOpenDialog = wx.FileDialog(self, "Open HFC", os.getcwd(), '',
+                            'HFC (*.MQ*)|*.MQ*',
+                                       style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+
+        if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
+            fileOpenDialog.Destroy()
+            return False
+
+        if self.manager is not None:
+            path = fileOpenDialog.GetPath()
+            if self.mode == "DEBUG":
+                print "path open"
+                print path
+
+            if path != "":
+                fileName = fileOpenDialog.GetFilename()
+                # self.qRevFileName = fileName
+                self.hfcDir = path
+                self.qRevDir = ""
+                self.flowTrackerDir = ""
+                self.ft2FtDir = ""
+                self.ft2JsonDir = ""
+                self.sxsDir = ""
+                self.rsslDir = ""
+                self.ehsnMidDir = ""
+        fileOpenDialog.Destroy()
+
+        return True
+
+
+
+    def EhsnMidsectionOpen(self):
+        self.DestroySubWindows()
+
+        fileOpenDialog = wx.FileDialog(self, "Open eHSN Midsection", os.getcwd(), '',
+                            'eHSN (*.xml)|*.xml',
+                                       style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+
+        if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
+            fileOpenDialog.Destroy()
+            return False
+
+        if self.manager is not None:
+            path = fileOpenDialog.GetPath()
+            if self.mode == "DEBUG":
+                print "path open"
+                print path
+
+            if path != "":
+                fileName = fileOpenDialog.GetFilename()
+                # self.qRevFileName = fileName
+                self.hfcDir = ""
+                self.qRevDir = ""
+                self.flowTrackerDir = ""
+                self.ft2FtDir = ""
+                self.ft2JsonDir = ""
+                self.sxsDir = ""
+                self.rsslDir = ""
+                self.ehsnMidDir = path
+        fileOpenDialog.Destroy()
+
+        return True
+
+    #Open the *.ft* file and save the directory of the file
+    def FtFileOpen(self):
+        self.DestroySubWindows()
+
+        fileOpenDialog = wx.FileDialog(self, "Open FlowTracker *.ft", os.getcwd(), '',
+                            'FlowTracker (*.ft)|*.ft',
+                                       style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+
+        if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
+            fileOpenDialog.Destroy()
+            return False
+
+        if self.manager is not None:
+            path = fileOpenDialog.GetPath()
+            if self.mode == "DEBUG":
+                print "path open"
+                print path
+
+            if path != "":
+                fileName = fileOpenDialog.GetFilename()
+                self.ftFileName = fileName
+                self.ft2FtDir = path
+                self.qRevDir = ""
+                self.flowTrackerDir = ""
+                self.hfcDir = ""
+                self.ft2JsonDir = ""
+                self.sxsDir = ""
+                self.rsslDir = ""
+                self.ehsnMidDir = ""
+                try:
+                    extractFile = zipfile.ZipFile(fileName, 'r')
+                    extractFile.extractall(fileName.split('.')[0])
+                    extractFile.close()
+                except:
+                    err = wx.MessageDialog(self, self.readFT2ErrMsg, self.readFT2ErrTitle, wx.OK | wx.ICON_ERROR)
+                    err.ShowModal()
+
+                self.ft2JsonDir = self.ft2FtDir.split('.')[0] + "\\DataFile.json"
+                self.qRevDir = ""
+                self.flowTrackerDir = ""
+                self.hfcDir = ""
+                self.ft2FtDir = ""
+                self.sxsDir = ""
+                self.rsslDir = ""
+                self.ehsnMidDir = ""
+        fileOpenDialog.Destroy()
+        return True
 
 
 
 
 
-    #     mmntStart = ''
-    #     mmntEnd = ''
-    #     stationNumber = ''
-    #     dateDis = ''
-    #     transducer = None
-    #     depRef =None
-    #     topMethod = None
-    #     botMethod = None
+    #Open the *.sxs.xml file and save the directory of the file
+    def SxsFileOpen(self):
+        self.DestroySubWindows()
+
+        fileOpenDialog = wx.FileDialog(self, "Open SxS", os.getcwd(), '',
+                            'FlowTracker (*.xsx.xml)|*.sxs.xml',
+                                       style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+
+        if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
+            fileOpenDialog.Destroy()
+            return False
+
+        if self.manager is not None:
+            path = fileOpenDialog.GetPath()
+            if self.mode == "DEBUG":
+                print "path open"
+                print path
+
+            if path != "":
+                fileName = fileOpenDialog.GetFilename()
+                # self.ftFileName = fileName
+                self.sxsDir = path
+                self.qRevDir = ""
+                self.flowTrackerDir = ""
+                self.hfcDir = ""
+                self.ft2FtDir = ""
+                self.ft2JsonDir = ""
+                self.rsslDir = ""
+                self.ehsnMidDir = ""
+
+        fileOpenDialog.Destroy()
+        return True
 
 
-    #     ## Open the file with read only permit
-    #     f = open(path)
-    #     ## Read the first line
-    #     line = f.readline()
-    #     Transections = []
-    #     summary = []
-    #     hasNextLine = False
-    #     ## If the file is not empty keep reading line one at a time
-    #     ## till the file is empty
-    #     while line:
-    #         if ';' in line:
-    #             row = line.split(';')
-    #             row[1] = row[1].strip()
-    #             key = row[0]
-    #             val = row[1]
-    #             if key == 'Track Reference':
-    #                 if 'Bottom-Track' in val:
-    #                     trackRef = 'BT'
-    #                 elif val == 'GPS-GGA':
-    #                     trackRef = 'GGA'
-    #                 elif val == 'GPS-VTG':
-    #                     trackRef = 'VTG'
-    #                 else:
-    #                     trackRef = ''
-    #             elif key == 'Left Method':
+    #Open the *.dis file and save the directory of the file
+    def RsslFileOpen(self):
+        self.DestroySubWindows()
 
-    #                 if val == 'Sloped Bank':
-    #                     leftBank = 'Sloping'
-    #                 elif val == 'Vertical Bank':
-    #                     leftBank = 'Vertical'
-    #                 elif val == 'User Input':
-    #                     leftBank = 'Other'
-    #                 else:
-    #                     leftBank = ''
-    #             elif key == 'Right Method':
+        fileOpenDialog = wx.FileDialog(self, "Open RSSL", os.getcwd(), '',
+                            'FlowTracker (*.dis)|*.dis',
+                                       style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
-    #                 if val == 'Sloped Bank':
-    #                     rightBank = 'Sloping'
-    #                 elif val == 'Vertical Bank':
-    #                     rightBank = 'Vertical'
-    #                 elif val == 'User Input':
-    #                     rightBank = 'Other'
-    #                 else:
-    #                     rightBank = ''
-    #             elif key == 'Station Number':
-    #                 stationNumber = val
-    #             elif 'Transducer' in key:
-    #                 transducer = val
-    #             elif 'Depth Reference' in key:
-    #                 depRef = val
-    #             elif 'Top Fit' in key:
-    #                 topMethod = val
-    #             elif 'Bottom Fit' in key:
-    #                 botMethod = val
-    #         comments = ''
-    #         comments += 'Transducer Depth: ' + transducer + '\n' if transducer is not None else ''
-    #         comments += 'Depth Reference: ' + depRef + '\n' if depRef is not None else ''
-    #         comments += 'Top Discharge Est: ' + topMethod + '\n' if topMethod is not None else ''
-    #         comments += 'Bottom Discharge Est: ' + botMethod + '\n' if botMethod is not None else ''
-    #         comments += '\n'
+        if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
+            fileOpenDialog.Destroy()
+            return False
 
-    #         if ":" in line:
-    #             dateline = line.split(':')
-    #             if dateline[0] == 'Date Measured':
-    #                 dateDis = self.ConvertDateFromDis(dateline[1])
+        if self.manager is not None:
+            path = fileOpenDialog.GetPath()
+            if self.mode == "DEBUG":
+                print "path open"
+                print path
+
+            if path != "":
+                fileName = fileOpenDialog.GetFilename()
+                # self.ftFileName = fileName
+                self.rsslDir = path
+                self.qRevDir = ""
+                self.flowTrackerDir = ""
+                self.hfcDir = ""
+                self.ft2FtDir = ""
+                self.ft2JsonDir = ""
+                self.sxsDir = ""
+                self.ehsnMidDir = ""
 
 
-
-    #         if "Transect\t" in line or hasNextLine:
-    #             # print line
-    #             line = line.split("\t")
-
-    #             line.pop()
-
-    #             Transections.append(line)
-    #             hasNextLine = True
-
-    #         line = f.readline()
-    #         if "\t\t\t\t" in line:
-    #             hasNextLine = False
-    #             line = line.split("\t")
-    #             line.pop()
-    #             summary.append(line)
-
-    #     f.close()
-
-    #     if self.LocationCheckBeforeImporiDis(stationNumber, dateDis):
+        fileOpenDialog.Destroy()
+        return True
 
 
-
-
-
-    #         if not locked:
-
-
-    #             self.movingBoatMeasurements.manager.lockCB = ''
-    #             self.movingBoatMeasurements.manager.mbCB = False
-    #             self.movingBoatMeasurements.manager.mbCmbo = ''
-    #             self.movingBoatMeasurements.manager.leftBankCmbo = ''
-    #             # movingBoatMeasurements.leftBankOtherCtrl = ''
-    #             self.movingBoatMeasurements.manager.rightBankCmbo = ''
-    #             # movingBoatMeasurements.rightBankOtherCtrl = ''
-    #             self.movingBoatMeasurements.manager.trackRefCmbo = ''
-    #             self.movingBoatMeasurements.manager.mmntStartTimeCtrl = '00:00:00'
-    #             self.movingBoatMeasurements.manager.mmntEndTimeCtrl = '00:00:00'
-    #             self.movingBoatMeasurements.manager.mmntMeanTimeCtrl = '00:00:00'
-    #             self.movingBoatMeasurements.manager.rawDischMeanCtrl = ''
-    #             self.movingBoatMeasurements.manager.finalDischCtrl = ''
-    #             self.movingBoatMeasurements.manager.mbCorrAppCtrl = ''
-    #             self.movingBoatMeasurements.manager.standDevMeanDischCtrl = ''
-    #             self.movingBoatMeasurements.manager.corrMeanGHCtrl = ''
-    #             self.movingBoatMeasurements.manager.calcShiftBaseCurveCtrl = ''
-    #             self.movingBoatMeasurements.manager.dischDiffBaseCurveCtrl = ''
-    #             self.movingBoatMeasurements.manager.baseCurveGHCtrl = ''
-    #             self.movingBoatMeasurements.manager.baseCurveDischCtrl = ''
-    #             self.movingBoatMeasurements.manager.commentsCtrl = ''
-
-    #             for row in range(len(self.movingBoatMeasurements.tableSizerV.GetChildren()) - 2):
-    #                 self.movingBoatMeasurements.manager.SetTableValue(row, 1, 'False')
-    #                 self.movingBoatMeasurements.manager.SetTableValue(row, 2, "")
-    #                 self.movingBoatMeasurements.manager.SetTableValue(row, 3, "")
-    #                 self.movingBoatMeasurements.manager.SetTableValue(row, 4, "00:00:00")
-    #                 self.movingBoatMeasurements.manager.SetTableValue(row, 5, "")
-    #                 self.movingBoatMeasurements.manager.SetTableValue(row, 6, "")
-    #                 self.movingBoatMeasurements.manager.SetTableValue(row, 7, "")
-    #                 self.movingBoatMeasurements.manager.SetTableValue(row, 8, "")
-    #                 self.movingBoatMeasurements.manager.SetTableValue(row, 9, "")
-    #                 self.movingBoatMeasurements.manager.SetTableValue(row, 10, "")
-
-
-
-
-
-
-
-    #         self.movingBoatMeasurements.trackRefCmbo.SetValue(trackRef)
-    #         self.movingBoatMeasurements.leftBankCmbo.SetValue(leftBank)
-    #         self.movingBoatMeasurements.rightBankCmbo.SetValue(rightBank)
-    #         color = (210, 210, 210)
-    #         for index in range(1, len(Transections)):
-    #             start = self.startTime(Transections[index][4])
-    #             end = self.endTime(start, Transections[index][5])
-    #             transectID = Transections[index][0]
-    #             startBank = 'L' if Transections[index][2] == 'Left Bank' else 'R'
-    #             finalDischarge = Transections[index][18]
-
-    #             mmntStart = start if mmntStart == '' else mmntStart
-    #             mmntEnd = end
-
-    #             if index > len(self.movingBoatMeasurements.tableSizerV.GetChildren()) - 2:
-    #             		self.movingBoatMeasurements.AddEntry()
-    #             if not locked:
-
-    #                 self.movingBoatMeasurements.manager.SetTableValue(index-1, 1, 'True')
-    #                 self.movingBoatMeasurements.manager.SetTableValue(index-1, 2, transectID)
-    #                 self.movingBoatMeasurements.manager.SetTableValue(index-1, 3, startBank)
-    #                 self.movingBoatMeasurements.manager.SetTableValue(index-1, 4, start)
-    #                 self.movingBoatMeasurements.manager.SetTableValue(index-1, 8, finalDischarge)
-    #                 self.movingBoatMeasurements.manager.commentsCtrl = comments
-
-    #                 self.movingBoatMeasurements.manager.SetTableColor(index-1, 2, color)
-    #                 self.movingBoatMeasurements.manager.SetTableColor(index-1, 8, color)
-    #             else:
-
-    #                 # self.movingBoatMeasurements.manager.SetTableValue(index-1, 0, 'True')
-    #                 if self.movingBoatMeasurements.manager.GetTableValue(index-1, 2) == '':
-    #                     self.movingBoatMeasurements.manager.SetTableValue(index-1, 2, transectID)
-    #                     self.movingBoatMeasurements.manager.SetTableColor(index-1, 2, color)
-    #                 if self.movingBoatMeasurements.manager.GetTableValue(index-1, 3) == '':
-    #                     self.movingBoatMeasurements.manager.SetTableValue(index-1, 3, startBank)
-    #                 if self.movingBoatMeasurements.manager.GetTableValue(index-1, 4) == '00:00:00':
-    #                     self.movingBoatMeasurements.manager.SetTableValue(index-1, 4, start)
-    #                 if self.movingBoatMeasurements.manager.GetTableValue(index-1, 8) == '':
-    #                     self.movingBoatMeasurements.manager.SetTableValue(index-1, 8, finalDischarge)
-    #                     self.movingBoatMeasurements.manager.SetTableColor(index-1, 8, color)
-    #         meanFinal = 0
-    #         counterFinal = 0
-    #         finals = []
-    #         for tran in range(len(self.movingBoatMeasurements.tableSizerV.GetChildren()) - 2):
-    #             if self.movingBoatMeasurements.manager.GetTableValue(tran, 1):
-
-    #                 meanFinal += float(self.movingBoatMeasurements.manager.GetTableValue(tran, 8))
-    #                 counterFinal += 1
-    #                 finals.append(self.movingBoatMeasurements.manager.GetTableValue(tran, 8))
-    #         if counterFinal > 0:
-    #             meanFinal = meanFinal / counterFinal
-    #         if len(finals) > 0:
-    #             standDevMean = float(format(self.standardDeviation(finals) /float(meanFinal), '.3f')) * 100
-    #             self.movingBoatMeasurements.standDevMeanDischCtrl.SetValue(str(standDevMean))
-    #         else:
-    #             self.movingBoatMeasurements.standDevMeanDischCtrl.SetValue('0.000')
-
-    #         self.movingBoatMeasurements.mmntStartTimeCtrl.SetValue(mmntStart)
-    #         self.movingBoatMeasurements.mmntEndTimeCtrl.SetValue(mmntEnd)
-
-    #         startFromTimeCtrl = self.movingBoatMeasurements.mmntStartTimeCtrl.GetWxDateTime()
-    #         endFromTimeCtrl = self.movingBoatMeasurements.mmntEndTimeCtrl.GetWxDateTime()
-    #         meanTime = self.mean(startFromTimeCtrl, endFromTimeCtrl)
-
-    #         self.movingBoatMeasurements.mmntMeanTimeCtrl.SetValue(meanTime)
-    #         if not locked :
-    #             self.movingBoatMeasurements.finalDischCtrl.SetValue(summary[0][18])
-    #             self.movingBoatMeasurements.standDevMeanDischCtrl.SetValue(str(float(summary[2][18]) * 100))
-    #         else:
-    #             self.movingBoatMeasurements.OnFinalDischargeMean(evt)
-    #             self.movingBoatMeasurements.OnStandardDev(evt)
-    #         self.movingBoatMeasurements.manager.recalculate()
 
 
     #return the standard deviation of a list of numbers
@@ -2364,87 +2601,306 @@ class EHSNGui(wx.Frame):
         else:
             return 0
 
+    #Timezone validation for importing FlowTracker2
+    def TimeZoneValidationImportFt2(self):
+        if self.manager.genInfoManager.tzCmbo == "":
+
+            info = wx.MessageDialog(self, self.tzEhsnMissErrMsg, self.tzEhsnMissErrTitle,
+                                     wx.OK | wx.ICON_ERROR)
+            info.ShowModal()
+            return False
+
+        elif len(self.manager.GetLocalTimeUtcOffsetFromFt2()) < 9:
+            info = wx.MessageDialog(self, self.tzFt2MissErrMsg, self.tzFt2MissErrTitle,
+                                     wx.OK | wx.ICON_ERROR)
+            info.ShowModal()
+            return False
+
+        else:
+            tzCmbo = self.manager.genInfoManager.tzCmbo
+            if tzCmbo == "PST":
+                tz = "-08"
+            elif tzCmbo == "MST":
+                tz = "-07"
+            elif tzCmbo == "CST":
+                tz = "-06"
+            elif tzCmbo == "EST":
+                tz = "-05"
+            elif tzCmbo == "AST":
+                tz = "-04"
+            elif tzCmbo == "NST":
+                tz = "-03"
+            # elif tzCmbo == "UTC":
+            #     tz = "00"
+        # print self.manager.GetLocalTimeUtcOffsetFromFt2()
+        # print tzCmbo
+        print "self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]", self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]
+        if tz != self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]:
+            info = wx.MessageDialog(self, self.tzMatchErrMsg, self.tzMatchErrTitle,
+                                     wx.OK | wx.ICON_ERROR)
+
+            # info.GetMessage().SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, "")) 
+            info.ShowModal()
+            return False
+
+        return True
+
+
 
     # def OnDraw(self, event):
     #     # skatch.MainApp().run()
     #     self.p = painting.MyPaint()
     #     self.p.Run()
+    def OnScal1(self, event):
+        fWindow = self.FindFocus()
+         
+        self.ApplyFontToChildren(self, 1)
+        self.ChangeFontToMidsectionGrid(1)
+
+        fWindow.SetFocus()
 
 
 
-    # #Check if station ID matched before import a dis file
-    # def LocationCheckBeforeImporiDis(self, locationID, date):
-    #     desc = 'The date for this measurement file does not match the date on the front page.\nDo you still want to import the ADCP file?'
-    #     openTitle = 'Date does not match'
+    def OnScal2(self, event):
+        fWindow = self.FindFocus()
+        self.ApplyFontToChildren(self, -1)
+        self.ChangeFontToMidsectionGrid(-1)
 
-    #     if locationID != '':
+        fWindow.SetFocus()
 
-    #         locationIDFrontPage = self.manager.genInfoManager.stnNumCmbo
-    #         dateFrontPage = self.manager.genInfoManager.datePicker
 
-    #         if locationID.upper() != locationIDFrontPage:
-    #             dlg = wx.MessageDialog(self, "The Station ID in the measurement file does not match", 'Dismatch Station ID',
-    #                                         wx.OK | wx.ICON_QUESTION)
-    #             res = dlg.ShowModal()
-    #             if res == wx.OK:
-    #                 dlg.Destroy()
-    #                 return False
-    #             else:
-    #                 dlg.Destroy()
-    #                 return False
-    #         elif date != dateFrontPage:
-    #             dlg = wx.MessageDialog(self, desc, openTitle, wx.YES_NO | wx.ICON_QUESTION)
 
-    #             res = dlg.ShowModal()
-    #             if res == wx.ID_YES:
-    #                 dlg.Destroy()
-    #                 return True
-    #             elif res == wx.wx.ID_NO:
-    #                 dlg.Destroy()
-    #                 return False
-    #             else:
-    #                 dlg.Destroy()
-    #                 return False
-    #         else:
-    #             return True
+    #Apply the change to given window 
+    def ApplyFontToChildren(self, window, deltaSize):
+        if deltaSize == 0:
+            return
+        if len(window.GetChildren()) > 0:
+            for index, child in enumerate(window.GetChildren()):
+                self.ApplyFontToChildren(child, deltaSize)
+
+        else:
+            font = window.GetFont()
+            size = font.GetPointSize()
+            if size + deltaSize > 6 and size + deltaSize < 16:
+                font.SetPointSize(size + deltaSize)
+                window.SetFont(font)
+                if isinstance(window, wx.StaticText):
+                    window.GetParent().Layout()
+                elif isinstance(window, wx.ComboBox) and window.GetValue() != "":
+                    window.SetFocus()
+                  
+
+
+
+
+    def ChangeFontToMidsectionGrid(self, deltaSize):
+        if deltaSize == 0:
+            return
+
+        labelFont = self.midsecMeasurements.table.summaryTable.GetLabelFont()
+        cellFont = self.midsecMeasurements.table.summaryTable.GetDefaultCellFont()
+
+        labelFontSize = labelFont.GetPointSize()
+        cellFontSize = cellFont.GetPointSize()
+
+        if labelFontSize + deltaSize > 6 and labelFontSize + deltaSize < 16:
+            labelFont.SetPointSize(labelFontSize + deltaSize)
+            cellFont.SetPointSize(cellFontSize + deltaSize)
+
+            self.midsecMeasurements.table.summaryTable.SetLabelFont(labelFont)
+            self.midsecMeasurements.table.summaryTable.SetDefaultCellFont(cellFont)
+
+            self.midsecMeasurements.table.summaryTable.ForceRefresh()
+            self.midsecMeasurements.table.summaryTable.Layout()
+
+
+            # self.midsecMeasurements.table.summaryTable.Layout()
+
+        subPanel = self.midsecMeasurements.table.subPanel
+        if subPanel is not None:
+            labelFont = subPanel.panel.velocityGrid.GetLabelFont()
+            cellFont = subPanel.panel.velocityGrid.GetDefaultCellFont()
+
+            labelFontSize = labelFont.GetPointSize()
+            cellFontSize = cellFont.GetPointSize()
+
+
+            if labelFontSize + deltaSize > 6 and labelFontSize + deltaSize < 16:
+                labelFont.SetPointSize(labelFontSize + deltaSize)
+                cellFont.SetPointSize(cellFontSize + deltaSize)
+
+                subPanel.panel.velocityGrid.SetLabelFont(labelFont)
+                subPanel.panel.velocityGrid.SetDefaultCellFont(cellFont)
+
+                subPanel.panel.velocityGrid.ForceRefresh()
+                subPanel.panel.velocityGrid.Layout()
+
+
+    # #Read the initial file to get the initial save_as path
+    # def IniSaveAsPath(self):
+    #     if os.path.isfile(self.inipath):
+    #         config = SafeConfigParser()
+    #         config.read(self.inipath)
+    #         try:
+    #             readPath = config.get('Initial_Path', 'Save_as_Path')
+    #             if os.path.exists(readPath):
+    #                 self.saveAsDirectory = readPath
+    #         except:
+    #             pass
+
+
+
+    #Read the initial file to get the initial save_as path
+    def IniUploadSavePath(self):
+        if os.path.isfile(self.inipath):
+            config = SafeConfigParser()
+            config.read(self.inipath)
+            try:
+                readPath = config.get('Initial_Path', 'Upload_Save_Path')
+                if os.path.exists(readPath):
+                    self.uploadSaveDir = readPath
+            except:
+                pass
+
+
+
+    # #Reset the initial save_as path
+    # def ResetSaveAsIni(self, resetpath):
+        
+    #     num = 0
+    #     for i in range(len(resetpath)):
+    #         if resetpath[len(resetpath) - i - 1] == '\\':
+    #             num = i
+    #             break
+    #     resetpath = resetpath[0:len(resetpath) - num - 1]
+
+    #     config = SafeConfigParser()
+    #     if os.path.isfile(self.inipath):
+    #         config.read(self.inipath)
+
+    #         try:
+    #             readPath = config.get('Initial_Path', 'Upload_Save_Path')
+    #         except:
+    #             readPath = None
+
+
+
+    #         try:
+    #             items = config.items("Initial_Path")
+    #             for i in items:
+    #                 if 'Save_as_Path' == i[0]:
+    #                     cfgfile = open(self.inipath, 'w')
+    #                     config.set('Initial_Path', 'Save_as_Path', resetpath)
+    #                     if readPath is not None:
+    #                         config.set('Initial_Path', 'Upload_Save_Path', readPath)
+    #                     self.saveAsDirectory = resetpath
+    #                     config.write(cfgfile)
+    #                     cfgfile.close()
+
+    #                     break
+
+    #             cfgfile = open(self.inipath, 'w')
+    #             config = SafeConfigParser()
+    #             config.add_section('Initial_Path')
+    #             config.set('Initial_Path', 'Save_as_Path', resetpath)
+    #             if readPath is not None:
+    #                 config.set('Initial_Path', 'Upload_Save_Path', readPath)
+    #             self.saveAsDirectory = resetpath
+    #             config.write(cfgfile)
+    #             cfgfile.close()
+
+
+    #         except:
+    #             cfgfile = open(self.inipath, 'a')
+    #             config = SafeConfigParser()
+    #             config.add_section('Initial_Path')
+    #             config.set('Initial_Path', 'Save_as_Path', resetpath)
+    #             self.saveAsDirectory = resetpath
+    #             config.write(cfgfile)
+    #             cfgfile.close()
 
     #     else:
-    #         dlg = wx.MessageDialog(self, "Station ID and date cannot be empty on the front page", 'Empty Station ID',
-    #                                         wx.OK | wx.ICON_QUESTION)
-    #         res = dlg.ShowModal()
-    #         if res == wx.OK:
-    #             dlg.Destroy()
-    #             return False
-    #         else:
-    #             dlg.Destroy()
-    #             return False
+
+    #         cfgfile = open(self.inipath, 'w')
+    #         config = SafeConfigParser()
+    #         config.add_section('Initial_Path')
+    #         config.set('Initial_Path', 'Save_as_Path', resetpath)
+    #         self.saveAsDirectory = resetpath
+    #         config.write(cfgfile)
+    #         cfgfile.close()
+
+
+    #Reset the initial upload_save path
+    def ResetUploadSaveIni(self, resetpath):
+        print "ResetUploadSaveIni"
+        num = 0
+        for i in range(len(resetpath)):
+            if resetpath[len(resetpath) - i - 1] == '\\':
+                num = i
+                break
+        resetpath = resetpath[0:len(resetpath) - num - 1]
+
+        config = SafeConfigParser()
+        if os.path.isfile(self.inipath):
+            config.read(self.inipath)
+
+            try:
+                readPath = config.get('Initial_Path', 'Save_as_Path')
+            except:
+                readPath = None
+
+
+            try:
+                items = config.items("Initial_Path")
+
+                for i in items:
+                    if 'Save_as_Path' == i[0]:
+                        cfgfile = open(self.inipath, 'w')
+                        config.set('Initial_Path', 'Upload_Save_Path', resetpath)
+                        if readPath is not None:
+                            config.set('Initial_Path', 'Save_as_Path', readPath)
+                        self.uploadSaveDir = resetpath
+                        config.write(cfgfile)
+                        cfgfile.close()
+
+                        break
+
+                cfgfile = open(self.inipath, 'w')
+                config = SafeConfigParser()
+                config.add_section('Initial_Path')
+                config.set('Initial_Path', 'Upload_Save_Path', resetpath)
+                if readPath is not None:
+                    config.set('Initial_Path', 'Save_as_Path', readPath)
+                self.uploadSaveDir = resetpath
+                config.write(cfgfile)
+                cfgfile.close()
+
+
+            except:
+                cfgfile = open(self.inipath, 'a')
+                config = SafeConfigParser()
+                config.add_section('Initial_Path')
+                config.set('Initial_Path', 'Upload_Save_Path', resetpath)
+                self.uploadSaveDir = resetpath
+                config.write(cfgfile)
+                cfgfile.close()
+
+        else:
+
+            cfgfile = open(self.inipath, 'w')
+            config = SafeConfigParser()
+            config.add_section('Initial_Path')
+            config.set('Initial_Path', 'Upload_Save_Path', resetpath)
+            self.uploadSaveDir = resetpath
+            config.write(cfgfile)
+            cfgfile.close()
 
 
 
 
-    # def OnAdcpMid(self, event):
-    #     print self.instrDep.methodCBListBox.GetCheckedStrings()
-
-    #     # self.instrDep.OnDeploymentCheckListCB(event)
-    #     if self.instrDep.methodCBListBox.IsChecked(0):
-    #         self.frChecklist.activeFieldReview(True)
-
-    #     elif self.instrDep.methodCBListBox.IsChecked(1):
-
-    #         if  self.instrDep.instrumentCmbo.GetValue().lower() == 'adcp' or self.instrDep.instrumentCmbo.GetValue().lower() == 'adv'\
-    #         or self.instrDep.instrumentCmbo.GetValue().lower() == 'current meter':
-
-    #             self.frChecklist.activeFieldReview(True)
-
-    #         else:
-
-    #             self.frChecklist.activeFieldReview(False)
 
 
-    #     else:
-    #         self.frChecklist.activeFieldReview(False)
 
-    #     event.Skip()
 
 
 def main():

@@ -118,6 +118,16 @@ class DischargeMeasurementsManager(object):
         self.gui.SetMghCmbo(mghCmbo)
 
 
+    #Discharge Combobox
+    @property
+    def dischCombo(self):
+        return self.gui.GetDischCombo()
+
+    @dischCombo.setter
+    def dischCombo(self, dischCombo):
+        self.gui.SetDischCombo(dischCombo)
+
+
 
     #Discharge Ctrl
     @property
@@ -172,6 +182,35 @@ class DischargeMeasurementsManager(object):
     def curveCtrl(self, curveCtrl):
         self.gui.SetCurveCtrl(curveCtrl)
 
+
+    #Control Condition Combo
+    @property
+    def controlConditionCmbo(self):
+        return self.gui.controlConditionCmbo.GetValue()
+
+    @controlConditionCmbo.setter
+    def controlConditionCmbo(self, controlConditionCmbo):
+        self.gui.controlConditionCmbo.SetValue(controlConditionCmbo)
+
+
+
+    #Control Remarks Control
+    @property
+    def ControlConditionRemarksCtrl(self):
+        return self.gui.controlConditionRemarksCtrl.GetValue()
+
+    @ControlConditionRemarksCtrl.setter
+    def ControlConditionRemarksCtrl(self, ControlConditionRemarksCtrl):
+        self.gui.controlConditionRemarksCtrl.SetValue(ControlConditionRemarksCtrl)
+
+
+    @property
+    def dischRemarksCtrl(self):
+        return self.gui.dischRemarksCtrl.GetValue()
+
+    @dischRemarksCtrl.setter
+    def dischRemarksCtrl(self, dischRemarksCtrl):
+        self.gui.dischRemarksCtrl.SetValue(dischRemarksCtrl)
 
 
 
@@ -246,6 +285,9 @@ class DischargeMeasurementsManager(object):
     def GetDischCtrl(self):
         return self.gui.dischCtrl
 
+    def GetDischCombo(self):
+    	return self.gui.dischCombo
+
     def GetShiftCtrl(self):
         return self.gui.shiftCtrl
 
@@ -260,7 +302,9 @@ class DischargeMeasurementsManager(object):
         return self.gui.IncompleteTimeCheck()
 
 
-
+    #Return TURE if discharge remarks is empty
+    def dischargeRemarkEmpty(self):
+        return self.gui.dischRemarksCtrl.GetValue() == ''
 
 
 

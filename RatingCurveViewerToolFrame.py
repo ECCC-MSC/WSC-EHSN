@@ -519,6 +519,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
         self.fig.set_facecolor('white')
 
 
+        lns=None
+
         # Plotting the curve
         if self.manager.extension == "xml":
             selectedCurveIndex = self.GetSelectedCurveIndex()
@@ -553,8 +555,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
                 if self.manager.qrta is not None:
                     lns = plt.plot(self.manager.qrta, self.manager.hgta, color='r', label="Rating Curve")        # Plotting straight lines between the points
         else:
-
-            lns = plt.plot(self.manager.qrta, self.manager.hgta, color='r', label="Rating Curve")        # Plotting straight lines between the points
+            if self.manager.extension is not None:
+                lns = plt.plot(self.manager.qrta, self.manager.hgta, color='r', label="Rating Curve")        # Plotting straight lines between the points
 
         # Hist values
         if self.manager.dischargeHist is not None and self.manager.stageHist is not None:
@@ -565,7 +567,10 @@ class RatingCurveViewerToolFrame(wx.Frame):
                 plt.annotate(label.strftime("%Y-%m-%d"), xy=(y, z), size=10)
 
             ln2 = plt.plot(self.manager.dischargeHist, self.manager.stageHist, "yo", markersize=9, zorder=3, alpha=0.75, label="Hist. mmts.")               # Plotting Hisorical Field MMt
-            lns = lns + ln2
+            if lns is not None:
+                lns = lns + ln2
+            else:
+                lns = ln2
 
         # min/max values
         if len(self.manager.minList)>0:
@@ -580,7 +585,10 @@ class RatingCurveViewerToolFrame(wx.Frame):
                 plt.annotate(str(label), xy=(q,h), size=10)
 
             ln3 = plt.plot(qList, hList, "co", markersize=9, zorder=3, alpha=0.75, label="Hist. Min")
-            lns = lns + ln3
+            if lns is not None:
+                lns = lns + ln3
+            else:
+                lns = ln3
 
         if len(self.manager.maxList)>0:
             qList=[]
@@ -594,8 +602,10 @@ class RatingCurveViewerToolFrame(wx.Frame):
                 plt.annotate(str(label), xy=(q,h), size=10)
 
             ln4 = plt.plot(qList, hList, "bo", markersize=9, zorder=3, alpha=0.75, label="Hist. Max")
-            lns = lns + ln4
-
+            if lns is not None:
+                lns = lns + ln4
+            else:
+                lns = ln4
 
         # Plotting observed point
         if self.manager.Qdiff is not None and (self.manager.obsDisch is not None and self.manager.obsStage is not None):
@@ -605,10 +615,13 @@ class RatingCurveViewerToolFrame(wx.Frame):
                 plt.plot(self.manager.obsDisch, self.manager.obsStage, "go", markersize=10, zorder=4)  # Plotting Qobs , Hobs
         if self.manager.qrta is not None:
             ln5 = plt.plot(self.manager.qrpa, self.manager.hgpa, "c^", markersize=5, zorder=2, label="Rating Points")  # Plotting rating points
-            lns = lns + ln5
+            if lns is not None:
+                lns = lns + ln5
+            else:
+                lns = ln5
 
         labels = [l.get_label() for l in lns]
-        plt.legend(lns, labels, loc=0, numpoints=1, framealpha=0.5)
+        plt.legend(lns, labels, loc=2, numpoints=1, framealpha=0.5)
 
         lowx = None
         highx = None

@@ -11,6 +11,7 @@ import xml.etree.ElementTree as ET
 # import pdb
 # from dateutil.tz import *
 import re
+import sys
 # import dateutil.parser
 
 
@@ -209,8 +210,14 @@ def ExportToAquarius(mode, ver, EHSN, aq, FIELDVISIT, locid, discharge, levelNot
     if mode == "DEBUG":
         print "before field visit save"
         print visit
-
-    fieldV = aq.service.SaveFieldVisit(visit)
+    try:
+        fieldV = aq.service.SaveFieldVisit(visit)
+    except Exception as e:
+        print str(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        return -1
 
     if mode == "DEBUG":
         print fieldV
@@ -218,17 +225,7 @@ def ExportToAquarius(mode, ver, EHSN, aq, FIELDVISIT, locid, discharge, levelNot
 
     return None
 
-    # except suds.WebFault, e:
-    #     if mode == "DEBUG":
-    #         print str(e)
 
-    #     return str(e)
-    # except ValueError, e:
-    #     if mode == "DEBUG":
-    #         print str(e)
-    #         print e.message
-
-    #     return str(e)
 
 # Creates Field Visit object
 # Calls each of 4 FVMeasurements (Disch, Stage, StationHealth, EnvConidtions)
@@ -318,7 +315,7 @@ def CreateFieldVisitObject(mode, ver, aq, locid, EHSN, FIELDVISIT, discharge, le
 
     #==============================================================
     dateInfo=start
-    print dateInfo
+
     #Create New Field Visit
     visit = aq.factory.create("ns0:FieldVisit")
 
@@ -362,23 +359,24 @@ def CreateFieldVisitObject(mode, ver, aq, locid, EHSN, FIELDVISIT, discharge, le
 
 
 
-
     if discharge:
 
         EHSN.gui.deleteProgressDialog()
-        dmeasurement = CreateDischargeMeasurements(mode, src, aq, visit, dMeas, EHSN,dateInfo, isoStart, isoEnd, list, dischargeResult)
+        dmeasurement = CreateDischargeMeasurements(mode, src, aq, visit, dMeas, EHSN, dateInfo, isoStart, isoEnd, list, dischargeResult)
         EHSN.gui.createProgressDialog("Uploading Field Visit to AQUARIUS", "Creating field visit to be uploaded to AQUARIUS")
     else:
         dmeasurement = None
 
     smeasurement = CreateStageMeasurements(mode, src, aq, visit, sMeas, EHSN, dateInfo, fvStartDate, server)
-    # print smeasurement
+
     shmeasurement = CreateStationHealthMeasurements(mode, src, aq, visit, shMeas, EHSN, dateInfo, fvStartDate)
     ecmeasurement = CreateEnvironmentConditionsMeasurements(mode, src, aq, visit, ecMeas, EHSN, dateInfo, fvStartDate)
     if levelNote:
         lsmeasurement = CreateLevelSurveyMeasurements(mode, src, aq, visit, lsMeas, EHSN, dateInfo, server, fvStartDate)
     else:
         lsmeasurement = None
+
+    
 
 
     # Don't add the measurement if there was no results
@@ -393,6 +391,7 @@ def CreateFieldVisitObject(mode, ver, aq, locid, EHSN, FIELDVISIT, discharge, le
         visit.Measurements.FieldVisitMeasurement.append(ecmeasurement)
     if lsmeasurement is not None:
         visit.Measurements.FieldVisitMeasurement.append(lsmeasurement)
+
 
     if len(visit.Measurements.FieldVisitMeasurement) <= 0 and visit.Remarks == "":
         raise ValueError("No valid measurements or remarks found. Cancelling upload.")
@@ -569,7 +568,9 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
 
 
     cdataParty = repChar(visit.Party)
+
     if dischargeResult is None:
+
         dmeasurement = aq.factory.create("ns0:FieldVisitMeasurement")
         dmeasurement.ApprovalLevelID = 3
         dmeasurement.MeasurementID = MEASUREMENT_ID
@@ -579,11 +580,14 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
         dmeasurement.MeasurementEndTime = isoEnd
         dmeasurement.LastModified = datetime.datetime(0001, 01, 01)
 
+        # dischargeDetails = CreateDischargeDetails(EHSN)
+ 
+
 
         if ('ADCP' in EHSN.instrDepManager.methodCBListBox.GetCheckedStrings() ) or ('ADCP' in EHSN.instrDepManager.instrumentCmbo):
             dmeasurement.MeasurementDetails = """<?xml version="1.0" encoding="UTF-8"?>
         <DiscreteMeasurementDetails xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-          <ControlCondition>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlCondition>
+          <ControlCondition>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlCondition>
           <Method>""" + method + """</Method>
           <AdcpMeasurementDetails>
             <Party>""" + cdataParty + """</Party>
@@ -598,14 +602,13 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
             <SoftwareAndVersion>""" + str(EHSN.instrDepManager.softwareCtrl) + """</SoftwareAndVersion>
             <FirmwareVersion>""" + str(EHSN.instrDepManager.firmwareCmbo) + """</FirmwareVersion>
             <SerialNumber>""" + str(EHSN.instrDepManager.serialCmbo) + """</SerialNumber>
-            <ControlCondition>""" + EHSN.instrDepManager.controlConditionCmbo + """</ControlCondition>
-          </AdcpMeasurementDetails>
-        </DiscreteMeasurementDetails>"""
+            <ControlCondition>""" + EHSN.disMeasManager.controlConditionCmbo + """</ControlCondition>
+          </AdcpMeasurementDetails> </DiscreteMeasurementDetails>"""
         elif 'ADV' in EHSN.instrDepManager.instrumentCmbo:
 
             dmeasurement.MeasurementDetails = """<?xml version="1.0" encoding="UTF-8"?>
                 <DiscreteMeasurementDetails xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                  <ControlCondition>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlCondition>
+                  <ControlCondition>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlCondition>
                   <Method>""" + method + """</Method>
                   <AdcpMeasurementDetails>
                     <Party>""" + cdataParty + """</Party>
@@ -619,7 +622,7 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
                     <SoftwareAndVersion>""" + str(EHSN.instrDepManager.softwareCtrl) + """</SoftwareAndVersion>
                     <FirmwareVersion>""" + str(EHSN.instrDepManager.firmwareCmbo) + """</FirmwareVersion>
                     <SerialNumber>""" + str(EHSN.instrDepManager.serialCmbo) + """</SerialNumber>
-                    <ControlCondition>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlCondition>
+                    <ControlCondition>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlCondition>
                   </AdcpMeasurementDetails>
                 </DiscreteMeasurementDetails>"""
 
@@ -627,7 +630,7 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
 
             dmeasurement.MeasurementDetails = """<?xml version="1.0" encoding="UTF-8"?>
                 <DiscreteMeasurementDetails xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                  <ControlCondition>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlCondition>
+                  <ControlCondition>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlCondition>
                   <Method>""" + method + """</Method>
                   <AdcpMeasurementDetails>
                     <Party>""" + cdataParty + """</Party>
@@ -641,16 +644,20 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
                     <SoftwareAndVersion>""" + str(EHSN.instrDepManager.softwareCtrl) + """</SoftwareAndVersion>
                     <FirmwareVersion>""" + str(EHSN.instrDepManager.firmwareCmbo) + """</FirmwareVersion>
                     <SerialNumber>""" + str(EHSN.instrDepManager.serialCmbo) + """</SerialNumber>
-                    <ControlCondition>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlCondition>
+                    <ControlCondition>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlCondition>
                   </AdcpMeasurementDetails>
                 </DiscreteMeasurementDetails>"""
 
 
-        dmeasurement.Remarks == ""
-        if EHSN.instrDepManager.dischRemarksCtrl.strip() != "":
-            dmeasurement.Remarks = "Discharge Remarks: " + EHSN.instrDepManager.dischRemarksCtrl.strip() + "\n"
-            if EHSN.instrDepManager.controlConditionRemarksCtrl.strip() != "":
-                dmeasurement.Remarks += ("Control Condition Remarks: " + EHSN.instrDepManager.controlConditionRemarksCtrl.strip() + "\n")
+        dmeasurement.Remarks = ""
+
+        if EHSN.disMeasManager.dischRemarksCtrl.strip() != "":
+            dmeasurement.Remarks = "Discharge Remarks: " + EHSN.disMeasManager.dischRemarksCtrl.strip() + "\n"
+
+            if EHSN.disMeasManager.ControlConditionRemarksCtrl.strip() != "":
+                dmeasurement.Remarks += ("Control Condition Remarks: " + EHSN.disMeasManager.ControlConditionRemarksCtrl.strip() + "\n")
+
+
 
 
         dmeasurement.Remarks += ("Depth Ref: " + EHSN.movingBoatMeasurementsManager.depthRefCmbo) if EHSN.movingBoatMeasurementsManager.depthRefCmbo != "" else ""
@@ -667,7 +674,6 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
             dmeasurement.Remarks += "metres " if EHSN.instrDepManager.lengthRadButBox == 0 else "kilometres "
             dmeasurement.Remarks += "above " if EHSN.instrDepManager.posRadButBox == 0 else "below "
             dmeasurement.Remarks += EHSN.instrDepManager.selectedGauge
-
 
 
         dmeasurement.Results = aq.factory.create("ns0:ArrayOfFieldVisitResult")
@@ -694,55 +700,6 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
         if dmeasurement.Results is None:
             dmeasurement.Results = aq.factory.create("ns0:ArrayOfFieldVisitResult")
             dmeasurement.Results.FieldVisitResult = []
-
-    # if MEASUREMENT_ID != 0:
-    #      if MEASUREMENT.Results is not None:
-    #          for i in range(len(MEASUREMENT.Results[0])):
-    #              MEASUREMENT.Results.FieldVisitResult[i].ResultID = -MEASUREMENT.Results.FieldVisitResult[i].ResultID
-    #              dmeasurement.Results.FieldVisitResult.append(MEASUREMENT.Results.FieldVisitResult[i])
-
-
-
-    # #Air Temp
-    # if str(EHSN.disMeasManager.airTempCtrl) != "":
-    #     ParamID = 'TA'
-
-    #     airTempResult = aq.factory.create("ns0:FieldVisitResult")
-    #     airTempResult.MeasurementID = dmeasurement.MeasurementID
-    #     airTempResult.ResultID = 0
-    #     airTempResult.StartTime = meanTime
-    #     # airTempResult.EndTime = visit.EndDate
-    #     airTempResult.ParameterID = ParamID
-    #     airTempResult.UnitID = environmentSensors[ParamID]
-    #     airTempResult.ResultType = resultType
-    #     airTempResult.ObservedResult = float(EHSN.disMeasManager.airTempCtrl)
-    #     airTempResult.Correction = 0.000
-    #     cdataParty = repChar(visit.Party)
-    #     airTempResult.ResultDetails = r"""<?xml version="1.0" encoding="UTF-8"?>
-    # <DischargeResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    #   <Party>""" + cdataParty + """</Party>
-    #   <Source>
-    #     <SourceType>
-    #       <Id>Import</Id>
-    #       <DisplayName>""" + src + """</DisplayName>
-    #     </SourceType>
-    #     <DisplayName>""" + src + """</DisplayName>
-    #     <Sequence>1</Sequence>
-    #   </Source>
-    # </DischargeResult>
-    # """
-    #     dmeasurement.Results.FieldVisitResult.append(airTempResult)
-
-
-
-    # #SRC constraint for HG and HG2
-    # if (hg != '' and src1 == '') or (hg2 != '' and src2 == ''):
-    #     warning = wx.MessageDialog(None, "Warning",
-    #         "S.R.C. is empty", wx.OK| wx.ICON_EXCLAMATION)
-    #     cont = warning.ShowModal()
-    #     if cont == wx.ID_OK:
-    #         return
-
 
 
 
@@ -889,7 +846,7 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
         #         eMGH = float(wl2)
         #         gaugeCorrection = EHSN.stageMeasManager.GCWLRefR
         #     else:
-        #         print "wrong"
+      
         #         eMGH = 0
 
         #     AMD.Destroy()
@@ -940,7 +897,7 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
                             val = False
                             break
                         else:
-                            print "Cancel"
+             
                             val = False
                     AUD.Destroy()
 
@@ -953,7 +910,9 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
             mghResult.MeasurementID = 0
             dmeasurement.Results.FieldVisitResult.append(mghResult)
 
-    else:
+    elif str(EHSN.disMeasManager.widthCtrl).strip() != "" or str(EHSN.disMeasManager.areaCtrl).strip() != "" or str(EHSN.disMeasManager.meanVelCtrl).strip() != "" or \
+            str(EHSN.disMeasManager.dischCombo).strip() != "":
+
         warning = wx.MessageDialog(None, "No MGH will be uploaded", "Warning!", wx.OK| wx.ICON_EXCLAMATION)
         cont = warning.ShowModal()
         if cont == wx.ID_OK:
@@ -1115,10 +1074,6 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
         if not areaFound:
             areaResult.MeasurementID = 0
             dmeasurement.Results.FieldVisitResult.append(areaResult)
-
-
-
-
 
 
 
@@ -1407,6 +1362,7 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
     #             dmeasurement.Results.FieldVisitResult.append(resultVal)
 
 ###########################################################################################
+
     if len(dmeasurement.Results.FieldVisitResult) <= 0 and dmeasurement.Remarks == "":
         return None
 
@@ -1421,6 +1377,32 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
             dmeasurement.Results.FieldVisitResult.append(dmeasurement.Results.FieldVisitResult[i])
             if i==len(dmeasurement.Results.FieldVisitResult)-1:
                 break
+
+    else:
+        if dmeasurement.Remarks != "" and len(dmeasurement.Results.FieldVisitResult) == 0:
+            startTimeCtrl = endTimeCtrl = "00:00"
+            if len(EHSN.disMeasManager.startTimeCtrl) > 3:
+                startTimeCtrl = EHSN.disMeasManager.startTimeCtrl
+                
+
+            if len(EHSN.disMeasManager.endTimeCtrl) > 3:
+                endTimeCtrl = EHSN.disMeasManager.endTimeCtrl
+                
+            if startTimeCtrl == "00:00" and endTimeCtrl != "00:00":
+                startTimeCtrl = endTimeCtrl
+            elif startTimeCtrl != "00:00" and endTimeCtrl == "00:00":
+                endTimeCtrl = startTimeCtrl
+
+            startTimeCtrl = datetime.datetime.strptime(startTimeCtrl, "%H:%M")
+            startTimeCtrl = startTimeCtrl.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+            startTimeCtrl = str(startTimeCtrl.isoformat()) + isoTail
+            endTimeCtrl = datetime.datetime.strptime(endTimeCtrl, "%H:%M")
+            endTimeCtrl = endTimeCtrl.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+            endTimeCtrl = str(endTimeCtrl.isoformat()) + isoTail
+
+
+            dmeasurement.MeasurementTime = startTimeCtrl
+            dmeasurement.MeasurementEndTime = endTimeCtrl
 
     return dmeasurement
 
@@ -1437,7 +1419,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
     #     MEASUREMENT_ID = MEASUREMENT.MeasurementID
 
     bms = GetBM(EHSN.genInfoManager.stnNumCmbo, aq, server)
-    print bms
+
 
     # Set to 0 for new measurement
     MEASUREMENT_ID = 0
@@ -1460,7 +1442,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
     smeasurement.MeasurementTime = fvStartDate
     smeasurement.MeasurementEndTime = fvStartDate
     smeasurement.LastModified = datetime.datetime(0001, 01, 01)
-    smeasurement.Remarks = EHSN.instrDepManager.stageRemarksCtrl
+    smeasurement.Remarks = EHSN.stageMeasManager.stageRemarksCtrl
     smeasurement.Remarks += "" if smeasurement.Remarks == "" else "\n"
     smeasurement.Remarks += "" if EHSN.envCondManager.levelsCtrl == "" else "Levels: " + str(EHSN.envCondManager.levelsCtrl)
 
@@ -1568,7 +1550,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
                             <DisplayName>""" + src + """</DisplayName>
                             <Sequence>1</Sequence>
                           </Source>
-                          <ControlConditions>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlConditions>""" \
+                          <ControlConditions>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlConditions>""" \
                            + """\n<LoggerValue>""" + hg + """</LoggerValue>""" + """
                           <IsLoggerRefSelected>false</IsLoggerRefSelected>
                         </StageResult>
@@ -1576,7 +1558,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
 
                         # if len(hgs) != 0:
                         smeasurement.Results.FieldVisitResult.append(resultVal)
-                        print "append ", measTime
+            
                         smeasurement.Remarks += "The Logger only stage value @" + measTime[11:16] + " was also used as observed value.\n"
 
 
@@ -1627,7 +1609,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
                             <DisplayName>""" + src + """</DisplayName>
                             <Sequence>1</Sequence>
                           </Source>
-                          <ControlConditions>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlConditions>""" \
+                          <ControlConditions>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlConditions>""" \
                            + """\n<LoggerValue>""" + hg + """</LoggerValue>""" + """
                           <IsLoggerRefSelected>false</IsLoggerRefSelected>
                         </StageResult>
@@ -1635,7 +1617,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
 
                             if len(refs) != 0:# and len(hgs) != 0:
                                 smeasurement.Results.FieldVisitResult.append(resultVal)
-                                print "append ", measTime
+                       
 
                 else:
 
@@ -1680,7 +1662,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
                             <DisplayName>""" + src + """</DisplayName>
                             <Sequence>1</Sequence>
                           </Source>
-                          <ControlConditions>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlConditions>""" \
+                          <ControlConditions>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlConditions>""" \
                            + """
                           <IsLoggerRefSelected>false</IsLoggerRefSelected>
                         </StageResult>
@@ -1689,7 +1671,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
 
                         if len(refs) != 0:
                             smeasurement.Results.FieldVisitResult.append(resultVal)
-                            print "append ", measTime
+                       
 
 
 
@@ -1731,7 +1713,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
                             <DisplayName>""" + src + """</DisplayName>
                             <Sequence>1</Sequence>
                           </Source>
-                          <ControlConditions>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlConditions>""" \
+                          <ControlConditions>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlConditions>""" \
                            + """\n<LoggerValue>""" + hg2 + """</LoggerValue>""" + """
                           <IsLoggerRefSelected>false</IsLoggerRefSelected>
                         </StageResult>
@@ -1739,7 +1721,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
 
                         if len(hg2s) != 0:
                             smeasurement.Results.FieldVisitResult.append(resultVal)
-                            print "append ", measTime
+            
 
 
                 elif len(refs) != 0 and len(hg2s) != 0:
@@ -1787,7 +1769,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
                             <DisplayName>""" + src + """</DisplayName>
                             <Sequence>1</Sequence>
                           </Source>
-                          <ControlConditions>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlConditions>""" \
+                          <ControlConditions>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlConditions>""" \
                            + """\n<LoggerValue>""" + hg2 + """</LoggerValue>""" + """
                           <IsLoggerRefSelected>false</IsLoggerRefSelected>
                         </StageResult>
@@ -1795,7 +1777,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
 
                             if len(hg2s) != 0 and len(refs) != 0:
                                 smeasurement.Results.FieldVisitResult.append(resultVal)
-                                print "append ", measTime
+                       
 
                 else:
 
@@ -1840,7 +1822,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
                             <DisplayName>""" + src + """</DisplayName>
                             <Sequence>1</Sequence>
                           </Source>
-                          <ControlConditions>""" + str(EHSN.instrDepManager.controlConditionCmbo) + """</ControlConditions>""" \
+                          <ControlConditions>""" + str(EHSN.disMeasManager.controlConditionCmbo) + """</ControlConditions>""" \
                            + """
                           <IsLoggerRefSelected>false</IsLoggerRefSelected>
                         </StageResult>
@@ -1849,11 +1831,30 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
 
                         if len(refs) != 0:
                             smeasurement.Results.FieldVisitResult.append(resultVal)
-                            print "append ", measTime
+                            
+
 
     # check if we actually have any data to avoid uploading empty entry
-    if len(smeasurement.Results.FieldVisitResult) == 0:
+    if len(smeasurement.Results.FieldVisitResult) == 0 and smeasurement.Remarks == "":
         return None
+
+ 
+    elif smeasurement.Remarks != "" and len(smeasurement.Results.FieldVisitResult) == 0:
+        startTimeCtrl = endTimeCtrl = "00:00"
+
+
+        startTimeCtrl = datetime.datetime.strptime(startTimeCtrl, "%H:%M")
+        startTimeCtrl = startTimeCtrl.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+        startTimeCtrl = str(startTimeCtrl.isoformat()) + isoTail
+        endTimeCtrl = datetime.datetime.strptime(endTimeCtrl, "%H:%M")
+        endTimeCtrl = endTimeCtrl.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+        endTimeCtrl = str(endTimeCtrl.isoformat()) + isoTail
+
+
+        smeasurement.MeasurementTime = startTimeCtrl
+        smeasurement.MeasurementEndTime = endTimeCtrl
+
+        return smeasurement
     # Sort by time
     smeasurement.Results.FieldVisitResult.sort(key=lambda f:f.StartTime)
     return smeasurement
@@ -1892,7 +1893,7 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
     shmeasurement.MeasurementEndTime = fvStartDate
     shmeasurement.LastModified = datetime.datetime(0001, 01, 01)
     shmeasurement.Remarks = ""
-    shmeasurement.Remarks += EHSN.instrDepManager.stationHealthRemarksCtrl
+    shmeasurement.Remarks += EHSN.envCondManager.stationHealthRemarksCtrl
     shmeasurement.Remarks += "\nIntake Flushed @" + EHSN.envCondManager.intakeTimeCtrl if EHSN.envCondManager.intakeCB else ""
     shmeasurement.Remarks += "\nOrifice Purged @" + EHSN.envCondManager.orificeTimeCtrl if EHSN.envCondManager.orificeCB else ""
     shmeasurement.Remarks += "\nDownloaded Program" if EHSN.envCondManager.programCB else ""
@@ -1934,12 +1935,57 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
         tankPressureResult = aq.factory.create("ns0:FieldVisitResult")
         tankPressureResult.MeasurementID = shmeasurement.MeasurementID
         tankPressureResult.ResultID = 0
-        tankPressureResult.StartTime = meanTime
+
+        time2Upload = EHSN.envCondManager.gasArrTime if EHSN.envCondManager.GetGasArrTime().IsCompleted() else "00:00"
+        time2Upload = datetime.datetime.strptime(time2Upload, "%H:%M")
+        time2Upload = time2Upload.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+        time2Upload = str(time2Upload.isoformat()) + isoTail
+        
+
+        tankPressureResult.StartTime = time2Upload
         # tankPressureResult.EndTime = visit.EndDate
         tankPressureResult.ParameterID = ParamID
         tankPressureResult.UnitID = stationhealthSensors[ParamID]
         tankPressureResult.ResultType = resultType_NA
         tankPressureResult.ObservedResult = float(EHSN.envCondManager.gasSysCtrl)
+        tankPressureResult.Correction = 0.000
+        cdataParty = repChar(visit.Party)
+        tankPressureResult.ResultDetails = r"""<?xml version="1.0" encoding="UTF-8"?>
+    <StationHealthResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <Party>""" + cdataParty + """</Party>
+      <Source>
+        <SourceType>
+          <Id>Import</Id>
+          <DisplayName>""" + src + """</DisplayName>
+        </SourceType>
+        <DisplayName>""" + src + """</DisplayName>
+        <Sequence>1</Sequence>
+      </Source>
+    </StationHealthResult>
+    """
+        shmeasurement.Results.FieldVisitResult.append(tankPressureResult)
+
+
+
+    if str(EHSN.envCondManager.gasSysDepCtrl) != "":
+        ParamID = 'YP'
+
+        tankPressureResult = aq.factory.create("ns0:FieldVisitResult")
+        tankPressureResult.MeasurementID = shmeasurement.MeasurementID
+        tankPressureResult.ResultID = 0
+
+        time2Upload = EHSN.envCondManager.gasDepTime if EHSN.envCondManager.GetGasDepTime().IsCompleted() else "00:00"
+        time2Upload = datetime.datetime.strptime(time2Upload, "%H:%M")
+        time2Upload = time2Upload.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+        time2Upload = str(time2Upload.isoformat()) + isoTail
+        
+
+        tankPressureResult.StartTime = time2Upload
+        # tankPressureResult.EndTime = visit.EndDate
+        tankPressureResult.ParameterID = ParamID
+        tankPressureResult.UnitID = stationhealthSensors[ParamID]
+        tankPressureResult.ResultType = resultType_NA
+        tankPressureResult.ObservedResult = float(EHSN.envCondManager.gasSysDepCtrl)
         tankPressureResult.Correction = 0.000
         cdataParty = repChar(visit.Party)
         tankPressureResult.ResultDetails = r"""<?xml version="1.0" encoding="UTF-8"?>
@@ -1966,12 +2012,56 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
         feedResult = aq.factory.create("ns0:FieldVisitResult")
         feedResult.MeasurementID = shmeasurement.MeasurementID
         feedResult.ResultID = 0
-        feedResult.StartTime = meanTime
+
+        time2Upload = EHSN.envCondManager.feedArrTime if EHSN.envCondManager.GetFeedArrTime().IsCompleted() else "00:00"
+        time2Upload = datetime.datetime.strptime(time2Upload, "%H:%M")
+        time2Upload = time2Upload.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+        time2Upload = str(time2Upload.isoformat()) + isoTail
+
+
+        feedResult.StartTime = time2Upload
         # feedResult.EndTime = visit.EndDate
         feedResult.ParameterID = ParamID
         feedResult.UnitID = stationhealthSensors[ParamID]
         feedResult.ResultType = resultType_NA
         feedResult.ObservedResult = float(EHSN.envCondManager.feedCtrl)
+        feedResult.Correction = 0.000
+        cdataParty = repChar(visit.Party)
+        feedResult.ResultDetails = r"""<?xml version="1.0" encoding="UTF-8"?>
+    <StationHealthResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <Party>""" + cdataParty + """</Party>
+      <Source>
+        <SourceType>
+          <Id>Import</Id>
+          <DisplayName>""" + src + """</DisplayName>
+        </SourceType>
+        <DisplayName>""" + src + """</DisplayName>
+        <Sequence>1</Sequence>
+      </Source>
+    </StationHealthResult>
+    """
+        shmeasurement.Results.FieldVisitResult.append(feedResult)
+
+
+    if str(EHSN.envCondManager.feedDepCtrl) != "":
+        ParamID = 'YP2'
+
+        feedResult = aq.factory.create("ns0:FieldVisitResult")
+        feedResult.MeasurementID = shmeasurement.MeasurementID
+        feedResult.ResultID = 0
+
+        time2Upload = EHSN.envCondManager.feedDepTime if EHSN.envCondManager.GetFeedDepTime().IsCompleted() else "00:00"
+        time2Upload = datetime.datetime.strptime(time2Upload, "%H:%M")
+        time2Upload = time2Upload.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+        time2Upload = str(time2Upload.isoformat()) + isoTail
+
+        
+        feedResult.StartTime = time2Upload
+        # feedResult.EndTime = visit.EndDate
+        feedResult.ParameterID = ParamID
+        feedResult.UnitID = stationhealthSensors[ParamID]
+        feedResult.ResultType = resultType_NA
+        feedResult.ObservedResult = float(EHSN.envCondManager.feedDepCtrl)
         feedResult.Correction = 0.000
         cdataParty = repChar(visit.Party)
         feedResult.ResultDetails = r"""<?xml version="1.0" encoding="UTF-8"?>
@@ -1997,7 +2087,13 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
         bubbleRateResult = aq.factory.create("ns0:FieldVisitResult")
         bubbleRateResult.MeasurementID = shmeasurement.MeasurementID
         bubbleRateResult.ResultID = 0
-        bubbleRateResult.StartTime = meanTime
+
+        time2Upload = EHSN.envCondManager.bpmrotArrTime if EHSN.envCondManager.GetBpmrotArrTime().IsCompleted() else "00:00"
+        time2Upload = datetime.datetime.strptime(time2Upload, "%H:%M")
+        time2Upload = time2Upload.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+        time2Upload = str(time2Upload.isoformat()) + isoTail
+
+        bubbleRateResult.StartTime = time2Upload
         # bubbleRateResult.EndTime = visit.EndDate
         bubbleRateResult.ParameterID = ParamID
         bubbleRateResult.UnitID = stationhealthSensors[ParamID]
@@ -2019,6 +2115,44 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
     </StationHealthResult>
     """
         shmeasurement.Results.FieldVisitResult.append(bubbleRateResult)
+
+
+    if 'bpm' in str(EHSN.envCondManager.bpmrotCmbo).lower() and str(EHSN.envCondManager.bpmrotDepCtrl) != "":
+        ParamID = 'N2BubbleRate'
+
+        bubbleRateResult = aq.factory.create("ns0:FieldVisitResult")
+        bubbleRateResult.MeasurementID = shmeasurement.MeasurementID
+        bubbleRateResult.ResultID = 0
+
+        time2Upload = EHSN.envCondManager.bpmrotDepTime if EHSN.envCondManager.GetBpmrotDepTime().IsCompleted() else "00:00"
+        time2Upload = datetime.datetime.strptime(time2Upload, "%H:%M")
+        time2Upload = time2Upload.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+        time2Upload = str(time2Upload.isoformat()) + isoTail
+        
+        bubbleRateResult.StartTime = time2Upload
+        # bubbleRateResult.EndTime = visit.EndDate
+        bubbleRateResult.ParameterID = ParamID
+        bubbleRateResult.UnitID = stationhealthSensors[ParamID]
+        bubbleRateResult.ResultType = resultType_NA
+        bubbleRateResult.ObservedResult = float(EHSN.envCondManager.bpmrotDepCtrl)
+        bubbleRateResult.Correction = 0.000
+        cdataParty = repChar(visit.Party)
+        bubbleRateResult.ResultDetails = r"""<?xml version="1.0" encoding="UTF-8"?>
+    <StationHealthResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <Party>""" + cdataParty + """</Party>
+      <Source>
+        <SourceType>
+          <Id>Import</Id>
+          <DisplayName>""" + src + """</DisplayName>
+        </SourceType>
+        <DisplayName>""" + src + """</DisplayName>
+        <Sequence>1</Sequence>
+      </Source>
+    </StationHealthResult>
+    """
+        shmeasurement.Results.FieldVisitResult.append(bubbleRateResult)
+
+        
 
     if str(EHSN.envCondManager.batteryCtrl) != "":
         ParamID = 'VB'
@@ -2060,15 +2194,14 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
             startTime = str(startTime.isoformat()) + isoTail
         else:
             startTime=""
-        # print sensorRefEntry.GetValue()
-        # print '======'
+
         #Is this a "valid" measurement result that can be uploaded to Aquarius?
         if EHSN.measResultsManager.sensorRef.has_key(sensorRefEntry.GetValue().strip()):
-            # print sensorRefEntry.GetValue()
+
             #Is this a discharge measurement?
             if stationhealthSensors.has_key(EHSN.measResultsManager.sensorRef[sensorRefEntry.GetValue()]):
                 ParamID = EHSN.measResultsManager.sensorRef[sensorRefEntry.GetValue()]
-                # print ParamID
+       
                 observed = 0.000 if EHSN.measResultsManager.observedVals[index].GetValue() == "" else float(EHSN.measResultsManager.observedVals[index].GetValue())
                 logger = "" if EHSN.measResultsManager.sensorVals[index].GetValue() == "" else str(EHSN.measResultsManager.sensorVals[index].GetValue())
 
@@ -2101,8 +2234,26 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
                 shmeasurement.Results.FieldVisitResult.append(resultVal)
 
 
-    if len(shmeasurement.Results.FieldVisitResult) <= 0:
+    if len(shmeasurement.Results.FieldVisitResult) <= 0 and shmeasurement.Remarks == "":
         return None
+
+
+    elif shmeasurement.Remarks != "" and len(shmeasurement.Results.FieldVisitResult) == 0:
+        startTimeCtrl = endTimeCtrl = "00:00"
+
+
+        startTimeCtrl = datetime.datetime.strptime(startTimeCtrl, "%H:%M")
+        startTimeCtrl = startTimeCtrl.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+        startTimeCtrl = str(startTimeCtrl.isoformat()) + isoTail
+        endTimeCtrl = datetime.datetime.strptime(endTimeCtrl, "%H:%M")
+        endTimeCtrl = endTimeCtrl.replace(dateInfo.year, dateInfo.month, dateInfo.day)
+        endTimeCtrl = str(endTimeCtrl.isoformat()) + isoTail
+
+
+        shmeasurement.MeasurementTime = startTimeCtrl
+        shmeasurement.MeasurementEndTime = endTimeCtrl
+
+        return shmeasurement
 
     # if MEASUREMENT_ID != 0:
     #     if len(shmeasurement.Results.FieldVisitResult) == len(MEASUREMENT.Results.FieldVisitResult):
@@ -2202,88 +2353,6 @@ def CreateEnvironmentConditionsMeasurements(mode, src, aq, visit, MEASUREMENT, E
 
 
 
-    # #Water Temperature
-    # if str(EHSN.disMeasManager.waterTempCtrl).strip() != "":
-    #     ParamID = 'TW'
-    #     eTW = float(EHSN.disMeasManager.waterTempCtrl)
-
-
-    #     # If we found the qr in the field visit, then we ask and the user will choose
-    #     # If we could not find the qr in the field visit, then we add automatically
-    #     twFound = False
-    #     waterTempResult = aq.factory.create("ns0:FieldVisitResult")
-    #     waterTempResult.MeasurementID = dmeasurement.MeasurementID
-    #     waterTempResult.ResultID = 0
-    #     waterTempResult.StartTime = meanTime
-    #     # waterTempResult.EndTime = visit.EndDate
-    #     waterTempResult.ParameterID = ParamID
-    #     waterTempResult.UnitID = dischargeSensors[ParamID]
-    #     waterTempResult.ObservedResult = float(EHSN.disMeasManager.waterTempCtrl)
-    #     waterTempResult.Correction = 0.000
-    #     waterTempResult.ResultType = resultType_RC
-    #     waterTempResult.ResultDetails = r"""<?xml version="1.0" encoding="UTF-8"?>
-    # <DischargeResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    #   <Party>""" + cdataParty + """</Party>
-    #   <Source>
-    #     <SourceType>
-    #       <Id>Import</Id>
-    #       <DisplayName>""" + src + """</DisplayName>
-    #     </SourceType>
-    #     <DisplayName>""" + src + """</DisplayName>
-    #     <Sequence>1</Sequence>
-    #   </Source>
-    # </DischargeResult>
-    # """
-    #     ecmeasurement.Results.FieldVisitResult.append(waterTempResult)
-
-
-        # for mea in dmeasurement.Results.FieldVisitResult:
-
-        #     val = True
-
-
-        #     if mea.ParameterID == ParamID:
-        #         aTW = mea.ObservedResult
-        #         AQResultDetails = mea.ResultDetails
-        #         source = ET.fromstring(AQResultDetails).find("Source").find("SourceType").find("DisplayName").text
-
-        #         twFound = True
-
-        #         if aTW != eTW:
-
-        #             if "import" in source.lower():
-        #                 break
-        #             else:
-
-        #                 aTW = str(aTW)
-        #                 eTW = str(eTW)
-
-        #                 AUD = AquariusConflictUploadDialog("DEBUG", None, eTW + u" \N{DEGREE SIGN}C", aTW + u" \N{DEGREE SIGN}C", "Water Temp", source, None, title="Upload Field Visit to Aquarius")
-
-        #                 while val:
-        #                     re = AUD.ShowModal()
-        #                     if re == wx.ID_YES:
-
-        #                         # Add mgh to field visit with measurement ID
-        #                         waterTempResult.ResultID = mea.ResultID
-        #                         dmeasurement.Results.FieldVisitResult.append(waterTempResult)
-        #                         val = False
-        #                         break
-        #                     else:
-        #                         val = False
-        #                         break
-        #                 AUD.Destroy()
-        #     if not val:
-        #         break
-
-        # # did not find q in the existing field visit, append to results list
-        # if not twFound:
-        #     waterTempResult.MeasurementID = 0
-        #     dmeasurement.Results.FieldVisitResult.append(waterTempResult)
-
-
-
-
 
 
 
@@ -2350,54 +2419,10 @@ def CreateEnvironmentConditionsMeasurements(mode, src, aq, visit, MEASUREMENT, E
         ecmeasurement.Results.FieldVisitResult.append(windVelResult)
 
 
-    # #Recorded Sensor Values
-    # #Loop through each sensor val and check if it is a discharge measurement
-    # for index, sensorRefEntry in enumerate(EHSN.measResultsManager.sensorRefEntries):
-
-    #     #Is this a "valid" measurement result that can be uploaded to Aquarius?
-    #     if EHSN.measResultsManager.sensorRef.has_key(sensorRefEntry.GetValue().strip()):
-
-    #         #Is this a discharge measurement?
-    #         if environmentSensors.has_key(EHSN.measResultsManager.sensorRef[sensorRefEntry.GetValue()]):
-
-    #             ParamID = EHSN.measResultsManager.sensorRef[sensorRefEntry.GetValue()]
-
-    #             observed = 0.000 if EHSN.measResultsManager.observedVals[index].GetValue() == "" else float(EHSN.measResultsManager.observedVals[index].GetValue())
-    #             logger = "" if EHSN.measResultsManager.sensorVals[index].GetValue() == "" else str(EHSN.measResultsManager.sensorVals[index].GetValue())
-
-    #             resultVal = aq.factory.create("ns0:FieldVisitResult")
-    #             resultVal.MeasurementID = ecmeasurement.MeasurementID
-    #             resultVal.ResultID = 0
-    #             resultVal.StartTime = startTime
-    #             # resultVal.EndTime = startTime
-    #             resultVal.ParameterID = ParamID
-    #             resultVal.UnitID = environmentSensors[ParamID]
-    #             resultVal.ObservedResult = observed
-    #             resultVal.Correction = 0.000
-    #             resultVal.ResultType = resultType
-    #             cdataParty = repChar(visit.Party)
-    #             resultVal.ResultDetails = r"""<?xml version="1.0" encoding="UTF-8"?>
-    #         <EnvConditionResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-    #           <Party>""" + cdataParty + """</Party>
-    #           <Source>
-    #             <SourceType>
-    #               <Id>Import</Id>
-    #               <DisplayName>""" + src + """</DisplayName>
-    #             </SourceType>
-    #             <DisplayName>""" + src + """</DisplayName>
-    #             <Sequence>1</Sequence>
-    #           </Source>""" + \
-    #           ("" if logger == "" else """\n<LoggerValue>""" + logger + """</LoggerValue>""") + """
-    #         </EnvConditionResult>
-    #         """
-    #             ecmeasurement.Results.FieldVisitResult.append(resultVal)
-
+   
     if len(ecmeasurement.Results.FieldVisitResult) <= 0 and ecmeasurement.Remarks == "":
         return None
 
-    # if MEASUREMENT_ID != 0:
-    #     if len(ecmeasurement.Results.FieldVisitResult) == len(MEASUREMENT.Results.FieldVisitResult):
-    #         ecmeasurement.MeasurementID = -ecmeasurement.MeasurementID
 
     return ecmeasurement
 
@@ -2416,8 +2441,8 @@ def GetBM(stationID, aq, server):
     locid = aq.service.GetLocationId(station)
 
     # is not a real station
-    if locid == 0:
-        failedStations.append(station)
+    # if locid == 0:
+    #     failedStations.append(station)
 
 
     # GetLocationBenchmarks
@@ -2431,12 +2456,13 @@ def GetBM(stationID, aq, server):
         benchmarks = benchmarks[0]
     except IndexError:
         # has no benchmarks not active?
-        failedStations.append(station)
+        # failedStations.append(station)
+        pass
     line = []
     for bm in benchmarks:
-        # print "***", str(bm.Name), "***"
+       
         bmName = unicode(bm.Name)
-        # print "***", str(bmName), "***"
+    
         if bm.History is not None:
             history = bm.History[0]
             latestBM = None
@@ -2449,10 +2475,9 @@ def GetBM(stationID, aq, server):
 
             if latestBM is not None:
                 if "inactive" not in latestBM.Status.lower():
-                    # print "append bmName", bmName, "***"
+                  
                     line.append(bmName)
-                    # line.append(latestBM.AcceptedElevation)
-                    # benchmarkList.append(line)
+                   
     return line
 
 # Creates a FieldVisitMeasurement with type WscFvtPlugin_ActivityTypeEnvCondition
@@ -2471,14 +2496,16 @@ def CreateLevelSurveyMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateI
 
 
     # if EHSN.disMeasManager.IsEmpty():
-    meanTime = EHSN.stageMeasManager.CalculteMeanTime()
+    try:
+        meanTime = EHSN.stageMeasManager.CalculteMeanTime()
 
-    # else:
-    #     meanTime = str(EHSN.disMeasManager.mmtValTxt) if str(EHSN.disMeasManager.mmtValTxt) != '' else "00:00"
-    # meanTime = str(EHSN.disMeasManager.mmtValTxt) if str(EHSN.disMeasManager.mmtValTxt) != '' else "00:00"
+    except:
+        meanTime = "00:00"
+
     meanTime = datetime.datetime.strptime(meanTime, "%H:%M")
     meanTime = meanTime.replace(dateInfo.year, dateInfo.month, dateInfo.day)
     meanTime = str(meanTime.isoformat()) + isoTail
+    
 
 
     levelSurvey = aq.factory.create("ns0:FieldVisitMeasurement")
@@ -2506,46 +2533,108 @@ def CreateLevelSurveyMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateI
                             bm = EHSN.waterLevelRunManager.GetLevelNotesStation(index, rowIndex).GetValue()
                             if "**" in bm:
                                 bm = bm[2:]
-                                # print bm
-                            if bm not in bmList and bm in bms:
-                                levelSurveyResult = aq.factory.create("ns0:FieldVisitResult")
-                                levelSurveyResult.CorrectedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex).GetValue())
-                                levelSurveyResult.Correction = 0.0
-                                levelSurveyResult.EndTime = None
-                                levelSurveyResult.MeasurementID = levelSurvey.MeasurementID
-                                levelSurveyResult.ObservedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex).GetValue())
-                                levelSurveyResult.ParameterID = "LevelSurveyResult"
-                                levelSurveyResult.BenchmarkOrRefPointName = bm
-                                # levelSurveyResult.PercentUncertainty = None
-                                # levelSurveyResult.Qualifier = None
-                                # levelSurveyResult.QualityCodeID = None
-                                # levelSurveyResult.Remarks = None
+                            
+                            if bm not in bmList:
+                                for i in bms:
+
+                                    if bm.upper() == i.upper():
 
 
-                                levelSurveyResult.ResultDetails = r"""<?xml version="1.0" encoding="UTF-8"?>
-                                    <LevelSurveyResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-                                      <Party>""" + cdataParty + """</Party>
-                                      <Source>
-                                        <SourceType>
-                                          <Id>Import</Id>
-                                          <DisplayName>""" + src + """</DisplayName>
-                                        </SourceType>
-                                        <DisplayName>""" + src + """</DisplayName>
-                                        <Sequence>1</Sequence>
-                                      </Source>
-                                    </LevelSurveyResult>
-                                    """
 
 
-                                levelSurveyResult.ResultID = 0
-                                levelSurveyResult.ResultType = resultType_All
-                                levelSurveyResult.StartTime = meanTime
-                                levelSurveyResult.UnitID = "m"
+                                        levelSurveyResult = aq.factory.create("ns0:FieldVisitResult")
+                                        levelSurveyResult.CorrectedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex).GetValue())
+                                        levelSurveyResult.Correction = 0.0
+                                        levelSurveyResult.EndTime = None
+                                        levelSurveyResult.MeasurementID = levelSurvey.MeasurementID
+                                        levelSurveyResult.ObservedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex).GetValue())
+                                        levelSurveyResult.ParameterID = "LevelSurveyResult"
+                                        levelSurveyResult.BenchmarkOrRefPointName = i
+                                        # levelSurveyResult.PercentUncertainty = None
+                                        # levelSurveyResult.Qualifier = None
+                                        # levelSurveyResult.QualityCodeID = None
+                                        # levelSurveyResult.Remarks = None
 
-                                levelSurvey.Results.FieldVisitResult.append(levelSurveyResult)
-                                bmList.append(bm)
+
+                                        levelSurveyResult.ResultDetails = r"""<?xml version="1.0" encoding="UTF-8"?>
+                                            <LevelSurveyResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+                                              <Party>""" + cdataParty + """</Party>
+                                              <Source>
+                                                <SourceType>
+                                                  <Id>Import</Id>
+                                                  <DisplayName>""" + src + """</DisplayName>
+                                                </SourceType>
+                                                <DisplayName>""" + src + """</DisplayName>
+                                                <Sequence>1</Sequence>
+                                              </Source>
+                                            </LevelSurveyResult>
+                                            """
+
+
+                                        levelSurveyResult.ResultID = 0
+                                        levelSurveyResult.ResultType = resultType_All
+                                        levelSurveyResult.StartTime = meanTime
+                                        levelSurveyResult.UnitID = "m"
+
+                                        levelSurvey.Results.FieldVisitResult.append(levelSurveyResult)
+                                        bmList.append(bm)
+
+                                        break
 
 
 
     levelSurvey = None if len(levelSurvey.Results.FieldVisitResult) == 0 else levelSurvey
+   
     return levelSurvey
+
+
+def CreateDischargeDetails(EHSN):
+    midXml = EHSN.GetMidSectionDetailXml()
+    if midXml is not None and len(midXml) != 0:
+        DateSpreadsheetFormat = midXml["DateSpreadsheetFormat"]
+        DeploymentMethod = midXml["DeploymentMethod"]
+        MeasurementSectionCondition = midXml["MeasurementSectionCondition"]
+        TotalDischarge = midXml["TotalDischarge"]
+        TotalArea = midXml["TotalArea"]
+        TotalWidth = midXml["TotalWidth"]
+        MeanVelocity = midXml["MeanVelocity"]
+        MeanDepth = midXml["MeanDepth"]
+        SerialNumber = midXml["SerialNumber"]
+        MeasuredBy = midXml["MeasuredBy"]
+        CalculationMethod = midXml["CalculationMethod"]
+        WaterTemperature = midXml["WaterTemperature"]
+        AirTemperature = midXml["AirTemperature"]
+        InitialPoint = midXml["InitialPoint"]
+        StartingPoint = midXml["StartingPoint"]
+        Condition = midXml["Condition"]
+        ImportFileSoftwareName = midXml["ImportFileSoftwareName"]
+
+    #     DischargeDetailsList = "<DischargeDetailsList measurementID=\"0\" startDateTime=\"" + DateSpreadsheetFormat + """\" isMetricUnits="true">
+    #     <attachedOrgMeasureData><AttachedOrgMeasureData_T measurementFileName=\"""" + EHSN.GetHfcDir() + """\"/></attachedOrgMeasureData>
+    # <prelimObservation>
+    #   <measurementSectionCondition>""" + "" + """</measurementSectionCondition>
+    #   <deploymentMethod>NA</deploymentMethod>
+    #   <calculationMethod>Mid-Section</calculationMethod>
+    #   <waterTemperature>""" + WaterTemperature + """</waterTemperature>
+    #   <airTemperature xsi:nil="true"/>
+    # </prelimObservation>
+    # <dischargeMeasurement>
+    #   <totalDischarge>""" + TotalDischarge + """</totalDischarge>
+    #   <totalArea>""" + TotalArea + """</totalArea>
+    #   <totalWidth>""" + TotalWidth + """</totalWidth>
+    #   <meanVelocity>""" + MeanVelocity + """</meanVelocity>
+    #   <meanDepth>""" + MeanDepth + """</meanDepth>
+    #   <dischargeUncertaintyISO></dischargeUncertaintyISO>
+    #   <dischargeUncertaintyUser>0</dischargeUncertaintyUser>
+    # </dischargeMeasurement>
+    #   </DischargeDetailsList>
+    #     """
+
+        DischargeDetailsList = "<DischargeDetailsList measurementID=\"0\" measuredBy=\"MDS\" startDateTime=\"" + DateSpreadsheetFormat + """\" isMetricUnits="true">
+            <attachedOrgMeasureData>
+                <AttachedOrgMeasureData_T measurementFileName="c:/"/>
+            </attachedOrgMeasureData>
+        </DischargeDetailsList>"""
+        return DischargeDetailsList
+    return ""
+    

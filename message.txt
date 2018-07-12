@@ -2,17 +2,20 @@ V1.2.5
 2
 							
 
-VERSION 1.2.4 is now available. This version allows us to upload "Level Only Data" to AQUARIUS, and has some bug fixes!
-
-
 *********************************ALERT - WARNING****************************************
 
-AQ3.10 dispatches all newly uploaded field visit Parameters to "ALL" by default. 
+AQ3.10 dispatches everything to "ALL" by default. 
+
+Please manually dispatch: 
+
+- MGH to Rating  
+- Stage to Time series 
+- Discharge to All
 
 ****************************************************************************************
+Version you should be using: 1.2.4
 
-Please report any EHSN issues through:
+Report Issues:
 
 https://watersurveyofcanada.atlassian.net/servicedesk/customer/portal/2
 
-email douglas.stiff@canada.ca if you can't log in.

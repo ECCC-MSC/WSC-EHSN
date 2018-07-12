@@ -345,12 +345,11 @@ class WaterLevelNotesPanel(wx.Panel):
         removeRunButton.SetForegroundColour('Red')
         removeRunButton.Bind(wx.EVT_BUTTON, self.OnRemoveRun)
 
-        self.uploadCkbox = wx.CheckBox(closurePanel, label="Upload", name=str(self.numRun), size=(-1,-1))
-        # self.uploadCkbox.Bind(wx.EVT_CHECKBOX, self.OnUploadCheckbox) # testing for self.IsUploaded()
-        self.uploadCkbox.SetValue(False)
+        uploadCkbox = wx.CheckBox(closurePanel, label="Upload", name=str(self.numRun), size=(-1,-1))
+        uploadCkbox.SetValue(False)
 
-        if self.numRun == 0:
-            removeRunButton.Hide()
+        # if self.numRun == 0:
+        #     removeRunButton.Hide()
 
         # closurePanelSizer.Add((20, -1), 0, wx.EXPAND)
 
@@ -358,7 +357,7 @@ class WaterLevelNotesPanel(wx.Panel):
         closurePanelSizer.Add(closureSubPanel, 0, wx.EXPAND|wx.ALL, 5)
         closurePanelSizer.Add(closureUnitTxt, 0, wx.EXPAND|wx.TOP|wx.LEFT, 10)
         closurePanelSizer.Add((-1, -1), 1, wx.EXPAND)
-        closurePanelSizer.Add(self.uploadCkbox, 0, wx.EXPAND)
+        closurePanelSizer.Add(uploadCkbox, 0, wx.EXPAND)
         closurePanelSizer.Add(removeRunButton, 0, wx.EXPAND|wx.ALL|wx.ALIGN_RIGHT, 5)
 
         subRunSizer.Add(levelNotesSizerV, 0, wx.EXPAND)
@@ -973,6 +972,7 @@ class WaterLevelNotesPanel(wx.Panel):
 
         panel = event.GetEventObject().GetParent().GetParent()
         runIndex = int(panel.GetName())
+        # print "runIndex", runIndex
         startBenchmark = self.GetStation(runIndex, 0).GetValue()
         startElevation = self.GetElevation(runIndex, 0).GetValue()
         if startBenchmark == "":
@@ -1003,7 +1003,7 @@ class WaterLevelNotesPanel(wx.Panel):
                         try:
                           pairEle = float(pairEle)
                           self.GetClosureText(runIndex).SetValue(str(round(pairEle - startElevation, 3)))
-                          self.uploadCkbox.SetValue(True)
+                          self.GetUploadCheckBox(runIndex).SetValue(True)
                           event.Skip()
                           return
                         except:

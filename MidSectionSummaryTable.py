@@ -7,6 +7,9 @@ from wx.grid import *
 from MidSectionSubPanel import *
 from MidSectionSubPanelObj import *
 
+import win32gui
+
+
 
 
 class MidSectionSummaryTable(wx.Panel):
@@ -29,7 +32,9 @@ class MidSectionSummaryTable(wx.Panel):
         self.meanVelLbl = "Mean\nVelocity\n(m/s)"
         self.dlg = None
         self.nextPanelNum = 1
-        self.panelType = 1
+        self.edgeSize = (440, 310)
+        self.panelSize = (570, 660)
+
         self.numberOfPanels = 0
 
         # self.summaryTable.GetNumberRows() = 0
@@ -39,12 +44,17 @@ class MidSectionSummaryTable(wx.Panel):
         self.pos = None
         self.numberOfPanelObjs = 0
 
-        self.modifiedPanelId = -1
-        self.modifiedPanelIndex = -1
+        self.modifiedPanelArrayIndex = -1
+        self.modifiedPanelTableIndex = -1
         self.cellHeight = 21
+        self.increasingPolority = None
+        self.nextPid = 100
+        self.subpanel = None
 
 
         self.InitUI()
+
+
 
     def InitUI(self):
         layout = wx.BoxSizer(wx.VERTICAL)
@@ -71,9 +81,17 @@ class MidSectionSummaryTable(wx.Panel):
         self.summaryTable.SetColLabelSize(60)
 
         self.summaryTable.SetRowLabelSize(40)
-        # self.summaryTable.HideRowLabels()
+        self.summaryTable.HideRowLabels()
 
         #self.summaryTable.SetColFormatFloat(1, precision=3)
+        self.summaryTable.SetColFormatFloat(1, precision=2)
+        self.summaryTable.SetColFormatFloat(2, precision=3)
+        self.summaryTable.SetColFormatFloat(3, precision=2)
+        self.summaryTable.SetColFormatFloat(4, precision=2)
+        self.summaryTable.SetColFormatFloat(5, precision=2)
+        self.summaryTable.SetColFormatFloat(6, precision=2)
+        self.summaryTable.SetColFormatFloat(7, precision=0)
+        self.summaryTable.SetColFormatFloat(8, precision=1)
         self.summaryTable.SetColFormatFloat(9, precision=3)
         self.summaryTable.SetColFormatFloat(10, precision=3)
         self.summaryTable.SetColFormatFloat(11, precision=3)
@@ -86,98 +104,106 @@ class MidSectionSummaryTable(wx.Panel):
 
         self.summaryTable.AutoSize()
         self.summaryTable.SetColSize(0, 60)
-        # print self.summaryTable.GetSize()
-        # print self.summaryTable.GetSize().GetHeight()
+
 
 
         self.addBtn = wx.Button(self, label="+", size=(-1, -1))
-        self.addBtn.Bind(wx.EVT_BUTTON, self.OnAddBtn)
+        self.addBtn.Bind(wx.EVT_BUTTON, self.OnAdd)
         layout.Add(self.summaryTable, 0, wx.EXPAND|wx.ALL, 20)
         layout.Add(self.addBtn, 0, wx.ALL, 20)
 
+        self.GetParent().GetParent().GetParent().GetParent().Bind(wx.EVT_SIZE, self.OnSize)
+        self.subPanel = None
+
+
+    def OnSize(self, event):
+
+        size = event.GetSize()
+        width = size.GetWidth()
+        height = size.GetHeight()
+
+        for col in range(14):
+            self.summaryTable.SetColSize(col, width/(14 + 2))
+
+        event.Skip()
+
+
     def OnRightClick(self, event):
-        # print event.GetRow()
-        # print event.GetPosition()
-        # if event.GetCol() == 0:
-        print "###############################"
-        for i in self.panelObjs:
-            i.ToString()
-        index = event.GetRow()
-        print "##INDEX##"
-        print index
-        objIndex = ""
+        # x = event.GetPosition().x + self.GetPosition().x + self.GetParent().GetParent().GetParent().GetParent().GetPosition().x
+        # y = event.GetPosition().y + self.GetPosition().y + self.GetParent().GetParent().GetParent().GetParent().GetPosition().y
+
         if len(self.panelObjs) > 0:
-            for i in reversed(range(index + 1)):
-                print "i: " + str(i)
-                if self.summaryTable.GetCellValue(i, 0) != "":
-                    for j, obj in enumerate(self.panelObjs):
-                        print "obj.panelNum: "+str(obj.panelNum)
-                        print  "self.summaryTable.GetCellValue(i, 0): "+str(self.summaryTable.GetCellValue(i, 0))
-                        if str(obj.panelNum) == self.summaryTable.GetCellValue(i, 0) and float(obj.distance) == float(self.summaryTable.GetCellValue(i, 1)):
-                            self.modifiedPanelId = j
-                            self.modifiedPanelIndex = i
-                            break
-                    break
-        if self.modifiedPanelId != "":
-            print "object index in the array is: ", self.modifiedPanelId
-            print "object index in the table is: ", self.modifiedPanelIndex
-        print self.panelObjs
-        print self.panelObjs[self.modifiedPanelId]
-        print self.panelObjs[self.modifiedPanelId].panelNum
+            # for i in self.panelObjs:
+            #     i.ToString()
+            index = event.GetRow()
+
+            objIndex = ""
+            if len(self.panelObjs) > 0:
+                for i in reversed(range(index + 1)):
+    
+                    if self.summaryTable.GetCellValue(i, 0) != "":
+                        for j, obj in enumerate(self.panelObjs):
+
+                            if str(obj.panelNum) == self.summaryTable.GetCellValue(i, 0) and float(obj.distance) == float(self.summaryTable.GetCellValue(i, 1)):
+                                self.modifiedPanelArrayIndex = j
+                                self.modifiedPanelTableIndex = i
+                                break
+                        break
 
 
 
-            #     print "Click on panel#: ", self.panelObjs[event.GetRow()].panelId
-            #     print "Click on type#: ", self.panelObjs[event.GetRow()].panelType
-            #     self.modifiedPanelId = self.panelObjs[event.GetRow()].panelId
-            #     self.panelType = self.panelObjs[event.GetRow()].panelType
-        #self.originalColour = self.summaryTable.GetCellBackgroundColour(self.modifiedPanelIndex,0)
-        #for i in range(self.summaryTable.GetNumberCols()):
-        #    print "change color"
-        #    self.summaryTable.SetCellBackgroundColour(self.modifiedPanelIndex,i,'yellow')
-        # Highlight when right clicked
-        self.summaryTable.ClearSelection()
-        if self.panelObjs[self.modifiedPanelId].panelType == 0:
-            self.summaryTable.SelectRow(self.modifiedPanelIndex)
-        elif len(self.panelObjs[self.modifiedPanelId].depths) == 1:
-            self.summaryTable.SelectRow(self.modifiedPanelIndex)
-        elif len(self.panelObjs[self.modifiedPanelId].depths) == 2:
-            self.summaryTable.SelectRow(self.modifiedPanelIndex, addToSelected=True)
-            self.summaryTable.SelectRow(self.modifiedPanelIndex+1, addToSelected=True)
-        elif len(self.panelObjs[self.modifiedPanelId].depths) == 3:
-            self.summaryTable.SelectRow(self.modifiedPanelIndex, addToSelected=True)
-            self.summaryTable.SelectRow(self.modifiedPanelIndex+1, addToSelected=True)
-            self.summaryTable.SelectRow(self.modifiedPanelIndex+2, addToSelected=True)
-        #self.summaryTable.DeselectRow(self.modifiedPanelIndex)
-        self.dlg = wx.Dialog(self, title="Editing Menu", size=(150, 170), pos=(500, 400))
-        dlgSizer = wx.BoxSizer(wx.VERTICAL)
-        self.dlg.SetSizer(dlgSizer)
-        addBtn = wx.Button(self.dlg, label="Add/Insert")
-        deleteBtn = wx.Button(self.dlg, label="Delete")
-        # deleteBtn.SetBackgroundColour("red")
-        # insertBtn = wx.Button(self.dlg, label="Insert")
-        modifyBtn = wx.Button(self.dlg, label="Modify")
 
-        addBtn.Bind(wx.EVT_BUTTON, self.OnAdd)
-        deleteBtn.Bind(wx.EVT_BUTTON, self.OnDelete)
-        # insertBtn.Bind(wx.EVT_BUTTON, self.OnInsert)
-        modifyBtn.Bind(wx.EVT_BUTTON, self.OnModify)
+            self.summaryTable.ClearSelection()
+            modifiedPanelObj = self.panelObjs[self.modifiedPanelArrayIndex]
 
+            if isinstance(modifiedPanelObj, EdgeObj):
+                self.summaryTable.SelectRow(self.modifiedPanelTableIndex)
+            elif isinstance(modifiedPanelObj, PanelObj) and len(modifiedPanelObj.depths) == 1:
+                self.summaryTable.SelectRow(self.modifiedPanelTableIndex)
+            elif isinstance(modifiedPanelObj, PanelObj) and len(modifiedPanelObj.depths) == 2:
+                self.summaryTable.SelectRow(self.modifiedPanelTableIndex, addToSelected=True)
+                self.summaryTable.SelectRow(self.modifiedPanelTableIndex+1, addToSelected=True)
+            elif isinstance(modifiedPanelObj, PanelObj) and len(modifiedPanelObj.depths) == 3:
+                self.summaryTable.SelectRow(self.modifiedPanelTableIndex, addToSelected=True)
+                self.summaryTable.SelectRow(self.modifiedPanelTableIndex+1, addToSelected=True)
+                self.summaryTable.SelectRow(self.modifiedPanelTableIndex+2, addToSelected=True)
+            #self.summaryTable.DeselectRow(self.modifiedPanelTableIndex)
+            self.dlg = wx.Dialog(self, title="Editing Menu", size=(150, 170), pos=win32gui.GetCursorPos())
+            dlgSizer = wx.BoxSizer(wx.VERTICAL)
+            self.dlg.SetSizer(dlgSizer)
+            addBtn = wx.Button(self.dlg, label="Add")
+            insertBtn = wx.Button(self.dlg, label="Insert")
+            deleteBtn = wx.Button(self.dlg, label="Remove")
+            deleteBtn.SetBackgroundColour("Grey")
+            modifyBtn = wx.Button(self.dlg, label="Edit")
 
-        dlgSizer.Add(addBtn, 1, wx.EXPAND)
-        dlgSizer.Add(modifyBtn, 1, wx.EXPAND)
-        # dlgSizer.Add(insertBtn, 1, wx.EXPAND)
-        dlgSizer.Add(deleteBtn, 1, wx.EXPAND)
+            if len(self.panelObjs) > 0 and self.panelObjs[-1].panelNum == "End Edge":
+                addBtn.Enable(False)
+            if len(self.panelObjs) > 1 and self.modifiedPanelArrayIndex == 0:
+                deleteBtn.Enable(False)
+
+            addBtn.Bind(wx.EVT_BUTTON, self.OnAdd)
+            deleteBtn.Bind(wx.EVT_BUTTON, self.OnRemove)
+            insertBtn.Bind(wx.EVT_BUTTON, self.OnInsert)
+            modifyBtn.Bind(wx.EVT_BUTTON, self.OnEdit)
 
 
-        self.dlg.ShowModal()
+            dlgSizer.Add(addBtn, 1, wx.EXPAND)
+            dlgSizer.Add(modifyBtn, 1, wx.EXPAND)
+            dlgSizer.Add(insertBtn, 1, wx.EXPAND)
+            dlgSizer.Add(deleteBtn, 1, wx.EXPAND)
 
 
-    def OnDelete(self, event):
-        print "On Delete"
+            self.dlg.ShowModal()
+
+
+    def OnRemove(self, event):
+
         if self.dlg != None:
             self.dlg.Destroy()
             self.dlg = None
+
+
         if len(self.panelObjs) > 0:
 
             dlg = wx.MessageDialog(self, "Do you want to delete the selected Panel/Edge?", 'None', wx.YES_NO)
@@ -188,41 +214,70 @@ class MidSectionSummaryTable(wx.Panel):
             else:
                 dlg.Destroy()
 
-
-
-
-            removedObj = self.panelObjs.pop(self.modifiedPanelId)
-            if isinstance(removedObj, PanelObj):
-                for obj in self.panelObjs:
-                    if isinstance(obj, PanelObj) and obj.panelNum > removedObj.panelNum:
-                        obj.panelNum = str(int(obj.panelNum) - 1)
-
-                length = len(removedObj.depths)
-                self.nextPanelNum -= 1
-
+        if "P" in str(self.panelObjs[self.modifiedPanelArrayIndex].panelNum):
+            if self.panelObjs[self.modifiedPanelArrayIndex].startOrEnd:
+                self.Remove(self.modifiedPanelArrayIndex, self.modifiedPanelTableIndex)
+                self.Remove(self.modifiedPanelArrayIndex, self.modifiedPanelTableIndex)
             else:
-                length = 1
+                self.Remove(self.modifiedPanelArrayIndex, self.modifiedPanelTableIndex)
+                self.Remove(self.modifiedPanelArrayIndex-1, self.modifiedPanelTableIndex-1)
+
+        else:
+            self.Remove(self.modifiedPanelArrayIndex, self.modifiedPanelTableIndex)
 
 
-            self.summaryTable.DeleteRows(self.modifiedPanelIndex, length)
-            if self.summaryTable.GetNumberRows() == 0:
-                self.summaryTable.AppendRows()
 
-            print "modifiedPanelId", self.modifiedPanelId
-            print "length of panelobjs", len(self.panelObjs)
-            self.UpdateObjInfoByRow(self.modifiedPanelId - 1)
-            self.TransferFromObjToTable()
-            self.RefreshFlow()
-            #self.CalculateSummary()
 
-            newHeight = self.summaryTable.GetSize().GetHeight() - length * self.cellHeight
-            self.summaryTable.SetSize((-1, newHeight))
-            self.Layout()
 
+
+    def Remove(self, arrayIndex, tableIndex):
+
+        removedObj = self.panelObjs.pop(arrayIndex)
+        if isinstance(removedObj, PanelObj):
+            for obj in self.panelObjs:
+                if isinstance(obj, PanelObj) and obj.panelNum > removedObj.panelNum:
+                    obj.panelNum = str(int(obj.panelNum) - 1)
+
+            length = len(removedObj.depths)
+            self.nextPanelNum -= 1
+
+        else:
+            length = 1
+
+        self.summaryTable.DeleteRows(tableIndex, length)
+
+        self.UpdateObjInfoByRow(arrayIndex - 1)
+        self.TransferFromObjToTable()
+        self.RefreshFlow()
+        self.CalculatePolority()
+
+        #self.CalculateSummary()
+
+        newHeight = self.summaryTable.GetSize().GetHeight() - length * self.cellHeight
+        self.summaryTable.SetSize((-1, newHeight))
+
+        #Enable the Adding Button if "End Edge" removed
+        if len(self.panelObjs) > 0 and self.panelObjs[-1].panelNum != "End Edge":
+            self.addBtn.Enable(True)
+
+        if self.summaryTable.GetNumberRows() == 0:
+            self.summaryTable.AppendRows()
+
+
+        self.Layout()
+
+
+    def GetTableIndex(self, obj):
+        for i in range(self.summaryTable.GetNumberRows()):
+
+            if str(self.summaryTable.GetCellValue(i, 1)) == str(obj.distance):
+                return i
+
+        return -1
 
 
     def OnAdd(self, event):
-        print "OnAdd"
+
         if self.dlg != None:
             self.dlg.Destroy()
             self.dlg = None
@@ -230,234 +285,333 @@ class MidSectionSummaryTable(wx.Panel):
         self.Adding()
         # event.Skip()
 
+    def OnInsert(self, event):
+        if self.dlg != None:
+            self.dlg.Destroy()
+            self.dlg = None
 
-    def Adding(self):
-        self.panelType = 1
-        enableEdgeStart = True
-        enablePierStart = True
-        enableEdgeEnd = True
-        enablePierEnd = True
+        self.Adding(insert=True)
+
+    def Adding(self, insert=False, endPier=False):
+        panelType = 1
+        panelSize = self.panelSize
         if len(self.panelObjs) == 0:
-            self.panelType = 0
-            enableEdgeEnd = False
-        if self.panelType == 0:
-            panelSize = (440, 280)
-        elif self.panelType == 1:
-            panelSize = (540, 660)
-            enableEdgeStart = False
+            panelType = 0
+            panelSize = self.edgeSize
 
-        frame = wx.Dialog(self, size=panelSize)
+
+
+        frame = wx.Dialog(self, size=panelSize, style=wx.RESIZE_BORDER|wx.CAPTION)
         header = self.GetParent().header
 
-        print "#########LENGTH OF PANEL OBJS: " + str(len(self.panelObjs))
+
+        if len(self.panelObjs) > 0:
+            self.lastObj = self.panelObjs[-1]
 
         if self.lastObj is not None:
-            if isinstance(self.lastObj, EdgeObj):
+            if isinstance(self.lastObj, EdgeObj) or isinstance(self.lastObj, EdgeObj):
                 if isinstance(self.lastObj.startOrEnd, str):
                     if self.lastObj.startOrEnd=="True":
                         self.lastObj.startOrEnd = True
                     else:
                         self.lastObj.startOrEnd = False
-                if self.lastObj.startOrEnd and "Pier/Island" in self.lastObj.edgeType:
-                    self.panelType = 0
-                    panelSize = (440, 280)
-                    enablePierStart = False
+                if (isinstance(self.lastObj, EdgeObj) and self.lastObj.startOrEnd and self.lastObj.edgeType == "Pier") or endPier:
+                    panelType = 2
+                    panelSize = self.edgeSize
+
+
             if isinstance(self.lastObj, PanelObj):
                 self.lastPanelObj = self.lastObj
         else:
             self.lastPanelObj = None
 
-        subPanel = MidSectionSubPanel(panelNum=self.nextPanelNum, parent=frame, size=panelSize, panelType=self.panelType, pos=self.pos)
-        if len(self.panelObjs) == 0 and self.panelType ==0:
-            subPanel.edge.panelNumberCtrl.SetValue(subPanel.edge.types[0])
-            subPanel.edge.endEdgeRdBtn.Disable()
-            subPanel.windowTypeBtn2.Disable()
-        else:
-            subPanel.edge.riverBankCtrl.Disable()
-        if not enablePierStart:
-            subPanel.edge.panelNumberCtrl.SetValue(subPanel.edge.types[1])
+        nextTagMark = self.GetNextTagMark()
 
-            # panelId=len(self.panelObjs))
-        print "nextpanelnum", self.nextPanelNum
-        subPanel.UpdateSubPanel()
+        if insert:
+            modify=1
+            nextTagMark = ""
+
+        else:
+            modify=0
+
+        if endPier:
+            nextTagMark = ""
+            panelType = 2
+            panelSize = self.edgeSize
+
+        else:    
+            self.GenerateNextPid()
+
+        
+
+        self.subPanel = MidSectionSubPanel(panelNum=self.nextPanelNum, parent=frame, size=panelSize, panelType=panelType, \
+            pos=self.pos, nextTagMark=nextTagMark, modify=modify, pid=self.nextPid)
+
+
+
+
+
+        if insert and not endPier:
+            self.subPanel.panel.headerTxt.SetLabel("Inserting a new panel")
+            if len(self.panelObjs) > 0 and self.panelObjs[-1].panelNum == "End Edge":
+                self.subPanel.windowTypeBtn1.Disable()
+        # else:
+        #     subPanel.panel.saveNextBtn.Show()
+        #     subPanel.edge.saveNextBtn.Show()
+        #     subPanel.pier.saveNextBtn.Show()
+        if endPier:
+            self.subPanel.pier.endEdgeRdBtn.SetValue(True)
+            self.subPanel.pier.startEdgeRdBtn.Disable()
+        
+
+
+
+
+
+        if len(self.panelObjs) == 0 and panelType == 0:
+            # subPanel.edge.panelNumberCtrl.SetValue(subPanel.edge.types[0])
+            self.subPanel.edge.endEdgeRdBtn.Disable()
+            self.subPanel.windowTypeBtn1.Disable()
+            self.subPanel.windowTypeBtn2.Disable()
+            self.subPanel.windowTypeBtn3.Disable()
+        else:
+            self.subPanel.edge.riverBankCtrl.Disable()
+
+            if self.panelObjs[0].leftOrRight == self.subPanel.edge.leftRight[2]:
+                self.subPanel.edge.riverBankCtrl.SetValue(self.subPanel.edge.leftRight[1])
+            else:
+                self.subPanel.edge.riverBankCtrl.SetValue(self.subPanel.edge.leftRight[2])
+
+
+
+        self.subPanel.UpdateSubPanel()
         #### Edge #####
         if isinstance(self.lastObj, EdgeObj):
             if self.lastObj.startOrEnd and "start p" in self.lastObj.panelNum.lower():
-                subPanel.edge.endEdgeRdBtn.SetValue(True)
-                subPanel.windowTypeBtn2.Disable()
-                subPanel.edge.startEdgeRdBtn.Disable()
-                subPanel.edge.panelNumberCtrl.Disable()
+                self.subPanel.edge.endEdgeRdBtn.SetValue(True)
+                self.subPanel.windowTypeBtn2.Disable()
+                self.subPanel.edge.startEdgeRdBtn.Disable()
+                # subPanel.edge.panelNumberCtrl.Disable()
+        
+
         # Check if start edge exists in panels, if so, check if user selected [Edge @ Bank],
         # if so, automatically select End Radio button
         for obj in self.panelObjs:
-            if isinstance(obj, EdgeObj):
-                if obj.startOrEnd and "edge" in obj.edgeType.lower():
-                    def SetEndRdTrue(e):
-                        if "edge" in subPanel.edge.panelNumberCtrl.GetValue().lower():
-                            subPanel.edge.endEdgeRdBtn.SetValue(True)
-                    subPanel.edge.panelNumberCtrl.Bind(wx.EVT_COMBOBOX, SetEndRdTrue)
-                    break
+            if isinstance(obj, EdgeObj) and obj.startOrEnd:    #"edge" in obj.edgeType.lower():
+                self.subPanel.edge.endEdgeRdBtn.SetValue(True)
+                break
 
 
         #### Panel ###
         if header.meter1MeterNoCtrl.GetValue() != "":
-            subPanel.panel.slopeCtrl.SetValue(header.meter1SlopeCtrl1.GetValue())
-            subPanel.panel.slopeCtrl2.SetValue(header.meter1SlopeCtrl2.GetValue())
-            subPanel.panel.interceptCtrl.SetValue(header.meter1InterceptCtrl1.GetValue())
-            subPanel.panel.interceptCtrl2.SetValue(header.meter1InterceptCtrl2.GetValue())
+            self.subPanel.panel.slopeCtrl.SetValue(header.meter1SlopeCtrl1.GetValue())
+            self.subPanel.panel.slopeCtrl2.SetValue(header.meter1SlopeCtrl2.GetValue())
+            self.subPanel.panel.interceptCtrl.SetValue(header.meter1InterceptCtrl1.GetValue())
+            self.subPanel.panel.interceptCtrl2.SetValue(header.meter1InterceptCtrl2.GetValue())
         elif header.meter2MeterNoCtrl.GetValue() != "":
-            subPanel.panel.slopeCtrl.SetValue(header.meter2SlopeCtrl1.GetValue())
-            subPanel.panel.slopeCtrl2.SetValue(header.meter2SlopeCtrl2.GetValue())
-            subPanel.panel.interceptCtrl.SetValue(header.meter2InterceptCtrl1.GetValue())
-            subPanel.panel.interceptCtrl2.SetValue(header.meter2InterceptCtrl2.GetValue())
+            self.subPanel.panel.slopeCtrl.SetValue(header.meter2SlopeCtrl1.GetValue())
+            self.subPanel.panel.slopeCtrl2.SetValue(header.meter2SlopeCtrl2.GetValue())
+            self.subPanel.panel.interceptCtrl.SetValue(header.meter2InterceptCtrl1.GetValue())
+            self.subPanel.panel.interceptCtrl2.SetValue(header.meter2InterceptCtrl2.GetValue())
         else:
-            subPanel.panel.slopeCtrl.SetValue("")
-            subPanel.panel.slopeCtrl2.SetValue("")
-            subPanel.panel.interceptCtrl.SetValue("")
-            subPanel.panel.interceptCtrl2.SetValue("")
+            self.subPanel.panel.slopeCtrl.SetValue("")
+            self.subPanel.panel.slopeCtrl2.SetValue("")
+            self.subPanel.panel.interceptCtrl.SetValue("")
+            self.subPanel.panel.interceptCtrl2.SetValue("")
 
         if header.meter1MeterNoCtrl.GetValue() != "" and header.meter1MeterNoCtrl.GetValue() is not None:
             if header.meter2MeterNoCtrl.GetValue() != "" and header.meter2MeterNoCtrl.GetValue() is not None:
-                subPanel.panel.currentMeterCtrl.SetItems([header.meter1MeterNoCtrl.GetValue(), header.meter2MeterNoCtrl.GetValue()])
+                self.subPanel.panel.currentMeterCtrl.SetItems([header.meter1MeterNoCtrl.GetValue(), header.meter2MeterNoCtrl.GetValue()])
             else:
-                subPanel.panel.currentMeterCtrl.SetItems([header.meter1MeterNoCtrl.GetValue()])
+                self.subPanel.panel.currentMeterCtrl.SetItems([header.meter1MeterNoCtrl.GetValue()])
             if self.lastPanelObj is not None:
-                subPanel.panel.currentMeterCtrl.SetValue(self.lastPanelObj.currentMeter)
-                subPanel.panel.slopeCtrl.SetValue(self.lastPanelObj.slop)
-                subPanel.panel.interceptCtrl.SetValue(self.lastPanelObj.intercept)
-                subPanel.panel.slopeCtrl2.SetValue(self.lastPanelObj.slop2)
-                subPanel.panel.interceptCtrl2.SetValue(self.lastPanelObj.intercept2)
+                self.subPanel.panel.currentMeterCtrl.SetValue(self.lastPanelObj.currentMeter)
+                self.subPanel.panel.slopeCtrl.SetValue(self.lastPanelObj.slop)
+                self.subPanel.panel.interceptCtrl.SetValue(self.lastPanelObj.intercept)
+                self.subPanel.panel.slopeCtrl2.SetValue(self.lastPanelObj.slop2)
+                self.subPanel.panel.interceptCtrl2.SetValue(self.lastPanelObj.intercept2)
             else:
-                subPanel.panel.currentMeterCtrl.SetValue(header.meter1MeterNoCtrl.GetValue())
+                self.subPanel.panel.currentMeterCtrl.SetValue(header.meter1MeterNoCtrl.GetValue())
         else:
             if header.meter2MeterNoCtrl.GetValue() != "":
-                subPanel.panel.currentMeterCtrl.SetItems([header.meter2MeterNoCtrl.GetValue()])
-                subPanel.panel.currentMeterCtrl.SetValue(header.meter2MeterNoCtrl.GetValue())
+                self.subPanel.panel.currentMeterCtrl.SetItems([header.meter2MeterNoCtrl.GetValue()])
+                self.subPanel.panel.currentMeterCtrl.SetValue(header.meter2MeterNoCtrl.GetValue())
             else:
-                subPanel.panel.currentMeterCtrl.SetItems([])
+                self.subPanel.panel.currentMeterCtrl.SetItems([])
 
         if header.measureSectionCtrl.GetValue().lower() == "open":
-            subPanel.panel.panelConditionCombox.SetItems(["Open"])
-            subPanel.panel.panelConditionCombox.SetValue("Open")
+            self.subPanel.panel.panelConditionCombox.SetItems(["Open"])
+            self.subPanel.panel.panelConditionCombox.SetValue("Open")
         elif header.measureSectionCtrl.GetValue().lower() == "ice":
-            subPanel.panel.panelConditionCombox.SetItems(["Ice"])
-            subPanel.panel.panelConditionCombox.SetValue("Ice")
+            self.subPanel.panel.panelConditionCombox.SetItems(["Ice"])
+            self.subPanel.panel.panelConditionCombox.SetValue("Ice")
         else:
             if self.lastPanelObj is not None:
-                subPanel.panel.panelConditionCombox.SetItems(["Open", "Ice"])
-                subPanel.panel.panelConditionCombox.SetValue(self.lastPanelObj.panelCondition)
+                self.subPanel.panel.panelConditionCombox.SetItems(["Open", "Ice"])
+                self.subPanel.panel.panelConditionCombox.SetValue(self.lastPanelObj.panelCondition)
                 # subPanel.panel.OnPanelCondition(event)
             else:
-                subPanel.panel.panelConditionCombox.SetItems(["Open", "Ice"])
-                subPanel.panel.panelConditionCombox.SetSelection(0)
+                self.subPanel.panel.panelConditionCombox.SetItems(["Open", "Ice"])
+                self.subPanel.panel.panelConditionCombox.SetSelection(0)
 
         if self.lastPanelObj is not None:
             # remember last slope radio button
             if self.lastPanelObj.slopBtn1:
-                subPanel.panel.slopBtn1.SetValue(True)
+                self.subPanel.panel.slopBtn1.SetValue(True)
             else:
-                subPanel.panel.slopBtn2.SetValue(True)
+                self.subPanel.panel.slopBtn2.SetValue(True)
             # remember 'amount of weight', 'WL/DL Correction' if panelCondition=open
 
-            if subPanel.panel.panelConditionCombox.GetValue() == "Open":
-                subPanel.panel.amountWeightCmbox.SetValue(self.lastPanelObj.weight)
-                subPanel.panel.wldlCorrectionCmbox.SetValue(self.lastPanelObj.wldl)
-                subPanel.panel.weightOffsetCtrl.SetValue(self.lastPanelObj.offset)
+            if self.subPanel.panel.panelConditionCombox.GetValue() == "Open":
+                self.subPanel.panel.amountWeightCmbox.SetValue(self.lastPanelObj.weight)
+                self.subPanel.panel.wldlCorrectionCmbox.SetValue(self.lastPanelObj.wldl)
+                self.subPanel.panel.weightOffsetCtrl.SetValue(self.lastPanelObj.offset)
             # remember 'Ice Assembly' if panelCondition=ice
-            if subPanel.panel.panelConditionCombox.GetValue() == "Ice":
-                subPanel.panel.iceAssemblyCmbbox.SetValue(self.lastPanelObj.iceAssembly)
-                subPanel.panel.meterAboveCtrl.SetValue(self.lastPanelObj.aboveFoot)
-                subPanel.panel.meterBelowCtrl.SetValue(self.lastPanelObj.belowFoot)
-                subPanel.panel.distanceAboveCtrl.SetValue(self.lastPanelObj.distAboveWeight)
-                subPanel.panel.iceThickCtrl.SetValue(str(self.lastObj.iceThickness))
-                subPanel.panel.iceThickAdjustedCtrl.SetValue(str(self.lastObj.iceThicknessAdjusted))
+            if self.subPanel.panel.panelConditionCombox.GetValue() == "Ice":
+                self.subPanel.panel.iceAssemblyCmbbox.SetValue(self.lastPanelObj.iceAssembly)
+                self.subPanel.panel.meterAboveCtrl.SetValue(self.lastPanelObj.aboveFoot)
+                self.subPanel.panel.meterBelowCtrl.SetValue(self.lastPanelObj.belowFoot)
+                self.subPanel.panel.distanceAboveCtrl.SetValue(self.lastPanelObj.distAboveWeight)
+                self.subPanel.panel.iceThickCtrl.SetValue(str(self.lastPanelObj.iceThickness))
+                self.subPanel.panel.iceThickAdjustedCtrl.SetValue(str(self.lastPanelObj.iceThicknessAdjusted))
 
 
 
-        subPanel.panel.PanelConditionUpdate()
-        subPanel.panel.SlopeRadioUpdate()
+        self.subPanel.panel.PanelConditionUpdate()
+        # self.subPanel.panel.SlopeRadioUpdate()
         #subPanel.panel.OnIceAssmeblyNoEvent()
-        subPanel.panel.WLDLCorrection()
-        subPanel.panel.UpdateWetLineCorrectionNoEvent()
+        self.subPanel.panel.WLDLCorrection()
+        self.subPanel.panel.UpdateWetLineCorrectionNoEvent()
         #subPanel.panel.UpdateMeterOffset()
-        subPanel.panel.UpdateVelocityCorrection()
-        subPanel.panel.UpdateGrid()
+        self.subPanel.panel.UpdateVelocityCorrection()
+        self.subPanel.panel.UpdateGrid()
+
+        self.subPanel.panel.BindingEvents()
+
+        # self.modifiedPanelArrayIndex
+        # self.modifiedPanelTableIndex
 
         frame.ShowModal()
+        # frame.Show(True)
 
 
-    def OnModify(self, event):
-        print "OnModify"
+
+    def GenerateNextPid(self):
+        self.nextPid += 1
+        return self.nextPid
+
+
+    def OnEdit(self, event):
+
+        self.Modify()
+
+    def Modify(self):
         if self.dlg != None:
             self.dlg.Destroy()
             self.dlg = None
         if len(self.panelObjs) == 0:
             return
+
+        if self.modifiedPanelArrayIndex > len(self.panelObjs) - 1:
+            self.modifiedPanelArrayIndex = len(self.panelObjs) - 1
+            dlg = wx.MessageDialog(None, "This is the last panel", "", wx.OK | wx.ICON_EXCLAMATION)
+            dlg.ShowModal()
         #TBD ===================================================================================NEED MORE CONDITIONS HERE!===
-        self.panelType = self.panelObjs[self.modifiedPanelId].panelType
-
-        if self.panelType == 0:
-            panelSize = (440, 280)
-        elif self.panelType == 1:
-            panelSize = (540, 660)
-
-        frame = wx.Dialog(self, size=panelSize)
-        header = self.GetParent().header
-        modifiedObj = self.panelObjs[self.modifiedPanelId]
-
-        subPanel = MidSectionSubPanel(panelNum=modifiedObj.panelNum, parent=frame, \
-            size=panelSize, panelType=self.panelType, panelId=modifiedObj.panelId, modify=True, pos=self.pos)
-
-        subPanel.edge.nextBtn.Disable()
-        subPanel.panel.nextBtn.Disable()
-        if self.panelType==1:
-            subPanel.windowTypeBtn1.Disable()
-        if self.panelType==0:
-            subPanel.windowTypeBtn2.Disable()
-
-        subPanel.UpdateSubPanel()
-        if header.meter1MeterNoCtrl.GetValue() != "":
-            subPanel.panel.slopeCtrl.SetValue(header.meter1SlopeCtrl1.GetValue())
-            subPanel.panel.slopeCtrl2.SetValue(header.meter1SlopeCtrl2.GetValue())
-            subPanel.panel.interceptCtrl.SetValue(header.meter1InterceptCtrl1.GetValue())
-            subPanel.panel.interceptCtrl2.SetValue(header.meter1InterceptCtrl2.GetValue())
-        elif header.meter2MeterNoCtrl.GetValue() != "":
-            subPanel.panel.slopeCtrl.SetValue(header.meter2SlopeCtrl1.GetValue())
-            subPanel.panel.slopeCtrl2.SetValue(header.meter2SlopeCtrl2.GetValue())
-            subPanel.panel.interceptCtrl.SetValue(header.meter2InterceptCtrl1.GetValue())
-            subPanel.panel.interceptCtrl2.SetValue(header.meter2InterceptCtrl2.GetValue())
+        # for i in self.panelObjs:
+        #     i.ToString()
+        if isinstance(self.panelObjs[self.modifiedPanelArrayIndex], EdgeObj):
+            if self.panelObjs[self.modifiedPanelArrayIndex].edgeType == "Edge" or "Edge" in str(self.panelObjs[self.modifiedPanelArrayIndex].panelNum):
+                panelType = 0
+            else:
+                panelType = 2
         else:
-            subPanel.panel.slopeCtrl.SetValue("")
-            subPanel.panel.slopeCtrl2.SetValue("")
-            subPanel.panel.interceptCtrl.SetValue("")
-            subPanel.panel.interceptCtrl2.SetValue("")
+            panelType = 1
+
+        if panelType == 0 or panelType == 2:
+            panelSize = self.edgeSize
+        elif panelType == 1:
+            panelSize = self.panelSize
+
+        frame = wx.Dialog(self, size=panelSize, style=wx.RESIZE_BORDER|wx.CAPTION)
+        header = self.GetParent().header
+        modifiedObj = self.panelObjs[self.modifiedPanelArrayIndex]
+
+        # modifiedObj.ToString()
+        pid = modifiedObj.pid
+
+        self.subPanel = MidSectionSubPanel(panelNum=modifiedObj.panelNum, parent=frame, \
+            size=panelSize, panelType=panelType, modify=2, pos=self.pos, pid=pid)
+
+
+
+        # subPanel.edge.nextBtn.Show()
+        # subPanel.edge.preBtn.Show()
+        # subPanel.panel.nextBtn.Show()
+        # subPanel.panel.preBtn.Show()
+
+        # if panelType == 2 and subPanel.pier.startEdgeRdBtn.GetValue() and (self.modifiedPanelArrayIndex == len(self.panelObjs) - 1\
+        #  or self.panelObjs[self.modifiedPanelArrayIndex+1].panelNum != "End Pier"):
+        #     subpanel.pier.saveBtn.Hide()
+
+
+        self.subPanel.windowTypeBtn1.Disable()
+        self.subPanel.windowTypeBtn2.Disable()
+        self.subPanel.windowTypeBtn3.Disable()
+
+        self.subPanel.UpdateSubPanel()
+        if header.meter1MeterNoCtrl.GetValue() != "":
+            self.subPanel.panel.slopeCtrl.SetValue(header.meter1SlopeCtrl1.GetValue())
+            self.subPanel.panel.slopeCtrl2.SetValue(header.meter1SlopeCtrl2.GetValue())
+            self.subPanel.panel.interceptCtrl.SetValue(header.meter1InterceptCtrl1.GetValue())
+            self.subPanel.panel.interceptCtrl2.SetValue(header.meter1InterceptCtrl2.GetValue())
+        elif header.meter2MeterNoCtrl.GetValue() != "":
+            self.subPanel.panel.slopeCtrl.SetValue(header.meter2SlopeCtrl1.GetValue())
+            self.subPanel.panel.slopeCtrl2.SetValue(header.meter2SlopeCtrl2.GetValue())
+            self.subPanel.panel.interceptCtrl.SetValue(header.meter2InterceptCtrl1.GetValue())
+            self.subPanel.panel.interceptCtrl2.SetValue(header.meter2InterceptCtrl2.GetValue())
+        else:
+            self.subPanel.panel.slopeCtrl.SetValue("")
+            self.subPanel.panel.slopeCtrl2.SetValue("")
+            self.subPanel.panel.interceptCtrl.SetValue("")
+            self.subPanel.panel.interceptCtrl2.SetValue("")
 
         if header.meter1MeterNoCtrl.GetValue() != "" and header.meter1MeterNoCtrl.GetValue() is not None:
             if header.meter2MeterNoCtrl.GetValue() != "" and header.meter2MeterNoCtrl.GetValue() is not None:
-                subPanel.panel.currentMeterCtrl.SetItems([header.meter1MeterNoCtrl.GetValue(), header.meter2MeterNoCtrl.GetValue()])
+                self.subPanel.panel.currentMeterCtrl.SetItems([header.meter1MeterNoCtrl.GetValue(), header.meter2MeterNoCtrl.GetValue()])
             else:
-                subPanel.panel.currentMeterCtrl.SetItems([header.meter1MeterNoCtrl.GetValue()])
+                self.subPanel.panel.currentMeterCtrl.SetItems([header.meter1MeterNoCtrl.GetValue()])
         else:
             if header.meter2MeterNoCtrl.GetValue() != "" and header.meter2MeterNoCtrl.GetValue() is not None:
-                subPanel.panel.currentMeterCtrl.SetItems([header.meter2MeterNoCtrl.GetValue()])
+                self.subPanel.panel.currentMeterCtrl.SetItems([header.meter2MeterNoCtrl.GetValue()])
             else:
-                subPanel.panel.currentMeterCtrl.SetItems([])
+                self.subPanel.panel.currentMeterCtrl.SetItems([])
 
         if header.measureSectionCtrl.GetValue() == "Open":
-            subPanel.panel.panelConditionCombox.SetItems(["Open"])
+            self.subPanel.panel.panelConditionCombox.SetItems(["Open"])
         elif header.measureSectionCtrl.GetValue() == "Ice":
-            subPanel.panel.panelConditionCombox.SetItems(["Ice"])
+            self.subPanel.panel.panelConditionCombox.SetItems(["Ice"])
         else:
-            subPanel.panel.panelConditionCombox.SetItems(["Open", "Ice"])
+            self.subPanel.panel.panelConditionCombox.SetItems(["Open", "Ice"])
             if isinstance(modifiedObj, PanelObj):
-            	subPanel.panel.panelConditionCombox.SetValue(modifiedObj.panelCondition)
-            else:
-            	subPanel.panel.panelConditionCombox.SetValue("Open")
+                self.subPanel.panel.panelConditionCombox.SetValue(modifiedObj.panelCondition)
+                if "Ice" in self.subPanel.panel.panelConditionCombox.GetValue():
+                    self.subPanel.panel.icePanel.Show()
+                    self.subPanel.panel.openWaterPanel.Hide()
+                else:
+                    self.subPanel.panel.openWaterPanel.Show()
+                    self.subPanel.panel.icePanel.Hide()
 
-        if self.panelType == 0:
-            edgePanel = subPanel.edge
+                self.subPanel.panel.Layout()
+            # else:
+            #     subPanel.panel.panelConditionCombox.SetValue("Open")
+
+        if panelType == 0 or panelType == 2:
+            if panelType == 0:
+                edgePanel = self.subPanel.edge
+            else:
+                edgePanel = self.subPanel.pier
             edgePanel.measurementTimeCtrl.SetValue(modifiedObj.time)
-            edgePanel.panelNumberCtrl.SetValue(modifiedObj.edgeType)
+            # edgePanel.panelNumberCtrl.SetValue(modifiedObj.edgeType)
             if isinstance(modifiedObj.startOrEnd, str):
                 if modifiedObj.startOrEnd == "True":
                     modifiedObj.startOrEnd = True
@@ -467,10 +621,13 @@ class MidSectionSummaryTable(wx.Panel):
                 edgePanel.startEdgeRdBtn.SetValue(True)
             else:
                 edgePanel.endEdgeRdBtn.SetValue(True)
-            edgePanel.riverBankCtrl.SetValue(modifiedObj.leftOrRight)
+            if panelType == 0:
+                edgePanel.riverBankCtrl.SetValue(modifiedObj.leftOrRight)
+
+                if edgePanel.types[1] == modifiedObj.edgeType or (edgePanel.types[0] == modifiedObj.edgeType and not modifiedObj.startOrEnd):
+                    edgePanel.riverBankCtrl.Disable()
             edgePanel.edgeTagmarkCtrl.SetValue(modifiedObj.distance)
-            if edgePanel.types[1] == modifiedObj.edgeType or (edgePanel.types[0] == modifiedObj.edgeType and not modifiedObj.startOrEnd):
-                edgePanel.riverBankCtrl.Disable()
+            
             edgePanel.depthCtrl.SetValue(modifiedObj.depth)
             edgePanel.estimatedVelCtrl.SetValue(modifiedObj.corrMeanVelocity)
             if modifiedObj.depthAdjacent:
@@ -480,10 +637,15 @@ class MidSectionSummaryTable(wx.Panel):
                 edgePanel.velAdjacentCkbox.SetValue(True)
                 edgePanel.estimatedVelCtrl.Disable()
 
+            if int(self.modifiedPanelArrayIndex) == len(self.panelObjs) - 1:
+                edgePanel.nextBtn.Enable(False)
+            if int(self.modifiedPanelArrayIndex) == 0:
+                edgePanel.preBtn.Enable(False)
+
         else:
-            panelPanel = subPanel.panel
+            panelPanel = self.subPanel.panel
             panelPanel.panelConditionCombox.SetValue(modifiedObj.panelCondition)
-            subPanel.panel.PanelConditionUpdate()
+            self.subPanel.panel.PanelConditionUpdate()
             panelPanel.velocityCombo.SetValue(modifiedObj.velocityMethod)
             panelPanel.UpdateVelocityCorrection()
             panelPanel.UpdateGrid()
@@ -498,6 +660,11 @@ class MidSectionSummaryTable(wx.Panel):
             panelPanel.interceptCtrl2.SetValue(modifiedObj.intercept2)
             if not modifiedObj.slopBtn1:
                 panelPanel.slopBtn2.SetValue(True)
+                slope = modifiedObj.slop2
+                intercept = modifiedObj.intercept2
+            else:
+                slope = modifiedObj.slop
+                intercept = modifiedObj.intercept
             #open
             panelPanel.openDepthReadCtrl.SetValue(modifiedObj.openDepthRead)
             panelPanel.amountWeightCmbox.SetValue(modifiedObj.weight)
@@ -524,6 +691,9 @@ class MidSectionSummaryTable(wx.Panel):
             panelPanel.slushThicknessCtrl.SetValue(modifiedObj.thickness)
             panelPanel.iceEffectiveDepthCtrl.SetValue(modifiedObj.iceEffectiveDepth)
 
+            # if modifiedObj.depthPanelLock:
+            #     panelPanel.depthPanelLockCkbox.SetValue(True)
+
 
             panelPanel.obliqueCtrl.SetValue(modifiedObj.obliqueCorrection)
             panelPanel.velocityCorrectionCtrl.SetValue(modifiedObj.velocityCorrFactor)
@@ -539,66 +709,50 @@ class MidSectionSummaryTable(wx.Panel):
                 panelPanel.velocityGrid.SetCellValue(i, 2, modifiedObj.revs[i])
                 panelPanel.velocityGrid.SetCellValue(i, 3, modifiedObj.revTimes[i])
                 panelPanel.velocityGrid.SetCellValue(i, 4, str(modifiedObj.pointVels[i]))
+                panelPanel.rawAtPointVel[i] = panelPanel.CalculateVel(modifiedObj.revs[i], modifiedObj.revTimes[i], slope, intercept, modifiedObj.reverseFlow)
                 pointVelsIsNone = False
 
-            if modifiedObj.meanVelocity!="":
-                panelPanel.openWaterPanel.Disable()
-                panelPanel.icePanel.Disable()
-            panelPanel.SlopeRadioUpdate()
+            # if modifiedObj.meanVelocity!="":
+            #     panelPanel.openWaterPanel.Disable()
+            #     panelPanel.icePanel.Disable()
+            # panelPanel.SlopeRadioUpdate()
+
+
+            if int(self.modifiedPanelArrayIndex) == len(self.panelObjs) - 1:
+                panelPanel.nextBtn.Enable(False)
+            if int(self.modifiedPanelArrayIndex) == 0:
+                panelPanel.preBtn.Enable(False)
+
+            panelPanel.BindingEvents()
         self.originalTagmark = float(modifiedObj.distance)
         frame.ShowModal()
-
+        # subPanel.Layout()
 
 
     #Add object to object array and update the table
     def AddRow(self, obj, pos=None):
         self.pos = pos
 
-        obj.panelId = len(self.panelObjs)
         self.panelObjs.append(obj)
         # Check if it's decreasing/increasing order then sort accordingly
         if len(self.panelObjs)>2:
             if float(self.panelObjs[0].distance) > float(self.panelObjs[1].distance):
                 self.panelObjs.sort(key=lambda f: float(f.distance), reverse=True)
-                print "sort reverse"
+
             else:
                 self.panelObjs.sort(key=lambda f: float(f.distance))
-                print "sort"
+   
 
         # Update Panel Number
         c = 1
         for i in range(len(self.panelObjs)):
-            if self.panelObjs[i].panelType==1:
+            if isinstance(self.panelObjs[i], PanelObj):
                 self.panelObjs[i].panelNum = c
                 c+=1
             if self.panelObjs[i]==obj:
                 addedIndexInArray = i
 
-        if len(self.panelObjs) < 2:
-            offset = 1
-        else:
-            offset = 0
 
-        newLines = 1
-        if isinstance(obj, PanelObj) and obj.depths != "":
-            if len(obj.depths) > 1:
-                newLines = len(obj.depths)
-
-        newLines = newLines - offset
-
-        # obj.panelId = self.summaryTable.GetNumberRows() - 1
-        print "==============="
-        print self.panelObjs[len(self.panelObjs) - 1].panelId
-
-        for i in range(newLines):
-            print "append a row"
-            self.summaryTable.AppendRows()
-            newHeight = self.summaryTable.GetSize().GetHeight() + self.cellHeight
-            self.summaryTable.SetSize((-1, newHeight))
-
-        #print "len(self.panelObjs) - 1", len(self.panelObjs) - 1
-        #self.UpdateObjInfoByRow(len(self.panelObjs) - 1)
-        print "addedIndexInArray:", addedIndexInArray
         if len(self.panelObjs)<=2:
             self.UpdateObjInfoByRow(len(self.panelObjs) -1)
         elif addedIndexInArray>0 and addedIndexInArray<len(self.panelObjs)-1:
@@ -754,14 +908,22 @@ class MidSectionSummaryTable(wx.Panel):
             #i.ToString()
             # Calculate Summary if end edge is detected
             if "End Edge" == i.panelNum:
+                self.addBtn.Enable(False)
                 self.GetParent().header.CalculateSummary()
                 break
 
 
+        self.CalculatePolority()
+
+        # if obj.panelNum == "Start Pier":
+        #     adding(endPier=True)
+
+
     #Recalculate the width, mean velocity, area, discharge, flow if anything changed in the given panel
     def UpdateObjInfoByRow(self, index):
+
         if index > -1:
-            print "UpdateObjInfoByRow  index:", index
+
             currentObj = self.panelObjs[index]
 
             if isinstance(currentObj, EdgeObj):
@@ -771,11 +933,10 @@ class MidSectionSummaryTable(wx.Panel):
 
 
                 if panelNum == "Start Edge" or panelNum == "End P / ISL":
-                    print "index", index
-                    print "len(panelObjs)", len(self.panelObjs)
+
 
                     if index < len(self.panelObjs) - 1:
-                        print "distance", self.panelObjs[index].distance, self.panelObjs[index+1].distance
+
                         if currentObj.distance != "" and self.panelObjs[index+1].distance != "":
                             currentObj.width = abs(float(currentObj.distance) - float(self.panelObjs[index+1].distance)) / 2
                         else:
@@ -841,12 +1002,12 @@ class MidSectionSummaryTable(wx.Panel):
 
                 #check previous, update previous
                 if index > 0:
-                    print "====================================previous checking"
+
                     preObj = self.panelObjs[index-1]
                     #if previous is an edge
                     if isinstance(preObj, EdgeObj):
                         if currentObj.distance != "" and preObj.distance != "":
-                            print "has previous is an edge, ", currentObj.distance, preObj.distance
+
                             preObj.width = abs(float(currentObj.distance) - float(preObj.distance)) / 2
                         else:
                             preObj.width = ""
@@ -859,7 +1020,7 @@ class MidSectionSummaryTable(wx.Panel):
                             else:
                                 preObj.width = ""
 
-            print "current object's width is ", str(currentObj.width)
+
             #Recalculate the area and discharge
             self.UpdateObjAreaAndDischarge(index)
             if index > 0:
@@ -869,11 +1030,11 @@ class MidSectionSummaryTable(wx.Panel):
 
             #for i in self.panelObjs:
             #    i.ToString()
-            print "The length of panelObjs is:", len(self.panelObjs)
+
 
 
     def UpdateObjAreaAndDischarge(self, index):
-        print "UpdateObjAreaAndDischarge", index
+
         obj = self.panelObjs[index]
         if isinstance(obj, PanelObj):
             if obj.panelCondition == "Ice":
@@ -895,9 +1056,14 @@ class MidSectionSummaryTable(wx.Panel):
                     rawArea = float(obj.width) * float(obj.openEffectiveDepth)
                     #obj.area = sigfig.round_sig(float(obj.width) * float(obj.openEffectiveDepth),3)
                     obj.area = str(float(obj.width) * float(obj.openEffectiveDepth))
-                    if obj.corrMeanVelocity != "":
-                        #obj.discharge = sigfig.round_sig(rawArea * float(obj.corrMeanVelocity),3)
+
+                    if obj.corrMeanVelocity != "" and float(obj.corrMeanVelocity) != 0.0:
+
                         obj.discharge = str(rawArea * float(obj.corrMeanVelocity))
+
+
+                    # elif obj.corrMeanVelocity != "" and float(obj.corrMeanVelocity) != 0.0:
+                    #     obj.discharge = str(rawArea * float(obj.corrMeanVelocity))
                     else:
                         obj.discharge = ""
                 else:
@@ -917,8 +1083,6 @@ class MidSectionSummaryTable(wx.Panel):
                 obj.discharge = ""
 
 
-        print "obj area", obj.area
-        print "obj discharge", obj.discharge
 
 
     def TransferFromObjToTable(self):
@@ -927,10 +1091,22 @@ class MidSectionSummaryTable(wx.Panel):
         colour1 = (220,230,240)
         colour2 = (255,245,235)
         self.summaryTable.ClearGrid()
+
+        rows = self.summaryTable.GetNumberRows()
+        rowsNeeded = self.CountNumberOfRows()
+
+
+
+        for i in range(rowsNeeded - rows):
+            self.summaryTable.AppendRows()
+
+        for i in range(rows - rowsNeeded):
+            self.summaryTable.DeleteRows()
+
         for obj in self.panelObjs:
             oldCounter = counter
             if isinstance(obj, EdgeObj):
-                obj.ToString()
+                # obj.ToString()
                 start = obj.startOrEnd
                 edgeType = obj.panelNum
                 # When opening xml, start will be string. So identify that.
@@ -942,8 +1118,9 @@ class MidSectionSummaryTable(wx.Panel):
 
                 if start:
                     if "Edge" in edgeType:
+
                         panelType = "Start Edge"
-                        print panelType
+    
                         if coloured:
                             for col in range(14):
                                 self.summaryTable.SetCellBackgroundColour(oldCounter, col, colour1)
@@ -960,7 +1137,7 @@ class MidSectionSummaryTable(wx.Panel):
                 else:
                     if "Edge" in edgeType:
                         panelType = "End Edge"
-                        print panelType
+         
                         if coloured:
                             for col in range(14):
                                 self.summaryTable.SetCellBackgroundColour(oldCounter, col, colour1)
@@ -974,7 +1151,8 @@ class MidSectionSummaryTable(wx.Panel):
                             self.summaryTable.SetCellBackgroundColour(counter, col, colour2)
                         coloured = False
 
-                print "line 869", panelType
+
+
                 self.summaryTable.SetCellValue(counter, 0, panelType)
                 self.summaryTable.SetCellValue(counter, 1, obj.distance)
                 self.summaryTable.SetCellValue(counter, 3, obj.depth)
@@ -985,32 +1163,29 @@ class MidSectionSummaryTable(wx.Panel):
 
 
             elif isinstance(obj, PanelObj):
-                #print "Counter:", str(counter)
-                print "line 882", obj.panelNum
+
                 self.summaryTable.SetCellValue(counter, 0, str(obj.panelNum))
                 self.summaryTable.SetCellValue(counter, 1, obj.distance)
                 self.Layout()
 
                 if obj.panelCondition == "Open":
-                    self.summaryTable.SetCellValue(counter, 3, obj.openDepthRead)
+                    self.summaryTable.SetCellValue(counter, 3, str(obj.openDepthRead))
                     self.summaryTable.SetCellValue(counter, 5, obj.openEffectiveDepth)
                 else:
                     self.summaryTable.SetCellValue(counter, 3, obj.iceDepthRead)
                     self.summaryTable.SetCellValue(counter, 5, obj.iceEffectiveDepth)
                     if obj.wsBottomSlush != "":
-                        # print self.summaryTable.GetNumberRows()
-                        # print "counter", counter
+
                         self.summaryTable.SetCellValue(counter, 4, obj.wsBottomSlush)
                     else:
                         self.summaryTable.SetCellValue(counter, 4, obj.wsBottomIce)
 
                 self.summaryTable.SetCellValue(counter, 10, obj.corrMeanVelocity)
 
-                print "obj depths", obj.depths
+
+
                 for i in range(len(obj.depths)):
-                    # if i > 0:
-                    #     self.summaryTable.AppendRows()
-                    #     print "add row in transfer"
+
 
                     self.summaryTable.SetCellValue(counter, 6, obj.depthObs[i])
                     self.summaryTable.SetCellValue(counter, 7, obj.revs[i])
@@ -1036,50 +1211,40 @@ class MidSectionSummaryTable(wx.Panel):
                         self.summaryTable.SetCellBackgroundColour(oldCounter, col, "white")
                 coloured = not coloured
 
-            # Format 3 sigfig for area and discharge
-            if isinstance(obj.discharge, str) and obj.discharge=="":
-                self.summaryTable.SetCellValue(oldCounter, 12, obj.discharge)
-            elif isinstance(obj.discharge, str) and obj.discharge!="":
-                #self.summaryTable.SetCellValue(oldCounter, 12, sigfig.round_sig(float(obj.discharge),3))
-                self.summaryTable.SetCellValue(oldCounter, 12, obj.discharge)
-            if isinstance(obj.discharge, float):
-                #self.summaryTable.SetCellValue(oldCounter, 12, sigfig.round_sig(obj.discharge,3))
-                self.summaryTable.SetCellValue(oldCounter, 12, str(obj.discharge))
-            if isinstance(obj.area, str) and obj.discharge=="":
-                self.summaryTable.SetCellValue(oldCounter, 11, obj.area)
-            elif isinstance(obj.area, str) and obj.discharge!="":
-                self.summaryTable.SetCellValue(oldCounter, 11, sigfig.round_sig(float(obj.area),3))
-            if isinstance(obj.area, float):
-                self.summaryTable.SetCellValue(oldCounter, 11, sigfig.round_sig(obj.area,3))
 
-            #self.summaryTable.SetCellValue(oldCounter, 12, str(obj.discharge))
+
+            self.summaryTable.SetCellValue(oldCounter, 12, str(obj.discharge))
+            self.summaryTable.SetCellValue(oldCounter, 11, obj.area)
+
+
             self.summaryTable.SetCellValue(oldCounter, 2, str(obj.width))
 
 
 
-            # print "obj.width and panelNum", obj.width, obj.panelNum
+
 
             counter += 1
 
+
+    def CountNumberOfRows(self):
+        counter = 0
+        for i in self.panelObjs:
+            if isinstance(i, EdgeObj):
+                counter += 1
+            else:
+                for j in range(len(i.depths)):
+                    counter += 1
+        return counter
 
 
 
     #Add object to object array and update the table
     def UpdateRow(self, obj, pos=None):
-        print "update row"
+
         self.pos = pos
 
-        for i in self.panelObjs:
-            i.ToString()
-        print "*********************"
-        print "obj.panelId", obj.panelId
-        if isinstance(obj, PanelObj):
-            oldDepthLength = len(self.panelObjs[self.modifiedPanelId].depths)
-            newDepthLength = len(obj.depths)
 
-            if obj.panelId < len(self.panelObjs):
-                self.Shift(obj.panelId+1, newDepthLength - oldDepthLength)
-        self.panelObjs[self.modifiedPanelId] = obj
+        self.panelObjs[self.modifiedPanelArrayIndex] = obj
 
         # Check if it's decreasing/increasing order then sort accordingly
         if len(self.panelObjs)>2:
@@ -1091,7 +1256,7 @@ class MidSectionSummaryTable(wx.Panel):
         # Update Panel Number
         c = 1
         for i in range(len(self.panelObjs)):
-            if self.panelObjs[i].panelType==1:
+            if isinstance(self.panelObjs[i], PanelObj):
                 self.panelObjs[i].panelNum = c
                 c+=1
         #    if self.panelObjs[i] == obj:
@@ -1101,8 +1266,6 @@ class MidSectionSummaryTable(wx.Panel):
         for i in range(len(self.panelObjs)):
             self.UpdateObjInfoByRow(i)
 
-        print "UpdateObjInfoByRow", self.modifiedPanelId
-        #self.UpdateObjInfoByRow(self.modifiedPanelId)
 
         self.TransferFromObjToTable()
         for i in range(len(self.panelObjs)):
@@ -1179,7 +1342,7 @@ class MidSectionSummaryTable(wx.Panel):
                                     self.UpdateObjInfoByRow(addedIndexInArray+1)
                                     self.TransferFromObjToTable()
                 if isinstance(obj, EdgeObj):
-                    if ("end edge" in obj.panelNum.lower() or "start p" in obj.panelNum.lower()) and obj.depthAdjacent:
+                    if ("end edge" in str(obj.panelNum).lower() or "start p" in str(obj.panelNum).lower()) and obj.depthAdjacent:
                         if isinstance(self.panelObjs[addedIndexInArray-1], PanelObj):
                             if len(self.panelObjs[addedIndexInArray-1].depths) == 1:
                                 self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-1, 3))
@@ -1197,7 +1360,7 @@ class MidSectionSummaryTable(wx.Panel):
                         self.UpdateObjInfoByRow(addedIndexInArray)
                         self.TransferFromObjToTable()
 
-                    if ("end edge" in obj.panelNum.lower() or "start p" in obj.panelNum.lower()) and obj.velocityAdjacent:
+                    if ("end edge" in str(obj.panelNum).lower() or "start p" in str(obj.panelNum).lower()) and obj.velocityAdjacent:
                         if isinstance(self.panelObjs[addedIndexInArray-1], PanelObj):
                             if len(self.panelObjs[addedIndexInArray-1].depths) == 1:
                                 self.summaryTable.SetCellValue(addedIndexInTable, 10, self.summaryTable.GetCellValue(addedIndexInTable-1, 10))
@@ -1226,11 +1389,6 @@ class MidSectionSummaryTable(wx.Panel):
         total = 0
         indexDischarge = {}
 
-        # for i in range(self.summaryTable.GetNumberRows()):
-        #     discharge = self.summaryTable.GetCellValue(i, 12)
-        #     if discharge != "":
-        #         total += float(discharge)
-        #         indexDischarge[i] = float(discharge)
 
 
         for i in range(len(self.panelObjs)):
@@ -1239,7 +1397,7 @@ class MidSectionSummaryTable(wx.Panel):
                 total += float(discharge)
                 indexDischarge[i] = float(discharge)
 
-        print "total Discharge, ", total
+
         if total != 0:
             for key in indexDischarge.keys():
                 flow = indexDischarge.get(key) / total * 100
@@ -1252,42 +1410,23 @@ class MidSectionSummaryTable(wx.Panel):
                         else:
                             self.summaryTable.SetCellTextColour(row, 13, "black")
 
-            print "********************"
-            print indexDischarge
-
-        # i = 0
-        # for obj in self.panelObjs:
-        #     if obj.discharge != "":
-        #         print "****************"
-        #         print indexDischarge.values()[i]
-        #         obj.flow = str(indexDischarge.values()[i])
-        #         i += 1
-
-
-
 
     #shift the rows from the index number given inclusively move by numbers of lines
     #row: the index of row start to move inclusively
     #lines: positive number to the bottom, negative number to the above
     def Shift(self, row, lines):
-        print "shift", row, lines
-        print self.summaryTable.GetNumberRows()
-        print "lines", lines
+
 
         oldTableSize = self.summaryTable.GetNumberRows()
         #shifting down(expand table)
         if lines > 0:
             for i in range(lines):
                 self.summaryTable.AppendRows()
-                print "appending a row during shifting...i=", i
+
             newHeight = self.summaryTable.GetSize().GetHeight() + lines * self.cellHeight
             self.summaryTable.SetSize((-1, newHeight))
             self.Layout()
-            # if row < oldTableSize:
-            #     for line in reversed(range(oldTableSize)[row:]):
-            #         print "copy reversed index number", line
-            #         for i in range(14):
-            #             self.summaryTable.SetCellValue(line+lines, i, self.summaryTable.GetCellValue(line, i))
+
 
 
             #clear the table
@@ -1305,34 +1444,197 @@ class MidSectionSummaryTable(wx.Panel):
 
 
 
-        print "=============================================="
-        print "Panel ID list:"
+    def OrderedTimes(self):
+        times = []
         for i in self.panelObjs:
-            if i is not None:
-                print i.panelId
-            else:
-                print "--"
+            times.append(i.time)
+        return sorted(times)
 
-        print "=============================================="
-        print "Panel panelNum list:"
-        for i in self.panelObjs:
-            if i is not None:
-                print i.panelNum
-            else:
-                print "--"
+    def GetNextTagMark(self):
+        if len(self.panelObjs) < 2:
+            return ''
+        else:
+            secondLast = float(self.panelObjs[-2].distance)
+            last = float(self.panelObjs[-1].distance)
+            distance = last * 2 - secondLast 
+            return str(distance)
 
-        print "=============================================="
-        print "Panel index list:"
-        for i in self.panelObjs:
-            if i is not None:
-                print i.index
-            else:
-                print "--"
 
-    def OnAddBtn(self, event):
-        # self.Shift(0, 2)
-        self.Adding()
-        event.Skip()
+    def CalculatePolority(self):
+
+        if len(self.panelObjs) > 2 or (len(self.panelObjs) > 1 and self.panelObjs[-1].panelNum == "End Edge"):
+
+            self.increasingPolority = float(self.panelObjs[1].distance) > float(self.panelObjs[0].distance)
+        else:
+            self.increasingPolority = None
+
+
+    def IsValidTagMark(self, tagmark, arrayIndex, pid=None, modify=0, startEdge=False, endEdge=False, startPier=False, endPier=False):
+
+        if len(self.panelObjs) == 0:
+            return 0
+        
+        #check boundary between edges
+        if self.increasingPolority is not None and len(self.panelObjs) > 1 and self.panelObjs[-1].panelNum == "End Edge":
+            if self.increasingPolority:
+                if float(tagmark) < float(self.panelObjs[0].distance) or float(tagmark) > float(self.panelObjs[-1].distance):
+                    dlg = wx.MessageDialog(None, "Panel tagmark is out of the boundary", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                    dlg.ShowModal()
+                    return 7
+            else:
+                if float(tagmark) > float(self.panelObjs[0].distance) or float(tagmark) < float(self.panelObjs[-1].distance):
+                    dlg = wx.MessageDialog(None, "Panel tagmark is out of the boundary", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                    dlg.ShowModal()
+                    return 7
+
+
+        for index, obj in enumerate(self.panelObjs):
+            #Between Pier check
+            if not startPier and not endPier:
+
+                if "Start P" in str(obj.panelNum):
+                    if self.increasingPolority:
+                        if float(tagmark) > float(obj.distance) and float(tagmark) < float(self.panelObjs[index+1].distance):
+                            dlg = wx.MessageDialog(None, "Panel tagmark cannot between piers", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                            dlg.ShowModal()
+                            return 1
+                    else:
+                        if float(tagmark) < float(obj.distance) and float(tagmark) > float(self.panelObjs[index+1].distance):
+                            dlg = wx.MessageDialog(None, "Panel tagmark cannot between piers", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                            dlg.ShowModal()
+                            return 1
+
+
+            #Duplicate Check
+
+            if (modify != 2 and float(tagmark) == float(obj.distance)) or \
+            (modify == 2 and float(tagmark) == float(obj.distance) and arrayIndex != index and not endPier):
+                # print "====----------------------"
+                # print "modify", modify
+                # print "arrayIndex", arrayIndex
+                # print "index", index
+                # print "endPier", endPier 
+                dlg = wx.MessageDialog(None, "Panel tagmark cannot be duplicated", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                dlg.ShowModal()
+                return 2
+        #Polority Check for adding
+        if modify == 0:           
+            if self.increasingPolority is not None and ((self.increasingPolority and float(self.panelObjs[-1].distance) > float(tagmark))\
+                 or (self.increasingPolority == False and float(self.panelObjs[-1].distance) < float(tagmark))):
+                    dlg = wx.MessageDialog(None, "Panel tagmark doesn't follow the polority", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                    dlg.ShowModal()
+                    return 3
+
+        #polority check for editing
+        else:
+            if self.increasingPolority == True is not None and not startEdge:
+                if (self.increasingPolority == True and float(tagmark) < float(self.panelObjs[0].distance)) or\
+                        (self.increasingPolority == False and float(tagmark) > float(self.panelObjs[0].distance)):
+                    dlg = wx.MessageDialog(None, "Panel tagmark is out of the boundary of Start Edge", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                    dlg.ShowModal()
+                    return 8
+
+
+        
+
+        #check only for end Edge
+        if endEdge:   
+            #Check number of edges
+            counter = 0
+            for obj in self.panelObjs:
+                if isinstance(obj, EdgeObj) and obj.edgeType == "Edge":
+                    counter += 1
+
+                #check end edge boundary
+                if isinstance(obj, PanelObj):
+                    if (self.increasingPolority == True and float(tagmark) < float(obj.distance)) \
+                        or (self.increasingPolority == False and float(tagmark) > float(obj.distance)):
+                        dlg = wx.MessageDialog(None, "Invalid tagmark for end edge", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                        dlg.ShowModal()
+                        return 5
+            if counter > 1 and modify == 0:
+                dlg = wx.MessageDialog(None, "Number of edges exceeded", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                dlg.ShowModal()
+                return 4
+
+        #check startEdge boundary
+        if startEdge and modify != 0 and self.increasingPolority is not None:
+            for obj in self.panelObjs:
+                if isinstance(obj, PanelObj):
+                    if (self.increasingPolority and float(tagmark) > float(obj.distance)) \
+                        or (self.increasingPolority == False and float(tagmark) < float(obj.distance)):
+                        dlg = wx.MessageDialog(None, "The start edge is out of the boundary", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                        dlg.ShowModal()
+                        return 6
+
+        #Check only for end Pier
+        if endPier:
+
+            if pid is not None:
+                for index, obj in enumerate(self.panelObjs):
+                    if pid == obj.pid:
+                        if (self.increasingPolority and float(tagmark) < float(obj.distance)) or\
+                         (self.increasingPolority == False and float(tagmark) > float(obj.distance)):
+                            dlg = wx.MessageDialog(None, "The end pier is out of the boundary 6", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                            dlg.ShowModal()
+                            return 18
+
+                        if modify == 0 or modify == 1:
+                            if (index < len(self.panelObjs) - 1) and ((self.increasingPolority and float(tagmark) > float(self.panelObjs[index+1].distance)) or\
+                                (self.increasingPolority == False and float(tagmark) < float(self.panelObjs[index+1].distance))):
+
+
+                                dlg = wx.MessageDialog(None, "The end pier is out of the boundary 7", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                                dlg.ShowModal()
+                                return 19
+                        else:
+                            if (index < len(self.panelObjs) - 2) and ((self.increasingPolority and float(tagmark) > float(self.panelObjs[index+2].distance)) or\
+                                (self.increasingPolority == False and float(tagmark) < float(self.panelObjs[index+2].distance))):
+
+                                dlg = wx.MessageDialog(None, "The end pier is out of the boundary 8", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                                dlg.ShowModal()
+                                return 20
+                        break
+
+        
+
+        #check only for start Pier
+        if startPier:
+            #modify
+            if modify == 2 and arrayIndex != -1:
+                if arrayIndex < len(self.panelObjs) - 1:
+                    if "End P" in str(self.panelObjs[arrayIndex + 1].panelNum):
+                        #less than end pier
+                        if self.increasingPolority == True:
+                            if float(tagmark) > float(self.panelObjs[arrayIndex + 1].distance):
+                                dlg = wx.MessageDialog(None, "The start pier is out of the boundary 1", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                                dlg.ShowModal()
+                                return 9 
+                        #greater than end pier
+                        elif self.increasingPolority == False:
+                            if float(tagmark) < float(self.panelObjs[arrayIndex + 1].distance):
+                                dlg = wx.MessageDialog(None, "The start pier is out of the boundary 2", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                                dlg.ShowModal()
+                                return 10
+                
+                        #greater than previous panel
+                        if self.increasingPolority == True:
+                            if float(self.panelObjs[arrayIndex - 1].distance) > float(tagmark):
+                                dlg = wx.MessageDialog(None, "The start pier is out of the boundary 3", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                                dlg.ShowModal()
+                                return 11
+
+                        #less than previous panel
+                        elif self.increasingPolority == False:
+                            if float(self.panelObjs[self.modifiedPanelArrayIndex - 1].distance) < float(tagmark):
+                                dlg = wx.MessageDialog(None, "The start pier is out of the boundary 4", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
+                                dlg.ShowModal()
+                                return 12
+
+
+        return 0
+
+
 
 
 def main():

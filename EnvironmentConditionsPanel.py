@@ -5,6 +5,7 @@ import wx
 import wx.lib.masked as masked
 import wx.adv as adv
 import NumberControl
+from DropdownTime import *
 
 #Overwrite the TextCtrl Class in order to control the float input
 class MyTextCtrl(wx.TextCtrl):
@@ -51,6 +52,13 @@ class EnvironmentConditionsPanel(wx.Panel):
         self.dataPeriodFromTxtLbl = "From"
         self.dataPeriodToTxtLbl = "To"
         self.intakeTimeLbl = "@"
+
+        self.arrivalLbl = "Arrival(Found)"
+        self.departLbl = "Departure(Left)"
+        self.bmpList = ["BMP/POT"]
+
+        self.stnRemarkLbl = "Station Health\nRemarks"
+
 
         self.SetSize((325, -1))
         self.mode=mode
@@ -136,39 +144,162 @@ class EnvironmentConditionsPanel(wx.Panel):
         batterySizer.Add(batteryTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
         batterySizer.Add(self.batteryCtrl, 1, wx.EXPAND|wx.LEFT, 5)
 
+
+
+        #Gas Pressure Sizer
+        gasPressureSizer = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressureV1 = wx.BoxSizer(wx.VERTICAL)
+        gasPressureV2 = wx.BoxSizer(wx.VERTICAL)
+        gasPressureV3 = wx.BoxSizer(wx.VERTICAL)
+
+
+        gasPressV1H1 = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressV1H2 = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressV1H3 = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressV1H4 = wx.BoxSizer(wx.HORIZONTAL)
+
+        gasPressV2H1 = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressV2H2 = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressV2H3 = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressV2H4 = wx.BoxSizer(wx.HORIZONTAL)
+
+        gasPressV3H1 = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressV3H2 = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressV3H3 = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressV3H4 = wx.BoxSizer(wx.HORIZONTAL)
+
+        gasPressureV1.Add(gasPressV1H1, 0, wx.EXPAND)
+        gasPressureV1.Add(gasPressV1H2, 0, wx.EXPAND)
+        gasPressureV1.Add(gasPressV1H3, 0, wx.EXPAND|wx.TOP, 5)
+        gasPressureV1.Add(gasPressV1H4, 0, wx.EXPAND|wx.TOP, 5)
+
+        gasPressureV2.Add(gasPressV2H1, 0, wx.EXPAND)
+        gasPressureV2.Add(gasPressV2H2, 0, wx.EXPAND)
+        gasPressureV2.Add(gasPressV2H3, 0, wx.EXPAND|wx.TOP, 5)
+        gasPressureV2.Add(gasPressV2H4, 0, wx.EXPAND|wx.TOP, 5)
+
+        gasPressureV3.Add(gasPressV3H1, 0, wx.EXPAND)
+        gasPressureV3.Add(gasPressV3H2, 0, wx.EXPAND)
+        gasPressureV3.Add(gasPressV3H3, 0, wx.EXPAND|wx.TOP, 5)
+        gasPressureV3.Add(gasPressV3H4, 0, wx.EXPAND|wx.TOP, 5)
+
+
+        gasPressureSizer.Add(gasPressureV1, 0, wx.EXPAND)
+        gasPressureSizer.Add(gasPressureV2, 1, wx.EXPAND)
+        gasPressureSizer.Add(gasPressureV3, 1, wx.EXPAND)
+
+
+        arrivalTxt = wx.StaticText(self, label=self.arrivalLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
+        departureTxt = wx.StaticText(self, label=self.departLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
+        font = wx.Font(wx.FontInfo(8).FaceName("Helvetica").Bold())
+        arrivalTxt.SetFont(font)
+        departureTxt.SetFont(font)
+
+        arrivalTxt.SetForegroundColour((164,64,43))
+        departureTxt.SetForegroundColour((164,64,43))
+
+        gasPressV1H1.Add((-255,-255), 1, wx.EXPAND)
+        gasPressV2H1.Add(arrivalTxt, 1, wx.EXPAND)
+        gasPressV3H1.Add(departureTxt, 1, wx.EXPAND)
+
+
+
+
+
+
+
+        ###########################################
+
+
+
+
         #Gas Text and Ctrl
-        gasSysSizer = wx.BoxSizer(wx.HORIZONTAL)
-        gasSysTxt = wx.StaticText(self, label=self.gasSystemTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
-        self.gasSysCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(100, -1))
+       
+        gasSysTxt = wx.StaticText(self, label=self.gasSystemTxtLbl)#, style=wx.ALIGN_CENTRE_HORIZONTAL)
+
+        gasSysAtTxt = wx.StaticText(self, label=self.intakeTimeLbl)
+        gasSysAt2Txt = wx.StaticText(self, label=self.intakeTimeLbl)
+        font2 = wx.Font(wx.FontInfo(7))
+        gasSysTxt.SetFont(font2)
+        self.gasSysCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
         self.gasSysCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.gasSysCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig3)
-        gasSysSizer.Add(gasSysTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
-        gasSysSizer.Add(self.gasSysCtrl, 1, wx.EXPAND|wx.LEFT, 5)
+
+        self.gasSysDepCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
+        self.gasSysDepCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.gasSysDepCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig3)
+
+        self.gasArrTime = DropdownTime(False, parent=self, size=(-1, -1))
+        self.gasDepTime = DropdownTime(False, parent=self, size=(-1, -1))
 
 
-        machineSizerH = wx.BoxSizer(wx.HORIZONTAL)
+        gasPressV1H2.Add(gasSysTxt, 0, wx.EXPAND|wx.TOP, 20)
+        gasPressV2H2.Add(self.gasSysCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV2H2.Add(gasSysAtTxt, 0, wx.LEFT, 5)
+        gasPressV2H2.Add(self.gasArrTime, 0)
+
+        gasPressV3H2.Add(self.gasSysDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV3H2.Add(gasSysAt2Txt, 0, wx.LEFT, 5)
+        gasPressV3H2.Add(self.gasDepTime, 0)
+
+
+
+
 
         #Feed Ctrl
-        feedSizer = wx.BoxSizer(wx.HORIZONTAL)
-        feedTxt = wx.StaticText(self, label=self.feedTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
-        self.feedCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(50, -1))
+        
+        feedTxt = wx.StaticText(self, label=self.feedTxtLbl)#, style=wx.ALIGN_CENTRE_HORIZONTAL)
+        feedAtTxt = wx.StaticText(self, label=self.intakeTimeLbl)
+        feedAt2Txt = wx.StaticText(self, label=self.intakeTimeLbl)
+        self.feedCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
         self.feedCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.feedCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
-        feedSizer.Add(feedTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
-        feedSizer.Add(self.feedCtrl, 1, wx.EXPAND|wx.LEFT, 5)
+
+        self.feedDepCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
+        self.feedDepCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.feedDepCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
+
+        self.feedArrTime = DropdownTime(False, parent=self, size=(-1, -1))
+        self.feedDepTime = DropdownTime(False, parent=self, size=(-1, -1))
+
+        gasPressV1H4.Add(feedTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
+        gasPressV2H4.Add(self.feedCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV2H4.Add(feedAtTxt, 0, wx.LEFT, 5)
+        gasPressV2H4.Add(self.feedArrTime, 0)
+
+        gasPressV3H4.Add(self.feedDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV3H4.Add(feedAt2Txt, 0, wx.LEFT, 5)
+        gasPressV3H4.Add(self.feedDepTime, 0)
 
         #BPM/ROT Cmbo and Ctrl
-        bpmrotSizer = wx.BoxSizer(wx.HORIZONTAL)
+        
         self.bpmrotCmbo = wx.ComboBox(self, choices=self.bpmrotTxtLbl, style=wx.CB_READONLY, size=(50, -1))
         self.bpmrotCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
-        self.bpmrotCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(50, -1))
+        bpmrotAtTxt = wx.StaticText(self, label=self.intakeTimeLbl)
+        bpmrotAt2Txt = wx.StaticText(self, label=self.intakeTimeLbl)
+
+        
+        self.bpmrotCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
         self.bpmrotCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.bpmrotCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
-        bpmrotSizer.Add(self.bpmrotCmbo, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
-        bpmrotSizer.Add(self.bpmrotCtrl, 1, wx.EXPAND)
 
-        machineSizerH.Add(feedSizer, 1, wx.EXPAND|wx.RIGHT, 5)
-        machineSizerH.Add(bpmrotSizer, 1, wx.EXPAND|wx.LEFT, 5)
+        self.bpmrotDepCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
+        self.bpmrotDepCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.bpmrotDepCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
+
+        self.bpmrotArrTime = DropdownTime(False, parent=self, size=(-1, -1))
+        self.bpmrotDepTime = DropdownTime(False, parent=self, size=(-1, -1))
+
+        gasPressV1H3.Add(self.bpmrotCmbo, 0, wx.EXPAND|wx.TOP, 10)
+        gasPressV2H3.Add(self.bpmrotCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV2H3.Add(bpmrotAtTxt, 0, wx.LEFT, 5)
+        gasPressV2H3.Add(self.bpmrotArrTime, 0)
+
+        gasPressV3H3.Add(self.bpmrotDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV3H3.Add(bpmrotAt2Txt, 0, wx.LEFT, 5)
+        gasPressV3H3.Add(self.bpmrotDepTime, 0)
+
+
 
 
         #Intake/Orifice checkboxes
@@ -247,6 +378,16 @@ class EnvironmentConditionsPanel(wx.Panel):
 
         dataPeriodSizer.Add(dataPeriodTxt, 0, wx.EXPAND)
         dataPeriodSizer.Add(dataPeriodRangeSizer, 1, wx.EXPAND)
+
+        #Station Health Remark
+        stationHealthRemarkPanel = wx.Panel(self, style=wx.NO_BORDER)
+        stationRemarkSizer = wx.BoxSizer(wx.HORIZONTAL)
+        stationHealthRemarkPanel.SetSizer(stationRemarkSizer)
+        stationHealthTxt = wx.StaticText(stationHealthRemarkPanel, label=self.stnRemarkLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.stationHealthRemarksCtrl = wx.TextCtrl(stationHealthRemarkPanel, style=wx.TE_PROCESS_ENTER|wx.TE_MULTILINE|wx.TE_BESTWRAP, size=(-1, -1))
+        stationRemarkSizer.Add(stationHealthTxt, 0)
+        stationRemarkSizer.Add(self.stationHealthRemarksCtrl, 1, wx.EXPAND)
+
         
 
         #Add all to layout Sizer
@@ -257,14 +398,20 @@ class EnvironmentConditionsPanel(wx.Panel):
         self.layoutSizer.Add(windMagSpeedSizer, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
         self.layoutSizer.Add(windDirSizer, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
         self.layoutSizer.Add(batterySizer, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
-        self.layoutSizer.Add(gasSysSizer, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
-        self.layoutSizer.Add(machineSizerH, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
+
+        self.layoutSizer.Add(gasPressureSizer, 1, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
+
+        # self.layoutSizer.Add(gasSysSizer, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
+        # self.layoutSizer.Add(machineSizerH, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
         self.layoutSizer.Add(intakeOrificeSizerH, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
         self.layoutSizer.Add(self.intakeOrificeTimeSizerH, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
         
         self.layoutSizer.Add(programDataSizerH, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
         self.layoutSizer.Add((1, 10))
         self.layoutSizer.Add(dataPeriodSizer, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
+
+
+        self.layoutSizer.Add(stationHealthRemarkPanel, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 5)
         
         
         self.SetSizer(self.layoutSizer)
@@ -368,12 +515,84 @@ class EnvironmentConditionsPanel(wx.Panel):
 
 
 
+
+
     #Gas System Ctrl
     def GetGasSysCtrl(self):
         return self.gasSysCtrl.GetValue()
 
     def SetGasSysCtrl(self, gasSysCtrl):
         self.gasSysCtrl.SetValue(gasSysCtrl)
+
+
+    #Gas Departure Ctrl
+    def GetGasDepSysCtrl(self):
+        return self.gasSysDepCtrl.GetValue()
+
+    def SetGasDepSysCtrl(self, SetGasDepSysCtrl):
+        self.gasSysDepCtrl.SetValue(SetGasDepSysCtrl)
+
+
+    #Gas Arrival Time
+    def GetGasArrTime(self):
+        return self.gasArrTime.GetValue()
+
+    def SetGasArrTime(self, gasArrTime):
+        self.gasArrTime.SetValue(gasArrTime)
+
+
+    #Gas Departure Time
+    def GetGasDepTime(self):
+        return self.gasDepTime.GetValue()
+
+    def SetGasDepTime(self, gasDepTime):
+        self.gasDepTime.SetValue(gasDepTime)
+
+
+    #Feed Departure Ctrl
+    def GetFeedDepCtrl(self):
+        return self.feedDepCtrl.GetValue()
+
+    def SetFeedDepCtrl(self, feedDepCtrl):
+        self.feedDepCtrl.SetValue(feedDepCtrl)
+
+    #Feed Arrival time
+    def GetFeedArrTime(self):
+        return self.feedArrTime.GetValue()
+
+    def SetFeedArrTime(self, feedArrTime):
+        self.feedArrTime.SetValue(feedArrTime)
+
+
+    #Feed Departure time
+    def GetFeedDepTime(self):
+        return self.feedDepTime.GetValue()
+
+    def SetFeedDepTime(self, feedDepTime):
+        self.feedDepTime.SetValue(feedDepTime)
+
+
+
+    def GetBpmrotDepCtrl(self):
+        return self.bpmrotDepCtrl.GetValue()
+
+    def SetBpmrotDepCtrl(self, bpmrotDepCtrl):
+        self.bpmrotDepCtrl.SetValue(bpmrotDepCtrl)
+
+    def GetBpmrotArrTime(self):
+        return self.bpmrotArrTime.GetValue()
+
+    def SetBpmrotArrTime(self, bpmrotArrTime):
+        self.bpmrotArrTime.SetValue(bpmrotArrTime)
+
+    def GetBpmrotDepTime(self):
+        return self.bpmrotDepTime.GetValue()
+
+    def SetBpmrotDepTime(self, bpmrotDepTime):
+        self.bpmrotDepTime.SetValue(bpmrotDepTime)
+
+
+
 
 
 

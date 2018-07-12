@@ -200,11 +200,6 @@ class EnvironmentConditionsManager(object):
     def dataCB(self, dataCB):
         self.gui.SetDataCB(dataCB)
 
-    def GetDataPeriodFromPicker(self):
-        return self.gui.dataPeriodFromPicker
-
-    def GetDataPeriodToPicker(self):
-        return self.gui.dataPeriodToPicker
 
 
     #Data Period From
@@ -227,6 +222,95 @@ class EnvironmentConditionsManager(object):
     def dataPeriodToPicker(self, dataPeriodToPicker):
         self.gui.SetDataPeriodToPicker(dataPeriodToPicker)
         
+
+
+
+    @property
+    def gasSysDepCtrl(self):
+        return self.gui.GetGasDepSysCtrl()
+
+    @gasSysDepCtrl.setter
+    def gasSysDepCtrl(self, gasSysDepCtrl):
+        self.gui.SetGasDepSysCtrl(gasSysDepCtrl)
+
+    @property
+    def gasArrTime(self):
+        return self.gui.GetGasArrTime()
+
+    @gasArrTime.setter
+    def gasArrTime(self, gasArrTime):
+        self.gui.SetGasArrTime(gasArrTime)
+
+
+    @property
+    def gasDepTime(self):
+        return self.gui.GetGasDepTime()
+
+    @gasDepTime.setter
+    def gasDepTime(self, gasDepTime):
+        self.gui.SetGasDepTime(gasDepTime)
+
+    @property
+    def feedDepCtrl(self):
+        return self.gui.GetFeedDepCtrl()
+
+    @feedDepCtrl.setter
+    def feedDepCtrl(self, feedDepCtrl):
+        self.gui.SetFeedDepCtrl(feedDepCtrl)
+
+    @property
+    def feedArrTime(self):
+        return self.gui.GetFeedArrTime()
+
+    @feedArrTime.setter
+    def feedArrTime(self, feedArrTime):
+        self.gui.SetFeedArrTime(feedArrTime)
+
+    @property
+    def feedDepTime(self):
+        return self.gui.GetFeedDepTime()
+
+    @feedDepTime.setter
+    def feedDepTime(self, feedDepTime):
+        self.gui.SetFeedDepTime(feedDepTime)
+
+
+    @property
+    def bpmrotDepCtrl(self):
+        return self.gui.GetBpmrotDepCtrl()
+
+    @bpmrotDepCtrl.setter
+    def bpmrotDepCtrl(self, bpmrotDepCtrl):
+        self.gui.SetBpmrotDepCtrl(bpmrotDepCtrl)
+
+
+    @property
+    def bpmrotArrTime(self):
+        return self.gui.GetBpmrotArrTime()
+
+    @bpmrotArrTime.setter
+    def bpmrotArrTime(self, bpmrotArrTime):
+        self.gui.SetBpmrotArrTime(bpmrotArrTime)
+
+
+    @property
+    def bpmrotDepTime(self):
+        return self.gui.GetBpmrotDepTime()
+
+    @bpmrotDepTime.setter
+    def bpmrotDepTime(self, bpmrotDepTime):
+        self.gui.SetBpmrotDepTime(bpmrotDepTime)
+
+
+    @property
+    def stationHealthRemarksCtrl(self):
+        return self.gui.stationHealthRemarksCtrl.GetValue()
+
+    @stationHealthRemarksCtrl.setter
+    def stationHealthRemarksCtrl(self, stationHealthRemarksCtrl):
+        self.gui.stationHealthRemarksCtrl.SetValue(stationHealthRemarksCtrl)
+
+
 
     def GetLevelsCtrl(self):
         return self.gui.levelsCtrl
@@ -282,6 +366,41 @@ class EnvironmentConditionsManager(object):
     def GetDataPeriodToPicker(self):
         return self.gui.dataPeriodToPicker
 
+
+
+    #Gas Departure Ctrl
+    def GetGasDepSysCtrl(self):
+        return self.gui.gasSysDepCtrl
+
+    #Gas Arrival Time
+    def GetGasArrTime(self):
+        return self.gui.gasArrTime
+
+    #Gas Departure Time
+    def GetGasDepTime(self):
+        return self.gui.gasDepTime
+
+    #Feed Departure Ctrl
+    def GetFeedDepCtrl(self):
+        return self.gui.feedDepCtrl
+
+    #Feed Arrival time
+    def GetFeedArrTime(self):
+        return self.gui.feedArrTime
+
+    #Feed Departure time
+    def GetFeedDepTime(self):
+        return self.gui.feedDepTime
+
+
+    def GetBpmrotDepCtrl(self):
+        return self.gui.bpmrotDepCtrl
+
+    def GetBpmrotArrTime(self):
+        return self.gui.bpmrotArrTime
+
+    def GetBpmrotDepTime(self):
+        return self.gui.bpmrotDepTime
 
 
 

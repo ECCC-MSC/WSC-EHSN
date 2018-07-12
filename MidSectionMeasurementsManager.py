@@ -246,6 +246,26 @@ class MidSectionMeasurementsManager(object):
     def uncertaintyCtrl(self, uncertaintyCtrl):
         self.gui.header.uncertaintyCtrl.SetValue(uncertaintyCtrl)
 
+    #nextPid
+    @property
+    def nextPid(self):
+        return self.gui.table.nextPid
+
+    @nextPid.setter
+    def nextPid(self, val):
+        try:
+            self.gui.table.nextPid = int(val)
+        except:
+            self.gui.table.nextPid = 0
+
+
+
+    
+
+    def GenerateNextPid(self):
+        return self.gui.table.GenerateNextPid()
+    
+
 
 
     def GetPanelObjs(self):
