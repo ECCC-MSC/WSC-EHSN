@@ -102,7 +102,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
         #Rating Info Line
         ratingInfoSizer = wx.BoxSizer(wx.HORIZONTAL)
         ratingInfoLabel = wx.StaticText(self.basePanel, label=self.ratingInfoLbl, size=(self.labelWidth, -1), style=wx.ALIGN_RIGHT)
-        self.ratingInfoText = wx.StaticText(self.basePanel, size=(-1, -1), style=wx.SUNKEN_BORDER)
+        self.ratingInfoText = wx.StaticText(self.basePanel, size=(100, -1), style=wx.SUNKEN_BORDER)
 
         self.ratingInfoButton = wx.Button(self.basePanel, label=self.browseButtonLbl)
         self.ratingInfoButton.Bind(wx.EVT_BUTTON, self.OnRatingInfo)
@@ -146,7 +146,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
         histFieldDataLabel.SetToolTip(wx.ToolTip('For example:\n' + self.toolTips))
         histFieldDataLabel.SetForegroundColour((0,0,255))
         histFieldDataLabel.SetFont(wx.Font(9, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_ITALIC, wx.FONTWEIGHT_NORMAL, False))
-        self.histFieldDataText = wx.StaticText(self.basePanel, style=wx.SUNKEN_BORDER)
+        self.histFieldDataText = wx.StaticText(self.basePanel, style=wx.SUNKEN_BORDER|wx.ST_NO_AUTORESIZE)
 
         self.histFieldDataButton = wx.Button(self.basePanel, label=self.browseButtonLbl)
         self.histFieldDataButton.Bind(wx.EVT_BUTTON, self.OnHistoricalData)
@@ -298,6 +298,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
         self.CreateStatusBar(style=wx.STB_SIZEGRIP|wx.STB_SHOW_TIPS|wx.STB_ELLIPSIZE_END|wx.FULL_REPAINT_ON_RESIZE)
 
+        self.Layout()
+
 
 
     def OnColClick(self, event):
@@ -400,41 +402,11 @@ class RatingCurveViewerToolFrame(wx.Frame):
             self.Update()
             self.Refresh()
 
-
-    #Call to fetch the values of the Observed Stage and Discharge
-    def OnRefresh(self, evt):
-        if self.mode == "DEBUG":
-            print "REFRESH BUTTON CLICKED"
-
-        self.GetStageDischarge()
-
     #Get the stage and discharge from the front page of the EHSN (call manager)
     def GetStageDischarge(self):
         if self.manager is None:
             return
         self.manager.FetchStageDischarge()
-
-    #Calculate the shift and discharge difference (call manager)
-    def OnCalculate(self, evt):
-        if self.mode == "DEBUG":
-            print "CALCULATE BUTTON CLICKED"
-
-        if self.manager is None:
-            return
-
-        try:
-            self.manager.CalculateShiftDisch(self.GetObsStage(), self.GetObsDisch(), self.GetSelectedCurveIndex())
-        except Exception as inst:
-            errorFile = open(self.path + r"\ErrorFile.txt","ab")
-            errorFile.write(str(inst) + "\n")
-            errorFile.close()
-            self.GetParent().RatingCurveViewerToolFrame = None
-            print "write error to errorfile.txt"
-            self.Destroy()
-            return
-        # plt.close()
-
-        evt.Skip()
 
     #Plot the Rating Curve
     def OnPlot(self, evt):
@@ -698,6 +670,11 @@ class RatingCurveViewerToolFrame(wx.Frame):
         if self.mode == "DEBUG":
             print "Clearing all rows"
         self.histDataList.DeleteAllItems()
+
+    def SetRatingInfo(self, riText):
+        self.ratingInfoText.SetLabel(riText)
+        self.ratingInfoText.GetParent().Layout()
+        
 
     def SetObsStage(self, stage):
         self.obsStageText.SetLabel(stage)

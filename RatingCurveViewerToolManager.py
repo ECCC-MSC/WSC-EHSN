@@ -178,7 +178,7 @@ class RatingCurveViewerToolManager(object):
                 self.gui.EnableXML(False)
                 self.gui.ClearAllAppRows()
                 self.gui.EmptyCalculatedFields()
-                self.gui.ratingInfoText.SetLabel(concatenatedFilepath)
+                self.gui.SetRatingInfo("")
             else:
                 self.gui.SetStatus("")
 

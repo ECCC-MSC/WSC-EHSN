@@ -900,7 +900,6 @@ class ElectronicHydrometricSurveyNotes:
         self.ratingCurveViewerToolManager.FindStationFile()
 
         # update rating curve dropdown in discharge measurements panel
-        print self.ratingCurveViewerToolManager.ratingCurveList
         self.disMeasManager.SetCurveList(self.ratingCurveViewerToolManager.ratingCurveList)
 
         # attempt to calculate
