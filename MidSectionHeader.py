@@ -345,7 +345,10 @@ class MidSectionHeader(wx.Panel):
         # self.layout.Add(transferBtnSizer, 0, wx.ALL, 10)
 
     def OnTransBtn(self, evt):
-        frame = MidSectionTransferFrame(mode=self.mode, parent=self, title="Transfer to The Front Page", size=self.transferFrameSize)
+        position = self.GetParent().GetParent().GetParent().GetParent().GetPosition()
+        x = position.x + 200
+        y = position.y + 50
+        frame = MidSectionTransferFrame(mode=self.mode, parent=self, title="Transfer to The Front Page", size=self.transferFrameSize, pos=(x, y))
         frame.Show()
 
         evt.Skip()

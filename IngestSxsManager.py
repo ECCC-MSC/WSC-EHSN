@@ -70,10 +70,10 @@ def PmTo24H(time):
 def AddDischargeSummary(filePath, disMeasManager):
     root = ElementTree.parse(filePath).getroot()
 
-    areaTotal = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Meas_Area').text
-    averageVel = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Mean_Vel').text
+    areaTotal = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Total_Area').text
+    averageVel = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Mean_Avg_V').text
     qtotal = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Total_Q').text
-    widthTotal = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Meas_Width').text
+    widthTotal = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Total_Width').text
 
 
 

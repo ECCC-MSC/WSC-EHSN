@@ -1156,6 +1156,7 @@ class MidSectionPanelPanel(wx.Panel):
             # self.depthPanelLockCkbox.SetValue(True)
         else:
             self.velocityGrid.SetCellValue((row, 4), "")
+            self.rawAtPointVel[row] = ""
 
         if self.velocityCombo.GetValue() == self.velocityMethods[2] and self.velocityGrid.GetCellValue((0, 4)) != "" and self.velocityGrid.GetCellValue((1, 4)) != "":
             vel02 = float(self.velocityGrid.GetCellValue((0, 4)))
@@ -1575,12 +1576,16 @@ class MidSectionPanelPanel(wx.Panel):
                 or self.velocityCombo.GetValue() == self.velocityMethods[1]\
                 or self.velocityCombo.GetValue() == self.velocityMethods[4]:
 
+
                 meanVal = self.rawAtPointVel[0] * float(self.velocityCorrectionCtrl.GetValue())
+    
             elif self.velocityCombo.GetValue() == self.velocityMethods[2]:
+ 
 
 
                 meanVal = (self.rawAtPointVel[0] + self.rawAtPointVel[1]) / 2 * float(self.velocityCorrectionCtrl.GetValue())
             else:
+            
 
                 meanVal = ((self.rawAtPointVel[0] + self.rawAtPointVel[1] * 2 + self.rawAtPointVel[2])) / 4 * float(self.velocityCorrectionCtrl.GetValue())
             self.rawMeanVal = meanVal

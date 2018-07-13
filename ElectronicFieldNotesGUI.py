@@ -2279,14 +2279,33 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 return
 
 
+            stnNumMatchingMessage = "The Station Numbers don't match: \n\neHSN:\t{1}\nSelected Mid-section File:\t{0}"
+            stnNumMatchingTitle = "Station Number is not matching"
+            stnDateMatchingMessage = "The Measurement Dates don't match: \n\neHSN: {1}\nSelected Mid-section File: {0}\n\nContinue anyway?"
+            stnDateMatchingTitle = "Date is not matching"
+
+
 
             stId = self.manager.GetStationIdFromEhsnMidsection()
             startDate = self.manager.GetDateFromEhsnMidsection()
+            matchDate = True
 
-            if not self.manager.genInfoManager.matchStation(stId):
-                res = self.manager.genInfoManager.matchDate(startDate)
-                if res == wx.ID_NO:
-                    return
+            if (self.genInfo.stnNumCmbo.GetValue() != stId):
+                dlg = wx.MessageDialog(None, stnNumMatchingMessage.format(stId, self.genInfo.stnNumCmbo.GetValue()), stnNumMatchingTitle, wx.OK | wx.ICON_ERROR)
+                dlg.SetOKLabel("Close")
+                dlg.ShowModal()
+
+                matchDate = False
+
+            if matchDate:
+                if (self.genInfo.GetDatePicker() != startDate):    
+                    dlg = wx.MessageDialog(None, stnDateMatchingMessage.format(startDate, self.genInfo.GetDatePicker()), stnDateMatchingTitle, wx.YES_NO | wx.ICON_EXCLAMATION)
+                    dlg.SetYesNoLabels("&Yes", "&No")
+                    res = dlg.ShowModal()
+
+
+                    if res == wx.ID_NO:
+                        return
 
 
                 self.manager.instrDepManager.GetMethodCBListBox().Check(1)

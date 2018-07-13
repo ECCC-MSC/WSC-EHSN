@@ -5,8 +5,8 @@
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
-		<station number=""/>
-		<date timezone="">2018/07/12</date>
+		<station number="02KF015">GRAHAM CREEK AT NEPEAN</station>
+		<date timezone="EST">2018/07/13</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -60,8 +60,8 @@
 		<area/>
 		<meanVel/>
 		<mgh/>
-		<mghCmbo>  (WLR1)</mghCmbo>
-		<discharge>1.00</discharge>
+		<mghCmbo/>
+		<discharge/>
 		<dischCombo/>
 		<mmtTimeVal/>
 		<shift/>
@@ -98,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2018/07/12</dataPeriodStart>
-		<dataPeriodEnd>2018/07/12</dataPeriodEnd>
+		<dataPeriodStart>2018/07/13</dataPeriodStart>
+		<dataPeriodEnd>2018/07/13</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -129,7 +129,7 @@
 	</MeasResults>
 	<InstrumentDeployment>
 		<GeneralInfo>
-			<methodType>None</methodType>
+			<methodType>Mid-section</methodType>
 			<deployment/>
 			<position/>
 			<instrument/>
@@ -186,17 +186,17 @@
 	</LevelNotes>
 	<FieldReview>
 		<pass>False</pass>
-		<dependencyType/>
-		<midsectionType/>
+		<dependencyType>Mid-section</dependencyType>
+		<midsectionType>All</midsectionType>
 		<FieldReviewTable>
 			<FieldReviewTableRow row="0">
-				<label>Passed All Initial QA/QC?</label>
+				<label>Passed All Instrument QA/QC?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
 			<FieldReviewTableRow row="1">
-				<label>Software Input Same as Notes*?</label>
+				<label>Software Input Same as Notes?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
@@ -208,156 +208,60 @@
 				<text/>
 			</FieldReviewTableRow>
 			<FieldReviewTableRow row="3">
-				<label>Smooth Ship Track?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="4">
-				<label>Boat Speed &lt; Water Speed?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="5">
-				<label>Pitch, Roll &lt; 5°?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="6">
-				<label>No Ambiguity Velocity?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="7">
-				<label>Good Differential GPS Quality?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="8">
-				<label>Bed Contours as Expected for Site?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="9">
-				<label>Measured Q &gt; 50%?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="10">
-				<label>Missing Data &lt; 10%</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="11">
-				<label>Missing Data Distributed?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="12">
-				<label>Proper Edge Measurement Method?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="13">
-				<label>Each Edge &lt; 5% of Total Q?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="14">
-				<label>Velocity Profile Checked with extrap?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="15">
-				<label>Reciprocal Pairs?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="16">
-				<label>Moving Bed Corrected If Any?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="17">
-				<label>Directional Bias &lt; 5%?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="18">
-				<label>Total Exposure &gt; 720s?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="19">
-				<label>Standard Deviation/Mean &lt; 5%?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="20">
 				<label>Signal to Noise Ratio &gt; 4</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="21">
+			<FieldReviewTableRow row="4">
 				<label>Flow Angles Accounted for?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="22">
+			<FieldReviewTableRow row="5">
 				<label>Exposure Time/Location &gt; 40s?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="23">
+			<FieldReviewTableRow row="6">
 				<label>Valid Ensembles/Panel &gt; 30?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="24">
+			<FieldReviewTableRow row="7">
 				<label>No Boundary or Spike Problem?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="25">
+			<FieldReviewTableRow row="8">
 				<label>Bed Contour as Expected for Site?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="26">
+			<FieldReviewTableRow row="9">
 				<label>Ice/Slush Depth as Expected?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="27">
+			<FieldReviewTableRow row="10">
+				<label>Velocity Profile Checked with extrap?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="11">
 				<label># Panels ≥ 20?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="28">
+			<FieldReviewTableRow row="12">
 				<label>No Panel Q &gt; 10%?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
@@ -405,57 +309,894 @@
 		<DischargeMeasurement>
 			<MmtInitAndSummary>
 				<MmtInit>
-					<DeploymentMethod/>
-					<StartingBank/>
+					<DeploymentMethod>Bridge</DeploymentMethod>
+					<StartingBank>Left</StartingBank>
 					<TagMarkPolarity/>
 					<InitialPoint/>
 					<UnmeasuredFlow/>
 					<TimeWeightedMeanWaterLevel/>
-					<measureSectionCtrl/>
+					<measureSectionCtrl>Open</measureSectionCtrl>
 				</MmtInit>
 				<MetersUsed>
 					<Meter>
-						<Number/>
+						<Number>1-291</Number>
 						<Equation>
 							<Type/>
-							<Slope/>
-							<Intercept/>
+							<Slope>0.68</Slope>
+							<Intercept>0.005</Intercept>
 						</Equation>
 						<Equation>
 							<Type/>
 							<Slope/>
 							<Intercept/>
 						</Equation>
-						<MeterCalibDate/>
+						<MeterCalibDate>23/09/1998</MeterCalibDate>
 					</Meter>
 					<Meter>
-						<Number/>
+						<Number>1-189</Number>
 						<Equation>
 							<Type/>
-							<Slope/>
-							<Intercept/>
+							<Slope>0.676</Slope>
+							<Intercept>0.005</Intercept>
 						</Equation>
 						<Equation>
 							<Type/>
 							<Slope/>
 							<Intercept/>
 						</Equation>
-						<MeterCalibDate/>
+						<MeterCalibDate>23/09/1998</MeterCalibDate>
 					</Meter>
 				</MetersUsed>
 				<MmtSummary>
-					<StartDate/>
-					<EndDate/>
-					<TotalQ/>
-					<TotalArea/>
-					<TotalWidth/>
-					<AverageVelocity/>
-					<AverageDepth/>
-					<NumberOfPanels/>
+					<StartDate>11:46</StartDate>
+					<EndDate>12:07</EndDate>
+					<TotalQ>117</TotalQ>
+					<TotalArea>54.7</TotalArea>
+					<TotalWidth>33.0</TotalWidth>
+					<AverageVelocity>2.14</AverageVelocity>
+					<AverageDepth>1.658</AverageDepth>
+					<NumberOfPanels>16</NumberOfPanels>
 					<Uncertainty/>
 				</MmtSummary>
 			</MmtInitAndSummary>
-			<Channels/>
+			<Channels>
+				<Channel>
+					<Panels>
+						<Panel Date="2018-07-13T11:46:00Z">
+							<panelId>1</panelId>
+							<Tagmark>38.000</Tagmark>
+							<ReverseFlow>True</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>0.800</DepthReading>
+							<DepthWithOffset>0.8</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>-0.163</AverageVelocity>
+							<Discharge>-0.2608</Discharge>
+							<PanelNum>1</PanelNum>
+							<Slop>0.68</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>No</Wldl>
+							<DryAngle/>
+							<DistWaterSurface/>
+							<DryCorrection/>
+							<WetCorrection>0</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>0.8</TotalDepth>
+							</Open>
+							<MeterNumber>1-291</MeterNumber>
+							<Flow>-0.2</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.6</SamplingDepthCoefficient>
+									<MeasurementDepth>0.480</MeasurementDepth>
+									<Revolutions>10</Revolutions>
+									<ElapsedTime>43.0</ElapsedTime>
+									<Velocity>-0.163</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>-0.163</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T11:47:00Z">
+							<panelId>2</panelId>
+							<Tagmark>36.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>1.180</DepthReading>
+							<DepthWithOffset>1.18</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>0.0390</AverageVelocity>
+							<Discharge>0.09204</Discharge>
+							<PanelNum>2</PanelNum>
+							<Slop>0.68</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>No</Wldl>
+							<DryAngle/>
+							<DistWaterSurface/>
+							<DryCorrection/>
+							<WetCorrection>0</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>1.18</TotalDepth>
+							</Open>
+							<MeterNumber>1-291</MeterNumber>
+							<Flow>0.1</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.6</SamplingDepthCoefficient>
+									<MeasurementDepth>0.708</MeasurementDepth>
+									<Revolutions>2</Revolutions>
+									<ElapsedTime>40.0</ElapsedTime>
+									<Velocity>0.039</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>0.0390</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T11:48:00Z">
+							<panelId>3</panelId>
+							<Tagmark>34.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>1.320</DepthReading>
+							<DepthWithOffset>1.32</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>0.572</AverageVelocity>
+							<Discharge>1.51008</Discharge>
+							<PanelNum>3</PanelNum>
+							<Slop>0.68</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>No</Wldl>
+							<DryAngle/>
+							<DistWaterSurface/>
+							<DryCorrection/>
+							<WetCorrection>0</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>1.32</TotalDepth>
+							</Open>
+							<MeterNumber>1-291</MeterNumber>
+							<Flow>1.3</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.6</SamplingDepthCoefficient>
+									<MeasurementDepth>0.792</MeasurementDepth>
+									<Revolutions>35</Revolutions>
+									<ElapsedTime>42.0</ElapsedTime>
+									<Velocity>0.572</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>0.572</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T11:48:00Z">
+							<panelId>4</panelId>
+							<Tagmark>32.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>1.460</DepthReading>
+							<DepthWithOffset>1.46</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>1.18</AverageVelocity>
+							<Discharge>3.4456</Discharge>
+							<PanelNum>4</PanelNum>
+							<Slop>0.68</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>No</Wldl>
+							<DryAngle/>
+							<DistWaterSurface/>
+							<DryCorrection/>
+							<WetCorrection>0</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>1.46</TotalDepth>
+							</Open>
+							<MeterNumber>1-291</MeterNumber>
+							<Flow>2.9</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.292</MeasurementDepth>
+									<Revolutions>80</Revolutions>
+									<ElapsedTime>40.1</ElapsedTime>
+									<Velocity>1.36</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>1.18</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>1.17</MeasurementDepth>
+									<Revolutions>60</Revolutions>
+									<ElapsedTime>40.8</ElapsedTime>
+									<Velocity>1.01</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>1.18</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T11:48:00Z">
+							<panelId>5</panelId>
+							<Tagmark>30.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>1.950</DepthReading>
+							<DepthWithOffset>1.95</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>1.79</AverageVelocity>
+							<Discharge>6.981</Discharge>
+							<PanelNum>5</PanelNum>
+							<Slop>0.68</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>No</Wldl>
+							<DryAngle/>
+							<DistWaterSurface/>
+							<DryCorrection/>
+							<WetCorrection>0</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>1.95</TotalDepth>
+							</Open>
+							<MeterNumber>1-291</MeterNumber>
+							<Flow>6.0</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.390</MeasurementDepth>
+									<Revolutions>125</Revolutions>
+									<ElapsedTime>41.2</ElapsedTime>
+									<Velocity>2.07</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>1.79</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>1.56</MeasurementDepth>
+									<Revolutions>100</Revolutions>
+									<ElapsedTime>45.0</ElapsedTime>
+									<Velocity>1.52</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>1.79</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T11:49:00Z">
+							<panelId>6</panelId>
+							<Tagmark>28.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>2.990</DepthReading>
+							<DepthWithOffset>2.99</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>2.29</AverageVelocity>
+							<Discharge>13.6942</Discharge>
+							<PanelNum>6</PanelNum>
+							<Slop>0.68</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>No</Wldl>
+							<DryAngle/>
+							<DistWaterSurface/>
+							<DryCorrection/>
+							<WetCorrection>0</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>2.99</TotalDepth>
+							</Open>
+							<MeterNumber>1-291</MeterNumber>
+							<Flow>11.7</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.598</MeasurementDepth>
+									<Revolutions>200</Revolutions>
+									<ElapsedTime>46.5</ElapsedTime>
+									<Velocity>2.93</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>2.29</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>2.39</MeasurementDepth>
+									<Revolutions>100</Revolutions>
+									<ElapsedTime>41.3</ElapsedTime>
+									<Velocity>1.65</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>2.29</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T11:50:00Z">
+							<panelId>7</panelId>
+							<Tagmark>26.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>2.830</DepthReading>
+							<DepthWithOffset>2.83</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>2.80</AverageVelocity>
+							<Discharge>15.3104</Discharge>
+							<PanelNum>7</PanelNum>
+							<Slop>0.68</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>Yes</Wldl>
+							<DryAngle>10</DryAngle>
+							<DistWaterSurface>5</DistWaterSurface>
+							<DryCorrection>0.0771330594287</DryCorrection>
+							<WetCorrection>0.0184433657684</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>2.734</TotalDepth>
+							</Open>
+							<MeterNumber>1-291</MeterNumber>
+							<Flow>13.1</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.566</MeasurementDepth>
+									<Revolutions>200</Revolutions>
+									<ElapsedTime>42.4</ElapsedTime>
+									<Velocity>3.21</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>2.80</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>2.26</MeasurementDepth>
+									<Revolutions>140</Revolutions>
+									<ElapsedTime>40.1</ElapsedTime>
+									<Velocity>2.38</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>2.80</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T11:52:00Z">
+							<panelId>8</panelId>
+							<Tagmark>24.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>2.430</DepthReading>
+							<DepthWithOffset>2.43</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>2.81</AverageVelocity>
+							<Discharge>12.47078</Discharge>
+							<PanelNum>8</PanelNum>
+							<Slop>0.68</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>Yes</Wldl>
+							<DryAngle>15</DryAngle>
+							<DistWaterSurface>5</DistWaterSurface>
+							<DryCorrection>0.17638090205</DryCorrection>
+							<WetCorrection>0.035044333637</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>2.219</TotalDepth>
+							</Open>
+							<MeterNumber>1-291</MeterNumber>
+							<Flow>10.6</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.486</MeasurementDepth>
+									<Revolutions>200</Revolutions>
+									<ElapsedTime>43.0</ElapsedTime>
+									<Velocity>3.17</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>2.81</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>1.94</MeasurementDepth>
+									<Revolutions>170</Revolutions>
+									<ElapsedTime>47.3</ElapsedTime>
+									<Velocity>2.45</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>2.81</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T11:59:00Z">
+							<panelId>9</panelId>
+							<Tagmark>22.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>2.500</DepthReading>
+							<DepthWithOffset>2.5</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>3.00</AverageVelocity>
+							<Discharge>12.684</Discharge>
+							<PanelNum>9</PanelNum>
+							<Slop>0.68</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>Yes</Wldl>
+							<DryAngle>20</DryAngle>
+							<DistWaterSurface>5</DistWaterSurface>
+							<DryCorrection>0.32088886238</DryCorrection>
+							<WetCorrection>0.0647816726659</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>2.114</TotalDepth>
+							</Open>
+							<MeterNumber>1-291</MeterNumber>
+							<Flow>10.8</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.500</MeasurementDepth>
+									<Revolutions>130</Revolutions>
+									<ElapsedTime>25.7</ElapsedTime>
+									<Velocity>3.44</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>3.00</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>2.00</MeasurementDepth>
+									<Revolutions>150</Revolutions>
+									<ElapsedTime>40.1</ElapsedTime>
+									<Velocity>2.55</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>3.00</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T12:01:00Z">
+							<panelId>10</panelId>
+							<Tagmark>20.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>2.380</DepthReading>
+							<DepthWithOffset>2.38</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>3.12</AverageVelocity>
+							<Discharge>12.46128</Discharge>
+							<PanelNum>10</PanelNum>
+							<Slop>0.68</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>Yes</Wldl>
+							<DryAngle>20</DryAngle>
+							<DistWaterSurface>5</DistWaterSurface>
+							<DryCorrection>0.32088886238</DryCorrection>
+							<WetCorrection>0.0616721523779</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>1.997</TotalDepth>
+							</Open>
+							<MeterNumber>1-291</MeterNumber>
+							<Flow>10.6</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.476</MeasurementDepth>
+									<Revolutions>160</Revolutions>
+									<ElapsedTime>31.0</ElapsedTime>
+									<Velocity>3.51</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>3.12</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>1.90</MeasurementDepth>
+									<Revolutions>160</Revolutions>
+									<ElapsedTime>40.0</ElapsedTime>
+									<Velocity>2.73</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>3.12</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T12:02:00Z">
+							<panelId>11</panelId>
+							<Tagmark>18.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>2.300</DepthReading>
+							<DepthWithOffset>2.3</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>3.72</AverageVelocity>
+							<Discharge>14.2848</Discharge>
+							<PanelNum>11</PanelNum>
+							<Slop>0.676</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>Yes</Wldl>
+							<DryAngle>20</DryAngle>
+							<DistWaterSurface>5</DistWaterSurface>
+							<DryCorrection>0.32088886238</DryCorrection>
+							<WetCorrection>0.0595991388526</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>1.92</TotalDepth>
+							</Open>
+							<MeterNumber>1-189</MeterNumber>
+							<Flow>12.2</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.460</MeasurementDepth>
+									<Revolutions>250</Revolutions>
+									<ElapsedTime>40.0</ElapsedTime>
+									<Velocity>4.23</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>3.72</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>1.84</MeasurementDepth>
+									<Revolutions>190</Revolutions>
+									<ElapsedTime>40.0</ElapsedTime>
+									<Velocity>3.22</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>3.72</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T12:03:00Z">
+							<panelId>12</panelId>
+							<Tagmark>16.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>2.300</DepthReading>
+							<DepthWithOffset>2.3</DepthWithOffset>
+							<Width>1.5</Width>
+							<AverageVelocity>3.64</AverageVelocity>
+							<Discharge>10.4832</Discharge>
+							<PanelNum>12</PanelNum>
+							<Slop>0.676</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>Yes</Wldl>
+							<DryAngle>20</DryAngle>
+							<DistWaterSurface>5</DistWaterSurface>
+							<DryCorrection>0.32088886238</DryCorrection>
+							<WetCorrection>0.0595991388526</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>1.92</TotalDepth>
+							</Open>
+							<MeterNumber>1-189</MeterNumber>
+							<Flow>8.9</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.460</MeasurementDepth>
+									<Revolutions>190</Revolutions>
+									<ElapsedTime>40.0</ElapsedTime>
+									<Velocity>3.22</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>3.64</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>1.84</MeasurementDepth>
+									<Revolutions>240</Revolutions>
+									<ElapsedTime>40.0</ElapsedTime>
+									<Velocity>4.06</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>3.64</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+					</Panels>
+					<Edges>
+						<Edge Date="2018-07-13T11:46:00Z">
+							<StartingEdge>True</StartingEdge>
+							<Tagmark>40.000</Tagmark>
+							<Depth>0</Depth>
+							<DepthSameAsAdjacent>False</DepthSameAsAdjacent>
+							<Velocity>0</Velocity>
+							<VelocitySameAsAdjacent>False</VelocitySameAsAdjacent>
+							<panelId>0</panelId>
+							<Width>1.0</Width>
+							<Area>0.0</Area>
+							<Discharge>0.0</Discharge>
+							<LeftOrRight>Left Bank</LeftOrRight>
+							<EdgeType>Edge @ Bank</EdgeType>
+							<Flow>0.0</Flow>
+						</Edge>
+						<Edge Date="2018-07-13T12:03:00Z">
+							<StartingEdge>True</StartingEdge>
+							<Tagmark>15.000</Tagmark>
+							<Depth>2.300</Depth>
+							<DepthSameAsAdjacent>True</DepthSameAsAdjacent>
+							<Velocity>3.64</Velocity>
+							<VelocitySameAsAdjacent>True</VelocitySameAsAdjacent>
+							<panelId>13</panelId>
+							<Width>0.5</Width>
+							<Area>1.15</Area>
+							<Discharge>4.186</Discharge>
+							<LeftOrRight/>
+							<EdgeType>Pier/Island</EdgeType>
+							<Flow>3.6</Flow>
+						</Edge>
+					</Edges>
+				</Channel>
+				<Channel>
+					<Panels>
+						<Panel Date="2018-07-13T12:04:00Z">
+							<panelId>15</panelId>
+							<Tagmark>14.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>0.90</AngleOfFlowCoefficient>
+							<DepthReading>1.720</DepthReading>
+							<DepthWithOffset>1.72</DepthWithOffset>
+							<Width>1.25</Width>
+							<AverageVelocity>1.48</AverageVelocity>
+							<Discharge>3.182</Discharge>
+							<PanelNum>13</PanelNum>
+							<Slop>0.676</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>No</Wldl>
+							<DryAngle/>
+							<DistWaterSurface/>
+							<DryCorrection/>
+							<WetCorrection>0</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>1.72</TotalDepth>
+							</Open>
+							<MeterNumber>1-189</MeterNumber>
+							<Flow>2.7</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.344</MeasurementDepth>
+									<Revolutions>105</Revolutions>
+									<ElapsedTime>41.3</ElapsedTime>
+									<Velocity>1.72</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>1.64</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>1.38</MeasurementDepth>
+									<Revolutions>100</Revolutions>
+									<ElapsedTime>43.5</ElapsedTime>
+									<Velocity>1.56</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>1.64</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T12:05:00Z">
+							<panelId>16</panelId>
+							<Tagmark>12.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>1.380</DepthReading>
+							<DepthWithOffset>1.38</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>0.910</AverageVelocity>
+							<Discharge>2.5116</Discharge>
+							<PanelNum>14</PanelNum>
+							<Slop>0.676</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>No</Wldl>
+							<DryAngle/>
+							<DistWaterSurface/>
+							<DryCorrection/>
+							<WetCorrection>0</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>1.38</TotalDepth>
+							</Open>
+							<MeterNumber>1-189</MeterNumber>
+							<Flow>2.1</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.276</MeasurementDepth>
+									<Revolutions>70</Revolutions>
+									<ElapsedTime>42.4</ElapsedTime>
+									<Velocity>1.12</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>0.910</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>1.10</MeasurementDepth>
+									<Revolutions>40</Revolutions>
+									<ElapsedTime>39.0</ElapsedTime>
+									<Velocity>0.698</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>0.910</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T12:06:00Z">
+							<panelId>17</panelId>
+							<Tagmark>10.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>1.380</DepthReading>
+							<DepthWithOffset>1.38</DepthWithOffset>
+							<Width>2.0</Width>
+							<AverageVelocity>0.910</AverageVelocity>
+							<Discharge>2.5116</Discharge>
+							<PanelNum>15</PanelNum>
+							<Slop>0.676</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>No</Wldl>
+							<DryAngle/>
+							<DistWaterSurface/>
+							<DryCorrection/>
+							<WetCorrection>0</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>1.38</TotalDepth>
+							</Open>
+							<MeterNumber>1-189</MeterNumber>
+							<Flow>2.1</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.2</SamplingDepthCoefficient>
+									<MeasurementDepth>0.276</MeasurementDepth>
+									<Revolutions>70</Revolutions>
+									<ElapsedTime>42.4</ElapsedTime>
+									<Velocity>1.12</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>0.910</MeanVelocity>
+								</PointMeasurement>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.8</SamplingDepthCoefficient>
+									<MeasurementDepth>1.10</MeasurementDepth>
+									<Revolutions>40</Revolutions>
+									<ElapsedTime>39.0</ElapsedTime>
+									<Velocity>0.698</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>0.910</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+						<Panel Date="2018-07-13T12:07:00Z">
+							<panelId>18</panelId>
+							<Tagmark>8.000</Tagmark>
+							<ReverseFlow>False</ReverseFlow>
+							<AngleOfFlowCoefficient>1</AngleOfFlowCoefficient>
+							<DepthReading>0.700</DepthReading>
+							<DepthWithOffset>0.7</DepthWithOffset>
+							<Width>1.75</Width>
+							<AverageVelocity>0.850</AverageVelocity>
+							<Discharge>1.04125</Discharge>
+							<PanelNum>16</PanelNum>
+							<Slop>0.676</Slop>
+							<Slop2/>
+							<SlopBtn1>True</SlopBtn1>
+							<Intercept>0.005</Intercept>
+							<Intercept2/>
+							<Wldl>No</Wldl>
+							<DryAngle/>
+							<DistWaterSurface/>
+							<DryCorrection/>
+							<WetCorrection>0</WetCorrection>
+							<Open>
+								<DeploymentMethod>Bridge</DeploymentMethod>
+								<AmountOfWeight>0</AmountOfWeight>
+								<DistanceAboveWeight>0</DistanceAboveWeight>
+								<TotalDepth>0.7</TotalDepth>
+							</Open>
+							<MeterNumber>1-189</MeterNumber>
+							<Flow>0.9</Flow>
+							<PointMeasurements>
+								<PointMeasurement>
+									<SamplingDepthCoefficient>0.6</SamplingDepthCoefficient>
+									<MeasurementDepth>0.420</MeasurementDepth>
+									<Revolutions>50</Revolutions>
+									<ElapsedTime>40.0</ElapsedTime>
+									<Velocity>0.85</Velocity>
+									<VelocityCoefficient>1.0</VelocityCoefficient>
+									<MeanVelocity>0.850</MeanVelocity>
+								</PointMeasurement>
+							</PointMeasurements>
+						</Panel>
+					</Panels>
+					<Edges>
+						<Edge Date="2018-07-13T12:04:00Z">
+							<StartingEdge>False</StartingEdge>
+							<Tagmark>14.500</Tagmark>
+							<Depth>1.720</Depth>
+							<DepthSameAsAdjacent>True</DepthSameAsAdjacent>
+							<Velocity>1.48</Velocity>
+							<VelocitySameAsAdjacent>True</VelocitySameAsAdjacent>
+							<panelId>14</panelId>
+							<Width>0.25</Width>
+							<Area>0.43</Area>
+							<Discharge>0.6364</Discharge>
+							<LeftOrRight/>
+							<EdgeType>Pier/Island</EdgeType>
+							<Flow>0.5</Flow>
+						</Edge>
+						<Edge Date="2018-07-13T12:07:00Z">
+							<StartingEdge>False</StartingEdge>
+							<Tagmark>6.500</Tagmark>
+							<Depth>0</Depth>
+							<DepthSameAsAdjacent>False</DepthSameAsAdjacent>
+							<Velocity>0</Velocity>
+							<VelocitySameAsAdjacent>False</VelocitySameAsAdjacent>
+							<panelId>19</panelId>
+							<Width>0.75</Width>
+							<Area>0.0</Area>
+							<Discharge>0.0</Discharge>
+							<LeftOrRight/>
+							<EdgeType>Edge @ Bank</EdgeType>
+							<Flow>0.0</Flow>
+						</Edge>
+					</Edges>
+				</Channel>
+			</Channels>
 		</DischargeMeasurement>
 		<nextPid>100</nextPid>
 	</MidsecMeas>

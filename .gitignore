@@ -5,7 +5,9 @@ config.xml
 **/*.xlsx
 **/*.pdf
 **/*.exe
-
+Omitted/
+Importing_Files/
+AQ_Extracted_Data/
 skatch.py
 
 

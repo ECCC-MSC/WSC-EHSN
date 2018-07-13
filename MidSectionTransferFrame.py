@@ -64,18 +64,20 @@ class MidSectionTransferFrame(wx.Frame):
         self.transferBtn.Bind(wx.EVT_BUTTON, self.OnTransfer)
 
         btnSizer = wx.BoxSizer(wx.HORIZONTAL)
-        btnSizer.Add(self.cancelBtn, 1, wx.EXPAND|wx.ALL, 5)
         btnSizer.Add(self.transferBtn, 1, wx.EXPAND|wx.ALL, 5)
+        btnSizer.Add(self.cancelBtn, 1, wx.EXPAND|wx.ALL, 5)
+        
 
         self.layoutSizer.Add(description, 1, wx.EXPAND|wx.ALL, 5)
 
+        self.layoutSizer.Add(self.mmntTimeCkbox, 1, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(self.widthCkbox, 1, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(self.areaCkbox, 1, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(self.meanVelocityCkbox, 1, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(self.dischargeCkbox, 1, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(self.numberPanelsCkbox, 1, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(self.meterNumberCkbox, 1, wx.EXPAND|wx.ALL, 5)
-        self.layoutSizer.Add(self.mmntTimeCkbox, 1, wx.EXPAND|wx.ALL, 5)
+        
 
         self.layoutSizer.Add(btnSizer, 1, wx.EXPAND|wx.ALL, 5)
 

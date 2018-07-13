@@ -15,9 +15,9 @@ class GenInfoManager(object):
         self.stnNameMissingMessage = "Station Name is missing"
         self.stnNumMissingMessage = "Station Number at the Front Page of eHSN is missing"
         # self.stnNumMatchingMessage = "The station ID in the file you selected({0}) does not match the station ID of eHSN({1})."
-        self.stnNumMatchingMessage = "The Station Numbers don't match: \n\neHSN:\t{1}\nSelected Importing File:\t{0}"
+        self.stnNumMatchingMessage = "The Station Numbers don't match: \n\neHSN:\t{1}\nQ-mmt File:\t{0}"
         self.stnNumMatchingTitle = "Station Number is not matching"
-        self.stnDateMatchingMessage = "The Measurement Dates don't match: \n\neHSN: {1}\nSelected Importing File: {0}\n\nContinue anyway?"
+        self.stnDateMatchingMessage = "The Measurement Dates don't match: \n\neHSN: {1}\nQ-mmt File: {0}\n\nContinue anyway?"
         self.stnDateMatchingTitle = "Date is not matching"
         
         self.mode = mode
