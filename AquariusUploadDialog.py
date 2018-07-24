@@ -11,7 +11,7 @@ class AquariusUploadDialog(wx.Dialog):
     def __init__(self, mode, dir, *args, **kwargs):
         super(AquariusUploadDialog, self).__init__(*args, **kwargs)
 
-        self.config_path = self.GetParent().uploadDir + "\\config.xml"
+        self.config_path = self.GetParent().config_path
    
         self.configFile = ElementTree.parse(self.config_path).getroot().find('AquariusUploadDialog')
 

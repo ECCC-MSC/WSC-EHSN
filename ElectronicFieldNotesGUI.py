@@ -283,6 +283,7 @@ class EHSNGui(wx.Frame):
         self.saveBeforeUploadTitle = 'Save before uploading'
         self.iconName = "icon_transparent.ico"
         self.logoName = "icon_transparent.jpg"
+        self.configName = "config.xml"
         self.closeRCVDesc = "Please close the plot window first"
         self.closeRCVTitle = "Message from Rating Curve View Tool"
         self.startTimeErrorMsg = "Start & end time cannot be '00:00'"
@@ -290,6 +291,7 @@ class EHSNGui(wx.Frame):
         self.icon_path = self.iconName
         self.qr_path = self.qrName
         self.logo_path = self.logoName
+        self.configPath = self.configName
         self.uploadOpenPdf = False
 
 
