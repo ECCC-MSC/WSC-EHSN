@@ -9,6 +9,7 @@ from datetime import *
 import os
 import re
 import copy
+import math
 
 
 class RatingCurveViewerToolManager(object):
@@ -57,8 +58,6 @@ class RatingCurveViewerToolManager(object):
         self.validHistPoints = None  ## Historical points (includes label, discharge, and stage
         self._obsDisch = None  ## observed Discharge value
         self._obsStage = None  ## observed Stage value
-        self.qrpa = None  ## list of discharge (qr) rating points
-        self.hrpa = None  ## list of stage (hg) rating points
         self.Hr = None  ## used for shift calculations
         self.Qr = None  ## used for discharge calculations
         self.Shift = None  ## shift
@@ -83,7 +82,7 @@ class RatingCurveViewerToolManager(object):
 
     @obsDisch.setter
     def obsDisch(self, val):
-        self._obsDisch = val
+        self._obsDisch = float(val) if val != "" and val is not None else None
 
         if self.gui is not None:
             self.gui.SetObsDisch("" if self._obsDisch is None else str(self._obsDisch))
@@ -94,7 +93,7 @@ class RatingCurveViewerToolManager(object):
 
     @obsStage.setter
     def obsStage(self, val):
-        self._obsStage = val
+        self._obsStage = float(val) if val != "" and val is not None else None
 
         if self.gui is not None:
             self.gui.SetObsStage("" if self._obsStage is None else str(self._obsStage))
@@ -370,7 +369,6 @@ class RatingCurveViewerToolManager(object):
                         error = ""
 
                     elif RCType == "Linear":
-
                         shift, error = self.CalcLinShiftQdiff(points, stage, disch)
                     elif RCType == "Logarithmic":
                         shift, error = self.CalcLogShiftQdiff(points, stage, disch)
@@ -397,45 +395,52 @@ class RatingCurveViewerToolManager(object):
             self.CalculateShiftDisch(self.obsStage, self.obsDisch, selectedCurveIndex)
 
 
-    def CalcLinShiftQdiff(self, points, hg, q):
+    def ValidateQdiff(self, q, Qr):
+        if Qr == 0 and math.isnan(Qr):
+            return float('nan')
+
+        return float(format(((q - Qr)/Qr)*100,".3g"))
+
+
+    def CalcLinQrHr(self, points, hg, q):
         a = None
         b = None
+        a2 = None
+        b2 = None
+
+        hgFound = False
+        qFound = False
 
         #a and b to calculate Qdiff
-        for i, hgpas in enumerate(points):
+        for i, point in enumerate(points):
+            hgpas = float(point.find('hg').text)
+            qpas = float(point.find('qr').text)
 
-            hgpas = float(hgpas.find('hg').text)
-
-            if hg < hgpas:
-                equation = points[i].find('equation')
+            if hg < hgpas and not hgFound:
+                equation = point.find('equation')
                 if equation is not None:
                     a = float(equation.find('a').text)
                     b = float(equation.find('b').text)
+                    hgFound = True
 
-                    break
-
-
-        #find a and b to calculate Shift
-        for i, qpas in enumerate(points):
-            qpas = float(qpas.find('qr').text)
-
-            if q < qpas:
-                equation = points[i].find('equation')
+            if q < qpas and not qFound:
+                equation = point.find('equation')
                 if equation is not None:
                     a2 = float(equation.find('a').text)
                     b2 = float(equation.find('b').text)
-                    break
+                    qFound = True
+
+            if qFound and hgFound:
+                break
 
         # Do Calculations
         Qr=(a * hg)+ b
         Hr=(1/a2 * (q - b2))
-        Shift = float(format(Hr - hg,".3g"))
-        Qdiff = float(format(((q - Qr)/Qr)*100,".3g"))
 
-        return Shift, Qdiff
+        return Qr, Hr
 
 
-    def CalcLogShiftQdiff(self, points, hg, q):
+    def CalcLogQrHr(self, points, hg, q):
         offset = None
         beta = None
         c = None
@@ -443,79 +448,143 @@ class RatingCurveViewerToolManager(object):
         qbeta = None
         qc = None
 
-        for i, hgpas in enumerate(points):
-            hgpas = float(hgpas.find('hg').text)
+        hg1 = None
+        q1 = None
+        qrPoints = None
+        hrPoints = None
 
-            if hg < hgpas:
-                equation = points[i].find('equation')
+        hgFound = False
+        qFound = False
+
+        for i, point in enumerate(points):
+            hg2 = float(point.find('hg').text)
+            q2 = float(point.find('qr').text)
+
+            if hg < hg2 and not hgFound:
+                equation = point.find('equation')
                 if equation is not None:
-                    offset = float(points[i].find('offset').text)
+                    offset = float(point.find('offset').text)
                     beta = float(equation.find('beta').text)
                     c = float(equation.find('c').text)
-                    break
 
+                    if math.isinf(beta) or math.isinf(c):
+                        qrPoints = ( (hg1, q1), (hg2, q2) )
 
-        # find offset, beta, c to calculate Shift
-        for i, qpas in enumerate(points):
-            qpas = float(qpas.find('hg').text)
+                    hgFound = True
 
-            if hg < qpas:
-                equation = points[i].find('equation')
+            if q < q2 and not qFound:
+                equation = point.find('equation')
                 if equation is not None:
-                    qoffset = float(points[i].find('offset').text)
+                    qoffset = float(point.find('offset').text)
                     qbeta = float(equation.find('beta').text)
                     qc = float(equation.find('c').text)
-                    break
+
+                    if math.isinf(qbeta) or math.isinf(qc):
+                        hrPoints = ( (hg1, q1), (hg2, q2) )
+                    qFound = True
+
+            if hgFound and qFound:
+                break
+            
+            hg1 = hg2
+            q1 = q2
 
         # Do the calculations
-        Qr=c * (hg - offset)**beta
-        Hr=qoffset+(q/qc)**(1/qbeta)
-        Shift = float(format(Hr-hg,".3g"))
-        Qdiff = float(format(((q-Qr)/Qr)*100,".3g"))
+        if qrPoints is None:
+            Qr = c * (hg - offset)**beta
+        else:
+            p1 = qrPoints[0]
+            p2 = qrPoints[1]
+
+            a = (p2[1] - p1[1]) / (p2[0] - p1[0])
+            b = p2[1] - a * p2[0]
+            
+            Qr = (a*hg) + b
+
+        if hrPoints is None:
+            Hr = qoffset+(q/qc)**(1/qbeta)
+        else:
+            p1 = hrPoints[0]
+            p2 = hrPoints[1]
+
+            a2 = (p2[1] - p1[1]) / (p2[0] - p1[0])
+            b2 = p2[1] - a2 * p2[0]
+
+            Hr = (1/a2* (q-b2))
+
+        return Qr, Hr
+
+
+
+    def CalcLinShiftQdiff(self, points, hg, q):
+        Qr, Hr = self.CalcLinQrHr(points, hg, q)
+
+        Shift = float(format(Hr - hg,".3g"))
+        Qdiff = self.ValidateQdiff(q, Qr)
 
         return Shift, Qdiff
 
 
-    def CalcTxtShiftQdiff(self, points, hg, q):
-        hg1 = None
-        hg2 = None
-        qr1 = None
-        qr2 = None
-        qhg1 = None
-        qhg2 = None
-        qqr1 = None
-        qqr2 = None
+    def CalcLogShiftQdiff(self, points, hg, q):
+        Qr, Hr = self.CalcLogQrHr(points, hg, q)
+
+        Shift = float(format(Hr-hg,".3g"))
+        Qdiff = self.ValidateQdiff(q, Qr)
+
+        return Shift, Qdiff
+
+
+    def CalcTxtQrHr(self, points, hg, q):
+        # Qr calculations
+        qr_hg1 = qr_hg2 = qr_q1 = qr_q2 = None
+
+        # Hr calculations
+        hr_hg1 = hr_hg2 = hr_q1 = hr_q2 = None
+
+        hgFound = False
+        qFound = False
+
         for i, row in enumerate(points):
-
-            hgpas = row[1]
-            if hg < hgpas:
-                hg1 = self.data[i-1][1]
-                qr1 = self.data[i-1][0]
-                hg2 = row[1]
-                qr2 = row[0]
-                break
-
-        #calculate a and b for shift
-        for j, row2 in enumerate(points):
             qpas = row[0]
-            if q < qpas:
-                qhg1 = self.data[i-1][1]
-                qqr1 = self.data[i-1][0]
-                qhg2 = row[1]
-                qqr2 = row[0]
+            hgpas = row[1]
+
+            if hg < hgpas and not hgFound:
+                qr_hg1 = self.data[i-1][1]
+                qr_q1 = self.data[i-1][0]
+                qr_hg2 = row[1]
+                qr_q2 = row[0]
+                
+                hgFound = True
+
+            if q < qpas and not qFound:
+                hr_hg1 = self.data[i-1][1]
+                hr_q1 = self.data[i-1][0]
+                hr_hg2 = row[1]
+                hr_q2 = row[0]
+                
+                qFound = True
+
+            if hgFound and qFound:
                 break
 
-        a = (qr2-qr1)/(hg2-hg1)
-        b = qr2 - a*hg2
+        a1 = (qr_q2 - qr_q1) / (qr_hg2 - qr_hg1)
+        b1 = qr_q2 - a * qr_hg2
 
-        q_a = (qqr2-qqr1)/(qhg2-qhg1)
-        q_b = qqr2 - q_a*qhg2
+        a2 = (hr_q2 - hr_q1) / (hr_hg2 - hr_hg1)
+        b2 = hr_q2 - a2 * hg_hg2
 
         # Do calculations
-        Qr=(a*hg)+ b
-        Hr=(1/q_a* (q-q_b))
+        Qr = (a1*hg)+ b1
+        Hr = (1/a2* (q-b2))
+
+        return Qr, Hr
+
+
+    def CalcTxtShiftQdiff(self, points, hg, q):
+        Qr, Hr = self.CalcTxtQrHr(points, hg, q)
+
         Shift = float(format(Hr-hg,".3g"))
-        Qdiff = float(format(((q-Qr)/Qr)*100,".3g"))
+        Qdiff = self.ValidateQdiff(q, Qr)
 
         return Shift, Qdiff
 
@@ -591,8 +660,8 @@ class RatingCurveViewerToolManager(object):
 
 
         # Store obsDisch, obsStage
-        self.obsDisch = float(Qobserved)
-        self.obsStage = float(Hobserved)
+        self.obsDisch = Qobserved
+        self.obsStage = Hobserved
         self.rcIndex = selectedCurveIndex
         
         if self.gui is not None:
@@ -650,12 +719,8 @@ class RatingCurveViewerToolManager(object):
         points = self.data[selectedCurveIndex][2]
 
         # plotted rating points
-
-        self.qrpa = [float(x.find('qr').text) for x in self.data[selectedCurveIndex][2]]
-
-        self.hgpa = [float(x.find('hg').text) for x in self.data[selectedCurveIndex][2]]
-        self.qrta = self.qrpa
-        self.hgta = self.hgpa
+        self.qrta = [float(x.find('qr').text) for x in self.data[selectedCurveIndex][2]]
+        self.hgta = [float(x.find('hg').text) for x in self.data[selectedCurveIndex][2]]
 
 
         # Determine Period (for historical data only)
@@ -703,111 +768,44 @@ class RatingCurveViewerToolManager(object):
 
 
     def CalculateLinearRC(self, points, selectedCurveIndex):
-        # self.Shift, self.Qdiff = self.CalcLinShiftQdiff(points, self.obsStage, self.obsDisch)
-        a = None
-        b = None
-        a2 = None
-        b2 = None
-        for i, hgpas in enumerate(points):
-            hgpas = float(hgpas.find('hg').text)
-
-            if self.obsStage < hgpas:
-                equation = points[i].find('equation')
-                if equation is not None:
-                    a = float(equation.find('a').text)
-                    b = float(equation.find('b').text)
-                    break
-
-        for i, qpas in enumerate(points):
-            qpas = float(qpas.find('qr').text)
-
-            if self.obsDisch < qpas:
-                equation = points[i].find('equation')
-                if equation is not None:
-                    a2 = float(equation.find('a').text)
-                    b2 = float(equation.find('b').text)
-                    break
-
         # Do Calculations
-        self.Qr=(a*self.obsStage)+ b
-        self.Hr=(1/a2* (self.obsDisch-b2))
+        self.Qr, self.Hr = self.CalcLinQrHr(points, self.obsStage, self.obsDisch)
+
         self.Shift = float(format(self.Hr-self.obsStage,".3g"))
-        self.Qdiff = float(format(((self.obsDisch-self.Qr)/self.Qr)*100,".3g"))
+        self.Qdiff = self.ValidateQdiff(self.obsDisch, self.Qr)
 
         # Set Text Fields in the gui
         if self.gui is not None:
             self.gui.SetCalcShift(str(self.Shift))
             self.gui.SetRatedDisch(str(self.GetFormattedRatedDischarge()))
             self.gui.SetDischDiff(str(self.Qdiff))
-
-        # # Set values in Discharge Manager
-        # if self.disMeasManager is not None:
-        #     self.disMeasManager.shiftCtrl = str(self.Shift)
-        #     self.disMeasManager.diffCtrl = str(self.Qdiff)
-            # self.disMeasManager.curveCtrl = str(self.curveNum)
 
 
     def CalculateLogRC(self, points, selectedCurveIndex):
-        c = None
-        beta = None
-        offset = None
-        c2 = None
-        beta2 = None
-        offset2 = None
-        for i, hgpas in enumerate(points):
-            hgpas = float(hgpas.find('hg').text)
-
-            if self.obsStage < hgpas:
-                equation = points[i].find('equation')
-                if equation is not None:
-                    offset = float(points[i].find('offset').text)
-                    beta = float(equation.find('beta').text)
-                    c = float(equation.find('c').text)
-                    break
-
-
-        for i, qpas in enumerate(points):
-            qpas = float(qpas.find('qr').text)
-
-            if self.obsDisch < qpas:
-                equation = points[i].find('equation')
-                if equation is not None:
-                    offset2 = float(points[i].find('offset').text)
-                    beta2 = float(equation.find('beta').text)
-                    c2 = float(equation.find('c').text)
-                    break
-
-
         # Do the calculations
-        self.Qr=c*(self.obsStage-offset)**beta
-        self.Hr=offset2+(self.obsDisch/c2)**(1/beta2)
-        self.Shift = float(format(self.Hr-self.obsStage,".3g"))
-        self.Qdiff = float(format(((self.obsDisch-self.Qr)/self.Qr)*100,".3g"))
+        self.Qr, self.Hr = self.CalcLogQrHr(points, self.obsStage, self.obsDisch)
 
+        self.Shift = float(format(self.Hr-self.obsStage,".3g"))
+        self.Qdiff = self.ValidateQdiff(self.obsDisch, self.Qr)
 
         # Set Text Fields in the gui
         if self.gui is not None:
             self.gui.SetCalcShift(str(self.Shift))
             self.gui.SetRatedDisch(str(self.GetFormattedRatedDischarge()))
             self.gui.SetDischDiff(str(self.Qdiff))
-
-        # # Set values in Discharge Manager
-        # if self.disMeasManager is not None:
-        #     self.disMeasManager.shiftCtrl = str(self.Shift)
-        #     self.disMeasManager.diffCtrl = str(self.Qdiff)
-            # self.disMeasManager.curveCtrl = str(self.curveNum)
 
 
 
     def SetupCurveFromTxt(self):
         # In the table, it's discharge, stage
         # in other words, [x][0] is discharge, [x][1] is stage
-        self.qrpa = [x[0] for x in self.data]
-        self.hgpa = [x[1] for x in self.data]
-        self.qrta = self.qrpa
-        self.hgta = self.hgpa
+        self.qrta = [x[0] for x in self.data]
+        self.hgta = [x[1] for x in self.data]
+
 
     def CalculateTXTShiftDisch(self):
+        self.SetupCurveFromTxt()
+
         # assumes that the first point is lowest, last point is highest
         # checks against high and low points first
         hg_low = float(self.data[0][1])
@@ -816,52 +814,14 @@ class RatingCurveViewerToolManager(object):
         q_high = float(self.data[-1][0])
 
         errorMessage = self.ValidateCalculations(hg_low, hg_high, q_low, q_high)
-        if erroMessage is not None:
+        if errorMessage is not None:
             return errorMessage
 
-        # Not above or below the RC
-        hg1 = None
-        hg2 = None
-        qr1 = None
-        qr2 = None
-        qhg1 = None
-        qhg2 = None
-        qqr1 = None
-        qqr2 = None
-        for i, row in enumerate(self.data):
-            hg = row[1]
-            if self.obsStage < hg:
-                hg1 = self.data[i-1][1]
-                qr1 = self.data[i-1][0]
-                hg2 = row[1]
-                qr2 = row[0]
-                break
-
-
-        for i, row in enumerate(self.data):
-            q = row[0]
-            if self.obsDisch < q:
-                qhg1 = self.data[i-1][1]
-                qqr1 = self.data[i-1][0]
-                qhg2 = row[1]
-                qqr2 = row[0]
-                break
-
-
-
-        a = (qr2-qr1)/(hg2-hg1)
-        b = qr2 - a*hg2
-
-
-        qa = (qqr2-qqr1)/(qhg2-qhg1)
-        qb = qqr2 - qa*qhg2
-
-
         # Do calculations
-        self.Qr=(a*self.obsStage)+ b
-        self.Hr=(1/qa* (self.obsDisch-qb))
+        self.Qr, self.Hr = self.CalcTxtQrHr(self.data, self.obsStage, self.obsDisch)
+
         self.Shift = float(format(self.Hr-self.obsStage,".3g"))
-        self.Qdiff = float(format(((self.obsDisch-self.Qr)/self.Qr)*100,".3g"))
+        self.Qdiff = self.ValidateQdiff(self.obsDisch, self.Qr)
 
         # Set Text Fields in the gui
         if self.gui is not None:
@@ -869,34 +829,11 @@ class RatingCurveViewerToolManager(object):
             self.gui.SetRatedDisch(str(self.GetFormattedRatedDischarge()))
             self.gui.SetDischDiff(str(self.Qdiff))
 
-        # if self.disMeasManager is not None:
-        #     self.disMeasManager.shiftCtrl = str(self.Shift)
-        #     self.disMeasManager.diffCtrl = str(self.Qdiff)
-
 
     def PlotData(self):
         if self.mode == "DEBUG":
             print "Plotting Data"
-
-        # if self.extension is None:
-        #     self.gui.CreateErrorDialog("Please use a valid Rating Curve File")
             return None
-        # if self.obsStage == "" or self.obsStage is None:
-        #     #show error dialog
-        #     self.gui.CreateErrorDialog("Observed Stage is empty. Please enter a value.")
-        #     return None
-        # elif self.obsDisch == "" or self.obsDisch is None:
-        #     #show error dialog
-        #     self.gui.CreateErrorDialog("Observed Discharge is empty. Please enter a value.")
-        #     return None
-
-        # print self.qrpa
-        # print self.hgpa
-        if (self.obsStage != "" and self.obsStage is not None) and (self.obsDisch != "" and self.obsDisch is not None):
-            self.qrta = self.qrpa
-            self.hgta = self.hgpa
-
-
 
         # If historical data exists
         if self.histData is not None:
@@ -939,8 +876,6 @@ class RatingCurveViewerToolManager(object):
         self.validHistPoints = None
         self.obsDisch = None
         self.obsStage = None
-        # self.qrpa = None
-        self.hrpa = None
         self.Hr = None
         self.Qr = None
 

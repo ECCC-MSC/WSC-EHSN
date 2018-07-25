@@ -740,7 +740,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.AutoSave(None)
         if self.RatingCurveViewerToolFrame is None:
             self.RatingCurveViewerToolFrame = RatingCurveViewerToolFrame(self.mode, self.ratingFileDir, self.manager.genInfoManager.stnNumCmbo,\
-                                            self.manager.disMeasManager, wx.LANGUAGE_ENGLISH, self.manager.ratingCurveViewerToolManager, self, size=(770, 578))
+                                            self.manager.disMeasManager, wx.LANGUAGE_ENGLISH, self.manager.ratingCurveViewerToolManager, self, size=(770, 600))
             self.RatingCurveViewerToolFrame.Bind(wx.EVT_CLOSE, self.closeRatingCurveViewWindow)
             self.RatingCurveViewerToolFrame.exitButton.Bind(wx.EVT_BUTTON, self.closeRatingCurveViewWindow)
             self.RatingCurveViewerToolFrame.Show()

@@ -4,6 +4,7 @@
 import wx
 import os
 import sys
+import math
 from RatingCurveViewerToolManager import *
 import FileDialog
 from wx.lib.agw import ultimatelistctrl as ULC
@@ -244,16 +245,6 @@ class RatingCurveViewerToolFrame(wx.Frame):
         self.histDataList.InsertColumn(6, 'R Error (%)')
         self.histDataList.InsertColumn(7, 'Shift (m)')
         self.histDataList.InsertColumn(8, 'Remarks')
-        #self.histDataList.SetColumnWidth(0, 240)
-        #self.histDataList.SetColumnWidth(1, 125)
-        #self.histDataList.SetColumnWidth(2, 125)
-        #self.histDataList.SetColumnWidth(3, 125)
-        #self.histDataList.SetColumnWidth(4, 125)
-        # self.histDataList.SetColumnToolTip(0, 'For Example:\n' + self.toolTips)
-        # self.histDataList.SetColumnToolTip(1, 'For Example:\n' + self.toolTips)
-        # self.histDataList.SetColumnToolTip(2, 'For Example:\n' + self.toolTips)
-        # self.histDataList.SetColumnToolTip(3, 'For Example:\n' + self.toolTips)
-        # self.histDataList.SetColumnToolTip(4, 'For Example:\n' + self.toolTips)
         self.histDataList.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnSelectHistDataItem)
 
 
@@ -421,17 +412,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
         else:
             self.manager.obsDisch = None
             self.manager.obsStage = None
-        #Plot the data somehow
-        # try:
-        #     self.manager.PlotData()
-        # except Exception as inst:
-        #     errorFile = open(self.path + r"\ErrorFile.txt","ab")
-        #     errorFile.write(str(inst) + "\n")
-        #     errorFile.close()
-        #     print "write error to errorfile.txt"
-        #     self.GetParent().RatingCurveViewerToolFrame = None
-        #     self.Destroy()
-        #     return
+
 
         #for testing when remove the try block above
         self.manager.PlotData()
@@ -474,7 +455,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
         self.fig.set_facecolor('white')
 
 
-        lns=None
+        lns = None
 
         # Plotting the curve
         if self.manager.extension == "xml":
@@ -482,27 +463,35 @@ class RatingCurveViewerToolFrame(wx.Frame):
             RCType = self.manager.data[selectedCurveIndex][0].get('type')
             if RCType == "Logarithmic":
 
-                for i, hgpas in enumerate(self.manager.data[selectedCurveIndex][2]):
-                    equation = hgpas.find('equation')
+                ratingpoints = self.manager.data[selectedCurveIndex][2]
+                for i, rpoint in enumerate(ratingpoints):
+                    equation = rpoint.find('equation')
 
                     # We use sample points to draw the curve
                     # For each segment of the curve, allocate its
                     # percentage of the total curve in points for drawing
                     if equation is not None:
-                        offset = float(hgpas.find('offset').text)
+                        offset = float(rpoint.find('offset').text)
                         beta = float(equation.find('beta').text)
                         c = float(equation.find('c').text)
 
-                        high = float(hgpas.find('qr').text)
-                        low = float(self.manager.data[selectedCurveIndex][2][i-1].find('qr').text)
+                        q2 = float(rpoint.find('qr').text)
+                        q1 = float(ratingpoints[i-1].find('qr').text)
+                        hg2 = float(rpoint.find('hg').text)
+                        hg1 = float(ratingpoints[i-1].find('hg').text)
 
-                        # Plotting curve based on percentage of total
-                        if self.manager.qrta is not None:
-                            num = int(max(1, 800*(high-low)/(self.manager.qrta[-1] - self.manager.qrta[0])))
+                        if not math.isinf(beta) or not math.isinf(c):
+                            # Plotting curve based on percentage of total
+                            if self.manager.qrta is not None:
+                                num = int(max(1, 800*(q2-q1)/(self.manager.qrta[-1] - self.manager.qrta[0])))
+                            else:
+                                num = int(max(1, 800*(q2-q1)))
+                            x = np.linspace(q1, q2, num)
+                            y = (x/c)**(1/beta) + offset
+
                         else:
-                            num = int(max(1, 800*(high-low)))
-                        x = np.linspace(low, high, num)
-                        y = (x/c)**(1/beta) + offset
+                            x = [q1, q2]
+                            y = [hg1, hg2]
 
                         lns = plt.plot(x, y, color="r", label="Rating Curve")
             else:
@@ -510,7 +499,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
                 if self.manager.qrta is not None:
                     lns = plt.plot(self.manager.qrta, self.manager.hgta, color='r', label="Rating Curve")        # Plotting straight lines between the points
         else:
-            if self.manager.extension is not None:
+            if self.manager.extension is not None and \
+                self.manager.qrta is not None and self.manager.hgta is not None:
                 lns = plt.plot(self.manager.qrta, self.manager.hgta, color='r', label="Rating Curve")        # Plotting straight lines between the points
 
         # Hist values
@@ -568,8 +558,9 @@ class RatingCurveViewerToolFrame(wx.Frame):
                 plt.plot(self.manager.obsDisch, self.manager.obsStage, "ro", markersize=10, zorder=4)  # Plotting Qobs , Hobs
             elif abs(self.manager.Qdiff) < 5:
                 plt.plot(self.manager.obsDisch, self.manager.obsStage, "go", markersize=10, zorder=4)  # Plotting Qobs , Hobs
-        if self.manager.qrta is not None:
-            ln5 = plt.plot(self.manager.qrpa, self.manager.hgpa, "c^", markersize=5, zorder=2, label="Rating Points")  # Plotting rating points
+
+        if self.manager.qrta is not None and self.manager.hgta is not None:
+            ln5 = plt.plot(self.manager.qrta, self.manager.hgta, "c^", markersize=5, zorder=2, label="Rating Points")  # Plotting rating points
             if lns is not None:
                 lns = lns + ln5
             else:
@@ -594,7 +585,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
             highy = max(self.manager.Hr, self.manager.obsStage) + abs(self.manager.Hr - self.manager.obsStage)/4
 
             # Plot line from observed point to Y-axis
-            plt.plot([0, self.manager.Qr], [self.manager.obsStage, self.manager.obsStage], linestyle='--', linewidth=2,color='g')
+            plt.plot([-1000, self.manager.Qr], [self.manager.obsStage, self.manager.obsStage], linestyle='--', linewidth=2,color='g')
 
         # Title
         plotTitle = ""
