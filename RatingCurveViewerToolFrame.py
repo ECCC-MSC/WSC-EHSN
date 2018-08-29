@@ -168,7 +168,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
         #Observed Stage
         obsStageSizer = wx.BoxSizer(wx.HORIZONTAL)
         obsStageLabel = wx.StaticText(self.basePanel, label=self.obsStageLbl)
-        self.obsStageText = wx.StaticText(self.basePanel, size=(100, -1), style=wx.BORDER_SUNKEN|wx.ALIGN_RIGHT)
+        # self.obsStageText = wx.StaticText(self.basePanel, size=(100, -1), style=wx.BORDER_SUNKEN|wx.ALIGN_RIGHT)
+        self.obsStageText = wx.TextCtrl(self.basePanel)
 
         obsStageSizer.Add((5, 0))
         obsStageSizer.Add(obsStageLabel, 0, wx.EXPAND|wx.TOP, 5)
@@ -177,7 +178,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
         #Observed Discharge
         obsDischSizer = wx.BoxSizer(wx.HORIZONTAL)
         obsDischLabel = wx.StaticText(self.basePanel, label=self.obsDischLbl)
-        self.obsDischText = wx.StaticText(self.basePanel, size=(100, -1), style=wx.BORDER_SUNKEN|wx.ALIGN_RIGHT)
+        # self.obsDischText = wx.StaticText(self.basePanel, size=(100, -1), style=wx.BORDER_SUNKEN|wx.ALIGN_RIGHT)
+        self.obsDischText = wx.TextCtrl(self.basePanel)
 
         obsDischSizer.Add((5, 0))
         obsDischSizer.Add(obsDischLabel, 0, wx.EXPAND|wx.TOP, 5)
@@ -218,6 +220,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
         #Buttons line
         buttonsSizer1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.calculateButton = wx.Button(self.basePanel, label=self.calculateButtonLbl)
+        self.calculateButton.Bind(wx.EVT_BUTTON, self.OnCalculate)
         self.plotButton = wx.Button(self.basePanel, label=self.plotButtonLbl)
         self.plotButton.Bind(wx.EVT_BUTTON, self.OnPlot)
         self.exitButton = wx.Button(self.basePanel, label=self.exitButtonLbl)
@@ -225,6 +229,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self.OnExit)
 
         buttonsSizer1.Add((1, 0), 1, wx.EXPAND)
+        buttonsSizer1.Add(self.calculateButton, 0, wx.EXPAND|wx.RIGHT, 4)
         buttonsSizer1.Add(self.plotButton, 0, wx.EXPAND|wx.RIGHT|wx.LEFT, 4)
 
         buttonsSizer2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -398,6 +403,18 @@ class RatingCurveViewerToolFrame(wx.Frame):
         if self.manager is None:
             return
         self.manager.FetchStageDischarge()
+
+
+    #Calculate the shift and discharge difference (call manager)
+    def OnCalculate(self, evt):
+        if self.mode == "DEBUG":
+            print "CALCULATE BUTTON CLICKED"
+
+        if self.manager is None:
+            return
+
+        self.manager.CalculateShiftDisch(self.GetObsStage(), self.GetObsDisch(), self.GetSelectedCurveIndex())
+
 
     #Plot the Rating Curve
     def OnPlot(self, evt):
@@ -673,11 +690,18 @@ class RatingCurveViewerToolFrame(wx.Frame):
     def SetObsDisch(self, disch):
         self.obsDischText.SetLabel(disch)
 
+    # def GetObsStage(self):
+    #     return self.obsStageText.GetLabel()
+
+    # def GetObsDisch(self):
+    #     return self.obsDischText.GetLabel()
+
     def GetObsStage(self):
-        return self.obsStageText.GetLabel()
+        return self.obsStageText.GetValue()
 
     def GetObsDisch(self):
-        return self.obsDischText.GetLabel()
+        return self.obsDischText.GetValue()
+
 
     def SetCurveCombo(self, curvelist, index=0):
         self.ratingCurveCombo.SetItems(curvelist)

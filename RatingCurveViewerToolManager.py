@@ -396,7 +396,7 @@ class RatingCurveViewerToolManager(object):
 
 
     def ValidateQdiff(self, q, Qr):
-        if Qr == 0 and math.isnan(Qr):
+        if Qr == 0 or math.isnan(Qr):
             return float('nan')
 
         return float(format(((q - Qr)/Qr)*100,".3g"))
@@ -416,14 +416,14 @@ class RatingCurveViewerToolManager(object):
             hgpas = float(point.find('hg').text)
             qpas = float(point.find('qr').text)
 
-            if hg < hgpas and not hgFound:
+            if hg <= hgpas and not hgFound:
                 equation = point.find('equation')
                 if equation is not None:
                     a = float(equation.find('a').text)
                     b = float(equation.find('b').text)
                     hgFound = True
 
-            if q < qpas and not qFound:
+            if q <= qpas and not qFound:
                 equation = point.find('equation')
                 if equation is not None:
                     a2 = float(equation.find('a').text)
@@ -460,7 +460,7 @@ class RatingCurveViewerToolManager(object):
             hg2 = float(point.find('hg').text)
             q2 = float(point.find('qr').text)
 
-            if hg < hg2 and not hgFound:
+            if hg <= hg2 and not hgFound:
                 equation = point.find('equation')
                 if equation is not None:
                     offset = float(point.find('offset').text)
@@ -472,7 +472,7 @@ class RatingCurveViewerToolManager(object):
 
                     hgFound = True
 
-            if q < q2 and not qFound:
+            if q <= q2 and not qFound:
                 equation = point.find('equation')
                 if equation is not None:
                     qoffset = float(point.find('offset').text)
@@ -548,7 +548,7 @@ class RatingCurveViewerToolManager(object):
             qpas = row[0]
             hgpas = row[1]
 
-            if hg < hgpas and not hgFound:
+            if hg <= hgpas and not hgFound:
                 qr_hg1 = self.data[i-1][1]
                 qr_q1 = self.data[i-1][0]
                 qr_hg2 = row[1]
@@ -556,7 +556,7 @@ class RatingCurveViewerToolManager(object):
                 
                 hgFound = True
 
-            if q < qpas and not qFound:
+            if q <= qpas and not qFound:
                 hr_hg1 = self.data[i-1][1]
                 hr_q1 = self.data[i-1][0]
                 hr_hg2 = row[1]
