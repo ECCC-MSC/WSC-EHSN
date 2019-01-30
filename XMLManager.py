@@ -1319,6 +1319,9 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     pictured = SubElement(GeneralInfo, "pictured")
     pictured.text = str(instrDepManager.GetPicturedCkboxVal())
 
+    preUseCable = SubElement(GeneralInfo, "preUseCable")
+    preUseCable.text = str(instrDepManager.GetPreUseCableCkboxVal())
+
     #Midsection Panel
     MidsectionInfo = SubElement(InstrumentDeployment, 'MidsectionInfo', empty = 'False')
     panelsNum = SubElement(MidsectionInfo, 'panelsNum')
@@ -1604,6 +1607,15 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     except:
         print "no pictured ckeckbox for field review in xml"
 
+    try:
+        preUseCable = GeneralInfo.find('preUseCable').text
+        if preUseCable == "True":
+            instrDepManager.SetPreUseCableCkboxVal(True)
+        else:
+            instrDepManager.SetPreUseCableCkboxVal(False)
+
+    except:
+        print "no preUseCable ckeckbox for field review in xml"
 
     #MIDSECTION
     MidsectionInfo = InstrumentDeployment.find('MidsectionInfo')

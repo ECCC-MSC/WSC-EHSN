@@ -100,6 +100,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.locatedList = ["On Rod"]
         self.numberOfPanelsList = []
         self.picturedLbl = "Site and/or control pictures were taken."
+        self.preUseCableLbl = "Pre-use Cableway was inspected"
         self.numberRange = list(range(20, 51))
         for i in self.numberRange:
             self.numberOfPanelsList.append(str(i))
@@ -674,8 +675,10 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         controlConditionPanel.SetSizer(controlConditionSizer)
 
         self.picturedCkbox = wx.CheckBox(controlConditionPanel, label=self.picturedLbl)
+        self.preUseCableCkBox = wx.CheckBox(controlConditionPanel, label=self.preUseCableLbl)
 
         controlConditionSizer.Add(self.picturedCkbox, 1, wx.EXPAND|wx.BOTTOM, 5)
+        controlConditionSizer.Add(self.preUseCableCkBox, 1, wx.EXPAND|wx.BOTTOM, 5)
 
         
 
