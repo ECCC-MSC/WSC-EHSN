@@ -291,49 +291,28 @@ class EnvironmentConditionsPanel(wx.Panel):
         gasPressV3H2.Add(self.gasDepTime, 0)
 
 
+        #Feed Ctrl
+        gasPressV1H3.Add(feedTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
+        gasPressV2H3.Add(self.feedCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV2H3.Add(feedAtTxt, 0, wx.LEFT, 5)
+        gasPressV2H3.Add(self.feedArrTime, 0)
+
+        gasPressV3H3.Add(self.feedDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV3H3.Add(feedAt2Txt, 0, wx.LEFT, 5)
+        gasPressV3H3.Add(self.feedDepTime, 0)
 
         #BPM/ROT Cmbo and Ctrl
-        
-        
         bpmrotAtTxt = wx.StaticText(self, label=self.intakeTimeLbl)
         bpmrotAt2Txt = wx.StaticText(self, label=self.intakeTimeLbl)
 
-        
-        
+        gasPressV1H4.Add(self.bpmrotCmbo, 0, wx.EXPAND|wx.TOP, 10)
+        gasPressV2H4.Add(self.bpmrotCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV2H4.Add(bpmrotAtTxt, 0, wx.LEFT, 5)
+        gasPressV2H4.Add(self.bpmrotArrTime, 0)
 
-        
-
-        gasPressV1H3.Add(self.bpmrotCmbo, 0, wx.EXPAND|wx.TOP, 10)
-        gasPressV2H3.Add(self.bpmrotCtrl, 0, wx.EXPAND|wx.LEFT, 5)
-        gasPressV2H3.Add(bpmrotAtTxt, 0, wx.LEFT, 5)
-        gasPressV2H3.Add(self.bpmrotArrTime, 0)
-
-        gasPressV3H3.Add(self.bpmrotDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
-        gasPressV3H3.Add(bpmrotAt2Txt, 0, wx.LEFT, 5)
-        gasPressV3H3.Add(self.bpmrotDepTime, 0)
-
-
-
-
-
-        #Feed Ctrl
-        
-        
-
-        
-
-        gasPressV1H4.Add(feedTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
-        gasPressV2H4.Add(self.feedCtrl, 0, wx.EXPAND|wx.LEFT, 5)
-        gasPressV2H4.Add(feedAtTxt, 0, wx.LEFT, 5)
-        gasPressV2H4.Add(self.feedArrTime, 0)
-
-        gasPressV3H4.Add(self.feedDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
-        gasPressV3H4.Add(feedAt2Txt, 0, wx.LEFT, 5)
-        gasPressV3H4.Add(self.feedDepTime, 0)
-
-
-
-
+        gasPressV3H4.Add(self.bpmrotDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV3H4.Add(bpmrotAt2Txt, 0, wx.LEFT, 5)
+        gasPressV3H4.Add(self.bpmrotDepTime, 0)
 
 
         #Intake/Orifice checkboxes
