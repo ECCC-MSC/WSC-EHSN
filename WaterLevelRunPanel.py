@@ -143,6 +143,8 @@ class WaterLevelRunPanel(wx.Panel):
         self.loggerLbl2 = "HG2"
         self.cwlLbl = "Corrected Water Level"
         self.hintLbl = "Transfer selected elevation and reference station to Direct Water Level table"
+        self.correctCmtBtnHint = 'Please note that these comments are uploaded to the to "Activity Remarks Management" section of Leveling Activity in AQUARIUS' \
+                + 'and these comments are also printed for Benchmark History Report.'
         self.transferSumLbl = "Transfer to Front Page"
         self.transferConfirmationMsg = "Corrected water level  and logger values have been transfered"
         self.transferToFrontHintLbl = "Transfer to front page"
@@ -662,7 +664,12 @@ class WaterLevelRunPanel(wx.Panel):
         commentsPanel.SetSizer(commentsSizer)
 
         commentsTxt = wx.StaticText(commentsPanel, label=self.commentsLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
-        commentsSizer.Add(commentsTxt, 0, wx.EXPAND|wx.ALL, 5)
+        correctCmtButton = wx.Button(commentsPanel, size=(15, 20), label="!")
+        correctCmtButton.SetForegroundColour('red')
+        correctCmtButton.Bind(wx.EVT_BUTTON, self.OnCmtBtn)
+
+        commentsSizer.Add(commentsTxt, 0, wx.EXPAND|wx.LEFT, 5)
+        commentsSizer.Add(correctCmtButton, 0, wx.RIGHT, 5)
 
         self.commentsCtrl = wx.TextCtrl(commentsPanel, style=wx.TE_MULTILINE|wx.TE_BESTWRAP)
         # self.commentsCtrl.Bind(wx.EVT_TEXT, self.OnTextType)
@@ -1704,6 +1711,18 @@ class WaterLevelRunPanel(wx.Panel):
             else:
                 self.rb2.SetValue(True)
             dlg.Destroy()
+
+    #Hint button on Comments
+    def OnCmtBtn(self, event):
+        dlg = wx.MessageDialog(self, self.correctCmtBtnHint, 'Hint', wx.OK)
+
+        res = dlg.ShowModal()
+        if res == wx.ID_OK:
+            dlg.Destroy()
+        else:
+            dlg.Destroy()
+        return
+
 
 
 def main():
