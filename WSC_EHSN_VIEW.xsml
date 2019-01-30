@@ -1063,20 +1063,36 @@
 			</tr>
 		</xsl:for-each>
 		
+        <tr class="noborder">
+            <xsl:choose>
+                <xsl:when test="pictured='True'">
+                    <td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+                        <b>Site and/or control pictures were taken.   </b>
+                    <font size="4">&#x2714;</font></td>
+                </xsl:when>
+                <xsl:otherwise>
+                    <td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+                        <b>Site and/or control pictures were taken.   </b>
+                    <font size="4">&#x2751;</font></td>
+                </xsl:otherwise>
+            </xsl:choose>
+        </tr>
+
 		<tr class="noborder">
 			<xsl:choose>
-				<xsl:when test="pictured='True'">
+				<xsl:when test="preUseCable='True'">
 					<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-						<b>Site and/or control pictures were taken.   </b>
+						<b>Pre-use Cableway was inspected.   </b>
 					<font size="4">&#x2714;</font></td>
 				</xsl:when>
 				<xsl:otherwise>
 					<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-						<b>Site and/or control pictures were taken.   </b>
+						<b>Pre-use Cableway was inspected.   </b>
 					<font size="4">&#x2751;</font></td>
 				</xsl:otherwise>
 			</xsl:choose>
 		</tr>
+
 		
 		<tr>
 			<td align="left" colspan="4" height="80"><b>Site Notes: </b><br/>

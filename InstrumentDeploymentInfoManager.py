@@ -39,12 +39,20 @@ class InstrumentDeploymentInfoManager(object):
     def GetPicturedCkboxVal(self):
         return self.gui.picturedCkbox.IsChecked()
 
+    def GetPreUseCableCkboxVal(self):
+        return self.gui.preUseCableCkBox.IsChecked()
+
     def SetPicturedCkboxVal(self, val):
         self.gui.picturedCkbox.SetValue(val)
+
+    def SetPreUseCableCkboxVal(self, val):
+        self.gui.preUseCableCkBox.SetValue(val)
 
     def GetPicturedCkbox(self):
         return self.gui.picturedCkbox
 
+    def GetPicturedCkbox(self):
+        return self.gui.preUseCableCkBox
 
 
 
