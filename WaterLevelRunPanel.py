@@ -550,7 +550,7 @@ class WaterLevelRunPanel(wx.Panel):
         loggerLabelPanel.SetSizer(loggerLabelSizer)
 
         loggerLabelTxt = wx.StaticText(loggerLabelPanel, label=self.loggerLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
-        self.hgText = wx.TextCtrl(loggerLabelPanel, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
+        self.hgText = wx.TextCtrl(loggerLabelPanel, style=wx.TE_CENTRE, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
         loggerLabelSizer.Add(loggerLabelTxt, 1, wx.EXPAND)
         loggerLabelSizer.Add(self.hgText, 1, wx.EXPAND)
         #Create new panel and sizer for dynamic entries
@@ -572,7 +572,7 @@ class WaterLevelRunPanel(wx.Panel):
         loggerLabelPanel2.SetSizer(loggerLabelSizer2)
 
         loggerLabelTxt2 = wx.StaticText(loggerLabelPanel2, label=self.loggerLbl2, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
-        self.hgText2 = wx.TextCtrl(loggerLabelPanel2, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
+        self.hgText2 = wx.TextCtrl(loggerLabelPanel2, style=wx.TE_CENTRE, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
         loggerLabelSizer2.Add(loggerLabelTxt2, 1, wx.EXPAND)
         loggerLabelSizer2.Add(self.hgText2, 1, wx.EXPAND)
         #Create new panel and sizer for dynamic entries
