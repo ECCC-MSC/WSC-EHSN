@@ -1,0 +1,26 @@
+# ignore data
+config.xml
+
+**/*.csv
+**/*.xlsx
+**/*.pdf
+**/*.exe
+Omitted/
+Importing_Files/
+AQ_Extracted_Data/
+skatch.py
+
+
+Saved Field Visits
+
+# ignore ide project files
+.idea
+
+# ignore temp files
+**/*.swp
+
+# ignore compiled code
+**/*.pyc
+
+# ignore test results
+HFC_Files_Testing/Test Results

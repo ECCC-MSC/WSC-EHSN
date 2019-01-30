@@ -1,0 +1,4632 @@
+{
+    "SerializationFormat": {
+        "Name": "FT2",
+        "Version": 1,
+        "Revision": 1
+    },
+    "Properties": {
+        "StartTime": "2017-03-07T17:23:56.2230000Z",
+        "EndTime": "2017-03-07T18:01:02.9710000Z",
+        "SiteNumber": "02HC009",
+        "SiteName": "Pine",
+        "Operator": "Js",
+        "Comment": null,
+        "LocalTimeUtcOffset": "-03:30:00",
+        "CalculationsEngine": "FlowTracker2"
+    },
+    "HandheldInfo": {
+        "SerialNumber": "FT2H1640009",
+        "BoardsInfo": "n/a",
+        "CpuSerialNumber": "004B0F86",
+        "SoftwareVersion": "1.2",
+        "OperatingSystem": "Microsoft Windows CE 6.0.0/.NET 3.5.10010.0",
+        "Settings": {
+            "Units": "Metric",
+            "WadingRod": "TopSetting",
+            "FileNamingConvention": "SiteNameDateTime",
+            "DataFoldersOrganization": "SiteName",
+            "GpsMode": "Disabled",
+            "BeeperUsage": "MajorEvents",
+            "ThemeKind": "Dark",
+            "EnableClearType": true,
+            "FontSize": 10,
+            "BatteryType": "Alkaline",
+            "ScreenBrightness": "Medium",
+            "LocalTimeOffsetFromUtc": "-03:30:00"
+        }
+    },
+    "Configuration": {
+        "DataCollectionMode": "Discharge",
+        "AveragingTime": "00:00:40",
+        "SamplingRate (Hz)": 2.0,
+        "Salinity (PSS-78)": 0.0,
+        "Temperature (C)": null,
+        "SoundSpeed (m/s)": null,
+        "MountingCorrection": 0.0,
+        "QualityControl": {
+            "SnrThreshold (dB)": 10.0,
+            "StdErrorThreshold (m/s)": 0.01,
+            "SpikeThreshold": 0.1,
+            "VelocityAngleForWarning (deg)": 20.0,
+            "TiltAngleForWarning (deg)": 5.0
+        },
+        "Discharge": {
+            "DischargeEquation": "MidSection",
+            "DischargeUncertainty": "Ive",
+            "DischargeReference": "Rated",
+            "MaxStationDischargeForWarning": 0.1,
+            "MaxDepthChangeForWarning": 0.5,
+            "MaxSpacingChangeForWarning": 1.0,
+            "VelocityMethods": {
+                "TwoTenthsSixTenthsEightTenths": true,
+                "Kreps": false,
+                "FivePoint": false,
+                "SixPoint": false,
+                "VerticalVelocityCurve": false
+            },
+            "SixTenthsMethodDepth (m)": 0.5
+        }
+    },
+    "Stations": [{
+        "Id": "330cd30d21a04950b7bba64538c8ce43",
+        "CreationTime": "2017-03-07T17:25:08.8980000Z",
+        "Location (m)": 14.0,
+        "Depth (m)": 0.0,
+        "StationType": "LeftBank",
+        "VelocityMethod": "None",
+        "CorrectionFactor": 1.0,
+        "Comment": null,
+        "Calculations": {
+            "Warnings": [],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.054224585503797482,
+                "Y": 0.0038437358683544327,
+                "Z": null
+            },
+            "Width (m)": 0.40000000000000036,
+            "Area (m2)": 0.0,
+            "Discharge (m3/s)": 0.0,
+            "FractionOfTotalDischarge": 0.0,
+            "Snr (dB)": {
+                "Beam0": null,
+                "Beam1": null,
+                "Beam2": null
+            },
+            "Temperature (C)": null,
+            "VelocityAngle (deg)": null,
+            "BoundaryAvoidance": "Undefined",
+            "Samples": 0,
+            "Spikes": 0,
+            "Tilt (deg)": null,
+            "VelocityStandardError (m/s)": {
+                "X": null,
+                "Y": null,
+                "Z": null
+            }
+        }
+    }, {
+        "Id": "2c52d5d0a2d54fbca7f867d00111901b",
+        "CreationTime": "2017-03-07T17:25:27.5130000Z",
+        "Location (m)": 14.8,
+        "Depth (m)": 0.16,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "c35f13a7b1e64d729b62f6612221ec3b",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.064,
+            "StartTime": "2017-03-07T17:25:44.5080000Z",
+            "EndTime": "2017-03-07T17:26:24.0910000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.1056,
+                    "MaxPingPrecision (m/s)": 0.0006960771
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 917.0,
+                    "PeakPosition (m)": 0.1172055,
+                    "PeakLevel (dB)": 48.28846
+                }, {
+                    "NoiseLevel (cnts)": 925.0,
+                    "PeakPosition (m)": 0.1165985,
+                    "PeakLevel (dB)": 48.88455
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": -0.01599754,
+                        "Max": 0.1553137,
+                        "Average": 0.055488199434999996,
+                        "StandardDeviation": 0.032660117192352706,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.03758139,
+                        "Max": 0.04762426,
+                        "Average": 0.004383984920000002,
+                        "StandardDeviation": 0.019361317685784456,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": -0.01599754,
+                        "Max": 0.1194495,
+                        "Average": 0.054224585503797482,
+                        "StandardDeviation": 0.030838018844997074,
+                        "Count": 79
+                    },
+                    "Y": {
+                        "Min": -0.03758139,
+                        "Max": 0.04762426,
+                        "Average": 0.0038437358683544327,
+                        "StandardDeviation": 0.0188684300370571,
+                        "Count": 79
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.674866,
+                    "Max": 2.679504,
+                    "Average": 2.6758729500000018,
+                    "StandardDeviation": 0.0018838140136368123,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.653813,
+                    "Max": 9.721983,
+                    "Average": 9.7124654499999963,
+                    "StandardDeviation": 0.016081772726375197,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.2764505089648206,
+                    "Max": 1.5217316154350979,
+                    "Average": 0.66146959930698934,
+                    "StandardDeviation": 0.2523664408322529,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 44.00572,
+                        "Max": 48.10718,
+                        "Average": 45.914825000000008,
+                        "StandardDeviation": 0.93401394262490611,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 45.6559,
+                        "Max": 51.2492,
+                        "Average": 47.755944375,
+                        "StandardDeviation": 0.99775767239338142,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": [],
+                "Velocity (m/s)": {
+                    "X": 0.054224585503797482,
+                    "Y": 0.0038437358683544327,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.0034695481891034927,
+                    "Y": 0.0021228642344162112,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 4.05465679696745,
+                "Snr (dB)": {
+                    "Beam0": 45.914825000000008,
+                    "Beam1": 47.755944375,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.93401394262490611,
+                    "Beam1": 0.99775767239338142,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 1,
+                "Tilt (deg)": 0.66146959930698934,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": [],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.054224585503797482,
+                "Y": 0.0038437358683544327,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.054224585503797482,
+                "Y": 0.0038437358683544327,
+                "Z": null
+            },
+            "Width (m)": 0.70000000000000018,
+            "Area (m2)": 0.11200000000000003,
+            "Discharge (m3/s)": 0.0060731535764253193,
+            "FractionOfTotalDischarge": 0.0024576408923047566,
+            "Snr (dB)": {
+                "Beam0": 45.914825000000008,
+                "Beam1": 47.755944375,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.6758729500000018,
+            "VelocityAngle (deg)": 4.05465679696745,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 1,
+            "Tilt (deg)": 0.66146959930698934,
+            "VelocityStandardError (m/s)": {
+                "X": 0.0034695481891034927,
+                "Y": 0.0021228642344162112,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "4b6014ae320442e7b27e43d3d6a9c237",
+        "CreationTime": "2017-03-07T17:26:35.9830000Z",
+        "Location (m)": 15.4,
+        "Depth (m)": 0.14,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "083a5796e144418da0d880e8f4452db0",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.056000000000000008,
+            "StartTime": "2017-03-07T17:26:48.7180000Z",
+            "EndTime": "2017-03-07T17:27:28.3620000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.1056,
+                    "MaxPingPrecision (m/s)": 0.0006960771
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 919.0,
+                    "PeakPosition (m)": 0.1153832,
+                    "PeakLevel (dB)": 46.61162
+                }, {
+                    "NoiseLevel (cnts)": 910.0,
+                    "PeakPosition (m)": 0.1159911,
+                    "PeakLevel (dB)": 49.11192
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.1369936,
+                        "Max": 0.4390729,
+                        "Average": 0.31690617000000004,
+                        "StandardDeviation": 0.056794556878693857,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": 0.01132478,
+                        "Max": 0.1312042,
+                        "Average": 0.074455230000000039,
+                        "StandardDeviation": 0.023257085980647123,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.1369936,
+                        "Max": 0.4390729,
+                        "Average": 0.31690617000000004,
+                        "StandardDeviation": 0.056794556878693857,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": 0.01132478,
+                        "Max": 0.1312042,
+                        "Average": 0.074455230000000039,
+                        "StandardDeviation": 0.023257085980647123,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.674866,
+                    "Max": 2.674866,
+                    "Average": 2.674866,
+                    "StandardDeviation": 0.0,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.627596,
+                    "Max": 9.703105,
+                    "Average": 9.6919672999999982,
+                    "StandardDeviation": 0.017781230897006825,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.091934852840944034,
+                    "Max": 1.92995695648959,
+                    "Average": 0.81751234876563428,
+                    "StandardDeviation": 0.48028849867093659,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 44.77616,
+                        "Max": 50.62244,
+                        "Average": 47.053207125000014,
+                        "StandardDeviation": 0.9117261971974846,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 47.04285,
+                        "Max": 50.65804,
+                        "Average": 49.02551975,
+                        "StandardDeviation": 0.7608003028539887,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": [],
+                "Velocity (m/s)": {
+                    "X": 0.31690617000000004,
+                    "Y": 0.074455230000000039,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.0063498244966368866,
+                    "Y": 0.0026002212605642163,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 13.221515101345021,
+                "Snr (dB)": {
+                    "Beam0": 47.053207125000014,
+                    "Beam1": 49.02551975,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.9117261971974846,
+                    "Beam1": 0.7608003028539887,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 0.81751234876563428,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": [],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.31690617000000004,
+                "Y": 0.074455230000000039,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.31690617000000004,
+                "Y": 0.074455230000000039,
+                "Z": null
+            },
+            "Width (m)": 0.59999999999999964,
+            "Area (m2)": 0.083999999999999964,
+            "Discharge (m3/s)": 0.026620118279999994,
+            "FractionOfTotalDischarge": 0.010772441437488789,
+            "Snr (dB)": {
+                "Beam0": 47.053207125000014,
+                "Beam1": 49.02551975,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.674866,
+            "VelocityAngle (deg)": 13.221515101345021,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 0.81751234876563428,
+            "VelocityStandardError (m/s)": {
+                "X": 0.0063498244966368866,
+                "Y": 0.0026002212605642163,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "0eff03d74ce042d8b0fc3f9a51cf332e",
+        "CreationTime": "2017-03-07T17:27:38.8660000Z",
+        "Location (m)": 16.0,
+        "Depth (m)": 0.14,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "a9eab685d9564cb1a71ed5a4da4e82e5",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.056000000000000008,
+            "StartTime": "2017-03-07T17:27:48.9590000Z",
+            "EndTime": "2017-03-07T17:28:28.6040000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.1056,
+                    "MaxPingPrecision (m/s)": 0.0006960771
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 907.0,
+                    "PeakPosition (m)": 0.117812,
+                    "PeakLevel (dB)": 47.6993
+                }, {
+                    "NoiseLevel (cnts)": 908.0,
+                    "PeakPosition (m)": 0.117812,
+                    "PeakLevel (dB)": 49.61213
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.1318371,
+                        "Max": 0.4453095,
+                        "Average": 0.2935456275,
+                        "StandardDeviation": 0.061642638806955738,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": 0.04685511,
+                        "Max": 0.1738153,
+                        "Average": 0.10631194937499996,
+                        "StandardDeviation": 0.026165869983269585,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.1318371,
+                        "Max": 0.4453095,
+                        "Average": 0.2935456275,
+                        "StandardDeviation": 0.061642638806955738,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": 0.04685511,
+                        "Max": 0.1738153,
+                        "Average": 0.10631194937499996,
+                        "StandardDeviation": 0.026165869983269585,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.674866,
+                    "Max": 2.674866,
+                    "Average": 2.674866,
+                    "StandardDeviation": 0.0,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.618156,
+                    "Max": 9.693666,
+                    "Average": 9.68271773749999,
+                    "StandardDeviation": 0.012755364950932758,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.24164175027014517,
+                    "Max": 2.3140295103842217,
+                    "Average": 1.0426639518633569,
+                    "StandardDeviation": 0.30599110127135831,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 44.82148,
+                        "Max": 49.48944,
+                        "Average": 47.497059500000006,
+                        "StandardDeviation": 0.97656067770271737,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 47.58854,
+                        "Max": 51.27193,
+                        "Average": 49.080658375000006,
+                        "StandardDeviation": 0.839422733702643,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": [],
+                "Velocity (m/s)": {
+                    "X": 0.2935456275,
+                    "Y": 0.10631194937499996,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.0068918565342409779,
+                    "Y": 0.0029254331986506036,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 19.908613548215484,
+                "Snr (dB)": {
+                    "Beam0": 47.497059500000006,
+                    "Beam1": 49.080658375000006,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.97656067770271737,
+                    "Beam1": 0.839422733702643,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 1.0426639518633569,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": [],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.2935456275,
+                "Y": 0.10631194937499996,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.2935456275,
+                "Y": 0.10631194937499996,
+                "Z": null
+            },
+            "Width (m)": 0.60000000000000053,
+            "Area (m2)": 0.084000000000000088,
+            "Discharge (m3/s)": 0.024657832710000029,
+            "FractionOfTotalDischarge": 0.00997835757339358,
+            "Snr (dB)": {
+                "Beam0": 47.497059500000006,
+                "Beam1": 49.080658375000006,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.674866,
+            "VelocityAngle (deg)": 19.908613548215484,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 1.0426639518633569,
+            "VelocityStandardError (m/s)": {
+                "X": 0.0068918565342409779,
+                "Y": 0.0029254331986506036,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "a90797b68e3d434d9671824d2d55b19f",
+        "CreationTime": "2017-03-07T17:28:37.7790000Z",
+        "Location (m)": 16.6,
+        "Depth (m)": 0.14,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "504e8d60b8ab4fc79a5941299303735d",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.056000000000000008,
+            "StartTime": "2017-03-07T17:28:47.7860000Z",
+            "EndTime": "2017-03-07T17:29:27.3720000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.1056,
+                    "MaxPingPrecision (m/s)": 0.0006960771
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 908.0,
+                    "PeakPosition (m)": 0.1172055,
+                    "PeakLevel (dB)": 48.19782
+                }, {
+                    "NoiseLevel (cnts)": 903.0,
+                    "PeakPosition (m)": 0.1172055,
+                    "PeakLevel (dB)": 50.8172
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.2389818,
+                        "Max": 0.6569948,
+                        "Average": 0.43241866124999995,
+                        "StandardDeviation": 0.09953981474631271,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.005611058,
+                        "Max": 0.2011791,
+                        "Average": 0.1033268399,
+                        "StandardDeviation": 0.042215463580135705,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.2389818,
+                        "Max": 0.6569948,
+                        "Average": 0.43241866124999995,
+                        "StandardDeviation": 0.09953981474631271,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.005611058,
+                        "Max": 0.2011791,
+                        "Average": 0.1033268399,
+                        "StandardDeviation": 0.042215463580135705,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.674866,
+                    "Max": 2.674866,
+                    "Average": 2.674866,
+                    "StandardDeviation": 0.0,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.608717,
+                    "Max": 9.684228,
+                    "Average": 9.6647210625,
+                    "StandardDeviation": 0.021213799503525817,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.040556740395463552,
+                    "Max": 5.2653111918688156,
+                    "Average": 1.2602464146509231,
+                    "StandardDeviation": 0.82854229247012512,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.50128,
+                        "Max": 49.46678,
+                        "Average": 47.509239249999986,
+                        "StandardDeviation": 0.77183489822691353,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 47.65675,
+                        "Max": 50.79446,
+                        "Average": 49.226459250000012,
+                        "StandardDeviation": 0.72065653128974616,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.43241866124999995,
+                    "Y": 0.1033268399,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.011128889612024559,
+                    "Y": 0.004719832313342504,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 13.43888593196754,
+                "Snr (dB)": {
+                    "Beam0": 47.509239249999986,
+                    "Beam1": 49.226459250000012,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.77183489822691353,
+                    "Beam1": 0.72065653128974616,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 1.2602464146509231,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.43241866124999995,
+                "Y": 0.1033268399,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.43241866124999995,
+                "Y": 0.1033268399,
+                "Z": null
+            },
+            "Width (m)": 0.59999999999999964,
+            "Area (m2)": 0.083999999999999964,
+            "Discharge (m3/s)": 0.036323167544999979,
+            "FractionOfTotalDischarge": 0.01469900287770644,
+            "Snr (dB)": {
+                "Beam0": 47.509239249999986,
+                "Beam1": 49.226459250000012,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.674866,
+            "VelocityAngle (deg)": 13.43888593196754,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 1.2602464146509231,
+            "VelocityStandardError (m/s)": {
+                "X": 0.011128889612024559,
+                "Y": 0.004719832313342504,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "8c8f3b529e664887a62ade52154845c7",
+        "CreationTime": "2017-03-07T17:29:52.1060000Z",
+        "Location (m)": 17.2,
+        "Depth (m)": 0.16,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "2ae4da748a92432d9de437aa41367926",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.064,
+            "StartTime": "2017-03-07T17:30:04.4770000Z",
+            "EndTime": "2017-03-07T17:30:44.1290000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.1056,
+                    "MaxPingPrecision (m/s)": 0.0006960771
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 898.0,
+                    "PeakPosition (m)": 0.1159911,
+                    "PeakLevel (dB)": 48.53772
+                }, {
+                    "NoiseLevel (cnts)": 904.0,
+                    "PeakPosition (m)": 0.1165985,
+                    "PeakLevel (dB)": 50.06688
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.4319953,
+                        "Max": 0.9226576,
+                        "Average": 0.66243936375000012,
+                        "StandardDeviation": 0.12398913668228169,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.01568377,
+                        "Max": 0.2101278,
+                        "Average": 0.0830350541,
+                        "StandardDeviation": 0.0482734375275804,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.4319953,
+                        "Max": 0.9226576,
+                        "Average": 0.66243936375000012,
+                        "StandardDeviation": 0.12398913668228169,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.01568377,
+                        "Max": 0.2101278,
+                        "Average": 0.0830350541,
+                        "StandardDeviation": 0.0482734375275804,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.674866,
+                    "Max": 2.674866,
+                    "Average": 2.674866,
+                    "StandardDeviation": 0.0,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.589839,
+                    "Max": 9.66535,
+                    "Average": 9.65816601249999,
+                    "StandardDeviation": 0.016561279021338561,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.0714557657736548,
+                    "Max": 1.7154575692471206,
+                    "Average": 0.833881824659013,
+                    "StandardDeviation": 0.43000976976515115,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.86385,
+                        "Max": 49.3988,
+                        "Average": 47.499609625000005,
+                        "StandardDeviation": 0.770026896420671,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.81548,
+                        "Max": 51.20372,
+                        "Average": 48.983455125000006,
+                        "StandardDeviation": 0.70422100839386692,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.66243936375000012,
+                    "Y": 0.0830350541,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.013862406904654729,
+                    "Y": 0.0053971343909629569,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 7.1446140271299585,
+                "Snr (dB)": {
+                    "Beam0": 47.499609625000005,
+                    "Beam1": 48.983455125000006,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.770026896420671,
+                    "Beam1": 0.70422100839386692,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 0.833881824659013,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.66243936375000012,
+                "Y": 0.0830350541,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.66243936375000012,
+                "Y": 0.0830350541,
+                "Z": null
+            },
+            "Width (m)": 0.59999999999999964,
+            "Area (m2)": 0.095999999999999946,
+            "Discharge (m3/s)": 0.06359417891999998,
+            "FractionOfTotalDischarge": 0.025734843135373327,
+            "Snr (dB)": {
+                "Beam0": 47.499609625000005,
+                "Beam1": 48.983455125000006,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.674866,
+            "VelocityAngle (deg)": 7.1446140271299585,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 0.833881824659013,
+            "VelocityStandardError (m/s)": {
+                "X": 0.013862406904654729,
+                "Y": 0.0053971343909629569,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "787480248c3e43c3a0d8da5b3f37c8d1",
+        "CreationTime": "2017-03-07T17:30:58.6580000Z",
+        "Location (m)": 17.8,
+        "Depth (m)": 0.21,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "d4bb4c3b58b7482ebf7e4b454f6315dc",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.084,
+            "StartTime": "2017-03-07T17:32:36.0620000Z",
+            "EndTime": "2017-03-07T17:33:15.7110000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.1056,
+                    "MaxPingPrecision (m/s)": 0.0006960771
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 920.0,
+                    "PeakPosition (m)": 0.1165985,
+                    "PeakLevel (dB)": 47.63132
+                }, {
+                    "NoiseLevel (cnts)": 913.0,
+                    "PeakPosition (m)": 0.117812,
+                    "PeakLevel (dB)": 49.93045
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3462666,
+                        "Max": 1.073568,
+                        "Average": 0.70533330624999979,
+                        "StandardDeviation": 0.15982935653133107,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1583977,
+                        "Max": 0.134047,
+                        "Average": 0.013852626324999997,
+                        "StandardDeviation": 0.055080507841332921,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3462666,
+                        "Max": 1.073568,
+                        "Average": 0.70533330624999979,
+                        "StandardDeviation": 0.15982935653133107,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1583977,
+                        "Max": 0.134047,
+                        "Average": 0.013852626324999997,
+                        "StandardDeviation": 0.055080507841332921,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.666595,
+                    "Max": 2.674866,
+                    "Average": 2.6735765625000019,
+                    "StandardDeviation": 0.0024226026377325272,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.584177,
+                    "Max": 9.646473,
+                    "Average": 9.6359005124999833,
+                    "StandardDeviation": 0.009448699385407,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.11409203715759118,
+                    "Max": 1.8823880481027171,
+                    "Average": 1.22797585945028,
+                    "StandardDeviation": 0.35586935990248192,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.90916,
+                        "Max": 48.9456,
+                        "Average": 47.389709000000011,
+                        "StandardDeviation": 0.66064675488168167,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 47.4976,
+                        "Max": 50.40793,
+                        "Average": 48.944235625000019,
+                        "StandardDeviation": 0.70435297586848722,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.70533330624999979,
+                    "Y": 0.013852626324999997,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.017869465300205313,
+                    "Y": 0.00615818798842153,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 1.1251347286832118,
+                "Snr (dB)": {
+                    "Beam0": 47.389709000000011,
+                    "Beam1": 48.944235625000019,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.66064675488168167,
+                    "Beam1": 0.70435297586848722,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 1.22797585945028,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.70533330624999979,
+                "Y": 0.013852626324999997,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.70533330624999979,
+                "Y": 0.013852626324999997,
+                "Z": null
+            },
+            "Width (m)": 0.59999999999999964,
+            "Area (m2)": 0.12599999999999992,
+            "Discharge (m3/s)": 0.088871996587499918,
+            "FractionOfTotalDischarge": 0.035964091842177442,
+            "Snr (dB)": {
+                "Beam0": 47.389709000000011,
+                "Beam1": 48.944235625000019,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.6735765625000019,
+            "VelocityAngle (deg)": 1.1251347286832118,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 1.22797585945028,
+            "VelocityStandardError (m/s)": {
+                "X": 0.017869465300205313,
+                "Y": 0.00615818798842153,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "4a5be882569a43c592c7932869780bf6",
+        "CreationTime": "2017-03-07T17:33:39.2380000Z",
+        "Location (m)": 18.4,
+        "Depth (m)": 0.26,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "ce7985ad3feb43b68e9e635237a4caa8",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.10400000000000001,
+            "StartTime": "2017-03-07T17:34:08.5370000Z",
+            "EndTime": "2017-03-07T17:34:48.2110000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.1056,
+                    "MaxPingPrecision (m/s)": 0.0006960771
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 910.0,
+                    "PeakPosition (m)": 0.1153832,
+                    "PeakLevel (dB)": 47.8126
+                }, {
+                    "NoiseLevel (cnts)": 912.0,
+                    "PeakPosition (m)": 0.1172055,
+                    "PeakLevel (dB)": 49.13466
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.01368055,
+                        "Max": 1.174239,
+                        "Average": 0.832716561875,
+                        "StandardDeviation": 0.20906105912146622,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.158749,
+                        "Max": 0.14964,
+                        "Average": -0.012518480212500002,
+                        "StandardDeviation": 0.064641714527085725,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3747588,
+                        "Max": 1.174239,
+                        "Average": 0.84308410632911379,
+                        "StandardDeviation": 0.18856761719393267,
+                        "Count": 79
+                    },
+                    "Y": {
+                        "Min": -0.158749,
+                        "Max": 0.14964,
+                        "Average": -0.013661109202531644,
+                        "StandardDeviation": 0.064236557101825867,
+                        "Count": 79
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.654175,
+                    "Max": 2.674866,
+                    "Average": 2.666898675000001,
+                    "StandardDeviation": 0.005258513390960581,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.582289,
+                    "Max": 9.627596,
+                    "Average": 9.622687425,
+                    "StandardDeviation": 0.0087243698895100585,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.049012920752289496,
+                    "Max": 2.5074416120177978,
+                    "Average": 0.62983593171164376,
+                    "StandardDeviation": 0.57582302411136921,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.90916,
+                        "Max": 49.5121,
+                        "Average": 47.723662250000004,
+                        "StandardDeviation": 0.70966202482657148,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 47.90686,
+                        "Max": 50.97636,
+                        "Average": 49.293815750000014,
+                        "StandardDeviation": 0.6790624744338627,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.84308410632911379,
+                    "Y": -0.013661109202531644,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.021215514461134372,
+                    "Y": 0.0072271773192407939,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": -0.92832423413664555,
+                "Snr (dB)": {
+                    "Beam0": 47.723662250000004,
+                    "Beam1": 49.293815750000014,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.70966202482657148,
+                    "Beam1": 0.6790624744338627,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 1,
+                "Tilt (deg)": 0.62983593171164376,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.84308410632911379,
+                "Y": -0.013661109202531644,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.84308410632911379,
+                "Y": -0.013661109202531644,
+                "Z": null
+            },
+            "Width (m)": 0.59999999999999964,
+            "Area (m2)": 0.15599999999999992,
+            "Discharge (m3/s)": 0.13152112058734169,
+            "FractionOfTotalDischarge": 0.053223038095382945,
+            "Snr (dB)": {
+                "Beam0": 47.723662250000004,
+                "Beam1": 49.293815750000014,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.666898675000001,
+            "VelocityAngle (deg)": -0.92832423413664555,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 1,
+            "Tilt (deg)": 0.62983593171164376,
+            "VelocityStandardError (m/s)": {
+                "X": 0.021215514461134372,
+                "Y": 0.0072271773192407939,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "d2e2ae40cd66499bb2726f3e29077794",
+        "CreationTime": "2017-03-07T17:35:24.2890000Z",
+        "Location (m)": 19.0,
+        "Depth (m)": 0.32,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "6bd34a7be134449f8d034f2db43bbe98",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.128,
+            "StartTime": "2017-03-07T17:36:05.3580000Z",
+            "EndTime": "2017-03-07T17:36:45.0310000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.1056,
+                    "MaxPingPrecision (m/s)": 0.0006960771
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 924.0,
+                    "PeakPosition (m)": 0.1165985,
+                    "PeakLevel (dB)": 47.17812
+                }, {
+                    "NoiseLevel (cnts)": 927.0,
+                    "PeakPosition (m)": 0.1159911,
+                    "PeakLevel (dB)": 49.06644
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.06045117,
+                        "Max": 1.236432,
+                        "Average": 0.8739306021250004,
+                        "StandardDeviation": 0.21218574051849443,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1265945,
+                        "Max": 0.2573391,
+                        "Average": 0.028138667672499996,
+                        "StandardDeviation": 0.071235267824224152,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3876272,
+                        "Max": 1.236432,
+                        "Average": 0.88422781012658258,
+                        "StandardDeviation": 0.19237633178636834,
+                        "Count": 79
+                    },
+                    "Y": {
+                        "Min": -0.1265945,
+                        "Max": 0.2573391,
+                        "Average": 0.027853670681012657,
+                        "StandardDeviation": 0.071644535284199534,
+                        "Count": 79
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.674866,
+                    "Average": 2.6550025625000004,
+                    "StandardDeviation": 0.0084564920246596384,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.55586,
+                    "Max": 9.608717,
+                    "Average": 9.6021100375000028,
+                    "StandardDeviation": 0.013602791217147903,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.42868796607379733,
+                    "Max": 5.1971246233083912,
+                    "Average": 1.4556840085965059,
+                    "StandardDeviation": 0.829170203645853,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 46.09044,
+                        "Max": 49.19486,
+                        "Average": 47.525667750000011,
+                        "StandardDeviation": 0.76880958735242089,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.63358,
+                        "Max": 51.31741,
+                        "Average": 49.01755875,
+                        "StandardDeviation": 0.77409986023028321,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.88422781012658258,
+                    "Y": 0.027853670681012657,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.021644028331737349,
+                    "Y": 0.00806063998157205,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 1.8042524876644692,
+                "Snr (dB)": {
+                    "Beam0": 47.525667750000011,
+                    "Beam1": 49.01755875,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.76880958735242089,
+                    "Beam1": 0.77409986023028321,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 1,
+                "Tilt (deg)": 1.4556840085965059,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.88422781012658258,
+                "Y": 0.027853670681012657,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.88422781012658258,
+                "Y": 0.027853670681012657,
+                "Z": null
+            },
+            "Width (m)": 0.55000000000000071,
+            "Area (m2)": 0.17600000000000024,
+            "Discharge (m3/s)": 0.15562409458227874,
+            "FractionOfTotalDischarge": 0.062976859363143844,
+            "Snr (dB)": {
+                "Beam0": 47.525667750000011,
+                "Beam1": 49.01755875,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.6550025625000004,
+            "VelocityAngle (deg)": 1.8042524876644692,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 1,
+            "Tilt (deg)": 1.4556840085965059,
+            "VelocityStandardError (m/s)": {
+                "X": 0.021644028331737349,
+                "Y": 0.00806063998157205,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "c60fe6a2d2d84d59ad994389195ba4cc",
+        "CreationTime": "2017-03-07T17:40:18.5950000Z",
+        "Location (m)": 19.5,
+        "Depth (m)": 0.35,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "b874f85b90e6454b8bd9a31bb4c496ad",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.13999999999999999,
+            "StartTime": "2017-03-07T17:40:39.0760000Z",
+            "EndTime": "2017-03-07T17:41:18.7590000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 926.0,
+                    "PeakPosition (m)": 0.1165818,
+                    "PeakLevel (dB)": 47.88058
+                }, {
+                    "NoiseLevel (cnts)": 930.0,
+                    "PeakPosition (m)": 0.1171887,
+                    "PeakLevel (dB)": 49.18013
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3222932,
+                        "Max": 1.180633,
+                        "Average": 0.76486970124999987,
+                        "StandardDeviation": 0.19523704937407646,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1807004,
+                        "Max": 0.126197,
+                        "Average": -0.034622852875000006,
+                        "StandardDeviation": 0.064267045527369143,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3222932,
+                        "Max": 1.180633,
+                        "Average": 0.76486970124999987,
+                        "StandardDeviation": 0.19523704937407646,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1807004,
+                        "Max": 0.126197,
+                        "Average": -0.034622852875000006,
+                        "StandardDeviation": 0.064267045527369143,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.633423,
+                    "Average": 2.633423,
+                    "StandardDeviation": 0.0,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.50489,
+                    "Max": 9.580401,
+                    "Average": 9.5688857000000045,
+                    "StandardDeviation": 0.017756008152279033,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.36783137243100422,
+                    "Max": 4.9160061487380871,
+                    "Average": 1.6838025198464881,
+                    "StandardDeviation": 0.72602226519609259,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.93182,
+                        "Max": 49.35348,
+                        "Average": 47.639534250000004,
+                        "StandardDeviation": 0.82491322739490336,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 47.1338,
+                        "Max": 51.68121,
+                        "Average": 49.237828375000007,
+                        "StandardDeviation": 0.78147712186026019,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.76486970124999987,
+                    "Y": -0.034622852875000006,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.021828165706345885,
+                    "Y": 0.0071852741256135605,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": -2.5918010352626086,
+                "Snr (dB)": {
+                    "Beam0": 47.639534250000004,
+                    "Beam1": 49.237828375000007,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.82491322739490336,
+                    "Beam1": 0.78147712186026019,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 1.6838025198464881,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.76486970124999987,
+                "Y": -0.034622852875000006,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.76486970124999987,
+                "Y": -0.034622852875000006,
+                "Z": null
+            },
+            "Width (m)": 0.5,
+            "Area (m2)": 0.175,
+            "Discharge (m3/s)": 0.13385219771874995,
+            "FractionOfTotalDischarge": 0.054166361923633222,
+            "Snr (dB)": {
+                "Beam0": 47.639534250000004,
+                "Beam1": 49.237828375000007,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.633423,
+            "VelocityAngle (deg)": -2.5918010352626086,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 1.6838025198464881,
+            "VelocityStandardError (m/s)": {
+                "X": 0.021828165706345885,
+                "Y": 0.0071852741256135605,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "a7b2af3b64d44d3cba17861eacc9cec8",
+        "CreationTime": "2017-03-07T17:41:29.5880000Z",
+        "Location (m)": 20.0,
+        "Depth (m)": 0.41,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "2b63d7ed77394244b1693d3aeba71311",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.164,
+            "StartTime": "2017-03-07T17:41:58.4170000Z",
+            "EndTime": "2017-03-07T17:42:38.0870000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 937.0,
+                    "PeakPosition (m)": 0.1177952,
+                    "PeakLevel (dB)": 48.12984
+                }, {
+                    "NoiseLevel (cnts)": 926.0,
+                    "PeakPosition (m)": 0.1177952,
+                    "PeakLevel (dB)": 48.93002
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3467058,
+                        "Max": 1.126525,
+                        "Average": 0.88354586250000011,
+                        "StandardDeviation": 0.14864691935880095,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1434701,
+                        "Max": 0.2228357,
+                        "Average": 0.075931604353749974,
+                        "StandardDeviation": 0.063707653374472734,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.6024047,
+                        "Max": 1.126525,
+                        "Average": 0.88938335128205159,
+                        "StandardDeviation": 0.13713566010184031,
+                        "Count": 78
+                    },
+                    "Y": {
+                        "Min": -0.04870069,
+                        "Max": 0.2228357,
+                        "Average": 0.078469371901282017,
+                        "StandardDeviation": 0.059383711683160478,
+                        "Count": 78
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.633423,
+                    "Average": 2.633423,
+                    "StandardDeviation": 0.0,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.495452,
+                    "Max": 9.570962,
+                    "Average": 9.5598242624999958,
+                    "StandardDeviation": 0.018611702828347718,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.093247905131426279,
+                    "Max": 2.8179570334952992,
+                    "Average": 1.1083973200935926,
+                    "StandardDeviation": 0.708957818651481,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.56926,
+                        "Max": 49.30816,
+                        "Average": 47.575802999999979,
+                        "StandardDeviation": 0.74079728828480917,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.97464,
+                        "Max": 51.13551,
+                        "Average": 49.302910749999974,
+                        "StandardDeviation": 0.82511389645059663,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.88938335128205159,
+                    "Y": 0.078469371901282017,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.01552755584955731,
+                    "Y": 0.0067238812941106717,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 5.0420911958237484,
+                "Snr (dB)": {
+                    "Beam0": 47.575802999999979,
+                    "Beam1": 49.302910749999974,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.74079728828480917,
+                    "Beam1": 0.82511389645059663,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 2,
+                "Tilt (deg)": 1.1083973200935926,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.88938335128205159,
+                "Y": 0.078469371901282017,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.88938335128205159,
+                "Y": 0.078469371901282017,
+                "Z": null
+            },
+            "Width (m)": 0.44999999999999929,
+            "Area (m2)": 0.18449999999999969,
+            "Discharge (m3/s)": 0.16409122831153825,
+            "FractionOfTotalDischarge": 0.066403279234101456,
+            "Snr (dB)": {
+                "Beam0": 47.575802999999979,
+                "Beam1": 49.302910749999974,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.633423,
+            "VelocityAngle (deg)": 5.0420911958237484,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 2,
+            "Tilt (deg)": 1.1083973200935926,
+            "VelocityStandardError (m/s)": {
+                "X": 0.01552755584955731,
+                "Y": 0.0067238812941106717,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "bfa56e8ea04c434ca47c3df3b6b941ca",
+        "CreationTime": "2017-03-07T17:43:05.0300000Z",
+        "Location (m)": 20.4,
+        "Depth (m)": 0.48,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "e83a344b913f4befb6d4c5941a4210b9",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.192,
+            "StartTime": "2017-03-07T17:44:17.6460000Z",
+            "EndTime": "2017-03-07T17:44:57.2410000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 937.0,
+                    "PeakPosition (m)": 0.1165818,
+                    "PeakLevel (dB)": 49.12688
+                }, {
+                    "NoiseLevel (cnts)": 927.0,
+                    "PeakPosition (m)": 0.1171887,
+                    "PeakLevel (dB)": 50.43067
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3806644,
+                        "Max": 1.246861,
+                        "Average": 0.85667902749999991,
+                        "StandardDeviation": 0.16896778227930934,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1333963,
+                        "Max": 0.1504207,
+                        "Average": 0.022479998825000007,
+                        "StandardDeviation": 0.057544769200735188,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3806644,
+                        "Max": 1.246861,
+                        "Average": 0.85667902749999991,
+                        "StandardDeviation": 0.16896778227930934,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1333963,
+                        "Max": 0.1504207,
+                        "Average": 0.022479998825000007,
+                        "StandardDeviation": 0.057544769200735188,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.633423,
+                    "Average": 2.633423,
+                    "StandardDeviation": 0.0,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.499228,
+                    "Max": 9.561523,
+                    "Average": 9.5475543000000052,
+                    "StandardDeviation": 0.014375475925550139,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.48175065579293069,
+                    "Max": 2.995146747493576,
+                    "Average": 1.3792183772813236,
+                    "StandardDeviation": 0.526171508303006,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.7732,
+                        "Max": 49.91998,
+                        "Average": 47.744336749999988,
+                        "StandardDeviation": 0.867183765918648,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 48.15697,
+                        "Max": 51.36288,
+                        "Average": 49.496173375,
+                        "StandardDeviation": 0.76857967590223475,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.85667902749999991,
+                    "Y": 0.022479998825000007,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.018891172359196,
+                    "Y": 0.0064337007841190055,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 1.503145872796456,
+                "Snr (dB)": {
+                    "Beam0": 47.744336749999988,
+                    "Beam1": 49.496173375,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.867183765918648,
+                    "Beam1": 0.76857967590223475,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 1.3792183772813236,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.85667902749999991,
+                "Y": 0.022479998825000007,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.85667902749999991,
+                "Y": 0.022479998825000007,
+                "Z": null
+            },
+            "Width (m)": 0.40000000000000036,
+            "Area (m2)": 0.19200000000000017,
+            "Discharge (m3/s)": 0.16448237328000012,
+            "FractionOfTotalDischarge": 0.066561565017132313,
+            "Snr (dB)": {
+                "Beam0": 47.744336749999988,
+                "Beam1": 49.496173375,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.633423,
+            "VelocityAngle (deg)": 1.503145872796456,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 1.3792183772813236,
+            "VelocityStandardError (m/s)": {
+                "X": 0.018891172359196,
+                "Y": 0.0064337007841190055,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "d29c479e40d04b21be4e014e90fdbafd",
+        "CreationTime": "2017-03-07T17:45:36.6680000Z",
+        "Location (m)": 20.8,
+        "Depth (m)": 0.52,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "301b269737c04d448095e2b6318cd017",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.20800000000000002,
+            "StartTime": "2017-03-07T17:45:57.6820000Z",
+            "EndTime": "2017-03-07T17:46:37.3620000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 926.0,
+                    "PeakPosition (m)": 0.1165818,
+                    "PeakLevel (dB)": 48.19782
+                }, {
+                    "NoiseLevel (cnts)": 928.0,
+                    "PeakPosition (m)": 0.1165818,
+                    "PeakLevel (dB)": 49.11192
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.6273538,
+                        "Max": 1.376058,
+                        "Average": 0.84419805375000012,
+                        "StandardDeviation": 0.13696052891689525,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1108605,
+                        "Max": 0.2680263,
+                        "Average": 0.075750947387499962,
+                        "StandardDeviation": 0.073106874748907771,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.6273538,
+                        "Max": 1.179458,
+                        "Average": 0.83746564936708856,
+                        "StandardDeviation": 0.1237988977911757,
+                        "Count": 79
+                    },
+                    "Y": {
+                        "Min": -0.1108605,
+                        "Max": 0.2680263,
+                        "Average": 0.075447027227848046,
+                        "StandardDeviation": 0.073523137239124792,
+                        "Count": 79
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.633423,
+                    "Average": 2.633423,
+                    "StandardDeviation": 0.0,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.480349,
+                    "Max": 9.552085,
+                    "Average": 9.5303747999999953,
+                    "StandardDeviation": 0.021433306766498586,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.25641304961772532,
+                    "Max": 6.7255570804692972,
+                    "Average": 2.5175930282823229,
+                    "StandardDeviation": 1.6484214108976181,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.84118,
+                        "Max": 49.37614,
+                        "Average": 47.83526,
+                        "StandardDeviation": 0.77815437151886768,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 47.95233,
+                        "Max": 51.38562,
+                        "Average": 49.413468625,
+                        "StandardDeviation": 0.81870593835830308,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.83746564936708856,
+                    "Y": 0.075447027227848046,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.013928464205282924,
+                    "Y": 0.00827199921458629,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 5.1478625257078656,
+                "Snr (dB)": {
+                    "Beam0": 47.83526,
+                    "Beam1": 49.413468625,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.77815437151886768,
+                    "Beam1": 0.81870593835830308,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 1,
+                "Tilt (deg)": 2.5175930282823229,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.83746564936708856,
+                "Y": 0.075447027227848046,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.83746564936708856,
+                "Y": 0.075447027227848046,
+                "Z": null
+            },
+            "Width (m)": 0.40000000000000036,
+            "Area (m2)": 0.20800000000000018,
+            "Discharge (m3/s)": 0.17419285506835458,
+            "FractionOfTotalDischarge": 0.0704911341984023,
+            "Snr (dB)": {
+                "Beam0": 47.83526,
+                "Beam1": 49.413468625,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.633423,
+            "VelocityAngle (deg)": 5.1478625257078656,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 1,
+            "Tilt (deg)": 2.5175930282823229,
+            "VelocityStandardError (m/s)": {
+                "X": 0.013928464205282924,
+                "Y": 0.00827199921458629,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "3fb11314469d4f6f95f278534273a578",
+        "CreationTime": "2017-03-07T17:47:12.2070000Z",
+        "Location (m)": 21.2,
+        "Depth (m)": 0.55,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "ea1cd482b7eb45cb8d36b8810fe1f70d",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.22000000000000003,
+            "StartTime": "2017-03-07T17:48:20.4440000Z",
+            "EndTime": "2017-03-07T17:49:00.0660000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 932.0,
+                    "PeakPosition (m)": 0.1165818,
+                    "PeakLevel (dB)": 48.69634
+                }, {
+                    "NoiseLevel (cnts)": 938.0,
+                    "PeakPosition (m)": 0.1171887,
+                    "PeakLevel (dB)": 50.29424
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.4336974,
+                        "Max": 1.169957,
+                        "Average": 0.79317360249999991,
+                        "StandardDeviation": 0.14263765609191595,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1233261,
+                        "Max": 0.2349112,
+                        "Average": 0.04530397965125,
+                        "StandardDeviation": 0.077802039317728666,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.4336974,
+                        "Max": 1.169957,
+                        "Average": 0.79317360249999991,
+                        "StandardDeviation": 0.14263765609191595,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1233261,
+                        "Max": 0.2349112,
+                        "Average": 0.04530397965125,
+                        "StandardDeviation": 0.077802039317728666,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.633423,
+                    "Average": 2.633423,
+                    "StandardDeviation": 0.0,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.472799,
+                    "Max": 9.542645,
+                    "Average": 9.5241449624999923,
+                    "StandardDeviation": 0.018462771539577143,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.13180230353546968,
+                    "Max": 2.824460434997865,
+                    "Average": 1.1298513521120479,
+                    "StandardDeviation": 0.64471842271541679,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.5466,
+                        "Max": 48.67368,
+                        "Average": 47.335326250000016,
+                        "StandardDeviation": 0.6669559594637724,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 47.49759,
+                        "Max": 50.77172,
+                        "Average": 49.059623374999987,
+                        "StandardDeviation": 0.70323824399168988,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.79317360249999991,
+                    "Y": 0.04530397965125,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.015947374758638052,
+                    "Y": 0.008698532435127632,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 3.2690316138241053,
+                "Snr (dB)": {
+                    "Beam0": 47.335326250000016,
+                    "Beam1": 49.059623374999987,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.6669559594637724,
+                    "Beam1": 0.70323824399168988,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 1.1298513521120479,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.79317360249999991,
+                "Y": 0.04530397965125,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.79317360249999991,
+                "Y": 0.04530397965125,
+                "Z": null
+            },
+            "Width (m)": 0.40000000000000036,
+            "Area (m2)": 0.22000000000000022,
+            "Discharge (m3/s)": 0.17449819255000015,
+            "FractionOfTotalDischarge": 0.0706146960137594,
+            "Snr (dB)": {
+                "Beam0": 47.335326250000016,
+                "Beam1": 49.059623374999987,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.633423,
+            "VelocityAngle (deg)": 3.2690316138241053,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 1.1298513521120479,
+            "VelocityStandardError (m/s)": {
+                "X": 0.015947374758638052,
+                "Y": 0.008698532435127632,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "988be8a643d742228bf220dd94287fe5",
+        "CreationTime": "2017-03-07T17:49:13.9360000Z",
+        "Location (m)": 21.6,
+        "Depth (m)": 0.7,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "a5e0e7015c944e388bd8de44682895d3",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.27999999999999997,
+            "StartTime": "2017-03-07T17:49:27.2490000Z",
+            "EndTime": "2017-03-07T17:50:06.9210000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 932.0,
+                    "PeakPosition (m)": 0.1171887,
+                    "PeakLevel (dB)": 48.51506
+                }, {
+                    "NoiseLevel (cnts)": 923.0,
+                    "PeakPosition (m)": 0.1171887,
+                    "PeakLevel (dB)": 50.11235
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.08577289,
+                        "Max": 1.200677,
+                        "Average": 0.75244629612500025,
+                        "StandardDeviation": 0.21969947165876205,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.2296122,
+                        "Max": 0.2322363,
+                        "Average": -0.015954587074999992,
+                        "StandardDeviation": 0.10223852478300063,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.2251164,
+                        "Max": 1.200677,
+                        "Average": 0.77654084415584435,
+                        "StandardDeviation": 0.18556448490894828,
+                        "Count": 77
+                    },
+                    "Y": {
+                        "Min": -0.2296122,
+                        "Max": 0.2322363,
+                        "Average": -0.020332942155844153,
+                        "StandardDeviation": 0.10134698361893973,
+                        "Count": 77
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.633423,
+                    "Average": 2.633423,
+                    "StandardDeviation": 0.0,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.467134,
+                    "Max": 9.533206,
+                    "Average": 9.5222859625000034,
+                    "StandardDeviation": 0.018783210511655303,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.21689002261780027,
+                    "Max": 4.9652323286194324,
+                    "Average": 1.9041650120874629,
+                    "StandardDeviation": 1.0095002691764217,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.88651,
+                        "Max": 48.85497,
+                        "Average": 47.273011499999988,
+                        "StandardDeviation": 0.67435811435408011,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.36074,
+                        "Max": 51.43109,
+                        "Average": 48.997666000000017,
+                        "StandardDeviation": 0.7931880557974551,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.77654084415584435,
+                    "Y": -0.020332942155844153,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.021147035670659533,
+                    "Y": 0.011549560675659855,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": -1.4998897337590187,
+                "Snr (dB)": {
+                    "Beam0": 47.273011499999988,
+                    "Beam1": 48.997666000000017,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.67435811435408011,
+                    "Beam1": 0.7931880557974551,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 3,
+                "Tilt (deg)": 1.9041650120874629,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.77654084415584435,
+                "Y": -0.020332942155844153,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.77654084415584435,
+                "Y": -0.020332942155844153,
+                "Z": null
+            },
+            "Width (m)": 0.40000000000000036,
+            "Area (m2)": 0.28000000000000025,
+            "Discharge (m3/s)": 0.2174314363636366,
+            "FractionOfTotalDischarge": 0.087988617866364568,
+            "Snr (dB)": {
+                "Beam0": 47.273011499999988,
+                "Beam1": 48.997666000000017,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.633423,
+            "VelocityAngle (deg)": -1.4998897337590187,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 3,
+            "Tilt (deg)": 1.9041650120874629,
+            "VelocityStandardError (m/s)": {
+                "X": 0.021147035670659533,
+                "Y": 0.011549560675659855,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "7c6accbc1b324ae38a9f7483e677701f",
+        "CreationTime": "2017-03-07T17:50:29.4860000Z",
+        "Location (m)": 22.0,
+        "Depth (m)": 0.76,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "5d64487bddec45d4b348b78e1ae4bef0",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.30400000000000005,
+            "StartTime": "2017-03-07T17:50:55.6820000Z",
+            "EndTime": "2017-03-07T17:51:35.3540000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 931.0,
+                    "PeakPosition (m)": 0.1171887,
+                    "PeakLevel (dB)": 47.586
+                }, {
+                    "NoiseLevel (cnts)": 923.0,
+                    "PeakPosition (m)": 0.1177952,
+                    "PeakLevel (dB)": 49.8395
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": -0.1411697,
+                        "Max": 1.451478,
+                        "Average": 0.40428347916249985,
+                        "StandardDeviation": 0.287767934776068,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.3994126,
+                        "Max": 0.2886967,
+                        "Average": 0.036584818412499991,
+                        "StandardDeviation": 0.16032553802372418,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": -0.1411697,
+                        "Max": 1.07535,
+                        "Average": 0.37913918375641015,
+                        "StandardDeviation": 0.24336875398843488,
+                        "Count": 78
+                    },
+                    "Y": {
+                        "Min": -0.3994126,
+                        "Max": 0.2886967,
+                        "Average": 0.036186402089743594,
+                        "StandardDeviation": 0.16142379624662823,
+                        "Count": 78
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.637604,
+                    "Average": 2.6334752624999958,
+                    "StandardDeviation": 0.00046745001069632946,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.448257,
+                    "Max": 9.514329,
+                    "Average": 9.50583411249999,
+                    "StandardDeviation": 0.018317246745320426,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.15238746585123056,
+                    "Max": 6.17806987228986,
+                    "Average": 2.5215171921807666,
+                    "StandardDeviation": 1.1240854824026867,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.34266,
+                        "Max": 48.67368,
+                        "Average": 46.999391125,
+                        "StandardDeviation": 0.722812353161959,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.86095,
+                        "Max": 50.72625,
+                        "Average": 48.910981,
+                        "StandardDeviation": 0.82615981076792933,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.37913918375641015,
+                    "Y": 0.036186402089743594,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.027556085096949078,
+                    "Y": 0.018277645725449373,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 5.4519995465787954,
+                "Snr (dB)": {
+                    "Beam0": 46.999391125,
+                    "Beam1": 48.910981,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.722812353161959,
+                    "Beam1": 0.82615981076792933,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 2,
+                "Tilt (deg)": 2.5215171921807666,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.37913918375641015,
+                "Y": 0.036186402089743594,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.37913918375641015,
+                "Y": 0.036186402089743594,
+                "Z": null
+            },
+            "Width (m)": 0.39999999999999858,
+            "Area (m2)": 0.30399999999999894,
+            "Discharge (m3/s)": 0.11525831186194828,
+            "FractionOfTotalDischarge": 0.046641919530819517,
+            "Snr (dB)": {
+                "Beam0": 46.999391125,
+                "Beam1": 48.910981,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.6334752624999958,
+            "VelocityAngle (deg)": 5.4519995465787954,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 2,
+            "Tilt (deg)": 2.5215171921807666,
+            "VelocityStandardError (m/s)": {
+                "X": 0.027556085096949078,
+                "Y": 0.018277645725449373,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "bf051ef6a2f14acf88889fd4a9e1d840",
+        "CreationTime": "2017-03-07T17:51:53.1990000Z",
+        "Location (m)": 22.4,
+        "Depth (m)": 0.66,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "5385ad3f596d407da8b7807afa046a1c",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.264,
+            "StartTime": "2017-03-07T17:52:21.5570000Z",
+            "EndTime": "2017-03-07T17:53:01.2320000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 916.0,
+                    "PeakPosition (m)": 0.1165818,
+                    "PeakLevel (dB)": 47.15546
+                }, {
+                    "NoiseLevel (cnts)": 927.0,
+                    "PeakPosition (m)": 0.1165818,
+                    "PeakLevel (dB)": 48.31612
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3182915,
+                        "Max": 1.177957,
+                        "Average": 0.76263583250000011,
+                        "StandardDeviation": 0.16522480959514169,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1471926,
+                        "Max": 0.2397209,
+                        "Average": 0.066856552374999975,
+                        "StandardDeviation": 0.078453783336649069,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.3566235,
+                        "Max": 1.177957,
+                        "Average": 0.77395910256410261,
+                        "StandardDeviation": 0.15103923504969971,
+                        "Count": 78
+                    },
+                    "Y": {
+                        "Min": -0.1471926,
+                        "Max": 0.2397209,
+                        "Average": 0.065265029358974339,
+                        "StandardDeviation": 0.078283930148206018,
+                        "Count": 78
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.650024,
+                    "Average": 2.6377354874999988,
+                    "StandardDeviation": 0.0040754185682173663,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.438818,
+                    "Max": 9.514329,
+                    "Average": 9.49976428750001,
+                    "StandardDeviation": 0.016180506531785738,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.3819832755545669,
+                    "Max": 3.6586654949746866,
+                    "Average": 1.695463492280489,
+                    "StandardDeviation": 0.75231587181885429,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.22936,
+                        "Max": 48.28846,
+                        "Average": 47.134782750000014,
+                        "StandardDeviation": 0.68044214834398264,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.67906,
+                        "Max": 50.88541,
+                        "Average": 48.42412325,
+                        "StandardDeviation": 0.76932060585252937,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.77395910256410261,
+                    "Y": 0.065265029358974339,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.017101825710154245,
+                    "Y": 0.0088639096249393413,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 4.820131723122417,
+                "Snr (dB)": {
+                    "Beam0": 47.134782750000014,
+                    "Beam1": 48.42412325,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.68044214834398264,
+                    "Beam1": 0.76932060585252937,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 2,
+                "Tilt (deg)": 1.695463492280489,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.77395910256410261,
+                "Y": 0.065265029358974339,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.77395910256410261,
+                "Y": 0.065265029358974339,
+                "Z": null
+            },
+            "Width (m)": 0.40000000000000036,
+            "Area (m2)": 0.26400000000000023,
+            "Discharge (m3/s)": 0.20432520307692326,
+            "FractionOfTotalDischarge": 0.08268487995422838,
+            "Snr (dB)": {
+                "Beam0": 47.134782750000014,
+                "Beam1": 48.42412325,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.6377354874999988,
+            "VelocityAngle (deg)": 4.820131723122417,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 2,
+            "Tilt (deg)": 1.695463492280489,
+            "VelocityStandardError (m/s)": {
+                "X": 0.017101825710154245,
+                "Y": 0.0088639096249393413,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "3a27a253885641059a2e43230932a76d",
+        "CreationTime": "2017-03-07T17:53:11.0040000Z",
+        "Location (m)": 22.8,
+        "Depth (m)": 0.66,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "f829e18a94354d4298b1d408d166cbec",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.264,
+            "StartTime": "2017-03-07T17:53:22.7360000Z",
+            "EndTime": "2017-03-07T17:54:02.4080000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 928.0,
+                    "PeakPosition (m)": 0.1159744,
+                    "PeakLevel (dB)": 47.08748
+                }, {
+                    "NoiseLevel (cnts)": 927.0,
+                    "PeakPosition (m)": 0.1159744,
+                    "PeakLevel (dB)": 49.54392
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.2269866,
+                        "Max": 1.069053,
+                        "Average": 0.6551002012499999,
+                        "StandardDeviation": 0.17109212563696366,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.3657806,
+                        "Max": 0.1873459,
+                        "Average": 0.0021922742500000022,
+                        "StandardDeviation": 0.0960941122440922,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.2269866,
+                        "Max": 1.069053,
+                        "Average": 0.65785167721518978,
+                        "StandardDeviation": 0.1703948056052299,
+                        "Count": 79
+                    },
+                    "Y": {
+                        "Min": -0.20476,
+                        "Max": 0.1873459,
+                        "Average": 0.0068501587341772176,
+                        "StandardDeviation": 0.087146662623850069,
+                        "Count": 79
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.654175,
+                    "Average": 2.6393631749999997,
+                    "StandardDeviation": 0.0043669122503090015,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.42938,
+                    "Max": 9.50489,
+                    "Average": 9.4894110999999981,
+                    "StandardDeviation": 0.01598270332293196,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.336543456834338,
+                    "Max": 4.6727949651205094,
+                    "Average": 1.9511907643099047,
+                    "StandardDeviation": 1.0134032570484321,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.29734,
+                        "Max": 49.01358,
+                        "Average": 46.871643500000019,
+                        "StandardDeviation": 0.78371390716982448,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.90643,
+                        "Max": 50.20329,
+                        "Average": 48.4707345,
+                        "StandardDeviation": 0.68164358746815434,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.65785167721518978,
+                    "Y": 0.0068501587341772176,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.0191709134167086,
+                    "Y": 0.0098047655724175856,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 0.59659496721247052,
+                "Snr (dB)": {
+                    "Beam0": 46.871643500000019,
+                    "Beam1": 48.4707345,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.78371390716982448,
+                    "Beam1": 0.68164358746815434,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 1,
+                "Tilt (deg)": 1.9511907643099047,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.65785167721518978,
+                "Y": 0.0068501587341772176,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.65785167721518978,
+                "Y": 0.0068501587341772176,
+                "Z": null
+            },
+            "Width (m)": 0.40000000000000036,
+            "Area (m2)": 0.26400000000000023,
+            "Discharge (m3/s)": 0.17367284278481027,
+            "FractionOfTotalDischarge": 0.07028069930054294,
+            "Snr (dB)": {
+                "Beam0": 46.871643500000019,
+                "Beam1": 48.4707345,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.6393631749999997,
+            "VelocityAngle (deg)": 0.59659496721247052,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 1,
+            "Tilt (deg)": 1.9511907643099047,
+            "VelocityStandardError (m/s)": {
+                "X": 0.0191709134167086,
+                "Y": 0.0098047655724175856,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "db44038db30947f2afd59ffd22cf625d",
+        "CreationTime": "2017-03-07T17:54:16.9480000Z",
+        "Location (m)": 23.2,
+        "Depth (m)": 0.58,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "fce9832643334e0f8a609702523fedba",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.23199999999999998,
+            "StartTime": "2017-03-07T17:54:37.8830000Z",
+            "EndTime": "2017-03-07T17:55:17.5440000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 927.0,
+                    "PeakPosition (m)": 0.1165818,
+                    "PeakLevel (dB)": 47.31408
+                }, {
+                    "NoiseLevel (cnts)": 928.0,
+                    "PeakPosition (m)": 0.1171887,
+                    "PeakLevel (dB)": 49.08918
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.256058,
+                        "Max": 0.8947368,
+                        "Average": 0.62028917625,
+                        "StandardDeviation": 0.14333679141633771,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.2172665,
+                        "Max": 0.2983899,
+                        "Average": 0.045432713209999996,
+                        "StandardDeviation": 0.090995097522879292,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.256058,
+                        "Max": 0.8947368,
+                        "Average": 0.62028917625,
+                        "StandardDeviation": 0.14333679141633771,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.2172665,
+                        "Max": 0.2983899,
+                        "Average": 0.045432713209999996,
+                        "StandardDeviation": 0.090995097522879292,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.662476,
+                    "Average": 2.6460467499999991,
+                    "StandardDeviation": 0.0062277500224215635,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.438818,
+                    "Max": 9.486012,
+                    "Average": 9.4792161624999967,
+                    "StandardDeviation": 0.014315662663841596,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.40779026761863951,
+                    "Max": 5.4809425065878985,
+                    "Average": 2.3549662133417431,
+                    "StandardDeviation": 1.0240145910053955,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 44.7535,
+                        "Max": 48.67368,
+                        "Average": 46.897419249999984,
+                        "StandardDeviation": 0.78060198780589785,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.58811,
+                        "Max": 50.24877,
+                        "Average": 48.428671625,
+                        "StandardDeviation": 0.75700090539625053,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.62028917625,
+                    "Y": 0.045432713209999996,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.016025540464181972,
+                    "Y": 0.010173561184019041,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": 4.189114935762662,
+                "Snr (dB)": {
+                    "Beam0": 46.897419249999984,
+                    "Beam1": 48.428671625,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.78060198780589785,
+                    "Beam1": 0.75700090539625053,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 2.3549662133417431,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.62028917625,
+                "Y": 0.045432713209999996,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.62028917625,
+                "Y": 0.045432713209999996,
+                "Z": null
+            },
+            "Width (m)": 0.40000000000000036,
+            "Area (m2)": 0.23200000000000018,
+            "Discharge (m3/s)": 0.14390708889000012,
+            "FractionOfTotalDischarge": 0.058235304261278445,
+            "Snr (dB)": {
+                "Beam0": 46.897419249999984,
+                "Beam1": 48.428671625,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.6460467499999991,
+            "VelocityAngle (deg)": 4.189114935762662,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 2.3549662133417431,
+            "VelocityStandardError (m/s)": {
+                "X": 0.016025540464181972,
+                "Y": 0.010173561184019041,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "dea359cf379845579db941e2a36c5d7e",
+        "CreationTime": "2017-03-07T17:55:37.8630000Z",
+        "Location (m)": 23.6,
+        "Depth (m)": 0.6,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "4e501a61a57e4d1898d63ba9b3474e42",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.24,
+            "StartTime": "2017-03-07T17:56:03.0760000Z",
+            "EndTime": "2017-03-07T17:56:42.7440000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.105449,
+                    "MaxPingPrecision (m/s)": 0.000695982
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 926.0,
+                    "PeakPosition (m)": 0.1171887,
+                    "PeakLevel (dB)": 46.86088
+                }, {
+                    "NoiseLevel (cnts)": 923.0,
+                    "PeakPosition (m)": 0.1177952,
+                    "PeakLevel (dB)": 48.56623
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": -0.02900103,
+                        "Max": 0.8756329,
+                        "Average": 0.45811607320000025,
+                        "StandardDeviation": 0.18130859014150408,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.2909539,
+                        "Max": 0.1922826,
+                        "Average": -0.015451749156249996,
+                        "StandardDeviation": 0.098055300556655567,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": -0.02900103,
+                        "Max": 0.8756329,
+                        "Average": 0.45811607320000025,
+                        "StandardDeviation": 0.18130859014150408,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.2909539,
+                        "Max": 0.1922826,
+                        "Average": -0.015451749156249996,
+                        "StandardDeviation": 0.098055300556655567,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.633423,
+                    "Max": 2.654175,
+                    "Average": 2.6400253499999993,
+                    "StandardDeviation": 0.0058203768856612175,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.423717,
+                    "Max": 9.486012,
+                    "Average": 9.4777062875000091,
+                    "StandardDeviation": 0.012840507482571553,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.19574545868245072,
+                    "Max": 2.9844578108356981,
+                    "Average": 1.3671244510575318,
+                    "StandardDeviation": 0.68564641009430494,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.0934,
+                        "Max": 48.8323,
+                        "Average": 46.674784750000015,
+                        "StandardDeviation": 0.80707438699868561,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.97464,
+                        "Max": 50.40793,
+                        "Average": 48.417588624999993,
+                        "StandardDeviation": 0.72247507018922175,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.45811607320000025,
+                    "Y": -0.015451749156249996,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.020270916623052564,
+                    "Y": 0.01096291587994274,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": -1.9317910215675966,
+                "Snr (dB)": {
+                    "Beam0": 46.674784750000015,
+                    "Beam1": 48.417588624999993,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.80707438699868561,
+                    "Beam1": 0.72247507018922175,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 1.3671244510575318,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.45811607320000025,
+                "Y": -0.015451749156249996,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.45811607320000025,
+                "Y": -0.015451749156249996,
+                "Z": null
+            },
+            "Width (m)": 0.40000000000000036,
+            "Area (m2)": 0.24000000000000021,
+            "Discharge (m3/s)": 0.10994785756800016,
+            "FractionOfTotalDischarge": 0.044492922396911321,
+            "Snr (dB)": {
+                "Beam0": 46.674784750000015,
+                "Beam1": 48.417588624999993,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.6400253499999993,
+            "VelocityAngle (deg)": -1.9317910215675966,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 1.3671244510575318,
+            "VelocityStandardError (m/s)": {
+                "X": 0.020270916623052564,
+                "Y": 0.01096291587994274,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "d9e6d591c74c4d8daf70df52691caa0d",
+        "CreationTime": "2017-03-07T17:57:12.8060000Z",
+        "Location (m)": 24.0,
+        "Depth (m)": 0.54,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "a067af46c3674639be3f5b22b6b9515a",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.21600000000000003,
+            "StartTime": "2017-03-07T17:57:48.1950000Z",
+            "EndTime": "2017-03-07T17:58:27.8770000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.1056,
+                    "MaxPingPrecision (m/s)": 0.0006960771
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 927.0,
+                    "PeakPosition (m)": 0.117812,
+                    "PeakLevel (dB)": 46.5663
+                }, {
+                    "NoiseLevel (cnts)": 926.0,
+                    "PeakPosition (m)": 0.117812,
+                    "PeakLevel (dB)": 48.67992
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.1376474,
+                        "Max": 0.8503039,
+                        "Average": 0.47995238625000003,
+                        "StandardDeviation": 0.13748455823703382,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.2553455,
+                        "Max": 0.1520203,
+                        "Average": -0.048777602612499985,
+                        "StandardDeviation": 0.084881872275477943,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": 0.1376474,
+                        "Max": 0.8503039,
+                        "Average": 0.47995238625000003,
+                        "StandardDeviation": 0.13748455823703382,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.2553455,
+                        "Max": 0.1520203,
+                        "Average": -0.048777602612499985,
+                        "StandardDeviation": 0.084881872275477943,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.661072,
+                    "Max": 2.674866,
+                    "Average": 2.6721150750000011,
+                    "StandardDeviation": 0.0034725803479235843,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.426234,
+                    "Max": 9.486012,
+                    "Average": 9.478094200000001,
+                    "StandardDeviation": 0.016323925591566382,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 1.0938682397277557,
+                    "Max": 5.1575808838006711,
+                    "Average": 2.9508779902774331,
+                    "StandardDeviation": 0.88286518652139434,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 45.07074,
+                        "Max": 47.88058,
+                        "Average": 46.421842500000011,
+                        "StandardDeviation": 0.64008312431999115,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.61085,
+                        "Max": 50.18056,
+                        "Average": 48.265250624999979,
+                        "StandardDeviation": 0.70010301495040128,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.47995238625000003,
+                    "Y": -0.048777602612499985,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.015371240903726812,
+                    "Y": 0.0094900818232711709,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": -5.8030504979598341,
+                "Snr (dB)": {
+                    "Beam0": 46.421842500000011,
+                    "Beam1": 48.265250624999979,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.64008312431999115,
+                    "Beam1": 0.70010301495040128,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 2.9508779902774331,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.47995238625000003,
+                "Y": -0.048777602612499985,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.47995238625000003,
+                "Y": -0.048777602612499985,
+                "Z": null
+            },
+            "Width (m)": 0.44999999999999929,
+            "Area (m2)": 0.24299999999999963,
+            "Discharge (m3/s)": 0.11662842985874983,
+            "FractionOfTotalDischarge": 0.047196369204098504,
+            "Snr (dB)": {
+                "Beam0": 46.421842500000011,
+                "Beam1": 48.265250624999979,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.6721150750000011,
+            "VelocityAngle (deg)": -5.8030504979598341,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 2.9508779902774331,
+            "VelocityStandardError (m/s)": {
+                "X": 0.015371240903726812,
+                "Y": 0.0094900818232711709,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "7e83f2b71f184611a6950b5269910f00",
+        "CreationTime": "2017-03-07T17:59:04.1140000Z",
+        "Location (m)": 24.5,
+        "Depth (m)": 0.38,
+        "StationType": "OpenWater",
+        "VelocityMethod": "SixTenths",
+        "CorrectionFactor": 1.0,
+        "PointMeasurements": [{
+            "Id": "5c9283c7e73744c7ab7c45f68c550e27",
+            "FractionalDepth": 0.6,
+            "DistanceFromBottom": 0.15200000000000002,
+            "StartTime": "2017-03-07T17:59:25.0630000Z",
+            "EndTime": "2017-03-07T18:00:04.6580000Z",
+            "Diagnostics": {
+                "Boundary": {
+                    "BoundaryRange (m)": 0.0,
+                    "VelocityAmbiguity (m/s)": 1.1056,
+                    "MaxPingPrecision (m/s)": 0.0006960771
+                },
+                "Beams": [{
+                    "NoiseLevel (cnts)": 926.0,
+                    "PeakPosition (m)": 0.1165985,
+                    "PeakLevel (dB)": 46.29438
+                }, {
+                    "NoiseLevel (cnts)": 926.0,
+                    "PeakPosition (m)": 0.1135568,
+                    "PeakLevel (dB)": 49.88498
+                }]
+            },
+            "HandheldInfo": {
+                "SoftwareVersion": "1.2",
+                "WadingRod": "TopSetting",
+                "Units": "Metric"
+            },
+            "ProbeInfo": {
+                "SerialNumber": "FT2P1640013",
+                "FirmwareVersion": "1.17",
+                "NumberOfBeams": 2,
+                "NominalBeamStatistics": [{
+                    "NoiseLevel (cnts)": 839.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 34.18125
+                }, {
+                    "NoiseLevel (cnts)": 838.0,
+                    "PeakPosition (m)": 0.11725,
+                    "PeakLevel (dB)": 35.96875
+                }]
+            },
+            "SampleStatistics": {
+                "OriginalVelocity (m/s)": {
+                    "X": {
+                        "Min": -0.08205632,
+                        "Max": 0.4925674,
+                        "Average": 0.23977746774999997,
+                        "StandardDeviation": 0.11785985308651423,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1673342,
+                        "Max": 0.195768,
+                        "Average": -0.041714336753750005,
+                        "StandardDeviation": 0.077478815120158612,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "DespikedVelocity (m/s)": {
+                    "X": {
+                        "Min": -0.08205632,
+                        "Max": 0.4925674,
+                        "Average": 0.23977746774999997,
+                        "StandardDeviation": 0.11785985308651423,
+                        "Count": 80
+                    },
+                    "Y": {
+                        "Min": -0.1673342,
+                        "Max": 0.195768,
+                        "Average": -0.041714336753750005,
+                        "StandardDeviation": 0.077478815120158612,
+                        "Count": 80
+                    },
+                    "Z": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                },
+                "Temperature (C)": {
+                    "Min": 2.650024,
+                    "Max": 2.674866,
+                    "Average": 2.6702149500000014,
+                    "StandardDeviation": 0.0050712713980229389,
+                    "Count": 80
+                },
+                "Pressure (dbar)": {
+                    "Min": null,
+                    "Max": null,
+                    "Average": null,
+                    "StandardDeviation": null,
+                    "Count": 0
+                },
+                "BatteryVoltage (V)": {
+                    "Min": 9.410501,
+                    "Max": 9.476574,
+                    "Average": 9.4667573875000048,
+                    "StandardDeviation": 0.017748105899648804,
+                    "Count": 80
+                },
+                "Tilt (deg)": {
+                    "Min": 0.33422893053330432,
+                    "Max": 2.5419110755898111,
+                    "Average": 1.5722694993422035,
+                    "StandardDeviation": 0.51896752493912679,
+                    "Count": 80
+                },
+                "Snr (dB)": {
+                    "Beam0": {
+                        "Min": 44.70818,
+                        "Max": 48.87762,
+                        "Average": 46.517864250000017,
+                        "StandardDeviation": 0.93944171216681882,
+                        "Count": 80
+                    },
+                    "Beam1": {
+                        "Min": 46.20159,
+                        "Max": 50.33972,
+                        "Average": 48.316409375,
+                        "StandardDeviation": 0.9535172809759962,
+                        "Count": 80
+                    },
+                    "Beam2": {
+                        "Min": null,
+                        "Max": null,
+                        "Average": null,
+                        "StandardDeviation": null,
+                        "Count": 0
+                    }
+                }
+            },
+            "Calculations": {
+                "Warnings": ["BadVelocityStandardError"],
+                "Velocity (m/s)": {
+                    "X": 0.23977746774999997,
+                    "Y": -0.041714336753750005,
+                    "Z": null
+                },
+                "VelocityStandardError (m/s)": {
+                    "X": 0.013177132165979211,
+                    "Y": 0.00866239487124066,
+                    "Z": 0.0
+                },
+                "FlowAngle (deg)": -9.8690326190759556,
+                "Snr (dB)": {
+                    "Beam0": 46.517864250000017,
+                    "Beam1": 48.316409375,
+                    "Beam2": null
+                },
+                "SnrStandardDeviation (dB)": {
+                    "Beam0": 0.93944171216681882,
+                    "Beam1": 0.9535172809759962,
+                    "Beam2": null
+                },
+                "Samples": 80,
+                "Spikes": 0,
+                "Tilt (deg)": 1.5722694993422035,
+                "BoundaryAvoidance": "Best"
+            }
+        }],
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["BadVelocityStandardError"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.23977746774999997,
+                "Y": -0.041714336753750005,
+                "Z": null
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.23977746774999997,
+                "Y": -0.041714336753750005,
+                "Z": null
+            },
+            "Width (m)": 0.5,
+            "Area (m2)": 0.19,
+            "Discharge (m3/s)": 0.045557718872499993,
+            "FractionOfTotalDischarge": 0.018435975881756453,
+            "Snr (dB)": {
+                "Beam0": 46.517864250000017,
+                "Beam1": 48.316409375,
+                "Beam2": null
+            },
+            "Temperature (C)": 2.6702149500000014,
+            "VelocityAngle (deg)": -9.8690326190759556,
+            "BoundaryAvoidance": "Best",
+            "Samples": 80,
+            "Spikes": 0,
+            "Tilt (deg)": 1.5722694993422035,
+            "VelocityStandardError (m/s)": {
+                "X": 0.013177132165979211,
+                "Y": 0.00866239487124066,
+                "Z": 0.0
+            }
+        }
+    }, {
+        "Id": "fe1966943adc4c869c609aafc8332117",
+        "CreationTime": "2017-03-07T18:00:16.1560000Z",
+        "Location (m)": 25.0,
+        "Depth (m)": 0.0,
+        "StationType": "RightBank",
+        "VelocityMethod": "None",
+        "CorrectionFactor": 1.0,
+        "Comment": null,
+        "Calculations": {
+            "Warnings": ["WaterDepth"],
+            "MeanVelocityInVertical (m/s)": {
+                "X": 0.0,
+                "Y": 0.0,
+                "Z": 0.0
+            },
+            "MeanPanelVelocity (m/s)": {
+                "X": 0.23977746774999997,
+                "Y": -0.041714336753750005,
+                "Z": null
+            },
+            "Width (m)": 0.25,
+            "Area (m2)": 0.0,
+            "Discharge (m3/s)": 0.0,
+            "FractionOfTotalDischarge": 0.0,
+            "Snr (dB)": {
+                "Beam0": null,
+                "Beam1": null,
+                "Beam2": null
+            },
+            "Temperature (C)": null,
+            "VelocityAngle (deg)": null,
+            "BoundaryAvoidance": "Undefined",
+            "Samples": 0,
+            "Spikes": 0,
+            "Tilt (deg)": null,
+            "VelocityStandardError (m/s)": {
+                "X": null,
+                "Y": null,
+                "Z": null
+            }
+        }
+    }],
+    "Calculations": {
+        "Warnings": [],
+        "Area (m2)": 3.9144999999999994,
+        "Discharge (m3/s)": 2.4711313989937573,
+        "Width (m)": 11.0,
+        "Velocity (m/s)": {
+            "X": 0.63127638242272521,
+            "Y": 0.022116761351974868,
+            "Z": null
+        },
+        "VelocityStandardError (m/s)": {
+            "X": 0.01611309317905571,
+            "Y": 0.0078242720903651339,
+            "Z": 0.0
+        },
+        "Depth (m)": 0.35586363636363633,
+        "Snr (dB)": 48.026263235119053,
+        "Temperature (C)": 2.6528728000000004,
+        "RatedDischarge": null,
+        "GaugeHeight": null,
+        "UncertaintyIso": {
+            "Accuracy": 0.010000000000000002,
+            "Depth": 0.00159970520648034,
+            "Velocity": 0.0070039163254400436,
+            "Width": 0.0012303804372732143,
+            "Method": 0.018455706559098214,
+            "NumberOfStations": 0.021958213274360414,
+            "Overall": 0.031239461766484858
+        },
+        "UncertaintyIve": {
+            "Accuracy": 0.010000000000000002,
+            "Depth": 0.016822031603166983,
+            "Velocity": 0.042210620204803373,
+            "Width": 0.0012303804372732143,
+            "Method": null,
+            "NumberOfStations": null,
+            "Overall": 0.046542787210829217
+        }
+    },
+    "SupplementalData": [],
+    "BeamChecks": [{
+        "Id": "f2ca825beb5f4723be72f479c2690e74",
+        "Time": "2017-03-07T17:24:47.2550000Z",
+        "NumberOfSamples": 21,
+        "AutoQualityControlWarnings": []
+    }]
+}

@@ -1,0 +1,501 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="WSC_EHSN.xsml"?>
+<EHSN version="v1.2.3">
+	<TitleHeader>
+		<enteredInHWS>True</enteredInHWS>
+	</TitleHeader>
+	<GenInfo>
+		<station number="02KF015">GRAHAM CREEK AT NEPEAN</station>
+		<date timezone="EST">2017/06/13</date>
+	</GenInfo>
+	<StageMeas>
+		<HgCkbox>False</HgCkbox>
+		<Hg2Ckbox>False</Hg2Ckbox>
+		<Wlr1Ckbox>False</Wlr1Ckbox>
+		<Wlr2Ckbox>False</Wlr2Ckbox>
+		<HG1Header/>
+		<HG2Header/>
+		<WL1Header/>
+		<WL2Header/>
+		<StageMeasTable>
+			<StageMeasRow row="0">
+				<time>12:22</time>
+				<HG1>1.000</HG1>
+				<HG2>23.000</HG2>
+				<WL1>3.000</WL1>
+				<WL2>4.000</WL2>
+				<SRC>2.000</SRC>
+				<SRCApp>Found (FD)</SRCApp>
+				<MghCkbox>True</MghCkbox>
+			</StageMeasRow>
+			<StageMeasRow row="1">
+				<time>12:23</time>
+				<HG1>3.000</HG1>
+				<HG2>4.000</HG2>
+				<WL1>6.000</WL1>
+				<WL2>5.000</WL2>
+				<SRC>3.000</SRC>
+				<SRCApp>Maintenance (MT)</SRCApp>
+				<MghCkbox>True</MghCkbox>
+			</StageMeasRow>
+			<StageMeasRow row="2">
+				<time>:</time>
+				<HG1/>
+				<HG2/>
+				<WL1/>
+				<WL2/>
+				<SRC/>
+				<SRCApp/>
+				<MghCkbox>False</MghCkbox>
+			</StageMeasRow>
+			<StageMeasRow row="3">
+				<time>13:40</time>
+				<HG1/>
+				<HG2/>
+				<WL1/>
+				<WL2/>
+				<SRC/>
+				<SRCApp>Found (FD)</SRCApp>
+				<MghCkbox>False</MghCkbox>
+			</StageMeasRow>
+			<StageMeasRow row="4">
+				<time>:</time>
+				<HG1/>
+				<HG2/>
+				<WL1/>
+				<WL2/>
+				<SRC/>
+				<SRCApp/>
+				<MghCkbox>False</MghCkbox>
+			</StageMeasRow>
+		</StageMeasTable>
+		<hgCkbox>False</hgCkbox>
+		<hg2Ckbox>False</hg2Ckbox>
+		<wlr1Ckbox>False</wlr1Ckbox>
+		<wlr2Ckbox>False</wlr2Ckbox>
+		<MGHHG1/>
+		<MGHHG2/>
+		<MGHWL1/>
+		<MGHWL2/>
+		<SRCHG1/>
+		<SRCHG2/>
+		<GCHG1/>
+		<GCHG2/>
+		<GCWL1/>
+		<GCWL2/>
+		<CMGHHG1/>
+		<CMGHHG2/>
+		<CMGHWL1/>
+		<CMGHWL2/>
+		<MghMethod/>
+		<Factors/>
+	</StageMeas>
+	<DisMeas>
+		<startTime>:</startTime>
+		<endTime>:</endTime>
+		<airTemp/>
+		<waterTemp/>
+		<width/>
+		<area/>
+		<meanVel/>
+		<mgh/>
+		<mghCmbo/>
+		<discharge/>
+		<mmtTimeVal/>
+		<shift/>
+		<diff/>
+		<curve/>
+	</DisMeas>
+	<EnvCond>
+		<levels/>
+		<cloudCover/>
+		<precipitation/>
+		<windMagnitude/>
+		<windMagnitudeSpeed/>
+		<windDirection/>
+		<batteryVolt/>
+		<gasSys/>
+		<feed/>
+		<bpmRotChoice/>
+		<bpmRot/>
+		<intakeFlushed>False</intakeFlushed>
+		<intakeTime>00:00</intakeTime>
+		<orificeTime>00:00</orificeTime>
+		<orificePurged>False</orificePurged>
+		<downloadedProgram>False</downloadedProgram>
+		<downloadedData>False</downloadedData>
+		<dataPeriodStart>2017/06/13</dataPeriodStart>
+		<dataPeriodEnd>2017/06/13</dataPeriodEnd>
+	</EnvCond>
+	<MeasResults empty="True">
+		<SensorRefs/>
+		<HourMinutes/>
+		<Times/>
+		<ObservedVals/>
+		<SensorVals/>
+		<loggerTimeTable>
+			<loggerTimeCol1/>
+			<loggerTimeRemark1/>
+			<Hour7/>
+			<Minute7/>
+			<Hour9/>
+			<Minute9/>
+			<Time7/>
+			<Time9/>
+			<loggerTimeCol2/>
+			<loggerTimeRemark2/>
+			<Hour8/>
+			<Minute8/>
+			<Hour10/>
+			<Minute10/>
+			<Time8/>
+			<Time10/>
+		</loggerTimeTable>
+	</MeasResults>
+	<InstrumentDeployment>
+		<GeneralInfo>
+			<methodType>None</methodType>
+			<deployment/>
+			<position/>
+			<instrument/>
+			<serialNum/>
+			<gauge1/>
+			<length>0</length>
+			<gaugePos>0</gaugePos>
+			<selectedGauge>gauge</selectedGauge>
+			<frequency/>
+			<firmware/>
+			<software/>
+			<manufacturer/>
+			<model/>
+		</GeneralInfo>
+		<MidsectionInfo empty="True">
+			<panelsNum/>
+			<flowAngle/>
+			<coeff/>
+			<method/>
+			<metres/>
+			<weight/>
+			<kglbs>0</kglbs>
+			<weightRadBut1>False</weightRadBut1>
+			<weightRadBut2>True</weightRadBut2>
+		</MidsectionInfo>
+		<ADCPInfo empty="True">
+			<configChoice/>
+			<configVal/>
+			<ADCPSetToClock>False</ADCPSetToClock>
+			<diagnosticTest>False</diagnosticTest>
+			<depth/>
+			<magDecl/>
+			<compassCali>False</compassCali>
+			<passedRev>False</passedRev>
+		</ADCPInfo>
+		<Control>
+			<condition/>
+			<dischargeRemark/>
+			<stageRemark/>
+			<stationHealthRemark/>
+			<pictured>False</pictured>
+		</Control>
+	</InstrumentDeployment>
+	<PartyInfo>
+		<party/>
+		<completed/>
+		<checked/>
+		<reviewed>True</reviewed>
+	</PartyInfo>
+	<LevelNotes>
+		<LevelChecks>
+			<LevelChecksTable run="0">
+				<LevelChecksRow row="0">
+					<station>**BM 87-1</station>
+					<backsight>1.000</backsight>
+					<htInst>3.881</htInst>
+					<foresight/>
+					<elevation>2.881</elevation>
+					<establish>2.881</establish>
+					<comments/>
+				</LevelChecksRow>
+				<LevelChecksRow row="1">
+					<station>**BM 87-1</station>
+					<backsight>2.000</backsight>
+					<htInst>4.881</htInst>
+					<foresight>1.000</foresight>
+					<elevation>2.881</elevation>
+					<establish>2.881</establish>
+					<comments/>
+				</LevelChecksRow>
+				<closure>0.0</closure>
+			</LevelChecksTable>
+			<LevelChecksSummaryTable/>
+			<comments/>
+			<loggerName/>
+			<loggerName2/>
+		</LevelChecks>
+	</LevelNotes>
+	<FieldReview>
+		<pass>False</pass>
+		<dependencyType/>
+		<midsectionType>All</midsectionType>
+		<FieldReviewTable>
+			<FieldReviewTableRow row="0">
+				<label>Passed All Initial QA/QC?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="1">
+				<label>Software Input Same as Notes*?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="2">
+				<label>Difference in ADCP and Water T &lt; 2°C?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="3">
+				<label>Smooth Ship Track?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="4">
+				<label>Boat Speed &lt; Water Speed?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="5">
+				<label>Pitch, Roll &lt; 5°?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="6">
+				<label>No Ambiguity Velocity?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="7">
+				<label>Good Differential GPS Quality?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="8">
+				<label>Bed Contours as Expected for Site?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="9">
+				<label>Measured Q &gt; 50%?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="10">
+				<label>Missing Data &lt; 10%</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="11">
+				<label>Missing Data Distributed?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="12">
+				<label>Proper Edge Measurement Method?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="13">
+				<label>Each Edge &lt; 5% of Total Q?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="14">
+				<label>Velocity Profile Checked with extrap?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="15">
+				<label>Reciprocal Pairs?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="16">
+				<label>Moving Bed Corrected If Any?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="17">
+				<label>Directional Bias &lt; 5%?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="18">
+				<label>Total Exposure &gt; 720s?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="19">
+				<label>Standard Deviation/Mean &lt; 5%?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="20">
+				<label>Signal to Noise Ratio &gt; 4</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="21">
+				<label>Flow Angles Accounted for?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="22">
+				<label>Exposure Time/Location &gt; 40s?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="23">
+				<label>Valid Ensembles/Panel &gt; 30?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="24">
+				<label>No Boundary or Spike Problem?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="25">
+				<label>Bed Contour as Expected for Site?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="26">
+				<label>Ice/Slush Depth as Expected?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="27">
+				<label># Panels ≥ 20?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="28">
+				<label>No Panel Q &gt; 10%?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+		</FieldReviewTable>
+		<siteNotes/>
+	</FieldReview>
+	<MovingBoatMeas empty="True">
+		<bedMaterial/>
+		<mbTest>False</mbTest>
+		<mbTestChoice/>
+		<detected/>
+		<trackRefChoice/>
+		<leftBankChoice/>
+		<leftBank/>
+		<rightBankChoice/>
+		<rightBank/>
+		<edgeDistMmntMethod/>
+		<compositeTrackCmbo/>
+		<depthRefCmbo/>
+		<velocityTopCombo/>
+		<velocityBottomCombo/>
+		<velocityExponentCtrl/>
+		<differenceCtrl/>
+		<ADCPMeasTable/>
+		<ADCPMeasResults>
+			<mmntStartTime>::</mmntStartTime>
+			<mmntEndTime>::</mmntEndTime>
+			<mmntMeanTime>::</mmntMeanTime>
+			<rawDischargeMean/>
+			<mbCorrectionApplied/>
+			<finalDischargeMean/>
+			<correctedMeanGaugeHeight/>
+			<baseCurveGaugeHeight/>
+			<calcBaseCurveDischarge/>
+			<standardDevMeanDischarge/>
+			<calculateShiftforBaseCurve/>
+			<dischargeDifferenceBaseCurve/>
+			<comments/>
+		</ADCPMeasResults>
+	</MovingBoatMeas>
+	<MidsecMeas empty="False">
+		<MidsectionInfo empty="True">
+			<startTimeCtrl>:</startTimeCtrl>
+			<endTimeCtrl>:</endTimeCtrl>
+			<measureSectionCtrl/>
+			<deployMethodCtrl/>
+			<meter1MeterNoCtrl/>
+			<meter1SlopeCtrl1/>
+			<meter1InterceptCtrl1/>
+			<meter1SlopeCtrl2/>
+			<meter1InterceptCtrl2/>
+			<meter1CalibDateCtrl/>
+			<meter2MeterNoCtrl/>
+			<meter2SlopeCtrl1/>
+			<meter2InterceptCtrl1/>
+			<meter2SlopeCtrl2/>
+			<meter2InterceptCtrl2/>
+			<meter2CalibDateCtrl/>
+			<numOfPanelCtrl/>
+			<widthCtrl/>
+			<areaCtrl/>
+			<avgDepthCtrl/>
+			<avgVelCtrl/>
+			<totalDisCtrl/>
+			<uncertaintyCtrl/>
+		</MidsectionInfo>
+	</MidsecMeas>
+	<AQ_Upload_Record>
+		<record>
+			<status>Successful</status>
+			<time>2017-06-13 14:18:53.990000</time>
+			<user>jack.li</user>
+		</record>
+		<record>
+			<status>Successful</status>
+			<time>2017-06-13 15:46:15.028000</time>
+			<user>jack.li</user>
+		</record>
+		<record>
+			<status>Successful</status>
+			<time>2017-06-13 15:50:07.509000</time>
+			<user>jack.li</user>
+		</record>
+		<record>
+			<status>Successful</status>
+			<time>2017-06-13 16:17:24.556000</time>
+			<user>jack.li</user>
+		</record>
+	</AQ_Upload_Record>
+</EHSN>

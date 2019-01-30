@@ -1,0 +1,21 @@
+V1.2.5
+2
+							
+
+*********************************ALERT - WARNING****************************************
+
+AQ3.10 dispatches everything to "ALL" by default. 
+
+Please manually dispatch: 
+
+- MGH to Rating  
+- Stage to Time series 
+- Discharge to All
+
+****************************************************************************************
+Version you should be using: 1.2.4
+
+Report Issues:
+
+https://watersurveyofcanada.atlassian.net/servicedesk/customer/portal/2
+

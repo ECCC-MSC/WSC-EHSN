@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+
+<EHSNCONFIG>
+    <AquariusUploadDialog>
+        <stage1></stage1>
+        <product2></product2>
+        <product></product>
+    </AquariusUploadDialog>
+    <AQUARIUSDataExtractionToolManager>
+        <rctUser></rctUser>
+        <rctPassword></rctPassword>
+    </AQUARIUSDataExtractionToolManager>
+</EHSNCONFIG>
