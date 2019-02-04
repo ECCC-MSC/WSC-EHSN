@@ -10,6 +10,7 @@ import math
 import time
 import ast
 import sys, os
+import traceback
 
 
 #Calculate the mean time
@@ -1320,7 +1321,7 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     pictured.text = str(instrDepManager.GetPicturedCkboxVal())
 
     preUseCable = SubElement(GeneralInfo, "preUseCable")
-    preUseCable.text = str(instrDepManager.GetPreUseCableCkboxVal())
+    preUseCable.text = instrDepManager.preUseCableCmbo
 
     #Midsection Panel
     MidsectionInfo = SubElement(InstrumentDeployment, 'MidsectionInfo', empty = 'False')
@@ -1608,14 +1609,14 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
         print "no pictured ckeckbox for field review in xml"
 
     try:
-        preUseCable = GeneralInfo.find('preUseCable').text
-        if preUseCable == "True":
-            instrDepManager.SetPreUseCableCkboxVal(True)
+        preUseCable = GeneralInfo.find('preUseCable')
+        if preUseCable is None:
+            instrDepManager.preUseCableCmboFromXml = ""
         else:
-            instrDepManager.SetPreUseCableCkboxVal(False)
+            instrDepManager.preUseCableCmboFromXml = preUseCable.text
 
     except:
-        print "no preUseCable ckeckbox for field review in xml"
+        print "Failed to load preUseCable value"
 
     #MIDSECTION
     MidsectionInfo = InstrumentDeployment.find('MidsectionInfo')
