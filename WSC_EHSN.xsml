@@ -2009,18 +2009,10 @@
         </tr>
 
 		<tr class="noborder">
-			<xsl:choose>
-				<xsl:when test="preUseCable='True'">
-					<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-						<b>Pre-use Cableway was inspected.   </b>
-					<font size="4">&#x2714;</font></td>
-				</xsl:when>
-				<xsl:otherwise>
-					<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-						<b>Pre-use Cableway was inspected.   </b>
-					<font size="4">&#x2751;</font></td>
-				</xsl:otherwise>
-			</xsl:choose>
+			<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+				<b>Pre-use Cableway Inspection: </b>
+				<xsl:value-of select="preUseCable"/>
+			</td>
 		</tr>
 
         </table>
