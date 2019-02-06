@@ -1156,9 +1156,6 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.locatedTxt.Enable(en)
         self.metresCtrl.Enable(en)
         self.metresAboveTxt.Enable(en)
-        self.weightCtrl.Enable(en)
-        self.weightRadButBox.Enable(en)
-        self.weightTxt.Enable(en)
         self.weightRadBut2.Enable(en)
         self.weightRadBut1.Enable(en)
 
@@ -1282,7 +1279,10 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         if self.instrumentCmbo.GetValue() == 'ADCP':
             self.UpdateComboBox(self.modelCmbo, self.modelList1)
             self.EnableAdcpInfo(True)
-            self.EnableMidsectionInfo(False)
+            if(self.methodCBListBox.GetCheckedStrings()[0]==self.adcpByMovingBoatLbl):
+                self.EnableMidsectionInfo(False)
+            else:
+                self.EnableMidsectionInfo(True)
             if self.manager.manager.frChecklistManager.midsecType != 'ADCP':
                 self.manager.OnInstrumentChange(3)
 
