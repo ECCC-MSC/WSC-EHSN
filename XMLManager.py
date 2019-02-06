@@ -1354,7 +1354,8 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     weightRadBut2.text = str(instrDepManager.weightRadBut2)
 
 
-    if flowAngle.text == '' and \
+    if panelsNum.text == '' and \
+        flowAngle.text == '' and \
         coeff.text == '' and \
         method.text == '' and \
         metres.text == '' and \
