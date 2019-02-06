@@ -138,6 +138,7 @@ class WaterLevelRunPanel(wx.Panel):
         self.surgeLbl = "Surge (+/- m)/ Comment"
         self.WLElevLbl = "Water Level Elevation"
         self.commentsLbl = "Comments"
+        self.completedByLbl = "Completed by"
         self.datumLbl = "Datum (m)"
         self.loggerLbl = "HG"
         self.loggerLbl2 = "HG2"
@@ -675,7 +676,15 @@ class WaterLevelRunPanel(wx.Panel):
         # self.commentsCtrl.Bind(wx.EVT_TEXT, self.OnTextType)
         commentsSizer.Add(self.commentsCtrl, 1, wx.EXPAND|wx.ALL, 5)
 
+        completedByPanel = wx.Panel(self.WLRScroll, style=wx.BORDER_NONE, size=(-1, 30))
+        completedBySizer = wx.BoxSizer(wx.HORIZONTAL)
+        completedByPanel.SetSizer(completedBySizer)
 
+        completedByTxt = wx.StaticText(completedByPanel, label=self.completedByLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
+        completedBySizer.Add(completedByTxt, 0, wx.EXPAND|wx.LEFT, 5)
+
+        self.completedByCtrl = wx.TextCtrl(completedByPanel, style=wx.TE_MULTILINE|wx.TE_BESTWRAP)
+        completedBySizer.Add(self.completedByCtrl, 1, wx.EXPAND|wx.ALL, 5)
 
         self.splitter.SplitHorizontally(self.runTablePanel, self.secondSplitPanel, 280)
         self.splitter.SetMinimumPaneSize(2)
@@ -690,6 +699,7 @@ class WaterLevelRunPanel(wx.Panel):
         # levelNotesSizer.Add(self.waterLevelPanel, 1, wx.EXPAND)
         levelNotesSizer.Add((-1, 10), 0, wx.EXPAND)
         levelNotesSizer.Add(commentsPanel, 0, wx.EXPAND)
+        levelNotesSizer.Add(completedByPanel, 0, wx.EXPAND)
         levelNotesSizer.Add((-1, 5), 0, wx.EXPAND)
 
 
