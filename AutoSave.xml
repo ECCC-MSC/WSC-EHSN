@@ -5,11 +5,11 @@
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
-		<station number="02LB006"/>
-		<date timezone="AST">2019/02/11</date>
+		<station number="02HC023">GRAHAM CREEK AT NEPEAN</station>
+		<date timezone="EST">2019/01/25</date>
 	</GenInfo>
 	<StageMeas>
-		<HgCkbox>False</HgCkbox>
+		<HgCkbox>True</HgCkbox>
 		<Hg2Ckbox>False</Hg2Ckbox>
 		<Wlr1Ckbox>False</Wlr1Ckbox>
 		<Wlr2Ckbox>False</Wlr2Ckbox>
@@ -19,54 +19,64 @@
 		<WL2Header/>
 		<StageMeasTable>
 			<StageMeasRow row="0">
-				<time>:</time>
-				<HG1/>
-				<HG2/>
+				<time>10:09</time>
+				<HG1>1.000</HG1>
+				<HG2>1.000</HG2>
 				<WL1/>
 				<WL2/>
 				<SRC/>
 				<SRCApp/>
-				<MghCkbox>False</MghCkbox>
+				<MghCkbox>True</MghCkbox>
+			</StageMeasRow>
+			<StageMeasRow row="1">
+				<time>10:10</time>
+				<HG1>1.000</HG1>
+				<HG2>1.000</HG2>
+				<WL1/>
+				<WL2/>
+				<SRC/>
+				<SRCApp/>
+				<MghCkbox>True</MghCkbox>
 			</StageMeasRow>
 		</StageMeasTable>
-		<hgCkbox>False</hgCkbox>
+		<hgCkbox>True</hgCkbox>
 		<hg2Ckbox>False</hg2Ckbox>
 		<wlr1Ckbox>False</wlr1Ckbox>
 		<wlr2Ckbox>False</wlr2Ckbox>
-		<MGHHG1/>
+		<MGHHG1>1.000</MGHHG1>
 		<MGHHG2/>
 		<MGHWL1/>
 		<MGHWL2/>
-		<SRCHG1/>
+		<SRCHG1>0.000</SRCHG1>
 		<SRCHG2/>
-		<GCHG1/>
+		<GCHG1>0.000</GCHG1>
 		<GCHG2/>
 		<GCWL1/>
 		<GCWL2/>
-		<CMGHHG1/>
+		<CMGHHG1>1.000</CMGHHG1>
 		<CMGHHG2/>
 		<CMGHWL1/>
 		<CMGHWL2/>
-		<MghMethod/>
+		<MghMethod>Average</MghMethod>
 		<Factors/>
 		<stageRemark/>
 	</StageMeas>
 	<DisMeas>
-		<startTime>00:38</startTime>
-		<endTime>02:3</endTime>
-		<airTemp/>
-		<waterTemp/>
-		<width imported="1">22.8</width>
-		<area imported="1">13.6</area>
-		<meanVel imported="1">0.421</meanVel>
-		<mgh/>
-		<mghCmbo/>
-		<discharge imported="1">5.71</discharge>
+		<startTime>15:46</startTime>
+		<endTime>16:17</endTime>
+		<airTemp>1.0</airTemp>
+		<waterTemp>1.0</waterTemp>
+		<width imported="1">4.70</width>
+		<area imported="1">2.43</area>
+		<meanVel imported="1">0.338</meanVel>
+		<mgh>1.000</mgh>
+		<mghCmbo>1.000  (HG)</mghCmbo>
+		<discharge imported="1">0.820</discharge>
 		<dischCombo/>
-		<mmtTimeVal>01:20</mmtTimeVal>
+		<mmtTimeVal>16:01</mmtTimeVal>
 		<shift/>
 		<diff/>
-		<curve/>
+		<curve>10.00</curve>
 		<condition/>
 		<dischargeRemark/>
 		<controlConditionRemark/>
@@ -98,8 +108,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/02/11</dataPeriodStart>
-		<dataPeriodEnd>2019/02/11</dataPeriodEnd>
+		<dataPeriodStart>2019/01/25</dataPeriodStart>
+		<dataPeriodEnd>2019/01/25</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -110,7 +120,7 @@
 		<SensorVals/>
 		<loggerTimeTable>
 			<loggerTimeCol1/>
-			<loggerTimeRemark1/>
+			<loggerTimeRemark1>Reset</loggerTimeRemark1>
 			<Hour7/>
 			<Minute7/>
 			<Hour9/>
@@ -133,20 +143,21 @@
 			<deployment imported="1">Wading</deployment>
 			<position/>
 			<instrument imported="1">ADV</instrument>
-			<serialNum imported="1">FT2H1805024</serialNum>
+			<serialNum imported="1">FT2H1640009</serialNum>
 			<gauge1/>
 			<length>0</length>
 			<gaugePos>0</gaugePos>
 			<selectedGauge>gauge</selectedGauge>
 			<frequency/>
-			<firmware imported="1">1.23</firmware>
-			<software imported="1">1.4</software>
+			<firmware imported="1">1.17</firmware>
+			<software imported="1">1.2</software>
 			<manufacturer imported="1">SonTek</manufacturer>
 			<model imported="1">FlowTracker</model>
 			<pictured>False</pictured>
+			<preUseCable/>
 		</GeneralInfo>
-		<MidsectionInfo empty="True">
-			<panelsNum imported="1">27</panelsNum>
+		<MidsectionInfo empty="False">
+			<panelsNum imported="1">23</panelsNum>
 			<flowAngle/>
 			<coeff/>
 			<method/>
@@ -172,16 +183,44 @@
 		<party/>
 		<completed/>
 		<checked/>
-		<reviewed>False</reviewed>
+		<reviewed>True</reviewed>
 	</PartyInfo>
 	<LevelNotes>
 		<LevelChecks>
 			<LevelChecksTable run="0">
-				<closure/>
-				<upload/>
+				<LevelChecksRow row="0">
+					<station>**BM 87-1</station>
+					<backsight>1.000</backsight>
+					<htInst>3.881</htInst>
+					<foresight/>
+					<elevation>2.881</elevation>
+					<establish>2.881</establish>
+					<comments/>
+				</LevelChecksRow>
+				<LevelChecksRow row="1">
+					<station>BM 87-3</station>
+					<backsight>1.100</backsight>
+					<htInst>4.981</htInst>
+					<foresight>2.000</foresight>
+					<elevation>3.881</elevation>
+					<establish>1.475</establish>
+					<comments/>
+				</LevelChecksRow>
+				<LevelChecksRow row="2">
+					<station>**BM 87-1</station>
+					<backsight/>
+					<htInst/>
+					<foresight>2.500</foresight>
+					<elevation>5.281</elevation>
+					<establish>2.881</establish>
+					<comments/>
+				</LevelChecksRow>
+				<closure>2.4</closure>
+				<upload>True</upload>
 			</LevelChecksTable>
 			<LevelChecksSummaryTable/>
 			<comments/>
+			<completedBy/>
 			<loggerName/>
 			<loggerName2/>
 		</LevelChecks>

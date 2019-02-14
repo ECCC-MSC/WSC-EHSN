@@ -338,7 +338,7 @@ Hint!
 Note: The FlowTracker2 date and time is stored as UTC along with an offset for local time. Make sure the 'Offset From UTC' time is correctly entered for your location."""
         self.tzMatchErrTitle = "TimeZones are not matching"
 
-        self.readFT2ErrMsg = "Error during reading ft file(FlowTracker2). It may have been caused by a lack of user rights. Please try to log in using another account."
+        self.readFT2ErrMsg = "Error during reading ft file(FlowTracker2). It may caused by do not have enough user rights. Please try log in by another account."
         self.readFT2ErrTitle = "Error during reading ft file(FlowTracker2)"
 
         self.sxsImportAttentionMsg = "Attention!\n\nThe xml file displays discharge in two decimal places, and the calculated discharge and average velocity might be slightly different from the values view in SxS Pro software."
@@ -2548,7 +2548,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         return True
 
-    #Open *.ft* or *.ft.edited* files and save the directory of the file
+    #Open the *.ft* file and save the directory of the file
     def FtFileOpen(self):
         self.DestroySubWindows()
 

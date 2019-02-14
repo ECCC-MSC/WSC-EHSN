@@ -217,8 +217,8 @@ def GetDischargeSummary(path):
                 for time in finalData[count:len(finalData)]:
                     timesArray.append(time[1]) #store all times from dis file into timesArray
 
-                timesArray = sorted(timesArray) #sorts time values(24-hour format) in increasing order
-                endTime = timesArray[len(timesArray)-1]  
+                timesArray = sorted(timesArray) #sorts time values in ascending order
+                endTime = timesArray[len(timesArray)-1] #ensures the correct endtime is stored even if times are not recorded in order 
             
             count=count+1
 

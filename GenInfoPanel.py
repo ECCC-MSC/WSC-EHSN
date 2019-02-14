@@ -127,7 +127,7 @@ class GenInfoPanel(wx.Panel):
         self.stnNameCtrl.Clear()
         self.stnNameCtrl.AppendItems(names)
         if name != '':
-            self.stnNumCmbo.ChangeValue(name)
+            self.stnNameCtrl.ChangeValue(name)
 
     #vbox sizer
     def GetVbox(self):

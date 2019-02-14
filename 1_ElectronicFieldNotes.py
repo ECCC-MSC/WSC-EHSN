@@ -52,7 +52,6 @@ import suds
 import datetime
 import sys
 import threading
-import _dtype_ctypes
 
 
 
@@ -693,8 +692,6 @@ class ElectronicHydrometricSurveyNotes:
         LevelNotes = EHSN.find('LevelNotes')
         LevelChecks = LevelNotes.find('LevelChecks')
         self.LevelChecksFromXML(LevelChecks)
-
-
 
         # AnnualLevels = LevelNotes.find('AnnualLevels')
         # self.AnnualLevelsFromXML(AnnualLevels)

@@ -10,9 +10,7 @@ import math
 import time
 import ast
 import sys, os
-
-
-#Get root info (EHSN version)
+import traceback
 
 
 #Calculate the mean time
@@ -1322,6 +1320,9 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     pictured = SubElement(GeneralInfo, "pictured")
     pictured.text = str(instrDepManager.GetPicturedCkboxVal())
 
+    preUseCable = SubElement(GeneralInfo, "preUseCable")
+    preUseCable.text = instrDepManager.preUseCableCmbo
+
     #Midsection Panel
     MidsectionInfo = SubElement(InstrumentDeployment, 'MidsectionInfo', empty = 'False')
     panelsNum = SubElement(MidsectionInfo, 'panelsNum')
@@ -1353,7 +1354,8 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     weightRadBut2.text = str(instrDepManager.weightRadBut2)
 
 
-    if flowAngle.text == '' and \
+    if panelsNum.text == '' and \
+        flowAngle.text == '' and \
         coeff.text == '' and \
         method.text == '' and \
         metres.text == '' and \
@@ -1607,6 +1609,15 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     except:
         print "no pictured ckeckbox for field review in xml"
 
+    try:
+        preUseCable = GeneralInfo.find('preUseCable')
+        if preUseCable is None:
+            instrDepManager.preUseCableCmboFromXml = ""
+        else:
+            instrDepManager.preUseCableCmboFromXml = preUseCable.text
+
+    except:
+        print "Failed to load preUseCable value"
 
     #MIDSECTION
     MidsectionInfo = InstrumentDeployment.find('MidsectionInfo')
@@ -1912,6 +1923,9 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
     comments = SubElement(LevelChecks, 'comments')
     comments.text = waterLevelRunManager.commentsCtrl
 
+    completedBy = SubElement(LevelChecks, 'completedBy')
+    completedBy.text = waterLevelRunManager.completedByCtrl
+
     loggerName = SubElement(LevelChecks, 'loggerName')
     loggerName.text = waterLevelRunManager.HGHeaderCtrl
 
@@ -1951,9 +1965,8 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
 
                     waterLevelRunManager.GetClosureText(index).SetValue(closure)
 
-                    #if (closure>=0.03):
-                        #waterLevelRunManager.GetClosureText(index).SetBackgroundColour("red")
-
+                    if (closure>=0.03):
+                        waterLevelRunManager.GetClosureText(index).SetBackgroundColour("red")
 
                 if LevelChecksTable.find('upload') is not None:
                     upload = LevelChecksTable.find('upload').text if LevelChecksTable.find('upload').text is not None else ""
@@ -2079,6 +2092,9 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
 
     comments = LevelChecks.find('comments').text
     waterLevelRunManager.commentsCtrl = "" if comments is None else comments
+
+    completedBy = LevelChecks.find('completedBy').text
+    waterLevelRunManager.completedByCtrl = "" if completedBy is None else completedBy
 
     try:
         loggerName = LevelChecks.find('loggerName').text

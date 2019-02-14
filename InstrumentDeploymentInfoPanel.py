@@ -100,6 +100,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.locatedList = ["On Rod"]
         self.numberOfPanelsList = []
         self.picturedLbl = "Site and/or control pictures were taken."
+        self.preUseCableLbl = "Pre-use Cableway Inspection"
+        self.preUseCableList = ["Not-required", "Passed", "Failed"]
         self.numberRange = list(range(20, 51))
         for i in self.numberRange:
             self.numberOfPanelsList.append(str(i))
@@ -674,8 +676,12 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         controlConditionPanel.SetSizer(controlConditionSizer)
 
         self.picturedCkbox = wx.CheckBox(controlConditionPanel, label=self.picturedLbl)
+        self.preUseCableTxt = wx.StaticText(controlConditionPanel, label=self.preUseCableLbl)
+        self.preUseCableCmbo = wx.ComboBox(controlConditionPanel, style=wx.CB_DROPDOWN|wx.TE_PROCESS_ENTER, size=(100, -1), choices=self.preUseCableList)
 
-        controlConditionSizer.Add(self.picturedCkbox, 1, wx.EXPAND|wx.BOTTOM, 5)
+        controlConditionSizer.Add(self.picturedCkbox, 0, wx.EXPAND|wx.ALL, 5)
+        controlConditionSizer.Add(self.preUseCableTxt, 0, wx.EXPAND|wx.TOP|wx.LEFT, 5)
+        controlConditionSizer.Add(self.preUseCableCmbo, 0, wx.EXPAND|wx.TOP|wx.LEFT, 5)
 
         
 
@@ -1150,9 +1156,6 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.locatedTxt.Enable(en)
         self.metresCtrl.Enable(en)
         self.metresAboveTxt.Enable(en)
-        self.weightCtrl.Enable(en)
-        self.weightRadButBox.Enable(en)
-        self.weightTxt.Enable(en)
         self.weightRadBut2.Enable(en)
         self.weightRadBut1.Enable(en)
 
@@ -1276,7 +1279,10 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         if self.instrumentCmbo.GetValue() == 'ADCP':
             self.UpdateComboBox(self.modelCmbo, self.modelList1)
             self.EnableAdcpInfo(True)
-            self.EnableMidsectionInfo(False)
+            if(self.methodCBListBox.GetCheckedStrings()[0]==self.adcpByMovingBoatLbl):
+                self.EnableMidsectionInfo(False)
+            else:
+                self.EnableMidsectionInfo(True)
             if self.manager.manager.frChecklistManager.midsecType != 'ADCP':
                 self.manager.OnInstrumentChange(3)
 
@@ -1697,6 +1703,19 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.weightRadButBox.SetSelection(0)
         self.EnableWeight(False)
 
+    #PreUseCable combo box
+    def GetPreUseCableCmbo(self):
+        return self.preUseCableCmbo.GetValue()
+
+    def SetPreUseCableCmbo(self, preUseCableCmbo):
+        self.preUseCableCmbo.SetValue(preUseCableCmbo)
+
+    #PreUseCable combo box from Xml
+    def GetPreUseCableCmboFromXml(self):
+        return self.preUseCableCmbo.GetValue()
+
+    def SetPreUseCableCmboFromXml(self, preUseCableCmbo):
+        self.preUseCableCmbo.ChangeValue(preUseCableCmbo)
 
 
     #Manufacturer combo box
