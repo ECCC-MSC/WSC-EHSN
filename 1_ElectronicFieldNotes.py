@@ -11,7 +11,7 @@ from MeasurementResultsManager import *
 from InstrumentDeploymentInfoManager import *
 from PartyInfoManager import *
 from WaterLevelRunManager import *
-## from AnnualLevellingManager import *
+# from AnnualLevellingManager import *
 from FRChecklistManager import *
 from MovingBoatMeasurementsManager import *
 from MidSectionMeasurementsManager import *
@@ -52,6 +52,7 @@ import suds
 import datetime
 import sys
 import threading
+import _dtype_ctypes
 
 
 
@@ -75,13 +76,13 @@ if 0:
     import reportlab.graphics.barcode.qrencoder
     import reportlab.graphics.barcode.test
     import reportlab.graphics.barcode.widgets
-#########################################
+##########################################
 
 
 
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v1.3_Beta"
+EHSN_VERSION = "v1.3.1"
 eHSN_WINDOW_SIZE = (965, 730)
 
 # import wx.lib.inspection
@@ -650,6 +651,11 @@ class ElectronicHydrometricSurveyNotes:
 
 
         EHSN = ElementTree.parse(filePath).getroot()
+        XML_version = EHSN.get('version') #get the eHSN version used to create the XML file
+
+        if XML_version > EHSN_VERSION: #if eHSN version obtained from xml file is newer than user's eHSN version, display a warning
+            dlg = wx.MessageDialog(self.gui, "You are attempting to open an XML file for "+XML_version+" of eHSN using "+EHSN_VERSION+" of eHSN. There is no guarantee an older version of eHSN will open the file successfully so please update to the newest version.","EHSN Version Error", wx.OK | wx.ICON_ERROR)
+            dlg.ShowModal()
 
         #First Page
         TitleHeader = EHSN.find('TitleHeader')
@@ -659,12 +665,9 @@ class ElectronicHydrometricSurveyNotes:
             GenInfo = EHSN.find('GenInfo')
             self.GenInfoFromXML(GenInfo)
         except:
-            dlg = wx.MessageDialog(self.gui, "The format of selected XML file is invalid.", "Invalid eHSN XML!", wx.OK | wx.ICON_ERROR)
+            dlg = wx.MessageDialog(self.gui,"The format of selected XML file is invalid.", "Invalid eHSN XML!", wx.OK | wx.ICON_ERROR)
             dlg.ShowModal()
             return
-
-
-
 
         StageMeas = EHSN.find('StageMeas')
         self.StageMeasFromXML(StageMeas)
@@ -679,7 +682,7 @@ class ElectronicHydrometricSurveyNotes:
         self.MeasResultsFromXML(MeasResults)
 
         InstrumentDeployment = EHSN.find('InstrumentDeployment')
-        self.InstrumentDepFromXML(InstrumentDeployment)
+        self.InstrumentDepFromXML(InstrumentDeployment) 
 
 
 
@@ -690,6 +693,8 @@ class ElectronicHydrometricSurveyNotes:
         LevelNotes = EHSN.find('LevelNotes')
         LevelChecks = LevelNotes.find('LevelChecks')
         self.LevelChecksFromXML(LevelChecks)
+
+
 
         # AnnualLevels = LevelNotes.find('AnnualLevels')
         # self.AnnualLevelsFromXML(AnnualLevels)

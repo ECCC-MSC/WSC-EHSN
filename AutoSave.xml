@@ -5,8 +5,8 @@
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
-		<station number="02HK007"/>
-		<date timezone="EST">2019/01/30</date>
+		<station number="02LB006"/>
+		<date timezone="AST">2019/02/11</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -52,18 +52,18 @@
 		<stageRemark/>
 	</StageMeas>
 	<DisMeas>
-		<startTime>09:43</startTime>
-		<endTime>10:07</endTime>
+		<startTime>00:38</startTime>
+		<endTime>02:3</endTime>
 		<airTemp/>
 		<waterTemp/>
-		<width imported="1">13.0</width>
-		<area imported="1">5.01</area>
-		<meanVel imported="1">0.213</meanVel>
+		<width imported="1">22.8</width>
+		<area imported="1">13.6</area>
+		<meanVel imported="1">0.421</meanVel>
 		<mgh/>
 		<mghCmbo/>
-		<discharge imported="1">1.07</discharge>
+		<discharge imported="1">5.71</discharge>
 		<dischCombo/>
-		<mmtTimeVal>09:55</mmtTimeVal>
+		<mmtTimeVal>01:20</mmtTimeVal>
 		<shift/>
 		<diff/>
 		<curve/>
@@ -98,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/01/30</dataPeriodStart>
-		<dataPeriodEnd>2019/01/30</dataPeriodEnd>
+		<dataPeriodStart>2019/02/11</dataPeriodStart>
+		<dataPeriodEnd>2019/02/11</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -133,24 +133,24 @@
 			<deployment imported="1">Wading</deployment>
 			<position/>
 			<instrument imported="1">ADV</instrument>
-			<serialNum imported="1">P3744</serialNum>
+			<serialNum imported="1">FT2H1805024</serialNum>
 			<gauge1/>
 			<length>0</length>
 			<gaugePos>0</gaugePos>
 			<selectedGauge>gauge</selectedGauge>
 			<frequency/>
-			<firmware imported="1">3.9</firmware>
-			<software imported="1">2.30</software>
+			<firmware imported="1">1.23</firmware>
+			<software imported="1">1.4</software>
 			<manufacturer imported="1">SonTek</manufacturer>
 			<model imported="1">FlowTracker</model>
 			<pictured>False</pictured>
 		</GeneralInfo>
-		<MidsectionInfo empty="False">
-			<panelsNum imported="1">20</panelsNum>
+		<MidsectionInfo empty="True">
+			<panelsNum imported="1">27</panelsNum>
 			<flowAngle/>
 			<coeff/>
 			<method/>
-			<metres>On Rod</metres>
+			<metres/>
 			<weight/>
 			<kglbs>0</kglbs>
 			<weightRadBut1>False</weightRadBut1>
@@ -172,7 +172,7 @@
 		<party/>
 		<completed/>
 		<checked/>
-		<reviewed>True</reviewed>
+		<reviewed>False</reviewed>
 	</PartyInfo>
 	<LevelNotes>
 		<LevelChecks>

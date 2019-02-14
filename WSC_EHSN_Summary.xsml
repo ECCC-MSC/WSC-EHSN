@@ -410,14 +410,14 @@
 						<td class="noborder"><xsl:value-of select="gasSysDepCtrl"/>@<xsl:value-of select="gasDepTime"/></td>
 					</tr>
 					<tr class="noborder">
-						<td class="noborder" align="left"><b>Feed: </b> </td>
-						<td class="noborder"><xsl:value-of select="feed"/>@<xsl:value-of select="feedArrTime"/></td>
-						<td class="noborder"><xsl:value-of select="feedDepCtrl"/>@<xsl:value-of select="feedDepTime"/></td>
-					</tr>
-					<tr class="noborder">
 						<td class="noborder" align = "left"><xsl:value-of select="bpmRotChoice"/> : </td>
 						<td class="noborder"><xsl:value-of select="bpmRot"/>@<xsl:value-of select="bpmrotArrTime"/></td>
 						<td class="noborder"><xsl:value-of select="bpmrotDepCtrl"/>@<xsl:value-of select="bpmrotDepTime"/></td>
+					</tr>
+					<tr class="noborder">
+						<td class="noborder" align="left"><b>Feed: </b> </td>
+						<td class="noborder"><xsl:value-of select="feed"/>@<xsl:value-of select="feedArrTime"/></td>
+						<td class="noborder"><xsl:value-of select="feedDepCtrl"/>@<xsl:value-of select="feedDepTime"/></td>
 					</tr>
 				</table>	
 			</td>

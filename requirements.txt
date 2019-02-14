@@ -1,8 +1,0 @@
-wxpython
-matplotlib
-requests
-qrcode
-lxml
-xhtml2pdf==0.0.6
-https://bitbucket.org/jurko/suds/get/tip.tar.gz#egg=suds
-html5lib==1.0b8

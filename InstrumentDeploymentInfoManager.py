@@ -45,22 +45,6 @@ class InstrumentDeploymentInfoManager(object):
     def GetPicturedCkbox(self):
         return self.gui.picturedCkbox
 
-    @property
-    def preUseCableCmbo(self):
-        return self.gui.GetPreUseCableCmbo()
-
-    @preUseCableCmbo.setter
-    def preUseCableCmbo(self, preUseCableCmbo):
-        self.gui.SetPreUseCableCmbo(preUseCableCmbo)
-
-    #preUseCable combo box from Xml
-    @property
-    def preUseCableCmboFromXml(self):
-        return self.gui.GetPreUseCableCmboFromXml()
-
-    @preUseCableCmboFromXml.setter
-    def preUseCableCmboFromXml(self, preUseCableCmbo):
-        self.gui.SetPreUseCableCmboFromXml(preUseCableCmbo)
 
 
 
@@ -609,8 +593,7 @@ class InstrumentDeploymentInfoManager(object):
 
 
 
-    def GetPreUseCableCmbo(self):
-        return self.gui.preUseCableCmbo
+
     def GetMethodCBListBox(self):
         return self.gui.methodCBListBox
     def GetDeploymentCmbo(self):

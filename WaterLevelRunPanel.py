@@ -138,14 +138,11 @@ class WaterLevelRunPanel(wx.Panel):
         self.surgeLbl = "Surge (+/- m)/ Comment"
         self.WLElevLbl = "Water Level Elevation"
         self.commentsLbl = "Comments"
-        self.completedByLbl = "Completed by"
         self.datumLbl = "Datum (m)"
         self.loggerLbl = "HG"
         self.loggerLbl2 = "HG2"
         self.cwlLbl = "Corrected Water Level"
         self.hintLbl = "Transfer selected elevation and reference station to Direct Water Level table"
-        self.correctCmtBtnHint = 'Please note that these comments are uploaded to the to "Activity Remarks Management" section of Leveling Activity in AQUARIUS' \
-                + 'and these comments are also printed for Benchmark History Report.'
         self.transferSumLbl = "Transfer to Front Page"
         self.transferConfirmationMsg = "Corrected water level  and logger values have been transfered"
         self.transferToFrontHintLbl = "Transfer to front page"
@@ -553,7 +550,7 @@ class WaterLevelRunPanel(wx.Panel):
         loggerLabelPanel.SetSizer(loggerLabelSizer)
 
         loggerLabelTxt = wx.StaticText(loggerLabelPanel, label=self.loggerLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
-        self.hgText = wx.TextCtrl(loggerLabelPanel, style=wx.TE_CENTRE, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
+        self.hgText = wx.TextCtrl(loggerLabelPanel, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
         loggerLabelSizer.Add(loggerLabelTxt, 1, wx.EXPAND)
         loggerLabelSizer.Add(self.hgText, 1, wx.EXPAND)
         #Create new panel and sizer for dynamic entries
@@ -575,7 +572,7 @@ class WaterLevelRunPanel(wx.Panel):
         loggerLabelPanel2.SetSizer(loggerLabelSizer2)
 
         loggerLabelTxt2 = wx.StaticText(loggerLabelPanel2, label=self.loggerLbl2, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
-        self.hgText2 = wx.TextCtrl(loggerLabelPanel2, style=wx.TE_CENTRE, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
+        self.hgText2 = wx.TextCtrl(loggerLabelPanel2, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
         loggerLabelSizer2.Add(loggerLabelTxt2, 1, wx.EXPAND)
         loggerLabelSizer2.Add(self.hgText2, 1, wx.EXPAND)
         #Create new panel and sizer for dynamic entries
@@ -665,26 +662,13 @@ class WaterLevelRunPanel(wx.Panel):
         commentsPanel.SetSizer(commentsSizer)
 
         commentsTxt = wx.StaticText(commentsPanel, label=self.commentsLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
-        correctCmtButton = wx.Button(commentsPanel, size=(15, 20), label="!")
-        correctCmtButton.SetForegroundColour('red')
-        correctCmtButton.Bind(wx.EVT_BUTTON, self.OnCmtBtn)
-
-        commentsSizer.Add(commentsTxt, 0, wx.EXPAND|wx.LEFT, 5)
-        commentsSizer.Add(correctCmtButton, 0, wx.RIGHT, 5)
+        commentsSizer.Add(commentsTxt, 0, wx.EXPAND|wx.ALL, 5)
 
         self.commentsCtrl = wx.TextCtrl(commentsPanel, style=wx.TE_MULTILINE|wx.TE_BESTWRAP)
         # self.commentsCtrl.Bind(wx.EVT_TEXT, self.OnTextType)
         commentsSizer.Add(self.commentsCtrl, 1, wx.EXPAND|wx.ALL, 5)
 
-        completedByPanel = wx.Panel(self.WLRScroll, style=wx.BORDER_NONE, size=(-1, 30))
-        completedBySizer = wx.BoxSizer(wx.HORIZONTAL)
-        completedByPanel.SetSizer(completedBySizer)
 
-        completedByTxt = wx.StaticText(completedByPanel, label=self.completedByLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
-        completedBySizer.Add(completedByTxt, 0, wx.EXPAND|wx.LEFT, 5)
-
-        self.completedByCtrl = wx.TextCtrl(completedByPanel, style=wx.TE_MULTILINE|wx.TE_BESTWRAP)
-        completedBySizer.Add(self.completedByCtrl, 1, wx.EXPAND|wx.ALL, 5)
 
         self.splitter.SplitHorizontally(self.runTablePanel, self.secondSplitPanel, 280)
         self.splitter.SetMinimumPaneSize(2)
@@ -699,7 +683,6 @@ class WaterLevelRunPanel(wx.Panel):
         # levelNotesSizer.Add(self.waterLevelPanel, 1, wx.EXPAND)
         levelNotesSizer.Add((-1, 10), 0, wx.EXPAND)
         levelNotesSizer.Add(commentsPanel, 0, wx.EXPAND)
-        levelNotesSizer.Add(completedByPanel, 0, wx.EXPAND)
         levelNotesSizer.Add((-1, 5), 0, wx.EXPAND)
 
 
@@ -1721,18 +1704,6 @@ class WaterLevelRunPanel(wx.Panel):
             else:
                 self.rb2.SetValue(True)
             dlg.Destroy()
-
-    #Hint button on Comments
-    def OnCmtBtn(self, event):
-        dlg = wx.MessageDialog(self, self.correctCmtBtnHint, 'Hint', wx.OK)
-
-        res = dlg.ShowModal()
-        if res == wx.ID_OK:
-            dlg.Destroy()
-        else:
-            dlg.Destroy()
-        return
-
 
 
 def main():

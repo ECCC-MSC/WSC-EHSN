@@ -329,16 +329,11 @@
 				<xsl:call-template name="LFsToBRs">
 					<xsl:with-param name="input" select="LevelChecks/comments"/>
 				</xsl:call-template>
-				</td>
-			</tr>
-			<tr>
-				<td align="left"><b>Completed By: </b><br/>
-				<xsl:call-template name="LFsToBRs">
-					<xsl:with-param name="input" select="LevelChecks/completedBy"/>
-				</xsl:call-template>
-				</td>
-			</tr>
 
+
+
+			</td>
+			</tr>
 		</tbody>
 		</table>
 		<p align="left">
@@ -805,14 +800,14 @@
 						<td class="noborder"><xsl:value-of select="gasSysDepCtrl"/>@<xsl:value-of select="gasDepTime"/></td>
 					</tr>
 					<tr class="noborder">
-						<td class="noborder" align="left"><b>Feed: </b> </td>
-						<td class="noborder"><xsl:value-of select="feed"/>@<xsl:value-of select="feedArrTime"/></td>
-						<td class="noborder"><xsl:value-of select="feedDepCtrl"/>@<xsl:value-of select="feedDepTime"/></td>
-					</tr>
-					<tr class="noborder">
 						<td class="noborder" align = "left"><xsl:value-of select="bpmRotChoice"/> : </td>
 						<td class="noborder"><xsl:value-of select="bpmRot"/>@<xsl:value-of select="bpmrotArrTime"/></td>
 						<td class="noborder"><xsl:value-of select="bpmrotDepCtrl"/>@<xsl:value-of select="bpmrotDepTime"/></td>
+					</tr>
+					<tr class="noborder">
+						<td class="noborder" align="left"><b>Feed: </b> </td>
+						<td class="noborder"><xsl:value-of select="feed"/>@<xsl:value-of select="feedArrTime"/></td>
+						<td class="noborder"><xsl:value-of select="feedDepCtrl"/>@<xsl:value-of select="feedDepTime"/></td>
 					</tr>
 				</table>	
 			</td>
@@ -1998,7 +1993,8 @@
 		</table>
 
         <table>
-        <tr class="noborder">
+            <tr class="noborder">
+
             <xsl:choose>
                 <xsl:when test="pictured='True'">
                     <td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
@@ -2011,15 +2007,8 @@
                     <font size="4">&#x2751;</font></td>
                 </xsl:otherwise>
             </xsl:choose>
+
         </tr>
-
-		<tr class="noborder">
-			<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-				<b>Pre-use Cableway Inspection: </b>
-				<xsl:value-of select="preUseCable"/>
-			</td>
-		</tr>
-
         </table>
 
 </xsl:template>

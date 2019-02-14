@@ -338,7 +338,7 @@ Hint!
 Note: The FlowTracker2 date and time is stored as UTC along with an offset for local time. Make sure the 'Offset From UTC' time is correctly entered for your location."""
         self.tzMatchErrTitle = "TimeZones are not matching"
 
-        self.readFT2ErrMsg = "Error during reading ft file(FlowTracker2). It may caused by do not have enough user rights. Please try log in by another account."
+        self.readFT2ErrMsg = "Error during reading ft file(FlowTracker2). It may have been caused by a lack of user rights. Please try to log in using another account."
         self.readFT2ErrTitle = "Error during reading ft file(FlowTracker2)"
 
         self.sxsImportAttentionMsg = "Attention!\n\nThe xml file displays discharge in two decimal places, and the calculated discharge and average velocity might be slightly different from the values view in SxS Pro software."
@@ -2548,12 +2548,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         return True
 
-    #Open the *.ft* file and save the directory of the file
+    #Open *.ft* or *.ft.edited* files and save the directory of the file
     def FtFileOpen(self):
         self.DestroySubWindows()
 
         fileOpenDialog = wx.FileDialog(self, "Open FlowTracker *.ft", self.rootPath, '',
-                            'FlowTracker2 (*.ft)|*.ft|All Files (*.*)|*',
+                            'FlowTracker2 (*.ft ; *.ft.edited)|*.ft;*.ft.edited|All Files (*.*)|*',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
@@ -2579,13 +2579,21 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.ehsnMidDir = ""
                 try:
                     extractFile = zipfile.ZipFile(fileName, 'r')
-                    extractFile.extractall(fileName.rsplit('.',1)[0])
-                    extractFile.close()
+                    if fileName.endswith('.ft'):
+                        extractFile.extractall(fileName.rsplit('.',1)[0])
+                        extractFile.close()
+                    else:
+                        extractFile.extractall(fileName.rsplit('.',1)[0].rsplit('.',1)[0])
+                        extractFile.close()
                 except:
                     err = wx.MessageDialog(self, self.readFT2ErrMsg, self.readFT2ErrTitle, wx.OK | wx.ICON_ERROR)
                     err.ShowModal()
+                
+                if fileName.endswith('.ft'): #get json file path from ft file
+                    self.ft2JsonDir = self.ft2FtDir.rsplit('.',1)[0] + "\\DataFile.json"
+                else: #get json file path from ft.edited file
+                    self.ft2JsonDir = self.ft2FtDir.rsplit('.',1)[0].rsplit('.',1)[0] + "\\DataFile.json"
 
-                self.ft2JsonDir = self.ft2FtDir.rsplit('.',1)[0] + "\\DataFile.json"
                 self.qRevDir = ""
                 self.flowTrackerDir = ""
                 self.hfcDir = ""

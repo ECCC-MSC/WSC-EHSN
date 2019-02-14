@@ -442,15 +442,6 @@ class WaterLevelRunManager(object):
     def commentsCtrl(self, commentsCtrl):
         self.gui.commentsCtrl.SetValue(commentsCtrl)
 
-    #CompletedBy Value
-    @property
-    def completedByCtrl(self):
-        return self.gui.completedByCtrl.GetValue()
-
-    @completedByCtrl.setter
-    def completedByCtrl(self, completedByCtrl):
-        self.gui.completedByCtrl.SetValue(completedByCtrl)
-
 
     #Return HG name header
     @property
@@ -541,9 +532,6 @@ class WaterLevelRunManager(object):
         return self.gui.hgText2
     def GetCommentsCtrl(self):
         return self.gui.commentsCtrl
-    def GetCompletedByCtrl(self):
-        return self.gui.completedByCtrl
-
         
 def main():
     app = wx.App()
