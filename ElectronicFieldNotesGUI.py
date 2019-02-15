@@ -2553,7 +2553,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.DestroySubWindows()
 
         fileOpenDialog = wx.FileDialog(self, "Open FlowTracker *.ft", self.rootPath, '',
-                            'FlowTracker2 (*.ft)|*.ft|All Files (*.*)|*',
+                            'FlowTracker2 (*.ft ; *.ft.edited)|*.ft;*.ft.edited|All Files (*.*)|*',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
@@ -2579,13 +2579,21 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.ehsnMidDir = ""
                 try:
                     extractFile = zipfile.ZipFile(fileName, 'r')
-                    extractFile.extractall(fileName.rsplit('.',1)[0])
-                    extractFile.close()
+                    if fileName.endswith('.ft'):
+                        extractFile.extractall(fileName.rsplit('.',1)[0])
+                        extractFile.close()
+                    else:
+                        extractFile.extractall(fileName.rsplit('.',1)[0].rsplit('.',1)[0])
+                        extractFile.close()
                 except:
                     err = wx.MessageDialog(self, self.readFT2ErrMsg, self.readFT2ErrTitle, wx.OK | wx.ICON_ERROR)
                     err.ShowModal()
+                
+                if fileName.endswith('.ft'): #get json file path from ft file
+                    self.ft2JsonDir = self.ft2FtDir.rsplit('.',1)[0] + "\\DataFile.json"
+                else: #get json file path from ft.edited file
+                    self.ft2JsonDir = self.ft2FtDir.rsplit('.',1)[0].rsplit('.',1)[0] + "\\DataFile.json"
 
-                self.ft2JsonDir = self.ft2FtDir.rsplit('.',1)[0] + "\\DataFile.json"
                 self.qRevDir = ""
                 self.flowTrackerDir = ""
                 self.hfcDir = ""
