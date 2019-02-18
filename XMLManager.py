@@ -1402,13 +1402,13 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
         ADCPInfo.attrib['empty'] = 'True'
 
 
-    #Control Panel
-    Control = SubElement(InstrumentDeployment, 'Control')
+    #SiteConditions Panel
+    SiteConditions = SubElement(InstrumentDeployment, 'SiteConditions')
 
-    pictured = SubElement(Control, "pictured")
+    pictured = SubElement(SiteConditions, "pictured")
     pictured.text = str(instrDepManager.GetPicturedCkboxVal())
 
-    preUseCable = SubElement(Control, "preUseCable")
+    preUseCable = SubElement(SiteConditions, "preUseCable")
     preUseCable.text = instrDepManager.preUseCableCmbo
 
     # condition = SubElement(Control, 'condition')
@@ -1705,10 +1705,10 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     instrDepManager.passedFieldRevCB = False if passedRev is None else (False if passedRev == 'False' else True)
 
 
-    #Control
-    Control = InstrumentDeployment.find('Control')
+    #Site Conditions
+    SiteConditions = InstrumentDeployment.find('SiteConditions')
     try:
-        pictured = Control.find('pictured').text
+        pictured = SiteConditions.find('pictured').text
         if pictured == "True":
             instrDepManager.SetPicturedCkboxVal(True)
         else:
@@ -1717,7 +1717,7 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
         print "no pictured ckeckbox for field review in xml"
 
     try:
-        preUseCable = Control.find('preUseCable')
+        preUseCable = SiteConditions.find('preUseCable')
         if preUseCable is None:
             instrDepManager.preUseCableCmboFromXml = ""
         else:

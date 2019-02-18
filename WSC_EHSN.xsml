@@ -180,7 +180,7 @@
 						<xsl:apply-templates select="EHSN/InstrumentDeployment/ADCPInfo"/>
 					</xsl:if>
 
-					<xsl:apply-templates select="EHSN/InstrumentDeployment/Control"/>
+					<xsl:apply-templates select="EHSN/InstrumentDeployment/SiteConditions"/>
 					<xsl:apply-templates select="EHSN/PartyInfo"/>
 				</td>
 			</tr>
@@ -2163,7 +2163,7 @@
 </xsl:template>
 
 
-<xsl:template match="EHSN/InstrumentDeployment/Control">
+<xsl:template match="EHSN/InstrumentDeployment/SiteConditions">
 	<br/>
 	<table style="height: 92px;" width="750">
 	<tr class="noborder">
