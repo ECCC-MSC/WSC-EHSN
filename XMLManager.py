@@ -1965,7 +1965,7 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
 
                     waterLevelRunManager.GetClosureText(index).SetValue(closure)
 
-                   if (closure>=0.003 or closure <= -0.003):
+                    if (closure>=0.003 or closure <= -0.003):
                         waterLevelRunManager.GetClosureText(index).SetBackgroundColour("red")
 
                 if LevelChecksTable.find('upload') is not None:
