@@ -1317,12 +1317,6 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     model = SubElement(GeneralInfo, 'model')
     model.text = instrDepManager.modelCmbo
 
-    pictured = SubElement(GeneralInfo, "pictured")
-    pictured.text = str(instrDepManager.GetPicturedCkboxVal())
-
-    preUseCable = SubElement(GeneralInfo, "preUseCable")
-    preUseCable.text = instrDepManager.preUseCableCmbo
-
     #Midsection Panel
     MidsectionInfo = SubElement(InstrumentDeployment, 'MidsectionInfo', empty = 'False')
     panelsNum = SubElement(MidsectionInfo, 'panelsNum')
@@ -1410,6 +1404,13 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
 
     #Control Panel
     Control = SubElement(InstrumentDeployment, 'Control')
+
+    pictured = SubElement(Control, "pictured")
+    pictured.text = str(instrDepManager.GetPicturedCkboxVal())
+
+    preUseCable = SubElement(Control, "preUseCable")
+    preUseCable.text = instrDepManager.preUseCableCmbo
+
     # condition = SubElement(Control, 'condition')
     # condition.text = str(instrDepManager.controlConditionCmbo)
 
@@ -1596,29 +1597,6 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     except:
         instrDepManager.selectedGauge = "gauge"
 
-
-    try:
-        #Control
-        # Control = InstrumentDeployment.find('GeneralInfo')
-        pictured = GeneralInfo.find('pictured').text
-        if pictured == "True":
-            instrDepManager.SetPicturedCkboxVal(True)
-        else:
-            instrDepManager.SetPicturedCkboxVal(False)
-
-    except:
-        print "no pictured ckeckbox for field review in xml"
-
-    try:
-        preUseCable = GeneralInfo.find('preUseCable')
-        if preUseCable is None:
-            instrDepManager.preUseCableCmboFromXml = ""
-        else:
-            instrDepManager.preUseCableCmboFromXml = preUseCable.text
-
-    except:
-        print "Failed to load preUseCable value"
-
     #MIDSECTION
     MidsectionInfo = InstrumentDeployment.find('MidsectionInfo')
     MidsectionInfo = InstrumentDeployment.find('MidsectionMethod') if MidsectionInfo is None else MidsectionInfo
@@ -1727,7 +1705,26 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     instrDepManager.passedFieldRevCB = False if passedRev is None else (False if passedRev == 'False' else True)
 
 
-    # #Control
+    #Control
+    Control = InstrumentDeployment.find('Control')
+    try:
+        pictured = Control.find('pictured').text
+        if pictured == "True":
+            instrDepManager.SetPicturedCkboxVal(True)
+        else:
+            instrDepManager.SetPicturedCkboxVal(False)
+    except:
+        print "no pictured ckeckbox for field review in xml"
+
+    try:
+        preUseCable = Control.find('preUseCable')
+        if preUseCable is None:
+            instrDepManager.preUseCableCmboFromXml = ""
+        else:
+            instrDepManager.preUseCableCmboFromXml = preUseCable.text
+    except:
+        print "Failed to load preUseCable value"
+        
     # Control = InstrumentDeployment.find('Control')
     # condition = Control.find('condition').text
     # instrDepManager.controlConditionCmbo = "" if condition is None else condition

@@ -180,9 +180,7 @@
 						<xsl:apply-templates select="EHSN/InstrumentDeployment/ADCPInfo"/>
 					</xsl:if>
 
-							<!-- <xsl:apply-templates select="EHSN/InstrumentDeployment/Control">
-							</xsl:apply-templates>
- -->
+					<xsl:apply-templates select="EHSN/InstrumentDeployment/Control"/>
 					<xsl:apply-templates select="EHSN/PartyInfo"/>
 				</td>
 			</tr>
@@ -1997,30 +1995,6 @@
 		</tr>
 		</table>
 
-        <table>
-        <tr class="noborder">
-            <xsl:choose>
-                <xsl:when test="pictured='True'">
-                    <td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-                        <b>Site and/or control pictures were taken.   </b>
-                    <font size="4">&#x2714;</font></td>
-                </xsl:when>
-                <xsl:otherwise>
-                    <td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-                        <b>Site and/or control pictures were taken.   </b>
-                    <font size="4">&#x2751;</font></td>
-                </xsl:otherwise>
-            </xsl:choose>
-        </tr>
-
-		<tr class="noborder">
-			<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-				<b>Pre-use Cableway Inspection: </b>
-				<xsl:value-of select="preUseCable"/>
-			</td>
-		</tr>
-
-        </table>
 
 </xsl:template>
 
@@ -2188,6 +2162,33 @@
 		</table>
 </xsl:template>
 
+
+<xsl:template match="EHSN/InstrumentDeployment/Control">
+	<br/>
+	<table style="height: 92px;" width="750">
+	<tr class="noborder">
+		<xsl:choose>
+			<xsl:when test="pictured='True'">
+				<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+					<b>Site and/or control pictures were taken.   </b>
+				<font size="4">&#x2714;</font></td>
+			</xsl:when>
+			<xsl:otherwise>
+				<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+					<b>Site and/or control pictures were taken.   </b>
+				<font size="4">&#x2751;</font></td>
+			</xsl:otherwise>
+		</xsl:choose>
+	</tr>
+
+	<tr class="noborder">
+		<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+			<b>Pre-use Cableway Inspection: </b>
+			<xsl:value-of select="preUseCable"/>
+		</td>
+	</tr>
+	</table>
+</xsl:template>
 <!-- <xsl:template match="EHSN/InstrumentDeployment/Control">
 <font size="0.05"><br/></font>
 	<table class="noborder" valign="middle" style="border:none; margin: 0 auto;">
