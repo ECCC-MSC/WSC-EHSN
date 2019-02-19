@@ -1796,7 +1796,11 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
 
     # LevelOrAnnual = SubElement(LevelChecks, 'LevelOrAnnual')
     # LevelOrAnnual.text = "GC" if waterLevelRunManager.gaugeCheck else ("DC" if waterLevelRunManager.datumCheck else "BC")
+    rb1 = SubElement(LevelChecks, 'rb1')
+    rb1.text = str(waterLevelRunManager.GetRb1().GetValue())
 
+    rb2 = SubElement(LevelChecks, 'rb2')
+    rb2.text = str(waterLevelRunManager.GetRb2().GetValue())
 
     runSizer = waterLevelRunManager.runSizer
     for i in range(len(runSizer.GetChildren())):
@@ -1932,6 +1936,16 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
 # Set Level Checks variables from existing XML structure
 def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
     print "LevelChecksFromXML"
+    
+    try:
+        rb1 = LevelChecks.find('rb1').text
+        if rb1 == "True":
+            waterLevelRunManager.SetRb1(True)
+        else:
+            waterLevelRunManager.SetRb2(True)
+    except:
+        pass
+    
     runSizer = waterLevelRunManager.runSizer
     #Reset Table
 
