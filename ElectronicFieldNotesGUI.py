@@ -889,8 +889,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.config.metersPathText.SetForegroundColour("Red")
                 self.config.metersPathText.SetLabel('No meters information file selected')
             if self.emptyLevel:
-                self.config.levelsPathText.SetForegroundColour("No bencmark information file selected")
-                self.config.levelsPathText.SetLabel('None')
+                self.config.levelsPathText.SetForegroundColour("Red")
+                self.config.levelsPathText.SetLabel('No bencmark information file selected')
 
 
             self.config.Layout()
