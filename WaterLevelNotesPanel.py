@@ -1101,7 +1101,7 @@ class WaterLevelNotesPanel(wx.Panel):
                             self.GetClosureText(runIndex).SetValue(str(closureValue))
                             if abs(closureValue) > 0.003:
                                 self.GetClosureText(runIndex).SetBackgroundColour("red")
-                                
+                            
                             self.GetUploadCheckBox(runIndex).SetValue(True)
                             event.Skip()
                             return

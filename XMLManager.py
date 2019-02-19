@@ -1973,7 +1973,6 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
             try:
                 if LevelChecksTable.find('closure') is not None:
                     closure = LevelChecksTable.find('closure').text if LevelChecksTable.find('closure').text is not None else ""
-
                     waterLevelRunManager.GetClosureText(index).SetValue(closure)
 
                 if LevelChecksTable.find('upload') is not None:
