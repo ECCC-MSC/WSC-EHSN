@@ -138,7 +138,7 @@ class WaterLevelRunPanel(wx.Panel):
         self.surgeLbl = "Surge (+/- m)/ Comment"
         self.WLElevLbl = "Water Level Elevation"
         self.commentsLbl = "Comments"
-        self.completedByLbl = "Completed by"
+        self.completedByLbl = "Surveyed by"
         self.datumLbl = "Datum (m)"
         self.loggerLbl = "HG"
         self.loggerLbl2 = "HG2"
