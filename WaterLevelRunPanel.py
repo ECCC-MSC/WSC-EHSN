@@ -138,7 +138,7 @@ class WaterLevelRunPanel(wx.Panel):
         self.surgeLbl = "Surge (+/- m)/ Comment"
         self.WLElevLbl = "Water Level Elevation"
         self.commentsLbl = "Comments"
-        self.completedByLbl = "Surveyed by"
+        self.completedByLbl = "Completed by"
         self.datumLbl = "Datum (m)"
         self.loggerLbl = "HG"
         self.loggerLbl2 = "HG2"
@@ -1598,7 +1598,21 @@ class WaterLevelRunPanel(wx.Panel):
     def SetLoggerReadingVal2(self, row, val):
         self.GetLoggerReading2(row).SetValue(val)
 
+    #Get Conventional Leveling Radio button
+    def GetRb1(self):
+        return self.rb1.GetValue()
 
+    #Set Conventional Leveling Radio button
+    def SetRb1(self, val):
+        self.rb1.SetValue(val)
+
+    #Get Total Staion Leveling Radio button
+    def GetRb2(self):
+        return self.rb2.GetValue()
+
+    #Set Total Staion Leveling Radio button
+    def SetRb2(self, val):
+        self.rb2.SetValue(val)
 
     #Return HG name header
     def GetHG(self):
