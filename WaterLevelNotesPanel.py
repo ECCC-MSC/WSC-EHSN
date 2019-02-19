@@ -1096,14 +1096,21 @@ class WaterLevelNotesPanel(wx.Panel):
                         pairEle = self.GetElevation(runIndex, i).GetValue()
 
                         try:
-                            pairEle = float(pairEle)
-                            closureValue = round(pairEle - startElevation, 3)
-                            self.GetClosureText(runIndex).SetValue(str(closureValue))
-                            if abs(closureValue) > 0.003:
-                                self.GetClosureText(runIndex).SetBackgroundColour("red")
-                                
-                            self.GetUploadCheckBox(runIndex).SetValue(True)
-                            event.Skip()
+                          pairEle = float(pairEle)
+                          self.GetClosureText(runIndex).SetValue(str(round(pairEle - startElevation, 3)))
+                          
+                          closureValue = round(pairEle - startElevation, 3)
+                          #print(closureValue)
+                          
+                          if closureValue > 0.003 or closureValue < (-1*0.003):
+                            #print("RED")
+                            self.GetClosureText(runIndex).SetBackgroundColour("red")
+                          else:
+                            #print("WHITE")
+                            self.GetClosureText(runIndex).SetBackgroundColour("white")
+
+                          self.GetUploadCheckBox(runIndex).SetValue(True)
+                          event.Skip()
                             return
                         except:
                             warning = wx.MessageDialog(None,"The elevation values provided for the 'BMs' is not a valid number.",
