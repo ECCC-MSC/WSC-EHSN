@@ -1094,21 +1094,19 @@ class WaterLevelRunPanel(wx.Panel):
         #Wle col stuff
         self.wleValSizer.Hide(index)
         self.wleValSizer.Remove(index)
-
-
+        
         for index, col in enumerate(self.waterLevelSizerH.GetChildren()):
             for rowIndex, child in enumerate(col.GetSizer().GetItem(1).GetWindow().GetSizer().GetChildren()):
-
+                if index == 8:
+                    i = int(child.GetSizer().GetItem(0).GetWindow().GetName())
+                else:
+                    i = int(child.GetWindow().GetName())
+                if i > rowIndex:
                     if index == 8:
-                        i = int(child.GetSizer().GetItem(0).GetWindow().GetName())
+                        self.GetCwl(rowIndex).SetName("%s" % (i - 1))
+                        self.GetWLCombobox(rowIndex).SetName("%s" % (i - 1))
                     else:
-                        i = int(child.GetWindow().GetName())
-                    if i > rowIndex:
-                        if index == 8:
-                            self.GetCwl(rowIndex).SetName("%s" % (i - 1))
-                            self.GetWLCombobox(rowIndex).SetName("%s" % (i - 1))
-                        else:
-                            child.GetWindow().SetName("%s" % (i - 1))
+                        child.GetWindow().SetName("%s" % (i - 1))
 
         self.waterLevelSizerV.Layout()
         self.waterLevelPanel.Update()
