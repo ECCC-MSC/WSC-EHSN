@@ -187,7 +187,7 @@ class EHSNGui(wx.Frame):
         self.fPdfvLabel = "Generate PDF - Complete Note on Full Page"
         self.fPdfvDesc = "Generate pdf for the current field visit as 8.5 x 11 size format."
         self.fAquLabel = '&Upload eHSN to AQUARIUS\tCtrl+U'
-        self.fAquDesc = 'Upload this Field Visit\'s information to AQUARIUS'
+        self.fAquDesc = 'Upload this Field Visit\'s information to AQUARIUS (saves XML and PDF at the same time)'
         self.fExitLabel = '&Quit\tCtrl+Q'
         self.fExitDesc = 'Exit Program'
         self.hAboutLabel = '&About'
@@ -257,29 +257,29 @@ class EHSNGui(wx.Frame):
         self.fileSavePDFStylesheetTitle = "Locate Stylesheet"
         self.fileSavePDFStylesheetSummMessage = "Stylesheet not found, please locate stylesheet file: " + self.summStyleSheetFileName
         self.fileSavePDFStylesheetViewMessage = "Stylesheet not found, please locate stylesheet file: " + self.viewStyleSheetFileName
-        self.fileSavePDFSaveTitle = 'Export Survey'
+        self.fileSavePDFSaveTitle = 'Save eHSN as PDF'
         self.fileOpenTitle = 'Open'
-        self.fileExitMessage = 'Save Hydrometric Field Notes before exit?'
+        self.fileExitMessage = 'Save Hydrometric Survey Notes before exit?'
         self.fileExitTitle = 'Save before exit?'
         self.fileAQStnMessage = "Please enter a Station Number"
-        self.fileAQStnTitle = "Information"
+        self.fileAQStnTitle = "Station information missing"
         self.fileAQTZMessage = "Please select timezone"
-        self.fileAQTZTitle = "Information"
+        self.fileAQTZTitle = "Time zone missing"
         self.fileAQUploadTitle = "Upload eHSN to AQUARIUS"
-        self.fileAQUpSuccessMessage = "Upload Successful!"
+        self.fileAQUpSuccessMessage = "Upload Successful"
         self.fileAQUpSuccessTitle = "Upload Complete"
         self.errorTitle = "Error"
         self.fileOpenMessage = "Do you want to save the changes?"
 
-        self.helpAboutTitle = 'Hydrometric Field Notes'
+        self.helpAboutTitle = 'Hydrometric Survey Notes'
         self.helpAboutBaseDesc = 'Version: '
-        self.helpHelpTitle = "Hydrometric Field Notes Help"
-        self.helpHelpMessage = "The help documentation and SOP for the eHSN is currently available in " \
-                               "the pdf document packaged with this release as well as the NHS ecollab library."
+        self.helpHelpTitle = "Hydrometric Survey Notes Help"
+        self.helpHelpMessage = "Help for this application can be found on the 'WSC Information Station'  " \
+                               "as well as the NHS ecollab library."
 
-        self.movingBoatOpenTitle = 'Open a saved moving boat from an external file'
+        self.movingBoatOpenTitle = 'Open saved moving boat data from an external file'
         self.saveBeforeUploadDesc = 'Do you want to save before uploading to AQUARIUS'
-        self.noSaveBeforeUploadMsg = 'Continue Without Saving'
+        self.noSaveBeforeUploadMsg = 'Continue without saving'
         self.saveBeforeUploadTitle = 'Save before uploading'
         self.iconName = "icon_transparent.ico"
         self.logoName = "icon_transparent.jpg"
@@ -287,8 +287,8 @@ class EHSNGui(wx.Frame):
         self.closeRCVDesc = "Please close the plot window first"
         self.closeRCVTitle = "Message from Rating Curve View Tool"
         self.startTimeErrorMsg = "Start & end time cannot be '00:00'"
-        self.savePDFErrorMsg = "The pdf file with the same name is open. Please close the window before generating the new one."
-        self.savePDFErrorTitle = "Saving PDF Error"
+        self.savePDFErrorMsg = "A pdf file with the same name is open. Please close or rename that file before generating a new one."
+        self.savePDFErrorTitle = "Error saving PDF file"
         self.qrName = "qr.jpg"
         self.icon_path = self.iconName
         self.qr_path = self.qrName
@@ -307,16 +307,16 @@ class EHSNGui(wx.Frame):
         self.savedLevelsPath = ''
 
 
-        self.notReviewedUploadWarning = """There is no indication that this field note has been reviewed. Please ensure this field note has been reviewed, and that the "Reviewed" checkbox at the bottom of the Front Page has been checked."""
+        self.notReviewedUploadWarning = """There is no indication that this survey note has been reviewed. Hydrometric survey notes must by reviewed prior to upload.  Once reviewed, ensure the check-box on the Front Page has been checked."""
         # self.importQRevMsg = "Upon importing all eHSN data entered in the following sections will be overwritten by data imported from measurement file. you can uncheck one or more of these measuremehnts if you opt for the eHSN data not to be overwritten by the imported data."
         # self.importQRevOption1 = "Discharge Measurements Summary"
         # self.importQRevOption2 = "Discharge Measurement and Equipment Details"
         # self.importQRevOption3 = "Moving Boat Page"
-        self.fileErrMsg = "Unable to read the station ID from the external file specified"
-        self.fileErrTitle = "Station ID reading error"
+        self.fileErrMsg = "Unable to read the station ID from the external file specified, please ensure you have selected the correct file."
+        self.fileErrTitle = "Error reading station IDs"
 
-        self.overwriteMsg = "Some of the information will be overwritten by the imported data. Countinue?"
-        self.iverwriteTitle = "Overwrite"
+        self.overwriteMsg = "Some information on the current survey note will be overwritten by the imported data. Countinue?"
+        self.iverwriteTitle = "Imported data overwrite"
 
 
         self.tzEhsnMissErrMsg = "Missing TimeZone from eHSN"
@@ -327,7 +327,7 @@ class EHSNGui(wx.Frame):
 The FlowTracker2 date and time is stored as Coordinated Universal Time (UTC) 
 along with an offset for local time. Make sure the 'Offset From UTC' time is 
 correct for your location. If the time offset is not correct, the times imported 
-into eHSN will be in error."""
+into eHSN will be wrong."""
 
         self.tzFt2MissErrTitle = "Missing TimeZone from FlowTracker2"
 
@@ -338,10 +338,10 @@ Hint!
 Note: The FlowTracker2 date and time is stored as UTC along with an offset for local time. Make sure the 'Offset From UTC' time is correctly entered for your location."""
         self.tzMatchErrTitle = "TimeZones are not matching"
 
-        self.readFT2ErrMsg = "Error during reading ft file(FlowTracker2). It may caused by do not have enough user rights. Please try log in by another account."
+        self.readFT2ErrMsg = "Error during reading ft file(FlowTracker2). It may have been caused by a lack of user rights. Please try to log in with another account."
         self.readFT2ErrTitle = "Error during reading ft file(FlowTracker2)"
 
-        self.sxsImportAttentionMsg = "Attention!\n\nThe xml file displays discharge in two decimal places, and the calculated discharge and average velocity might be slightly different from the values view in SxS Pro software."
+        self.sxsImportAttentionMsg = "Attention!\n\nThe xml file displays discharge to two decimal places; the calculated discharge and average velocity might be slightly different from the values viewed in SxS Pro software."
         self.sxsImportAttentionTitle = "Attention"
 
         self.RatingCurveViewerToolFrame = None
@@ -393,7 +393,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.ehsnMidDir = ""
 
         self.importSucessMsg = "Data imported succesfully!"
-        self.importSucessTitle = "Succesful"
+        self.importSucessTitle = "Succesful import"
 
 
         self.rootPath = os.getcwd()
@@ -425,7 +425,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.SetFont(myFont)
 
         self.CreateStatusBar(style=wx.STB_SIZEGRIP|wx.STB_SHOW_TIPS|wx.STB_ELLIPSIZE_END|wx.FULL_REPAINT_ON_RESIZE)
-        self.SetStatusText("Welcome to the Hydrometric Survey Notes")
+        self.SetStatusText("Backup located in C:\\temp\\eHSN\\")
 
         fileMenu = wx.Menu()
         fnew = fileMenu.Append(ID_FILE_NEW, self.fNewLabel, self.fNewDesc)
@@ -683,7 +683,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.layout.AddPage(self.form, "Front Page")
         self.layout.AddPage(self.form2_1, "Level Notes")
         self.layout.AddPage(self.form3, "Moving Boat")
-        self.layout.AddPage(self.form4, "Mid-section")
+        self.layout.AddPage(self.form4, "Mid-Section")
         self.layout.AddPage(self.form5, "Field Review")
         # self.layout.AddPage(form6, "User Config")
         self.layout.Show(True)
@@ -884,12 +884,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.config.clearButton.Bind(wx.EVT_BUTTON, self.OnClearAll)
             if self.emptyStation:
                 self.config.stationsPathText.SetForegroundColour("Red")
-                self.config.stationsPathText.SetLabel('None')
+                self.config.stationsPathText.SetLabel('No station information file selected')
             if self.emptyMeter:
                 self.config.metersPathText.SetForegroundColour("Red")
-                self.config.metersPathText.SetLabel('None')
+                self.config.metersPathText.SetLabel('No meters information file selected')
             if self.emptyLevel:
-                self.config.levelsPathText.SetForegroundColour("Red")
+                self.config.levelsPathText.SetForegroundColour("No bencmark information file selected")
                 self.config.levelsPathText.SetLabel('None')
 
 
@@ -982,17 +982,17 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def SaveAsPDFAndXML4Upload(self, path, success):
         try:
 	        if success:
-	            self.createProgressDialog('In Progress', 'Uploading Successful. Saving Field Visit to pdf & xml.........')
+	            self.createProgressDialog('In Progress', 'Upload Successful. Saving Field Visit to pdf & xml.........')
 	            name = self.SaveAsXMLAtUpload(path, success).rsplit('.',1)[0]
 	            self.deleteProgressDialog()
 	            info = wx.MessageDialog(self, "Upload: Successful\nThe xml and pdf files has also been saved.\n" \
                     + name + ".xml\n" + name + ".pdf", "Done!",
 	                                wx.OK)
 	        else:
-	            self.createProgressDialog('In Progress', 'Uploading failed. Saving Field Visit to pdf & xml.........')
+	            self.createProgressDialog('In Progress', 'Upload failed. Saving Field Visit to pdf & xml.........')
 	            name = self.SaveAsXMLAtUpload(path, success).rsplit('.',1)[0]
 	            self.deleteProgressDialog()
-	            info = wx.MessageDialog(self, "Upload: Failed\nThe xml and pdf files has also been have saved.\n" \
+	            info = wx.MessageDialog(self, "Upload: Failed\nThe xml and pdf files have been have saved.\n" \
                     + name + ".xml\n" + name + ".pdf", "Done!",
 	                                wx.OK)
 
@@ -1065,7 +1065,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
         if self.mode == "DEBUG":
-            print "path for export pdf before upload to AQ"
+            print "Path for export pdf before upload to AQ:"
             print path
 
         if self.name == '':
@@ -1544,7 +1544,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         aboutInfo.SetName(self.helpAboutTitle)
         aboutInfo.SetVersion(self.version)
         aboutInfo.SetDescription(description)
-        aboutInfo.SetCopyright("This code was developed specifically for the Water Survey of Canada. \nFor support please submit an issue to: ")
+        aboutInfo.SetCopyright("This code was developed by the Water Survey of Canada. \nFor support please submit an issue to: ")
         aboutInfo.SetWebSite("https://watersurveyofcanada.atlassian.net/")
         aboutInfo.AddDeveloper("Wenbin Zhang")
         aboutInfo.AddDeveloper("Yugo Brunet")
@@ -2270,7 +2270,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     def CreateQR(self):
         manager = self.manager
-        code = "MATMSG:TO:dougstiff@gmail.com;SUB: Field visit for: " + manager.genInfoManager.datePicker + ";BODY: <?xml version="'"1.0"'"?><?xml-stylesheet type="'"text/xsl"'" href="'"WSC_EHSN.xsml"'"?><EHSN version="'"v1.2.1.1"'"><TitleHeader><enteredInHWS>False</enteredInHWS></TitleHeader><GenInfo><station number="'"08OA003"'">PREMIER CREEK NEAR QUEEN CHARLOTTE</station><date>timezone="'"PST"'">2016/05/09</date></GenInfo><StageMeas><HgCkbox>True</HgCkbox><Hg2Ckbox>False</Hg2Ckbox><Wlr1Ckbox>False</Wlr1Ckbox><Wlr2Ckbox>False</Wlr2Ckbox><HG1Header/><HG2Header/><WL1Header/><WL2Header/><StageMeasTable><StageMeasRow row="'"0"'"><time>15:23</time><HG1>12.000</HG1><HG2/><WL1/><WL2/><SRC/><SRCApp/><MghCkbox>True</MghCkbox></StageMeasRow></StageMeasTable><hgCkbox>True</hgCkbox><hg2Ckbox>False</hg2Ckbox><wlr1Ckbox>False</wlr1Ckbox><wlr2Ckbox>False</wlr2Ckbox><MGHHG1>12.0</MGHHG1><MGHHG2/><MGHWL1/><MGHWL2/><SRCHG1>0.000</SRCHG1><SRCHG2/><GCHG1>0.000</GCHG1><GCHG2/><GCWL1/><GCWL2/><CMGHHG1>12.0</CMGHHG1><CMGHHG2/><CMGHWL1/><CMGHWL2/><MghMethod>Average</MghMethod><Factors/></StageMeas><DisMeas><startTime>15:44</startTime><endTime>04:00</endTime><airTemp/><waterTemp/><width/><area/><meanVel/><mgh/><mghCmbo/><discharge>12.0</discharge><mmtTimeVal>21:52</mmtTimeVal><shift>3</shift><diff>3</diff><curve>3</curve></DisMeas><PartyInfo><party/><completed/><checked/><reviewed>True</reviewed></PartyInfo></EHSN>;;"
+        code = "MATMSG:TO:dummy@dummy.com;SUB: Field visit for: " + manager.genInfoManager.datePicker + ";BODY: <?xml version="'"1.0"'"?><?xml-stylesheet type="'"text/xsl"'" href="'"WSC_EHSN.xsml"'"?><EHSN version="'"v1.2.1.1"'"><TitleHeader><enteredInHWS>False</enteredInHWS></TitleHeader><GenInfo><station number="'"08OA003"'">PREMIER CREEK NEAR QUEEN CHARLOTTE</station><date>timezone="'"PST"'">2016/05/09</date></GenInfo><StageMeas><HgCkbox>True</HgCkbox><Hg2Ckbox>False</Hg2Ckbox><Wlr1Ckbox>False</Wlr1Ckbox><Wlr2Ckbox>False</Wlr2Ckbox><HG1Header/><HG2Header/><WL1Header/><WL2Header/><StageMeasTable><StageMeasRow row="'"0"'"><time>15:23</time><HG1>12.000</HG1><HG2/><WL1/><WL2/><SRC/><SRCApp/><MghCkbox>True</MghCkbox></StageMeasRow></StageMeasTable><hgCkbox>True</hgCkbox><hg2Ckbox>False</hg2Ckbox><wlr1Ckbox>False</wlr1Ckbox><wlr2Ckbox>False</wlr2Ckbox><MGHHG1>12.0</MGHHG1><MGHHG2/><MGHWL1/><MGHWL2/><SRCHG1>0.000</SRCHG1><SRCHG2/><GCHG1>0.000</GCHG1><GCHG2/><GCWL1/><GCWL2/><CMGHHG1>12.0</CMGHHG1><CMGHHG2/><CMGHWL1/><CMGHWL2/><MghMethod>Average</MghMethod><Factors/></StageMeas><DisMeas><startTime>15:44</startTime><endTime>04:00</endTime><airTemp/><waterTemp/><width/><area/><meanVel/><mgh/><mghCmbo/><discharge>12.0</discharge><mmtTimeVal>21:52</mmtTimeVal><shift>3</shift><diff>3</diff><curve>3</curve></DisMeas><PartyInfo><party/><completed/><checked/><reviewed>True</reviewed></PartyInfo></EHSN>;;"
 
         self.img = qrcode.make(code)
         self.img.save(self.qr_path, "jpeg")
@@ -2324,9 +2324,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 return
 
 
-            stnNumMatchingMessage = "The Station Numbers don't match: \n\neHSN:\t{1}\nSelected Mid-section File:\t{0}"
-            stnNumMatchingTitle = "Station Number is not matching"
-            stnDateMatchingMessage = "The Measurement Dates don't match: \n\neHSN: {1}\nSelected Mid-section File: {0}\n\nContinue anyway?"
+            stnNumMatchingMessage = "The station numbers do not match: \n\neHSN:\t{1}\nSelected mid-section file:\t{0}"
+            stnNumMatchingTitle = "Station number mis-match"
+            stnDateMatchingMessage = "The measurement dates do not match: \n\neHSN: {1}\nSelected mid-section file: {0}\n\nContinue anyway?"
             stnDateMatchingTitle = "Date is not matching"
 
 
@@ -2405,7 +2405,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 if result != wx.ID_YES:
                     return
 
-            frame = IngestOptionFrame(mode=self.mode, parent=self, title="External File Ingest", inType=evt.GetId(), size=(550, 250))
+            frame = IngestOptionFrame(mode=self.mode, parent=self, title="External file ingest", inType=evt.GetId(), size=(550, 250))
             frame.Show()
 
 
