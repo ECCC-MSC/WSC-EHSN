@@ -337,9 +337,10 @@ class WaterLevelNotesPanel(wx.Panel):
         self.closureBtn.Bind(wx.EVT_BUTTON, self.OnClosure)
         closureSubPanel = wx.Panel(closurePanel, style=wx.SUNKEN_BORDER, size=(90, -1))
 
-        closureCtrl = wx.TextCtrl(closureSubPanel, style=wx.TE_PROCESS_ENTER)
+        self.closureCtrl = wx.TextCtrl(closureSubPanel, style=wx.TE_PROCESS_ENTER)
+        self.closureCtrl.Bind(wx.EVT_TEXT, self.OnClosureCtrl)
         closureSizer = wx.BoxSizer(wx.VERTICAL)
-        closureSizer.Add(closureCtrl, 1, wx.EXPAND)
+        closureSizer.Add(self.closureCtrl, 1, wx.EXPAND)
         closureSubPanel.SetSizer(closureSizer)
 
         closureUnitTxt = wx.StaticText(closurePanel, label=self.closureUnitLbl)
@@ -1095,11 +1096,15 @@ class WaterLevelNotesPanel(wx.Panel):
                         pairEle = self.GetElevation(runIndex, i).GetValue()
 
                         try:
-                          pairEle = float(pairEle)
-                          self.GetClosureText(runIndex).SetValue(str(round(pairEle - startElevation, 3)))
-                          self.GetUploadCheckBox(runIndex).SetValue(True)
-                          event.Skip()
-                          return
+                            pairEle = float(pairEle)
+                            closureValue = round(pairEle - startElevation, 3)
+                            self.GetClosureText(runIndex).SetValue(str(closureValue))
+                            if abs(closureValue) > 0.003:
+                                self.GetClosureText(runIndex).SetBackgroundColour("red")
+                                
+                            self.GetUploadCheckBox(runIndex).SetValue(True)
+                            event.Skip()
+                            return
                         except:
                             warning = wx.MessageDialog(None,"The elevation values provided for the 'BMs' is not a valid number.",
                                             "Error", wx.OK | wx.ICON_EXCLAMATION)
@@ -1109,7 +1114,6 @@ class WaterLevelNotesPanel(wx.Panel):
                                 return
 
             event.Skip()
-
 
 
             warning = wx.MessageDialog(None,"The beginning and ending BM/Reference names are not identical.",
@@ -1127,6 +1131,17 @@ class WaterLevelNotesPanel(wx.Panel):
                 evnet.Skip()
                 return
 
+    def OnClosureCtrl(self, event):
+        panel = event.GetEventObject().GetParent().GetParent().GetParent()
+        runIndex = int(panel.GetName())
+        closureCtrl = self.GetClosureText(runIndex)
+        if abs(float(closureCtrl.GetValue())) > 0.003:
+            closureCtrl.SetBackgroundColour("red")
+        else:
+            closureCtrl.SetBackgroundColour("white")
+        closureCtrl.Refresh()
+        
+        event.Skip()
 
 
     # When the '-' is clicked, remove that row
