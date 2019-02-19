@@ -1005,7 +1005,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td align="left"><b>Completed By: </b><br/>
+				<td align="left"><b>Surveyed By: </b><br/>
 				<xsl:call-template name="LFsToBRs">
 					<xsl:with-param name="input" select="LevelChecks/completedBy"/>
 				</xsl:call-template>
