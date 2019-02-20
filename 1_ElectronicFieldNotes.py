@@ -1059,8 +1059,8 @@ class ElectronicHydrometricSurveyNotes:
         self.partyInfoManager.GetReviewedCB().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
 
         #waterLevelRunManager
-        self.waterLevelRunManager.GetRb1().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
-        self.waterLevelRunManager.GetRb2().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+        self.waterLevelRunManager.GetConventionalLevellingRb().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+        self.waterLevelRunManager.GetTotalStationRb().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.waterLevelRunManager.GetHgText().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.waterLevelRunManager.GetHgText2().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.waterLevelRunManager.GetCommentsCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
