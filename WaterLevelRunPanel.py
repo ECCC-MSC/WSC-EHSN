@@ -174,8 +174,8 @@ class WaterLevelRunPanel(wx.Panel):
         self.picture = wx.Image(self.myBitmap, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         self.transToFrontpicture = wx.Image(self.myBitmapFront, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 
-        self.rb1Lbl = "Conventional Levelling"
-        self.rb2Lbl = "Total Station"
+        self.conventionalLevellingRbLbl = "Conventional Levelling"
+        self.totalStationRbLbl = "Total Station"
         # self.rb3Lbl = "Both"
         # self.levelNoteToolTipDesc = "Note: Aggregation of the Foresight and/or Backsight measurements may be needed externally before entering the values" \
         #         + " in eHSN when levelling a wire-weight gauge (e.g. when sight on the grooves of weight and WWG reading are used) or a staff gauge" \
@@ -221,16 +221,16 @@ class WaterLevelRunPanel(wx.Panel):
         # dummyTxt=wx.StaticText(self.titlePanel, name="-1")
 
 
-        self.rb1 = wx.RadioButton(self.titlePanel, -1, self.rb1Lbl, (10, 10),style = wx.RB_GROUP)
-        self.rb2 = wx.RadioButton(self.titlePanel, -1, self.rb2Lbl, (10, 10))
+        self.conventionalLevellingRb = wx.RadioButton(self.titlePanel, -1, self.conventionalLevellingRbLbl, (10, 10),style = wx.RB_GROUP)
+        self.totalStationRb = wx.RadioButton(self.titlePanel, -1, self.totalStationRbLbl, (10, 10))
         # self.rb3 = wx.RadioButton(self.titlePanel, -1, self.rb3Lbl, (10, 10))
-        self.rb1.Bind(wx.EVT_RADIOBUTTON, self.OnChangeLevelType)
-        self.rb2.Bind(wx.EVT_RADIOBUTTON, self.OnChangeLevelType)
+        self.conventionalLevellingRb.Bind(wx.EVT_RADIOBUTTON, self.OnChangeLevelType)
+        self.totalStationRb.Bind(wx.EVT_RADIOBUTTON, self.OnChangeLevelType)
 
         titleSizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        titleSizer.Add(self.rb1, 0, wx.EXPAND)
-        titleSizer.Add(self.rb2, 0, wx.EXPAND)
+        titleSizer.Add(self.conventionalLevellingRb, 0, wx.EXPAND)
+        titleSizer.Add(self.totalStationRb, 0, wx.EXPAND)
 
         # titleSizer.Add(self.rb3, 0, wx.EXPAND)
         titleSizer.Add(levelNotesTxt, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 150)
@@ -1597,20 +1597,20 @@ class WaterLevelRunPanel(wx.Panel):
         self.GetLoggerReading2(row).SetValue(val)
 
     #Get Conventional Leveling Radio button
-    def GetRb1(self):
-        return self.rb1.GetValue()
+    def GetConventionalLevellingRb(self):
+        return self.conventionalLevellingRb.GetValue()
 
     #Set Conventional Leveling Radio button
-    def SetRb1(self, val):
-        self.rb1.SetValue(val)
+    def SetConventionalLevellingRb(self, val):
+        self.conventionalLevellingRb.SetValue(val)
 
     #Get Total Staion Leveling Radio button
-    def GetRb2(self):
-        return self.rb2.GetValue()
+    def GetTotalStationRb(self):
+        return self.totalStationRb.GetValue()
 
     #Set Total Staion Leveling Radio button
-    def SetRb2(self, val):
-        self.rb2.SetValue(val)
+    def SetTotalStationRb(self, val):
+        self.totalStationRb.SetValue(val)
 
     #Return HG name header
     def GetHG(self):
@@ -1721,17 +1721,17 @@ class WaterLevelRunPanel(wx.Panel):
         dlg = wx.MessageDialog(self, self.changeLvlMethodMessage, "Are you sure?", wx.YES_NO|wx.YES_DEFAULT)
         res = dlg.ShowModal()
         if res == wx.ID_YES:
-            if self.rb1.GetValue():
+            if self.conventionalLevellingRb.GetValue():
                 self.levelNotes.type = 0
             else:
                 self.levelNotes.type = 1
             self.levelNotes.RefreshTable()
             dlg.Destroy()
         else:
-            if not self.rb1.GetValue():
-                self.rb1.SetValue(True)
+            if not self.conventionalLevellingRb.GetValue():
+                self.conventionalLevellingRb.SetValue(True)
             else:
-                self.rb2.SetValue(True)
+                self.totalStationRb.SetValue(True)
             dlg.Destroy()
 
     #Hint button on Comments

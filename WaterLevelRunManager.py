@@ -531,18 +531,18 @@ class WaterLevelRunManager(object):
 
 
     #Conventional Leveling Radio button
-    def GetRb1(self):
-        return self.gui.rb1
+    def GetConventionalLevellingRb(self):
+        return self.gui.conventionalLevellingRb
 
-    def SetRb1(self, val):
-        self.gui.SetRb1(val)
+    def SetConventionalLevellingRb(self, val):
+        self.gui.SetConventionalLevellingRb(val)
 
     #Total Staion Leveling Radio button
-    def GetRb2(self):
-        return self.gui.rb2
+    def GetTotalStationRb(self):
+        return self.gui.totalStationRb
 
-    def SetRb2(self, val):
-        self.gui.SetRb2(val)
+    def SetTotalStationRb(self, val):
+        self.gui.SetTotalStationRb(val)
 
     def GetHgText(self):
         return self.gui.hgText
