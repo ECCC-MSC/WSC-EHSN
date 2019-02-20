@@ -1924,8 +1924,8 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
     comments = SubElement(LevelChecks, 'comments')
     comments.text = waterLevelRunManager.commentsCtrl
 
-    completedBy = SubElement(LevelChecks, 'completedBy')
-    completedBy.text = waterLevelRunManager.completedByCtrl
+    surveyedby = SubElement(LevelChecks, 'surveyedby')
+    surveyedby.text = waterLevelRunManager.surveyedbyCtrl
 
     loggerName = SubElement(LevelChecks, 'loggerName')
     loggerName.text = waterLevelRunManager.HGHeaderCtrl
@@ -2100,8 +2100,8 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
     comments = LevelChecks.find('comments').text
     waterLevelRunManager.commentsCtrl = "" if comments is None else comments
 
-    completedBy = LevelChecks.find('completedBy').text
-    waterLevelRunManager.completedByCtrl = "" if completedBy is None else completedBy
+    surveyedby = LevelChecks.find('surveyedby').text
+    waterLevelRunManager.surveyedbyCtrl = "" if surveyedby is None else surveyedby
 
     try:
         loggerName = LevelChecks.find('loggerName').text

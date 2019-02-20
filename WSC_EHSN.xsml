@@ -332,7 +332,7 @@
 			<tr>
 				<td align="left"><b>Surveyed By: </b><br/>
 				<xsl:call-template name="LFsToBRs">
-					<xsl:with-param name="input" select="LevelChecks/completedBy"/>
+					<xsl:with-param name="input" select="LevelChecks/surveyedby"/>
 				</xsl:call-template>
 				</td>
 			</tr>

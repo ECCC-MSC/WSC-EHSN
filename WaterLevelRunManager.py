@@ -442,14 +442,14 @@ class WaterLevelRunManager(object):
     def commentsCtrl(self, commentsCtrl):
         self.gui.commentsCtrl.SetValue(commentsCtrl)
 
-    #CompletedBy Value
+    #Surveyedby Value
     @property
-    def completedByCtrl(self):
-        return self.gui.completedByCtrl.GetValue()
+    def surveyedbyCtrl(self):
+        return self.gui.surveyedbyCtrl.GetValue()
 
-    @completedByCtrl.setter
-    def completedByCtrl(self, completedByCtrl):
-        self.gui.completedByCtrl.SetValue(completedByCtrl)
+    @surveyedbyCtrl.setter
+    def surveyedbyCtrl(self, surveyedbyCtrl):
+        self.gui.surveyedbyCtrl.SetValue(surveyedbyCtrl)
 
 
     #Return HG name header
@@ -550,8 +550,8 @@ class WaterLevelRunManager(object):
         return self.gui.hgText2
     def GetCommentsCtrl(self):
         return self.gui.commentsCtrl
-    def GetCompletedByCtrl(self):
-        return self.gui.completedByCtrl
+    def GetSurveyedByCtrl(self):
+        return self.gui.surveyedbyCtrl
 
         
 def main():
