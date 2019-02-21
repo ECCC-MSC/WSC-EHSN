@@ -632,6 +632,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         formSizer.Add(self.instrDep, 0, wx.EXPAND|wx.ALL, 3)
         # formSizer.Add(self.remarks, 0, wx.EXPAND|wx.ALL, 3)
         formSizer.Add(self.partyInfo, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 3)
+        
 
         self.form.SetSizerAndFit(formSizer)
 
