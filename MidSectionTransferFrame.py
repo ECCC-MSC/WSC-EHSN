@@ -40,14 +40,16 @@ class MidSectionTransferFrame(wx.Frame):
         description.SetFont(self.titleFont)
 
 
-
+        self.mmntTimeCkbox = wx.CheckBox(mainPanel, label=self.mmntTimeLbl, style=wx.ALIGN_LEFT)
+        self.numberPanelsCkbox = wx.CheckBox(mainPanel, label=self.numberPanelsLbl, style=wx.ALIGN_LEFT)
         self.widthCkbox = wx.CheckBox(mainPanel, label=self.widthLbl, style=wx.ALIGN_LEFT)
         self.areaCkbox = wx.CheckBox(mainPanel, label=self.areaLbl, style=wx.ALIGN_LEFT)
         self.meanVelocityCkbox = wx.CheckBox(mainPanel, label=self.meanVelocityLbl, style=wx.ALIGN_LEFT)
         self.dischargeCkbox = wx.CheckBox(mainPanel, label=self.dischargeLbl, style=wx.ALIGN_LEFT)
-        self.numberPanelsCkbox = wx.CheckBox(mainPanel, label=self.numberPanelsLbl, style=wx.ALIGN_LEFT)
         self.meterNumberCkbox = wx.CheckBox(mainPanel, label=self.meterNumberLbl, style=wx.ALIGN_LEFT)
-        self.mmntTimeCkbox = wx.CheckBox(mainPanel, label=self.mmntTimeLbl, style=wx.ALIGN_LEFT)
+        
+        
+
 
         self.widthCkbox.SetValue(True)
         self.areaCkbox.SetValue(True)
@@ -71,12 +73,14 @@ class MidSectionTransferFrame(wx.Frame):
         self.layoutSizer.Add(description, 1, wx.EXPAND|wx.ALL, 5)
 
         self.layoutSizer.Add(self.mmntTimeCkbox, 1, wx.EXPAND|wx.ALL, 5)
+        self.layoutSizer.Add(self.numberPanelsCkbox, 1, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(self.widthCkbox, 1, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(self.areaCkbox, 1, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(self.meanVelocityCkbox, 1, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(self.dischargeCkbox, 1, wx.EXPAND|wx.ALL, 5)
-        self.layoutSizer.Add(self.numberPanelsCkbox, 1, wx.EXPAND|wx.ALL, 5)
+        
         self.layoutSizer.Add(self.meterNumberCkbox, 1, wx.EXPAND|wx.ALL, 5)
+        
         
 
         self.layoutSizer.Add(btnSizer, 1, wx.EXPAND|wx.ALL, 5)

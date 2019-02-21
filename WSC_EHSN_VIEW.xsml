@@ -120,6 +120,7 @@
 				<xsl:if test="EHSN/InstrumentDeployment/ADCPInfo/@empty='False'">
 					<xsl:apply-templates select="EHSN/InstrumentDeployment/ADCPInfo"/>
 				</xsl:if>
+				<xsl:apply-templates select="EHSN/InstrumentDeployment/SiteConditions"/>
 
 				<xsl:apply-templates select="EHSN/PartyInfo"/>
 
@@ -460,14 +461,14 @@
 						<td class="noborder"><xsl:value-of select="gasSysDepCtrl"/>@<xsl:value-of select="gasDepTime"/></td>
 					</tr>
 					<tr class="noborder">
-						<td class="noborder" align = "left"><xsl:value-of select="bpmRotChoice"/> : </td>
-						<td class="noborder"><xsl:value-of select="bpmRot"/>@<xsl:value-of select="bpmrotArrTime"/></td>
-						<td class="noborder"><xsl:value-of select="bpmrotDepCtrl"/>@<xsl:value-of select="bpmrotDepTime"/></td>
-					</tr>
-					<tr class="noborder">
 						<td class="noborder" align="left"><b>Feed: </b> </td>
 						<td class="noborder"><xsl:value-of select="feed"/>@<xsl:value-of select="feedArrTime"/></td>
 						<td class="noborder"><xsl:value-of select="feedDepCtrl"/>@<xsl:value-of select="feedDepTime"/></td>
+					</tr>
+					<tr class="noborder">
+						<td class="noborder" align = "left"><xsl:value-of select="bpmRotChoice"/> : </td>
+						<td class="noborder"><xsl:value-of select="bpmRot"/>@<xsl:value-of select="bpmrotArrTime"/></td>
+						<td class="noborder"><xsl:value-of select="bpmrotDepCtrl"/>@<xsl:value-of select="bpmrotDepTime"/></td>
 					</tr>
 				</table>	
 			</td>
@@ -715,7 +716,8 @@
 			
 		</tr>
 		</table>
-		
+
+
 </xsl:template>
 
 <xsl:template match="EHSN/InstrumentDeployment/MidsectionInfo">  
@@ -815,10 +817,6 @@
 		</table>
 </xsl:template>
 
-
-
-
-
 <xsl:template name="LFsToBRs">
 	<xsl:param name="input" />
 	<xsl:choose>
@@ -833,6 +831,34 @@
 		</xsl:otherwise>
 	</xsl:choose>
 </xsl:template>
+
+<xsl:template match="EHSN/InstrumentDeployment/SiteConditions">
+	<br/>
+	<table style="height: 92px;" width="750">
+	<tr class="noborder">
+		<xsl:choose>
+			<xsl:when test="pictured='True'">
+				<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+					<b>Site and/or control pictures were taken.   </b>
+				<font size="4">&#x2714;</font></td>
+			</xsl:when>
+			<xsl:otherwise>
+				<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+					<b>Site and/or control pictures were taken.   </b>
+				<font size="4">&#x2751;</font></td>
+			</xsl:otherwise>
+		</xsl:choose>
+	</tr>
+
+	<tr class="noborder">
+		<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+			<b>Pre-use Cableway Inspection: </b>
+			<xsl:value-of select="preUseCable"/>
+		</td>
+	</tr>
+	</table>
+</xsl:template>
+
 <xsl:template match="EHSN/PartyInfo">
 	<table class="noborder" style="text-align:center; border:none; width:750px">
 	<tbody>
@@ -978,6 +1004,13 @@
 				</xsl:call-template>
 				</td>
 			</tr>
+			<tr>
+				<td align="left"><b>Surveyed By: </b><br/>
+				<xsl:call-template name="LFsToBRs">
+					<xsl:with-param name="input" select="LevelChecks/surveyedby"/>
+				</xsl:call-template>
+				</td>
+			</tr>
 		</tbody>
 		</table>
 		
@@ -1062,21 +1095,6 @@
 				<td align="left"><xsl:value-of select="text"/></td>
 			</tr>
 		</xsl:for-each>
-		
-		<tr class="noborder">
-			<xsl:choose>
-				<xsl:when test="pictured='True'">
-					<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-						<b>Site and/or control pictures were taken.   </b>
-					<font size="4">&#x2714;</font></td>
-				</xsl:when>
-				<xsl:otherwise>
-					<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-						<b>Site and/or control pictures were taken.   </b>
-					<font size="4">&#x2751;</font></td>
-				</xsl:otherwise>
-			</xsl:choose>
-		</tr>
 		
 		<tr>
 			<td align="left" colspan="4" height="80"><b>Site Notes: </b><br/>

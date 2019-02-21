@@ -33,10 +33,10 @@ def Check(version, parent, alwaysShow):
         ftp.cwd('WSC eHSN')
         print "======================================"
         ftp.retrlines('LIST')
-        fdir = location + '\message.txt'
+        fdir = 'message'
         f = open(fdir,'wb')
 
-        ftp.retrbinary('RETR eHSN_message.txt', f.write)
+        ftp.retrbinary('RETR message.txt', f.write)
         f.close()
 
         f = open(fdir,'r')

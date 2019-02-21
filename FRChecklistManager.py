@@ -180,11 +180,11 @@ class FRChecklistManager(object):
         self.gui.siteNotesCtrl.SetValue(siteNotesCtrl)
 
 
-    def GetPicturedCkbox(self):
-        return self.gui.picturedCkbox.IsChecked()
+    # def GetPicturedCkbox(self):
+    #     return self.gui.picturedCkbox.IsChecked()
 
-    def SetPicturedCkbox(self, val):
-        self.gui.picturedCkbox.SetValue(val)
+    # def SetPicturedCkbox(self, val):
+    #     self.gui.picturedCkbox.SetValue(val)
 
 
 

@@ -178,11 +178,11 @@ class MovingBoatMeasurementsManager(object):
         elif col == 1:
             if val == 'True':
                 val = True
-                for i in range(1, 8):
+                for i in range(1, 10):
                     self.SetFontColor(row - 1, i, 'Black')
             else:
                 val = False
-                for i in range(1, 8):
+                for i in range(1, 10):
                     self.SetFontColor(row - 1, i, 'Red')
         sizerItem.SetValue(val)
 

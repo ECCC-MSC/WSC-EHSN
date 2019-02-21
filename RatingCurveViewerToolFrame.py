@@ -602,7 +602,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
             highy = max(self.manager.Hr, self.manager.obsStage) + abs(self.manager.Hr - self.manager.obsStage)/4
 
             # Plot line from observed point to Y-axis
-            plt.plot([-1000, self.manager.Qr], [self.manager.obsStage, self.manager.obsStage], linestyle='--', linewidth=2,color='g')
+            plt.plot([0, self.manager.Qr], [self.manager.obsStage, self.manager.obsStage], linestyle='--', linewidth=2,color='g')
 
         # Title
         plotTitle = ""

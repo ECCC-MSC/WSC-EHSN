@@ -10,6 +10,7 @@ import math
 import time
 import ast
 import sys, os
+import traceback
 
 
 #Calculate the mean time
@@ -1347,7 +1348,8 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     weightRadBut2.text = str(instrDepManager.weightRadBut2)
 
 
-    if flowAngle.text == '' and \
+    if panelsNum.text == '' and \
+        flowAngle.text == '' and \
         coeff.text == '' and \
         method.text == '' and \
         metres.text == '' and \
@@ -1400,8 +1402,15 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
         ADCPInfo.attrib['empty'] = 'True'
 
 
-    #Control Panel
-    # Control = SubElement(InstrumentDeployment, 'Control')
+    #SiteConditions Panel
+    SiteConditions = SubElement(InstrumentDeployment, 'SiteConditions')
+
+    pictured = SubElement(SiteConditions, "pictured")
+    pictured.text = str(instrDepManager.GetPicturedCkboxVal())
+
+    preUseCable = SubElement(SiteConditions, "preUseCable")
+    preUseCable.text = instrDepManager.preUseCableCmbo
+
     # condition = SubElement(Control, 'condition')
     # condition.text = str(instrDepManager.controlConditionCmbo)
 
@@ -1418,8 +1427,7 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     # stationHealthRemark.text = instrDepManager.stationHealthRemarksCtrl
 
 
-    # pictured = SubElement(Control, "pictured")
-    # pictured.text = str(instrDepManager.GetPicturedCkboxVal())
+    
 
     # controlConditionRemark = SubElement(Control, 'controlConditionRemark')
     # controlConditionRemark.text = instrDepManager.SetControlConditionRemarksCtrl
@@ -1589,7 +1597,6 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     except:
         instrDepManager.selectedGauge = "gauge"
 
-
     #MIDSECTION
     MidsectionInfo = InstrumentDeployment.find('MidsectionInfo')
     MidsectionInfo = InstrumentDeployment.find('MidsectionMethod') if MidsectionInfo is None else MidsectionInfo
@@ -1698,7 +1705,26 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     instrDepManager.passedFieldRevCB = False if passedRev is None else (False if passedRev == 'False' else True)
 
 
-    # #Control
+    #Site Conditions
+    SiteConditions = InstrumentDeployment.find('SiteConditions')
+    try:
+        pictured = SiteConditions.find('pictured').text
+        if pictured == "True":
+            instrDepManager.SetPicturedCkboxVal(True)
+        else:
+            instrDepManager.SetPicturedCkboxVal(False)
+    except:
+        print "no pictured ckeckbox for field review in xml"
+
+    try:
+        preUseCable = SiteConditions.find('preUseCable')
+        if preUseCable is None:
+            instrDepManager.preUseCableCmboFromXml = ""
+        else:
+            instrDepManager.preUseCableCmboFromXml = preUseCable.text
+    except:
+        print "Failed to load preUseCable value"
+        
     # Control = InstrumentDeployment.find('Control')
     # condition = Control.find('condition').text
     # instrDepManager.controlConditionCmbo = "" if condition is None else condition
@@ -1718,15 +1744,7 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     # instrDepManager.stationHealthRemarksCtrl = "" if stationHealthRemark is None else stationHealthRemark
 
 
-    # try:
-    #     pictured = Control.find('pictured').text
-    #     if pictured == "True":
-    #         instrDepManager.SetPicturedCkboxVal(True)
-    #     else:
-    #         instrDepManager.SetPicturedCkboxVal(False)
-
-    # except:
-    #     print "no pictured ckeckbox for field review in xml"
+    
 
 
     # try:
@@ -1778,7 +1796,11 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
 
     # LevelOrAnnual = SubElement(LevelChecks, 'LevelOrAnnual')
     # LevelOrAnnual.text = "GC" if waterLevelRunManager.gaugeCheck else ("DC" if waterLevelRunManager.datumCheck else "BC")
+    conventionalLevellingRb = SubElement(LevelChecks, 'conventionalLevellingRb')
+    conventionalLevellingRb.text = str(waterLevelRunManager.GetConventionalLevellingRb().GetValue())
 
+    totalStationRb = SubElement(LevelChecks, 'totalStationRb')
+    totalStationRb.text = str(waterLevelRunManager.GetTotalStationRb().GetValue())
 
     runSizer = waterLevelRunManager.runSizer
     for i in range(len(runSizer.GetChildren())):
@@ -1902,6 +1924,9 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
     comments = SubElement(LevelChecks, 'comments')
     comments.text = waterLevelRunManager.commentsCtrl
 
+    surveyedby = SubElement(LevelChecks, 'surveyedby')
+    surveyedby.text = waterLevelRunManager.surveyedbyCtrl
+
     loggerName = SubElement(LevelChecks, 'loggerName')
     loggerName.text = waterLevelRunManager.HGHeaderCtrl
 
@@ -1911,6 +1936,16 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
 # Set Level Checks variables from existing XML structure
 def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
     print "LevelChecksFromXML"
+    
+    try:
+        conventionalLevellingRb = LevelChecks.find('conventionalLevellingRb').text
+        if conventionalLevellingRb == "True":
+            waterLevelRunManager.SetConventionalLevellingRb(True)
+        else:
+            waterLevelRunManager.SetTotalStationRb(True)
+    except:
+        pass
+    
     runSizer = waterLevelRunManager.runSizer
     #Reset Table
 
@@ -1938,7 +1973,6 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
             try:
                 if LevelChecksTable.find('closure') is not None:
                     closure = LevelChecksTable.find('closure').text if LevelChecksTable.find('closure').text is not None else ""
-
                     waterLevelRunManager.GetClosureText(index).SetValue(closure)
 
                 if LevelChecksTable.find('upload') is not None:
@@ -2065,6 +2099,9 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
 
     comments = LevelChecks.find('comments').text
     waterLevelRunManager.commentsCtrl = "" if comments is None else comments
+
+    surveyedby = LevelChecks.find('surveyedby').text
+    waterLevelRunManager.surveyedbyCtrl = "" if surveyedby is None else surveyedby
 
     try:
         loggerName = LevelChecks.find('loggerName').text
@@ -2206,8 +2243,8 @@ def FieldReviewAsXMLTree(FieldReview, frChecklistManager):
     siteNotes = SubElement(FieldReview, "siteNotes")
     siteNotes.text = frChecklistManager.siteNotesCtrl
 
-    pictured = SubElement(FieldReview, "pictured")
-    pictured.text = str(frChecklistManager.GetPicturedCkbox())
+    # pictured = SubElement(FieldReview, "pictured")
+    # pictured.text = str(frChecklistManager.GetPicturedCkbox())
 
 
 # Set Field Review Checklist variables from existing XML structure
@@ -2237,15 +2274,15 @@ def FieldReviewFromXML(FieldReview, frChecklistManager):
     siteNotes = FieldReview.find('siteNotes').text
     frChecklistManager.siteNotesCtrl = "" if siteNotes is None else siteNotes
 
-    try:
-        pictured = FieldReview.find('pictured').text
-        if pictured == "True":
-            frChecklistManager.SetPicturedCkbox(True)
-        else:
-            frChecklistManager.SetPicturedCkbox(False)
+    # try:
+    #     pictured = FieldReview.find('pictured').text
+    #     if pictured == "True":
+    #         frChecklistManager.SetPicturedCkbox(True)
+    #     else:
+    #         frChecklistManager.SetPicturedCkbox(False)
 
-    except:
-        print "no pictured ckeckbox for field review in xml"
+    # except:
+    #     print "no pictured ckeckbox for field review in xml"
 
 # Create XML structure for Moving Boat Method information
 def MovingBoatMeasAsXMLTree(MovingBoatMeas, movingBoatMeasurementsManager):
@@ -2349,11 +2386,11 @@ def MovingBoatMeasAsXMLTree(MovingBoatMeas, movingBoatMeasurementsManager):
         startBankText = str(movingBoatMeasurementsManager.GetTableValue(i - 1, 3)) \
         if movingBoatMeasurementsManager.GetTableValue(i - 1, 3) is not None else ""
         startTimeText = movingBoatMeasurementsManager.GetTableValue(i - 1, 4)
-        startDistanceText = movingBoatMeasurementsManager.GetTableValue(i - 1, 5)
-        endDistanceText = movingBoatMeasurementsManager.GetTableValue(i - 1, 6)
-        rawDischargeText = movingBoatMeasurementsManager.GetTableValue(i - 1, 7)
+        startDistanceText = movingBoatMeasurementsManager.GetTableValue(i - 1, 6)
+        endDistanceText = movingBoatMeasurementsManager.GetTableValue(i - 1, 7)
+        rawDischargeText = movingBoatMeasurementsManager.GetTableValue(i - 1, 8)
         # finalDisText = movingBoatMeasurementsManager.GetTableValue(i - 1, 8)
-        remarksText = movingBoatMeasurementsManager.GetTableValue(i - 1, 8)
+        remarksText = movingBoatMeasurementsManager.GetTableValue(i - 1, 9)
 
         notEmptyRow = False
         if transectIDText == "True":
@@ -2415,17 +2452,17 @@ def MovingBoatMeasAsXMLTree(MovingBoatMeas, movingBoatMeasurementsManager):
             else:
                 transectID.attrib['imported'] = "0"
 
-            if movingBoatMeasurementsManager.GetTableColor(i - 1, 5) == bkColor:
+            if movingBoatMeasurementsManager.GetTableColor(i - 1, 6) == bkColor:
                 startDistance.attrib['imported'] =  "1"
             else:
                 startDistance.attrib['imported'] = "0"
 
-            if movingBoatMeasurementsManager.GetTableColor(i - 1, 6) == bkColor:
+            if movingBoatMeasurementsManager.GetTableColor(i - 1, 7) == bkColor:
                 endDistance.attrib['imported'] =  "1"
             else:
                 endDistance.attrib['imported'] = "0"
 
-            if movingBoatMeasurementsManager.GetTableColor(i - 1, 7) == bkColor:
+            if movingBoatMeasurementsManager.GetTableColor(i - 1, 8) == bkColor:
                 rawDischarge.attrib['imported'] =  "1"
             else:
                 rawDischarge.attrib['imported'] =  "0"
@@ -2434,7 +2471,7 @@ def MovingBoatMeasAsXMLTree(MovingBoatMeas, movingBoatMeasurementsManager):
             #     finalDischarge.attrib['color'] = white
             # else:
             #     finalDischarge.attrib['color'] = grey
-            if movingBoatMeasurementsManager.GetTableColor(i - 1, 8) == bkColor:
+            if movingBoatMeasurementsManager.GetTableColor(i - 1, 9) == bkColor:
                 remarks.attrib['imported'] =  "1"
             else:
                 remarks.attrib['imported'] =  "0"
@@ -2747,10 +2784,10 @@ def MovingBoatMeasFromXML(MovingBoatMeas, movingBoatMeasurementsManager):
         movingBoatMeasurementsManager.SetTableValue(row, 2, "")
         movingBoatMeasurementsManager.SetTableValue(row, 3, "")
         movingBoatMeasurementsManager.SetTableValue(row, 4, "00:00:00")
-        movingBoatMeasurementsManager.SetTableValue(row, 5, "")
         movingBoatMeasurementsManager.SetTableValue(row, 6, "")
         movingBoatMeasurementsManager.SetTableValue(row, 7, "")
         movingBoatMeasurementsManager.SetTableValue(row, 8, "")
+        movingBoatMeasurementsManager.SetTableValue(row, 9, "")
         # movingBoatMeasurementsManager.SetTableValue(row, 9, "")
 
 
@@ -2785,11 +2822,11 @@ def MovingBoatMeasFromXML(MovingBoatMeas, movingBoatMeasurementsManager):
         movingBoatMeasurementsManager.SetTableValue(row, 2, "" if transectID is None else transectID)
         movingBoatMeasurementsManager.SetTableValue(row, 3, "" if startBank is None else startBank)
         movingBoatMeasurementsManager.SetTableValue(row, 4, "" if startTime is None else startTime)
-        movingBoatMeasurementsManager.SetTableValue(row, 5, "" if startDistance is None else startDistance)
-        movingBoatMeasurementsManager.SetTableValue(row, 6, "" if endDistance is None else endDistance)
-        movingBoatMeasurementsManager.SetTableValue(row, 7, "" if rawDischarge is None else rawDischarge)
+        movingBoatMeasurementsManager.SetTableValue(row, 6, "" if startDistance is None else startDistance)
+        movingBoatMeasurementsManager.SetTableValue(row, 7, "" if endDistance is None else endDistance)
+        movingBoatMeasurementsManager.SetTableValue(row, 8, "" if rawDischarge is None else rawDischarge)
         # movingBoatMeasurementsManager.SetTableValue(row, 8, "" if finalDischarge is None else finalDischarge)
-        movingBoatMeasurementsManager.SetTableValue(row, 8, "" if remarks is None else remarks)
+        movingBoatMeasurementsManager.SetTableValue(row, 9, "" if remarks is None else remarks)
 
         # grey = (210, 210, 210)
         # "1" = 'Grey'
@@ -2800,25 +2837,25 @@ def MovingBoatMeasFromXML(MovingBoatMeas, movingBoatMeasurementsManager):
         else:
             movingBoatMeasurementsManager.SetTableColor(row, 2, white)
         if startDistanceColor == "1":
-            movingBoatMeasurementsManager.SetTableColor(row, 5, bkColor)
-        else:
-            movingBoatMeasurementsManager.SetTableColor(row, 5, white)
-        if endDistanceColor == "1":
             movingBoatMeasurementsManager.SetTableColor(row, 6, bkColor)
         else:
             movingBoatMeasurementsManager.SetTableColor(row, 6, white)
-        if rawDischargeColor == "1":
+        if endDistanceColor == "1":
             movingBoatMeasurementsManager.SetTableColor(row, 7, bkColor)
         else:
             movingBoatMeasurementsManager.SetTableColor(row, 7, white)
+        if rawDischargeColor == "1":
+            movingBoatMeasurementsManager.SetTableColor(row, 8, bkColor)
+        else:
+            movingBoatMeasurementsManager.SetTableColor(row, 8, white)
         # if finalDischargeColor == "1":
         #     movingBoatMeasurementsManager.SetTableColor(row, 8, grey)
         # else:
         #     movingBoatMeasurementsManager.SetTableColor(row, 8, white)
         if remarksColor == "1":
-            movingBoatMeasurementsManager.SetTableColor(row, 8, bkColor)
+            movingBoatMeasurementsManager.SetTableColor(row, 9, bkColor)
         else:
-            movingBoatMeasurementsManager.SetTableColor(row, 8, white)
+            movingBoatMeasurementsManager.SetTableColor(row, 9, white)
 
 
     ADCPMeasResults = MovingBoatMeas.find('ADCPMeasResults')

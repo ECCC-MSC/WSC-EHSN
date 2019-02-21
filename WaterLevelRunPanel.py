@@ -138,11 +138,14 @@ class WaterLevelRunPanel(wx.Panel):
         self.surgeLbl = "Surge (+/- m)/ Comment"
         self.WLElevLbl = "Water Level Elevation"
         self.commentsLbl = "Comments"
+        self.surveyedbyLbl = "Surveyed by"
         self.datumLbl = "Datum (m)"
         self.loggerLbl = "HG"
         self.loggerLbl2 = "HG2"
         self.cwlLbl = "Corrected Water Level"
         self.hintLbl = "Transfer selected elevation and reference station to Direct Water Level table"
+        self.correctCmtBtnHint = 'Please note that these comments are uploaded to the to "Activity Remarks Management" section of Leveling Activity in AQUARIUS' \
+                + 'and these comments are also printed for Benchmark History Report.'
         self.transferSumLbl = "Transfer to Front Page"
         self.transferConfirmationMsg = "Corrected water level  and logger values have been transfered"
         self.transferToFrontHintLbl = "Transfer to front page"
@@ -171,8 +174,8 @@ class WaterLevelRunPanel(wx.Panel):
         self.picture = wx.Image(self.myBitmap, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         self.transToFrontpicture = wx.Image(self.myBitmapFront, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 
-        self.rb1Lbl = "Conventional Levelling"
-        self.rb2Lbl = "Total Station"
+        self.conventionalLevellingRbLbl = "Conventional Levelling"
+        self.totalStationRbLbl = "Total Station"
         # self.rb3Lbl = "Both"
         # self.levelNoteToolTipDesc = "Note: Aggregation of the Foresight and/or Backsight measurements may be needed externally before entering the values" \
         #         + " in eHSN when levelling a wire-weight gauge (e.g. when sight on the grooves of weight and WWG reading are used) or a staff gauge" \
@@ -218,16 +221,16 @@ class WaterLevelRunPanel(wx.Panel):
         # dummyTxt=wx.StaticText(self.titlePanel, name="-1")
 
 
-        self.rb1 = wx.RadioButton(self.titlePanel, -1, self.rb1Lbl, (10, 10), style = wx.RB_GROUP)
-        self.rb2 = wx.RadioButton(self.titlePanel, -1, self.rb2Lbl, (10, 10))
+        self.conventionalLevellingRb = wx.RadioButton(self.titlePanel, -1, self.conventionalLevellingRbLbl, (10, 10),style = wx.RB_GROUP)
+        self.totalStationRb = wx.RadioButton(self.titlePanel, -1, self.totalStationRbLbl, (10, 10))
         # self.rb3 = wx.RadioButton(self.titlePanel, -1, self.rb3Lbl, (10, 10))
-        self.rb1.Bind(wx.EVT_RADIOBUTTON, self.OnChangeLevelType)
-        self.rb2.Bind(wx.EVT_RADIOBUTTON, self.OnChangeLevelType)
+        self.conventionalLevellingRb.Bind(wx.EVT_RADIOBUTTON, self.OnChangeLevelType)
+        self.totalStationRb.Bind(wx.EVT_RADIOBUTTON, self.OnChangeLevelType)
 
         titleSizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        titleSizer.Add(self.rb1, 0, wx.EXPAND)
-        titleSizer.Add(self.rb2, 0, wx.EXPAND)
+        titleSizer.Add(self.conventionalLevellingRb, 0, wx.EXPAND)
+        titleSizer.Add(self.totalStationRb, 0, wx.EXPAND)
 
         # titleSizer.Add(self.rb3, 0, wx.EXPAND)
         titleSizer.Add(levelNotesTxt, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 150)
@@ -550,7 +553,7 @@ class WaterLevelRunPanel(wx.Panel):
         loggerLabelPanel.SetSizer(loggerLabelSizer)
 
         loggerLabelTxt = wx.StaticText(loggerLabelPanel, label=self.loggerLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
-        self.hgText = wx.TextCtrl(loggerLabelPanel, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
+        self.hgText = wx.TextCtrl(loggerLabelPanel, style=wx.TE_CENTRE, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
         loggerLabelSizer.Add(loggerLabelTxt, 1, wx.EXPAND)
         loggerLabelSizer.Add(self.hgText, 1, wx.EXPAND)
         #Create new panel and sizer for dynamic entries
@@ -572,7 +575,7 @@ class WaterLevelRunPanel(wx.Panel):
         loggerLabelPanel2.SetSizer(loggerLabelSizer2)
 
         loggerLabelTxt2 = wx.StaticText(loggerLabelPanel2, label=self.loggerLbl2, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
-        self.hgText2 = wx.TextCtrl(loggerLabelPanel2, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
+        self.hgText2 = wx.TextCtrl(loggerLabelPanel2, style=wx.TE_CENTRE, size=(self.colHeaderWidth/2, self.colHeaderHeight/2))
         loggerLabelSizer2.Add(loggerLabelTxt2, 1, wx.EXPAND)
         loggerLabelSizer2.Add(self.hgText2, 1, wx.EXPAND)
         #Create new panel and sizer for dynamic entries
@@ -662,13 +665,26 @@ class WaterLevelRunPanel(wx.Panel):
         commentsPanel.SetSizer(commentsSizer)
 
         commentsTxt = wx.StaticText(commentsPanel, label=self.commentsLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
-        commentsSizer.Add(commentsTxt, 0, wx.EXPAND|wx.ALL, 5)
+        correctCmtButton = wx.Button(commentsPanel, size=(15, 20), label="!")
+        correctCmtButton.SetForegroundColour('red')
+        correctCmtButton.Bind(wx.EVT_BUTTON, self.OnCmtBtn)
+
+        commentsSizer.Add(commentsTxt, 0, wx.EXPAND|wx.LEFT, 5)
+        commentsSizer.Add(correctCmtButton, 0, wx.RIGHT, 5)
 
         self.commentsCtrl = wx.TextCtrl(commentsPanel, style=wx.TE_MULTILINE|wx.TE_BESTWRAP)
         # self.commentsCtrl.Bind(wx.EVT_TEXT, self.OnTextType)
         commentsSizer.Add(self.commentsCtrl, 1, wx.EXPAND|wx.ALL, 5)
 
+        surveyedbyPanel = wx.Panel(self.WLRScroll, style=wx.BORDER_NONE, size=(-1, 30))
+        surveyedbySizer = wx.BoxSizer(wx.HORIZONTAL)
+        surveyedbyPanel.SetSizer(surveyedbySizer)
 
+        surveyedbyTxt = wx.StaticText(surveyedbyPanel, label=self.surveyedbyLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
+        surveyedbySizer.Add(surveyedbyTxt, 0, wx.EXPAND|wx.LEFT, 5)
+
+        self.surveyedbyCtrl = wx.TextCtrl(surveyedbyPanel, style=wx.TE_MULTILINE|wx.TE_BESTWRAP)
+        surveyedbySizer.Add(self.surveyedbyCtrl, 1, wx.EXPAND|wx.ALL, 5)
 
         self.splitter.SplitHorizontally(self.runTablePanel, self.secondSplitPanel, 280)
         self.splitter.SetMinimumPaneSize(2)
@@ -683,6 +699,7 @@ class WaterLevelRunPanel(wx.Panel):
         # levelNotesSizer.Add(self.waterLevelPanel, 1, wx.EXPAND)
         levelNotesSizer.Add((-1, 10), 0, wx.EXPAND)
         levelNotesSizer.Add(commentsPanel, 0, wx.EXPAND)
+        levelNotesSizer.Add(surveyedbyPanel, 0, wx.EXPAND)
         levelNotesSizer.Add((-1, 5), 0, wx.EXPAND)
 
 
@@ -1077,21 +1094,19 @@ class WaterLevelRunPanel(wx.Panel):
         #Wle col stuff
         self.wleValSizer.Hide(index)
         self.wleValSizer.Remove(index)
-
-
+        
         for index, col in enumerate(self.waterLevelSizerH.GetChildren()):
             for rowIndex, child in enumerate(col.GetSizer().GetItem(1).GetWindow().GetSizer().GetChildren()):
-
+                if index == 8:
+                    i = int(child.GetSizer().GetItem(0).GetWindow().GetName())
+                else:
+                    i = int(child.GetWindow().GetName())
+                if i > rowIndex:
                     if index == 8:
-                        i = int(child.GetSizer().GetItem(0).GetWindow().GetName())
+                        self.GetCwl(rowIndex).SetName("%s" % (i - 1))
+                        self.GetWLCombobox(rowIndex).SetName("%s" % (i - 1))
                     else:
-                        i = int(child.GetWindow().GetName())
-                    if i > rowIndex:
-                        if index == 8:
-                            self.GetCwl(rowIndex).SetName("%s" % (i - 1))
-                            self.GetWLCombobox(rowIndex).SetName("%s" % (i - 1))
-                        else:
-                            child.GetWindow().SetName("%s" % (i - 1))
+                        child.GetWindow().SetName("%s" % (i - 1))
 
         self.waterLevelSizerV.Layout()
         self.waterLevelPanel.Update()
@@ -1581,7 +1596,21 @@ class WaterLevelRunPanel(wx.Panel):
     def SetLoggerReadingVal2(self, row, val):
         self.GetLoggerReading2(row).SetValue(val)
 
+    #Get Conventional Leveling Radio button
+    def GetConventionalLevellingRb(self):
+        return self.conventionalLevellingRb.GetValue()
 
+    #Set Conventional Leveling Radio button
+    def SetConventionalLevellingRb(self, val):
+        self.conventionalLevellingRb.SetValue(val)
+
+    #Get Total Staion Leveling Radio button
+    def GetTotalStationRb(self):
+        return self.totalStationRb.GetValue()
+
+    #Set Total Staion Leveling Radio button
+    def SetTotalStationRb(self, val):
+        self.totalStationRb.SetValue(val)
 
     #Return HG name header
     def GetHG(self):
@@ -1692,18 +1721,30 @@ class WaterLevelRunPanel(wx.Panel):
         dlg = wx.MessageDialog(self, self.changeLvlMethodMessage, "Are you sure?", wx.YES_NO|wx.YES_DEFAULT)
         res = dlg.ShowModal()
         if res == wx.ID_YES:
-            if self.rb1.GetValue():
+            if self.conventionalLevellingRb.GetValue():
                 self.levelNotes.type = 0
             else:
                 self.levelNotes.type = 1
             self.levelNotes.RefreshTable()
             dlg.Destroy()
         else:
-            if not self.rb1.GetValue():
-                self.rb1.SetValue(True)
+            if not self.conventionalLevellingRb.GetValue():
+                self.conventionalLevellingRb.SetValue(True)
             else:
-                self.rb2.SetValue(True)
+                self.totalStationRb.SetValue(True)
             dlg.Destroy()
+
+    #Hint button on Comments
+    def OnCmtBtn(self, event):
+        dlg = wx.MessageDialog(self, self.correctCmtBtnHint, 'Hint', wx.OK)
+
+        res = dlg.ShowModal()
+        if res == wx.ID_OK:
+            dlg.Destroy()
+        else:
+            dlg.Destroy()
+        return
+
 
 
 def main():

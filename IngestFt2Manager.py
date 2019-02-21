@@ -72,7 +72,7 @@ def AddDischargeSummary(filePath, disMeasManager):
     calculations = (GetData(filePath)['Calculations'])
 
     # depth = calculations['Depth (m)']
-    waterTemp = calculations['Temperature (C)']
+    # waterTemp = calculations['Temperature (C)']
     area = calculations['Area (m2)']
     discharge = calculations['Discharge (m3/s)']
     width = calculations['Width (m)']
@@ -82,12 +82,12 @@ def AddDischargeSummary(filePath, disMeasManager):
         disMeasManager.startTimeCtrl = finalStartTime
     if finalEndTime is not None and finalEndTime != "":
         disMeasManager.endTimeCtrl = finalEndTime
-    if waterTemp is not None and waterTemp != "":
-        disMeasManager.waterTempCtrl = str(waterTemp)
-        myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
-        myEvent.SetEventObject(disMeasManager.GetWaterTempCtrl())
-        wx.PostEvent(disMeasManager.GetWaterTempCtrl(), myEvent)
-        disMeasManager.GetWaterTempCtrl().SetBackgroundColour(color)
+    # if waterTemp is not None and waterTemp != "":
+    #     disMeasManager.waterTempCtrl = str(waterTemp)
+    #     myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
+    #     myEvent.SetEventObject(disMeasManager.GetWaterTempCtrl())
+    #     wx.PostEvent(disMeasManager.GetWaterTempCtrl(), myEvent)
+    #     disMeasManager.GetWaterTempCtrl().SetBackgroundColour(color)
     if width is not None and width != "":
         disMeasManager.widthCtrl = str(width)
         myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())

@@ -10,6 +10,7 @@ import re
 from decimal import *
 import NumberControl
 from DropdownTime import *
+from datetime import datetime as dt
 
 #Overwrite the TextCtrl Class in order to control the float input
 class MyTextCtrl(wx.TextCtrl):
@@ -138,7 +139,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.bottomLbl = "Bottom:"
         self.exponentLbl = "Exponent:"
         self.differenceInQLbl = "% Difference in Q from power,\n power, 0.1667.\n(value calculated by extrap):"
-        self.compositeTracksLbl = "Composite Tracks: (SonTek Only)"
+        self.compositeTracksLbl = "Composite Tracks:"
         self.depthRefLbl = "Depth Ref:"
 
         self.tops = ["", "Power", "Constant", "3-Point"]
@@ -235,7 +236,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.compositeTrackCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
         self.compositeTrackCmbo.Bind(wx.EVT_TEXT, self.OnTextResetBGColour)
         compositeTrackSizer.Add((5, -1), 0)
-        compositeTrackSizer.Add(compositeTrackTxt, 0, wx.EXPAND)
+        compositeTrackSizer.Add(compositeTrackTxt, 0, wx.EXPAND|wx.TOP|wx.BOTTOM, 5)
         compositeTrackSizer.Add(self.compositeTrackCmbo, 1, wx.EXPAND|wx.TOP|wx.BOTTOM, 5)
         compositeTrackSizer.Add((5, -1), 0)
 
@@ -620,6 +621,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         # self.mmntStartTimeCtrl.Bind(wx.EVT_KEY_DOWN, self.OnResetTime)
         # self.mmntStartTimeCtrl.Bind(wx.EVT_TEXT, self.OnEndTime)
         self.mmntStartTimeCtrl = DropdownTime(True, self, size=(-1, -1))
+        self.mmntStartTimeCtrl.HideCBtn()
         self.mmntStartTimeCtrl.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
         self.mmntStartTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
         self.mmntStartTimeCtrl.GetSecondCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
@@ -720,6 +722,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         # self.mmntEndTimeCtrl.Bind(wx.EVT_KEY_DOWN, self.OnResetTime)
         # self.mmntEndTimeCtrl.Bind(wx.EVT_TEXT, self.OnEndTime)
         self.mmntEndTimeCtrl = DropdownTime(True, self, size=(-1, -1))
+        self.mmntEndTimeCtrl.HideCBtn()
         self.mmntEndTimeCtrl.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
         self.mmntEndTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
         self.mmntEndTimeCtrl.GetSecondCtrl().Bind(wx.EVT_COMBOBOX, self.OnEndTime)
@@ -812,6 +815,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         # self.mmntMeanTimeCtrl = masked.TimeCtrl(self, displaySeconds=True, size=(40, -1), fmt24hr = True)
         # self.mmntMeanTimeCtrl.Bind(wx.EVT_KEY_DOWN, self.OnResetTime)
         self.mmntMeanTimeCtrl = DropdownTime(True, self, size=(-1, -1))
+        self.mmntMeanTimeCtrl.HideCBtn()
 
         # #Final Discharge 
         # finalDischPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
@@ -923,6 +927,8 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         startTimeCtrl = masked.TimeCtrl(self, displaySeconds=True, size=(65, self.rowHeight), fmt24hr=True)
         startTimeCtrl.Bind(wx.EVT_TEXT, self.OnStartTime)
 
+        cBtn = wx.Button(self, label="C", size=(13, self.rowHeight), name = str(self.entryNum))
+        cBtn.Bind(wx.EVT_BUTTON, self.OnCurrent)
 
         startDistanceCtrl = MyTextCtrl(self, size=(76, self.rowHeight), style=wx.TE_PROCESS_ENTER, name = str(self.entryNum))
         startDistanceCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
@@ -968,6 +974,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         rowSizerOld.Add(transectCtrl, 2, wx.EXPAND)
         rowSizerOld.Add(startBankCtrl, 2, wx.EXPAND)
         rowSizerOld.Add(startTimeCtrl, 2, wx.EXPAND)
+        rowSizerOld.Add(cBtn, 0)
         rowSizerOld.Add(startDistanceCtrl, 2, wx.EXPAND)
         rowSizerOld.Add(endDistanceCtrl, 2, wx.EXPAND)
         rowSizerOld.Add(rawDischCtrl, 2, wx.EXPAND)
@@ -992,8 +999,15 @@ class MovingBoatMeasurementsPanel(wx.Panel):
 
 
 
+    #On click current time
+    def OnCurrent(self, evt):
+        name = evt.GetEventObject().GetName()
+        sizer = self.tableSizerV.GetItem(int(name)).GetSizer()
+        timeCtrl = sizer.GetItem(4).GetWindow()
+        time = str(dt.now().time())[:8]
+        timeCtrl.SetValue(time) 
 
-
+        
 
 
     # When the '-' is clicked, remove that row
@@ -1093,8 +1107,8 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         for i in range(1, len(self.tableSizerV.GetChildren()) - 1):
             row = self.tableSizerV.GetChildren()[i]
             if row.GetSizer().GetChildren()[1].GetWindow().GetValue():
-                if row.GetSizer().GetChildren()[7].GetWindow().GetValue() != '':
-                    mean += float(row.GetSizer().GetChildren()[7].GetWindow().GetValue())
+                if row.GetSizer().GetChildren()[8].GetWindow().GetValue() != '':
+                    mean += float(row.GetSizer().GetChildren()[8].GetWindow().GetValue())
                     counter += 1
         if counter > 0:
             mean = '' if mean == 0 else mean/counter
@@ -1238,9 +1252,9 @@ class MovingBoatMeasurementsPanel(wx.Panel):
 
 
     def IsEmptyRow(self, index):
-        if self.manager.GetTableValue(index, 2) == "" and self.manager.GetTableValue(index, 5) == ""\
-        and self.manager.GetTableValue(index, 6) == "" and self.manager.GetTableValue(index, 7) == ""\
-        and self.manager.GetTableValue(index, 8) == "":
+        if self.manager.GetTableValue(index, 2) == "" and self.manager.GetTableValue(index, 6) == ""\
+        and self.manager.GetTableValue(index, 7) == "" and self.manager.GetTableValue(index, 8) == ""\
+        and self.manager.GetTableValue(index, 9) == "":
             return True
         else:
             return False
@@ -1308,12 +1322,13 @@ class MovingBoatMeasurementsPanel(wx.Panel):
             self.manager.SetTableValue(row, 2, "")
             self.manager.SetTableValue(row, 3, "")
             self.manager.SetTableValue(row, 4, "00:00:00")
-            self.manager.SetTableValue(row, 5, "")
+            # self.manager.SetTableValue(row, 5, "")
             self.manager.SetTableValue(row, 6, "")
             self.manager.SetTableValue(row, 7, "")
             self.manager.SetTableValue(row, 8, "")
             self.manager.SetTableValue(row, 9, "")
             self.manager.SetTableValue(row, 10, "")
+            self.manager.SetTableValue(row, 11, "")
 
 
         self.mmntStartTimeCtrl.Clear()
