@@ -84,7 +84,7 @@ ID_IMPORT_RSSDIS = wx.NewId()
 
 ID_TOOLS_CALC = wx.NewId()
 ID_TOOLS_RCVT = wx.NewId()
-ID_TOOLS_MAGN = wx.NewId()
+# ID_TOOLS_MAGN = wx.NewId()
 
 ID_TOOLS_SCALING_SUB1 = wx.NewId()
 ID_TOOLS_SCALING_SUB2 = wx.NewId()
@@ -187,7 +187,7 @@ class EHSNGui(wx.Frame):
         self.fPdfvLabel = "Generate PDF - Complete Note on Full Page"
         self.fPdfvDesc = "Generate pdf for the current field visit as 8.5 x 11 size format."
         self.fAquLabel = '&Upload eHSN to AQUARIUS\tCtrl+U'
-        self.fAquDesc = 'Upload this Field Visit\'s information to AQUARIUS'
+        self.fAquDesc = 'Upload this Field Visit\'s information to AQUARIUS (saves XML and PDF at the same time)'
         self.fExitLabel = '&Quit\tCtrl+Q'
         self.fExitDesc = 'Exit Program'
         self.hAboutLabel = '&About'
@@ -257,29 +257,29 @@ class EHSNGui(wx.Frame):
         self.fileSavePDFStylesheetTitle = "Locate Stylesheet"
         self.fileSavePDFStylesheetSummMessage = "Stylesheet not found, please locate stylesheet file: " + self.summStyleSheetFileName
         self.fileSavePDFStylesheetViewMessage = "Stylesheet not found, please locate stylesheet file: " + self.viewStyleSheetFileName
-        self.fileSavePDFSaveTitle = 'Export Survey'
+        self.fileSavePDFSaveTitle = 'Save eHSN as PDF'
         self.fileOpenTitle = 'Open'
-        self.fileExitMessage = 'Save Hydrometric Field Notes before exit?'
+        self.fileExitMessage = 'Save Hydrometric Survey Notes before exit?'
         self.fileExitTitle = 'Save before exit?'
         self.fileAQStnMessage = "Please enter a Station Number"
-        self.fileAQStnTitle = "Information"
+        self.fileAQStnTitle = "Station information missing"
         self.fileAQTZMessage = "Please select timezone"
-        self.fileAQTZTitle = "Information"
+        self.fileAQTZTitle = "Time zone missing"
         self.fileAQUploadTitle = "Upload eHSN to AQUARIUS"
-        self.fileAQUpSuccessMessage = "Upload Successful!"
+        self.fileAQUpSuccessMessage = "Upload Successful"
         self.fileAQUpSuccessTitle = "Upload Complete"
         self.errorTitle = "Error"
         self.fileOpenMessage = "Do you want to save the changes?"
 
-        self.helpAboutTitle = 'Hydrometric Field Notes'
+        self.helpAboutTitle = 'Hydrometric Survey Notes'
         self.helpAboutBaseDesc = 'Version: '
-        self.helpHelpTitle = "Hydrometric Field Notes Help"
-        self.helpHelpMessage = "The help documentation and SOP for the eHSN is currently available in " \
-                               "the pdf document packaged with this release as well as the NHS ecollab library."
+        self.helpHelpTitle = "Hydrometric Survey Notes Help"
+        self.helpHelpMessage = "Help for this application can be found on the 'WSC Information Station'  " \
+                               "as well as the NHS ecollab library."
 
-        self.movingBoatOpenTitle = 'Open a saved moving boat from an external file'
+        self.movingBoatOpenTitle = 'Open saved moving boat data from an external file'
         self.saveBeforeUploadDesc = 'Do you want to save before uploading to AQUARIUS'
-        self.noSaveBeforeUploadMsg = 'Continue Without Saving'
+        self.noSaveBeforeUploadMsg = 'Continue without saving'
         self.saveBeforeUploadTitle = 'Save before uploading'
         self.iconName = "icon_transparent.ico"
         self.logoName = "icon_transparent.jpg"
@@ -287,6 +287,8 @@ class EHSNGui(wx.Frame):
         self.closeRCVDesc = "Please close the plot window first"
         self.closeRCVTitle = "Message from Rating Curve View Tool"
         self.startTimeErrorMsg = "Start & end time cannot be '00:00'"
+        self.savePDFErrorMsg = "A pdf file with the same name is open. Please close or rename that file before generating a new one."
+        self.savePDFErrorTitle = "Error saving PDF file"
         self.qrName = "qr.jpg"
         self.icon_path = self.iconName
         self.qr_path = self.qrName
@@ -305,16 +307,16 @@ class EHSNGui(wx.Frame):
         self.savedLevelsPath = ''
 
 
-        self.notReviewedUploadWarning = """There is no indication that this field note has been reviewed. Please ensure this field note has been reviewed, and that the "Reviewed" checkbox at the bottom of the Front Page has been checked."""
+        self.notReviewedUploadWarning = """There is no indication that this survey note has been reviewed. Hydrometric survey notes must by reviewed prior to upload.  Once reviewed, ensure the check-box on the Front Page has been checked."""
         # self.importQRevMsg = "Upon importing all eHSN data entered in the following sections will be overwritten by data imported from measurement file. you can uncheck one or more of these measuremehnts if you opt for the eHSN data not to be overwritten by the imported data."
         # self.importQRevOption1 = "Discharge Measurements Summary"
         # self.importQRevOption2 = "Discharge Measurement and Equipment Details"
         # self.importQRevOption3 = "Moving Boat Page"
-        self.fileErrMsg = "Unable to read the station ID from the external file specified"
-        self.fileErrTitle = "Station ID reading error"
+        self.fileErrMsg = "Unable to read the station ID from the external file specified, please ensure you have selected the correct file."
+        self.fileErrTitle = "Error reading station IDs"
 
-        self.overwriteMsg = "Some of the information will be overwritten by the imported data. Countinue?"
-        self.iverwriteTitle = "Overwrite"
+        self.overwriteMsg = "Some information on the current survey note will be overwritten by the imported data. Countinue?"
+        self.iverwriteTitle = "Imported data overwrite"
 
 
         self.tzEhsnMissErrMsg = "Missing TimeZone from eHSN"
@@ -325,7 +327,7 @@ class EHSNGui(wx.Frame):
 The FlowTracker2 date and time is stored as Coordinated Universal Time (UTC) 
 along with an offset for local time. Make sure the 'Offset From UTC' time is 
 correct for your location. If the time offset is not correct, the times imported 
-into eHSN will be in error."""
+into eHSN will be wrong."""
 
         self.tzFt2MissErrTitle = "Missing TimeZone from FlowTracker2"
 
@@ -336,10 +338,10 @@ Hint!
 Note: The FlowTracker2 date and time is stored as UTC along with an offset for local time. Make sure the 'Offset From UTC' time is correctly entered for your location."""
         self.tzMatchErrTitle = "TimeZones are not matching"
 
-        self.readFT2ErrMsg = "Error during reading ft file(FlowTracker2). It may caused by do not have enough user rights. Please try log in by another account."
+        self.readFT2ErrMsg = "Error during reading ft file(FlowTracker2). It may have been caused by a lack of user rights. Please try to log in with another account."
         self.readFT2ErrTitle = "Error during reading ft file(FlowTracker2)"
 
-        self.sxsImportAttentionMsg = "Attention!\n\nThe xml file displays discharge in two decimal places, and the calculated discharge and average velocity might be slightly different from the values view in SxS Pro software."
+        self.sxsImportAttentionMsg = "Attention!\n\nThe xml file displays discharge to two decimal places; the calculated discharge and average velocity might be slightly different from the values viewed in SxS Pro software."
         self.sxsImportAttentionTitle = "Attention"
 
         self.RatingCurveViewerToolFrame = None
@@ -391,9 +393,10 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.ehsnMidDir = ""
 
         self.importSucessMsg = "Data imported succesfully!"
-        self.importSucessTitle = "Succesful"
+        self.importSucessTitle = "Succesful import"
 
 
+        self.rootPath = os.getcwd()
         self.saveAsDirectory = os.getcwd()
         self.inipath = self.saveAsDirectory + r'\AQ_Extracted_Data\iniPath.ini'
         self.uploadSaveDir = os.getcwd()
@@ -415,14 +418,14 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             print "Setup the Frame"
 
         self.locale = wx.Locale(self.lang)
-        myFont = wx.Font(10, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.NORMAL, False)
+        myFont = wx.Font(10, wx.DEFAULT, wx.FONTSTYLE_NORMAL, wx.NORMAL, False)
         if GetSystemMetrics(11) > 39:
-            myFont = wx.Font(8, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.NORMAL, False)
+            myFont = wx.Font(8, wx.DEFAULT, wx.FONTSTYLE_NORMAL, wx.NORMAL, False)
 
         self.SetFont(myFont)
 
         self.CreateStatusBar(style=wx.STB_SIZEGRIP|wx.STB_SHOW_TIPS|wx.STB_ELLIPSIZE_END|wx.FULL_REPAINT_ON_RESIZE)
-        self.SetStatusText("Welcome to the Hydrometric Survey Notes")
+        self.SetStatusText("Backup located in C:\\temp\\eHSN\\")
 
         fileMenu = wx.Menu()
         fnew = fileMenu.Append(ID_FILE_NEW, self.fNewLabel, self.fNewDesc)
@@ -459,7 +462,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         tRcvt = toolMenu.Append(ID_TOOLS_RCVT, self.tRcvtLabel, self.tRcvtDesc)
         toolMenu.AppendSeparator()
         tCalc = toolMenu.Append(ID_TOOLS_CALC, self.tCalcLabel, self.tCalcDesc)
-        tMagn = toolMenu.Append(ID_TOOLS_MAGN, self.tMagnLabel, self.tMagnDesc)
+        # tMagn = toolMenu.Append(ID_TOOLS_MAGN, self.tMagnLabel, self.tMagnDesc)
 
 
 
@@ -486,10 +489,15 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         menuImport = wx.Menu()
 
         iHfc = menuImport.Append(ID_IMPORT_HFC, self.iHfcLabel, self.iHfcDesc)
+        menuImport.AppendSeparator()
         iFtdis = menuImport.Append(ID_IMPORT_FTDIS, self.iFtDisLabel, self.iFtDisDesc)
+        menuImport.AppendSeparator()
         iFt2 = menuImport.Append(ID_IMPORT_FT2, self.iFt2Label, self.iFt2Desc)
+        menuImport.AppendSeparator()
         iQrxml = menuImport.Append(ID_IMPORT_QRXML, self.iQrXmlLabel, self.iQrXmlDesc)
+        menuImport.AppendSeparator()
         iSxsmmt = menuImport.Append(ID_IMPORT_SXSMMT, self.iSxsProMmtLabel, self.iSxsProMmtDesc)
+        menuImport.AppendSeparator()
         iRssdis = menuImport.Append(ID_IMPORT_RSSDIS, self.iRsslDisLabel, self.iRsslDisDesc)
         menuImport.AppendSeparator()
         iEhsn = menuImport.Append(ID_IMPORT_EHSN, self.iEhsnLabel, self.iEhsnDesc)
@@ -520,7 +528,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.Bind(wx.EVT_MENU, self.OnHelpEHelp, hehelp)
         self.Bind(wx.EVT_CLOSE, self.OnFileExit)
         self.Bind(wx.EVT_MENU, self.OnCalc, tCalc)
-        self.Bind(wx.EVT_MENU, self.OnMagn, tMagn)
+        # self.Bind(wx.EVT_MENU, self.OnMagn, tMagn)
 
         self.Bind(wx.EVT_MENU, self.OnScal1, tScal1)
         self.Bind(wx.EVT_MENU, self.OnScal2, tScal2)
@@ -577,6 +585,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         mainSizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(mainSizer)
 
+
         if self.layout is not None:
             self.layout.Show(False)
             self.layout.Destroy()
@@ -623,6 +632,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         formSizer.Add(self.instrDep, 0, wx.EXPAND|wx.ALL, 3)
         # formSizer.Add(self.remarks, 0, wx.EXPAND|wx.ALL, 3)
         formSizer.Add(self.partyInfo, 0, wx.EXPAND|wx.LEFT|wx.TOP|wx.RIGHT, 3)
+        
 
         self.form.SetSizerAndFit(formSizer)
 
@@ -674,7 +684,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.layout.AddPage(self.form, "Front Page")
         self.layout.AddPage(self.form2_1, "Level Notes")
         self.layout.AddPage(self.form3, "Moving Boat")
-        self.layout.AddPage(self.form4, "Mid-section")
+        self.layout.AddPage(self.form4, "Mid-Section")
         self.layout.AddPage(self.form5, "Field Review")
         # self.layout.AddPage(form6, "User Config")
         self.layout.Show(True)
@@ -740,7 +750,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.AutoSave(None)
         if self.RatingCurveViewerToolFrame is None:
             self.RatingCurveViewerToolFrame = RatingCurveViewerToolFrame(self.mode, self.ratingFileDir, self.manager.genInfoManager.stnNumCmbo,\
-                                            self.manager.disMeasManager, wx.LANGUAGE_ENGLISH, self.manager.ratingCurveViewerToolManager, self, size=(770, 600))
+                                            self.manager.disMeasManager, wx.LANGUAGE_ENGLISH, self.manager.ratingCurveViewerToolManager, self, size=(770, 578))
             self.RatingCurveViewerToolFrame.Bind(wx.EVT_CLOSE, self.closeRatingCurveViewWindow)
             self.RatingCurveViewerToolFrame.exitButton.Bind(wx.EVT_BUTTON, self.closeRatingCurveViewWindow)
             self.RatingCurveViewerToolFrame.Show()
@@ -751,13 +761,13 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
 
-    #Call subprocess for Windows Magnifier
-    def OnMagn(self, event):
-        try:
-            subprocess.call("C:\\windows\\system32\\magnify.exe", shell=True)
-        except:
-            dlg = wx.MessageDialog(None, "Error\nWindowsError: [Error 740] The requested operation requires elevation.", "Error!", wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
+    # #Call subprocess for Windows Magnifier
+    # def OnMagn(self, event):
+    #     try:
+    #         subprocess.call("C:\\windows\\system32\\magnify.exe", shell=True)
+    #     except:
+    #         dlg = wx.MessageDialog(None, "Error\nWindowsError: [Error 740] The requested operation requires elevation.", "Error!", wx.OK | wx.ICON_ERROR)
+    #         dlg.ShowModal()
 
 
     #Calling the calculator
@@ -816,8 +826,21 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     #Reset user interface from scratch
     def ResetGUI(self):
+  
         self.Unbind(wx.EVT_SIZE)
         self.DestroySubWindows()
+
+
+        #Destroy all the components in the main layout in cluding the self.layout ===========================
+        for i in self.GetSizer().GetChildren():
+            i.GetWindow().Destroy()
+  
+
+        # self.GetSizer().Destroy()
+        self.SetSizer(None)
+        self.layout = None
+        #======================================================================================================
+      
         self.CreateFrames()
         self.manager.SetupManagers()
         self.SetTitle(self.noteHeaderTxt)
@@ -862,13 +885,13 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.config.clearButton.Bind(wx.EVT_BUTTON, self.OnClearAll)
             if self.emptyStation:
                 self.config.stationsPathText.SetForegroundColour("Red")
-                self.config.stationsPathText.SetLabel('None')
+                self.config.stationsPathText.SetLabel('No station information file selected')
             if self.emptyMeter:
                 self.config.metersPathText.SetForegroundColour("Red")
-                self.config.metersPathText.SetLabel('None')
+                self.config.metersPathText.SetLabel('No meters information file selected')
             if self.emptyLevel:
                 self.config.levelsPathText.SetForegroundColour("Red")
-                self.config.levelsPathText.SetLabel('None')
+                self.config.levelsPathText.SetLabel('No bencmark information file selected')
 
 
             self.config.Layout()
@@ -960,17 +983,17 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def SaveAsPDFAndXML4Upload(self, path, success):
         try:
 	        if success:
-	            self.createProgressDialog('In Progress', 'Uploading Successful. Saving Field Visit to pdf & xml.........')
-	            name = self.SaveAsXMLAtUpload(path, success).split('.')[0]
+	            self.createProgressDialog('In Progress', 'Upload Successful. Saving Field Visit to pdf & xml.........')
+	            name = self.SaveAsXMLAtUpload(path, success).rsplit('.',1)[0]
 	            self.deleteProgressDialog()
 	            info = wx.MessageDialog(self, "Upload: Successful\nThe xml and pdf files has also been saved.\n" \
                     + name + ".xml\n" + name + ".pdf", "Done!",
 	                                wx.OK)
 	        else:
-	            self.createProgressDialog('In Progress', 'Uploading failed. Saving Field Visit to pdf & xml.........')
-	            name = self.SaveAsXMLAtUpload(path, success).split('.')[0]
+	            self.createProgressDialog('In Progress', 'Upload failed. Saving Field Visit to pdf & xml.........')
+	            name = self.SaveAsXMLAtUpload(path, success).rsplit('.',1)[0]
 	            self.deleteProgressDialog()
-	            info = wx.MessageDialog(self, "Upload: Failed\nThe xml and pdf files has also been have saved.\n" \
+	            info = wx.MessageDialog(self, "Upload: Failed\nThe xml and pdf files have been have saved.\n" \
                     + name + ".xml\n" + name + ".pdf", "Done!",
 	                                wx.OK)
 
@@ -993,7 +1016,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.xml"
 
         else:
-            defaultName = self.name.split(".")[0] + ".xml"
+            defaultName = self.name.rsplit(".",1)[0] + ".xml"
 
 
 
@@ -1023,7 +1046,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                                      wx.OK | wx.ICON_EXCLAMATION)
             info.ShowModal()
 
-            fileOpenDialog = wx.FileDialog(self, self.fileSavePDFStylesheetTitle, os.getcwd(), '',
+            fileOpenDialog = wx.FileDialog(self, self.fileSavePDFStylesheetTitle, self.rootPath, '',
                                            'EHSN (*.xsml)|*.xsml',
                                            style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -1043,7 +1066,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
         if self.mode == "DEBUG":
-            print "path for export pdf before upload to AQ"
+            print "Path for export pdf before upload to AQ:"
             print path
 
         if self.name == '':
@@ -1054,7 +1077,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.pdf"
 
         else:
-            defaultName = self.name.split(".")[0] + ".pdf"
+            defaultName = self.name.rsplit(".",1)[0] + ".pdf"
 
 
         if path != "":
@@ -1154,7 +1177,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                                      wx.OK | wx.ICON_EXCLAMATION)
             info.ShowModal()
 
-            fileOpenDialog = wx.FileDialog(self, self.fileSavePDFStylesheetTitle, os.getcwd(), '',
+            fileOpenDialog = wx.FileDialog(self, self.fileSavePDFStylesheetTitle, self.rootPath, '',
                                            'EHSN (*.xsml)|*.xsml',
                                            style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -1180,8 +1203,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 date = date.strftime("%Y%m%d")
                 defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV"
         else:
-            defaultName = self.name.split(".")[0]
-        fileSaveDialog = wx.FileDialog(self, self.fileSavePDFSaveTitle, os.getcwd(), defaultName,
+            defaultName = self.name.rsplit(".",1)[0]
+        fileSaveDialog = wx.FileDialog(self, self.fileSavePDFSaveTitle, self.rootPath, defaultName,
                                            'eHSN (*.pdf)|*.pdf',
                                            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
 
@@ -1196,7 +1219,16 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 print "path exp"
                 print path
             if path != "":
-                self.manager.ExportAsPDF(path, self.fullStyleSheetFilePath)
+                try:
+                    self.manager.ExportAsPDF(path, self.fullStyleSheetFilePath)
+                except:
+                    info = wx.MessageDialog(self, self.savePDFErrorMsg, self.savePDFErrorTitle,
+                                     wx.OK | wx.ICON_ERROR)
+                    info.ShowModal()
+
+
+                # self.manager.ExportAsPDF(path, self.fullStyleSheetFilePath)
+                # info.ShowModal()
 
         fileSaveDialog.Destroy()
 
@@ -1216,7 +1248,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                                      wx.OK | wx.ICON_EXCLAMATION)
             info.ShowModal()
 
-            fileOpenDialog = wx.FileDialog(self, self.fileSavePDFStylesheetTitle, os.getcwd(), '',
+            fileOpenDialog = wx.FileDialog(self, self.fileSavePDFStylesheetTitle, self.rootPath, '',
                                            'EHSN (*.xsml)|*.xsml',
                                            style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -1241,7 +1273,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             date = date.strftime("%Y%m%d")
             defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV_FRONTPAGE"
 
-        fileSaveDialog = wx.FileDialog(self, self.fileSavePDFSaveTitle, os.getcwd(), defaultName,
+        fileSaveDialog = wx.FileDialog(self, self.fileSavePDFSaveTitle, self.rootPath, defaultName,
                                        'eHSN (*.pdf)|*.pdf',
                                        style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
 
@@ -1256,7 +1288,13 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 print path
             if path != "":
                 self.CreateQR()
-                self.manager.ExportAsPDF(path, self.summStyleSheetFilePath)
+                try:
+                    self.manager.ExportAsPDF(path, self.summStyleSheetFilePath)
+                except:
+                    info = wx.MessageDialog(self, self.savePDFErrorMsg, self.savePDFErrorTitle,
+                                     wx.OK | wx.ICON_ERROR)
+                    info.ShowModal()
+                # self.manager.ExportAsPDF(path, self.summStyleSheetFilePath)
 
         fileSaveDialog.Destroy()
 
@@ -1276,7 +1314,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                                      wx.OK | wx.ICON_EXCLAMATION)
             info.ShowModal()
 
-            fileOpenDialog = wx.FileDialog(self, self.fileSavePDFStylesheetTitle, os.getcwd(), '',
+            fileOpenDialog = wx.FileDialog(self, self.fileSavePDFStylesheetTitle, self.rootPath, '',
                                            'EHSN (*.xsml)|*.xsml',
                                            style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -1301,7 +1339,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             date = date.strftime("%Y%m%d")
             defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV_VIEW"
 
-        fileSaveDialog = wx.FileDialog(self, self.fileSavePDFSaveTitle, os.getcwd(), defaultName,
+        fileSaveDialog = wx.FileDialog(self, self.fileSavePDFSaveTitle, self.rootPath, defaultName,
                                        'eHSN (*.pdf)|*.pdf',
                                        style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
 
@@ -1315,7 +1353,13 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 print "path exp"
                 print path
             if path != "":
-                self.manager.ExportAsPDF(path, self.viewStyleSheetFilePath)
+                try:
+                    self.manager.ExportAsPDF(path, self.viewStyleSheetFilePath)
+                except:
+                    info = wx.MessageDialog(self, self.savePDFErrorMsg, self.savePDFErrorTitle,
+                                     wx.OK | wx.ICON_ERROR)
+                    info.ShowModal()
+                # self.manager.ExportAsPDF(path, self.viewStyleSheetFilePath)
 
         fileSaveDialog.Destroy()
 
@@ -1347,7 +1391,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def FileOpen(self, evt):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, self.fileOpenTitle, os.getcwd(), '',
+        fileOpenDialog = wx.FileDialog(self, self.fileOpenTitle, self.rootPath, '',
                             'Hydrometric Survey Notes (*.xml)|*.xml',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -1501,7 +1545,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         aboutInfo.SetName(self.helpAboutTitle)
         aboutInfo.SetVersion(self.version)
         aboutInfo.SetDescription(description)
-        aboutInfo.SetCopyright("This code was developed specifically for the Water Survey of Canada. \nFor support please submit an issue to: ")
+        aboutInfo.SetCopyright("This code was developed by the Water Survey of Canada. \nFor support please submit an issue to: ")
         aboutInfo.SetWebSite("https://watersurveyofcanada.atlassian.net/")
         aboutInfo.AddDeveloper("Wenbin Zhang")
         aboutInfo.AddDeveloper("Yugo Brunet")
@@ -1536,7 +1580,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
     def OnImportMovingBoaiMmt(self, event):
-        movingBoatOpenDialog = wx.FileDialog(self, self.movingBoatOpenTitle, os.getcwd(), '',
+        movingBoatOpenDialog = wx.FileDialog(self, self.movingBoatOpenTitle, self.rootPath, '',
                             'Moving Boat (*.mmt)|*.mmt',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -1789,7 +1833,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     	self.OpenStationFile(file)
 
     def OnStationBrowse(self, event):
-        fileOpenDialog = wx.FileDialog(self.config, 'Open Config', os.getcwd(), '',
+        fileOpenDialog = wx.FileDialog(self.config, 'Open Config', self.rootPath, '',
                             'eHSN Station Config (*.txt)|*.txt|eHSN Station Config (*.csv)|*.csv',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -1931,7 +1975,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
     def OnLevelBrowse(self, event):
-        fileOpenDialog = wx.FileDialog(self.config, 'Open Config', os.getcwd(), '',
+        fileOpenDialog = wx.FileDialog(self.config, 'Open Config', self.rootPath, '',
                             'eHSN Level Config (*.txt)|*.txt|eHSN Level Config (*.csv)|*.csv',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -1967,7 +2011,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
     def OnMeterBrowse(self, event):
-        fileOpenDialog = wx.FileDialog(self.config, 'Open Config', os.getcwd(), '',
+        fileOpenDialog = wx.FileDialog(self.config, 'Open Config', self.rootPath, '',
                             'eHSN Meter Config (*.csv)|*.csv|eHSN Meter Config (*.txt)|*.txt',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -2227,7 +2271,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     def CreateQR(self):
         manager = self.manager
-        code = "MATMSG:TO:dougstiff@gmail.com;SUB: Field visit for: " + manager.genInfoManager.datePicker + ";BODY: <?xml version="'"1.0"'"?><?xml-stylesheet type="'"text/xsl"'" href="'"WSC_EHSN.xsml"'"?><EHSN version="'"v1.2.1.1"'"><TitleHeader><enteredInHWS>False</enteredInHWS></TitleHeader><GenInfo><station number="'"08OA003"'">PREMIER CREEK NEAR QUEEN CHARLOTTE</station><date>timezone="'"PST"'">2016/05/09</date></GenInfo><StageMeas><HgCkbox>True</HgCkbox><Hg2Ckbox>False</Hg2Ckbox><Wlr1Ckbox>False</Wlr1Ckbox><Wlr2Ckbox>False</Wlr2Ckbox><HG1Header/><HG2Header/><WL1Header/><WL2Header/><StageMeasTable><StageMeasRow row="'"0"'"><time>15:23</time><HG1>12.000</HG1><HG2/><WL1/><WL2/><SRC/><SRCApp/><MghCkbox>True</MghCkbox></StageMeasRow></StageMeasTable><hgCkbox>True</hgCkbox><hg2Ckbox>False</hg2Ckbox><wlr1Ckbox>False</wlr1Ckbox><wlr2Ckbox>False</wlr2Ckbox><MGHHG1>12.0</MGHHG1><MGHHG2/><MGHWL1/><MGHWL2/><SRCHG1>0.000</SRCHG1><SRCHG2/><GCHG1>0.000</GCHG1><GCHG2/><GCWL1/><GCWL2/><CMGHHG1>12.0</CMGHHG1><CMGHHG2/><CMGHWL1/><CMGHWL2/><MghMethod>Average</MghMethod><Factors/></StageMeas><DisMeas><startTime>15:44</startTime><endTime>04:00</endTime><airTemp/><waterTemp/><width/><area/><meanVel/><mgh/><mghCmbo/><discharge>12.0</discharge><mmtTimeVal>21:52</mmtTimeVal><shift>3</shift><diff>3</diff><curve>3</curve></DisMeas><PartyInfo><party/><completed/><checked/><reviewed>True</reviewed></PartyInfo></EHSN>;;"
+        code = "MATMSG:TO:dummy@dummy.com;SUB: Field visit for: " + manager.genInfoManager.datePicker + ";BODY: <?xml version="'"1.0"'"?><?xml-stylesheet type="'"text/xsl"'" href="'"WSC_EHSN.xsml"'"?><EHSN version="'"v1.2.1.1"'"><TitleHeader><enteredInHWS>False</enteredInHWS></TitleHeader><GenInfo><station number="'"08OA003"'">PREMIER CREEK NEAR QUEEN CHARLOTTE</station><date>timezone="'"PST"'">2016/05/09</date></GenInfo><StageMeas><HgCkbox>True</HgCkbox><Hg2Ckbox>False</Hg2Ckbox><Wlr1Ckbox>False</Wlr1Ckbox><Wlr2Ckbox>False</Wlr2Ckbox><HG1Header/><HG2Header/><WL1Header/><WL2Header/><StageMeasTable><StageMeasRow row="'"0"'"><time>15:23</time><HG1>12.000</HG1><HG2/><WL1/><WL2/><SRC/><SRCApp/><MghCkbox>True</MghCkbox></StageMeasRow></StageMeasTable><hgCkbox>True</hgCkbox><hg2Ckbox>False</hg2Ckbox><wlr1Ckbox>False</wlr1Ckbox><wlr2Ckbox>False</wlr2Ckbox><MGHHG1>12.0</MGHHG1><MGHHG2/><MGHWL1/><MGHWL2/><SRCHG1>0.000</SRCHG1><SRCHG2/><GCHG1>0.000</GCHG1><GCHG2/><GCWL1/><GCWL2/><CMGHHG1>12.0</CMGHHG1><CMGHHG2/><CMGHWL1/><CMGHWL2/><MghMethod>Average</MghMethod><Factors/></StageMeas><DisMeas><startTime>15:44</startTime><endTime>04:00</endTime><airTemp/><waterTemp/><width/><area/><meanVel/><mgh/><mghCmbo/><discharge>12.0</discharge><mmtTimeVal>21:52</mmtTimeVal><shift>3</shift><diff>3</diff><curve>3</curve></DisMeas><PartyInfo><party/><completed/><checked/><reviewed>True</reviewed></PartyInfo></EHSN>;;"
 
         self.img = qrcode.make(code)
         self.img.save(self.qr_path, "jpeg")
@@ -2281,9 +2325,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 return
 
 
-            stnNumMatchingMessage = "The Station Numbers don't match: \n\neHSN:\t{1}\nSelected Mid-section File:\t{0}"
-            stnNumMatchingTitle = "Station Number is not matching"
-            stnDateMatchingMessage = "The Measurement Dates don't match: \n\neHSN: {1}\nSelected Mid-section File: {0}\n\nContinue anyway?"
+            stnNumMatchingMessage = "The station numbers do not match: \n\neHSN:\t{1}\nSelected mid-section file:\t{0}"
+            stnNumMatchingTitle = "Station number mis-match"
+            stnDateMatchingMessage = "The measurement dates do not match: \n\neHSN: {1}\nSelected mid-section file: {0}\n\nContinue anyway?"
             stnDateMatchingTitle = "Date is not matching"
 
 
@@ -2336,7 +2380,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if self.manager.genInfoManager.matchStation(stId):
                 if evt.GetId() == ID_IMPORT_FT2:
                     if self.ft2FtDir != '':
-                        shutil.rmtree(self.ft2FtDir.split('.')[0])
+                        shutil.rmtree(self.ft2FtDir.rsplit('.',1)[0])
                 return
 
             #Measurement date not matching and "not import" select from the user
@@ -2344,14 +2388,14 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if res == wx.ID_NO:
                 if evt.GetId() == ID_IMPORT_FT2:
                     if self.ft2FtDir != '':
-                        shutil.rmtree(self.ft2FtDir.split('.')[0])
+                        shutil.rmtree(self.ft2FtDir.rsplit('.',1)[0])
                 return
 
             #Timezone if invalid (eHSN or external file or not matching)
             if evt.GetId() == ID_IMPORT_FT2:
                 if not self.TimeZoneValidationImportFt2():
                     if self.ft2FtDir != '':
-                        shutil.rmtree(self.ft2FtDir.split('.')[0])
+                        shutil.rmtree(self.ft2FtDir.rsplit('.',1)[0])
                     return
 
             if evt.GetId() == ID_IMPORT_SXSMMT:
@@ -2362,7 +2406,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 if result != wx.ID_YES:
                     return
 
-            frame = IngestOptionFrame(mode=self.mode, parent=self, title="External File Ingest", inType=evt.GetId(), size=(550, 250))
+            frame = IngestOptionFrame(mode=self.mode, parent=self, title="External file ingest", inType=evt.GetId(), size=(550, 250))
             frame.Show()
 
 
@@ -2374,8 +2418,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def QRevFileOpen(self):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, "Open QRev", os.getcwd(), '',
-                            'QRev (*.xml)|*.xml',
+        fileOpenDialog = wx.FileDialog(self, "Open QRev", self.rootPath, '',
+                            'QRev (*.xml)|*.xml|All Files (*.*)|*',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
@@ -2409,8 +2453,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def FlowTrackerOpen(self):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, "Open FlowTracker *.dis", os.getcwd(), '',
-                            'FlowTracker (*.dis)|*.dis',
+        fileOpenDialog = wx.FileDialog(self, "Open FlowTracker *.dis", self.rootPath, '',
+                            'FlowTracker (*.dis)|*.dis|All Files (*.*)|*',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
@@ -2442,8 +2486,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def HfcFileOpen(self):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, "Open HFC", os.getcwd(), '',
-                            'HFC (*.MQ*)|*.MQ*',
+        fileOpenDialog = wx.FileDialog(self, "Open HFC", self.rootPath, '',
+                            'HFC (*.MQ*)|*.MQ*|All Files (*.*)|*',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
@@ -2476,7 +2520,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def EhsnMidsectionOpen(self):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, "Open eHSN Midsection", os.getcwd(), '',
+        fileOpenDialog = wx.FileDialog(self, "Open eHSN Midsection", self.rootPath, '',
                             'eHSN (*.xml)|*.xml',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -2509,8 +2553,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def FtFileOpen(self):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, "Open FlowTracker *.ft", os.getcwd(), '',
-                            'FlowTracker (*.ft)|*.ft',
+        fileOpenDialog = wx.FileDialog(self, "Open FlowTracker *.ft", self.rootPath, '',
+                            'FlowTracker2 (*.ft ; *.ft.edited)|*.ft;*.ft.edited|All Files (*.*)|*',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
@@ -2536,13 +2580,21 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.ehsnMidDir = ""
                 try:
                     extractFile = zipfile.ZipFile(fileName, 'r')
-                    extractFile.extractall(fileName.split('.')[0])
-                    extractFile.close()
+                    if fileName.endswith('.ft'):
+                        extractFile.extractall(fileName.rsplit('.',1)[0])
+                        extractFile.close()
+                    else:
+                        extractFile.extractall(fileName.rsplit('.',1)[0].rsplit('.',1)[0])
+                        extractFile.close()
                 except:
                     err = wx.MessageDialog(self, self.readFT2ErrMsg, self.readFT2ErrTitle, wx.OK | wx.ICON_ERROR)
                     err.ShowModal()
+                
+                if fileName.endswith('.ft'): #get json file path from ft file
+                    self.ft2JsonDir = self.ft2FtDir.rsplit('.',1)[0] + "\\DataFile.json"
+                else: #get json file path from ft.edited file
+                    self.ft2JsonDir = self.ft2FtDir.rsplit('.',1)[0].rsplit('.',1)[0] + "\\DataFile.json"
 
-                self.ft2JsonDir = self.ft2FtDir.split('.')[0] + "\\DataFile.json"
                 self.qRevDir = ""
                 self.flowTrackerDir = ""
                 self.hfcDir = ""
@@ -2561,8 +2613,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def SxsFileOpen(self):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, "Open SxS", os.getcwd(), '',
-                            'FlowTracker (*.xsx.xml)|*.sxs.xml',
+        fileOpenDialog = wx.FileDialog(self, "Open SxS", self.rootPath, '',
+                            'SXS (*.sxs.xml)|*.sxs.xml|All Files (*.*)|*',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
@@ -2595,8 +2647,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def RsslFileOpen(self):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, "Open RSSL", os.getcwd(), '',
-                            'FlowTracker (*.dis)|*.dis',
+        fileOpenDialog = wx.FileDialog(self, "Open RSSL", self.rootPath, '',
+                            'RSSL (*.dis)|*.dis|All Files (*.*)|*',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
