@@ -13,6 +13,8 @@ class InstrumentDeploymentInfoManager(object):
         
         self.mode = mode
 
+        self.detypepre = ''
+
         self.Init()
 
     def Init(self):
@@ -34,15 +36,31 @@ class InstrumentDeploymentInfoManager(object):
         self.gui.SetMethodCBListBox(method)
 
 
-    # def GetPicturedCkboxVal(self):
-    #     return self.gui.picturedCkbox.IsChecked()
+    def GetPicturedCkboxVal(self):
+        return self.gui.picturedCkbox.IsChecked()
 
-    # def SetPicturedCkboxVal(self, val):
-    #     self.gui.picturedCkbox.SetValue(val)
+    def SetPicturedCkboxVal(self, val):
+        self.gui.picturedCkbox.SetValue(val)
 
-    # def GetPicturedCkbox(self):
-    #     return self.gui.picturedCkbox
+    def GetPicturedCkbox(self):
+        return self.gui.picturedCkbox
 
+    @property
+    def preUseCableCmbo(self):
+        return self.gui.GetPreUseCableCmbo()
+
+    @preUseCableCmbo.setter
+    def preUseCableCmbo(self, preUseCableCmbo):
+        self.gui.SetPreUseCableCmbo(preUseCableCmbo)
+
+    #preUseCable combo box from Xml
+    @property
+    def preUseCableCmboFromXml(self):
+        return self.gui.GetPreUseCableCmboFromXml()
+
+    @preUseCableCmboFromXml.setter
+    def preUseCableCmboFromXml(self, preUseCableCmbo):
+        self.gui.SetPreUseCableCmboFromXml(preUseCableCmbo)
 
 
 
@@ -78,7 +96,12 @@ class InstrumentDeploymentInfoManager(object):
             if len(checkList) > 0:
                 check = checkList[0]
 
-            self.manager.DeploymentUpdate(str(check))
+                
+        #bug fix for keep the field review data
+            if self.detypepre != str(check):
+                self.manager.DeploymentUpdate(str(check))
+                self.detypepre = str(check)
+
 
 
 
@@ -586,7 +609,8 @@ class InstrumentDeploymentInfoManager(object):
 
 
 
-
+    def GetPreUseCableCmbo(self):
+        return self.gui.preUseCableCmbo
     def GetMethodCBListBox(self):
         return self.gui.methodCBListBox
     def GetDeploymentCmbo(self):

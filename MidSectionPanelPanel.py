@@ -9,6 +9,64 @@ import sigfig
 from DropdownTime import *
 from MidSectionSubPanelObj import *
 from win32api import GetSystemMetrics
+# import win32gui
+
+from time import clock
+
+import time
+import threading
+
+
+class ThreadingControl(threading.Thread):
+    def __init__(self, panel):
+        threading.Thread.__init__(self)
+        #flag to pause thread
+        self.paused = False
+        self.startRun = False
+        self.panel = panel
+        # Explicitly using Lock over RLock since the use of self.paused
+        # break reentrancy anyway, and I believe using Lock could allow
+        # one thread to pause the worker, while another resumes; haven't
+        # checked if Condition imposes additional limitations that would 
+        # prevent that. In Python 2, use of Lock instead of RLock also
+        # boosts performance.
+        self.pause_cond = threading.Condition(threading.Lock())
+        self._stop_event = threading.Event()
+
+    def stop(self):
+        self._stop_event.set()
+
+    def stopped(self):
+        return self._stop_event.is_set()
+
+    def run(self):
+        self.startRun = True
+        while True:
+            with self.pause_cond:
+                while self.paused:
+                    self.pause_cond.wait()
+
+                #thread should do the thing if
+                #not paused
+                # print 'do the thing'
+             
+                self.panel.timeTextCtrl.SetValue('%.1f' %(self.panel.MySW.Time() * 0.001))
+            time.sleep(0.1)
+
+    def pause(self):
+        self.paused = True
+        # If in sleep, we acquire immediately, otherwise we wait for thread
+        # to release condition. In race, worker will still see self.paused
+        # and begin waiting until it's set back to False
+        self.pause_cond.acquire()
+
+    #should just resume the thread
+    def resume(self):
+        self.paused = False
+        # Notify so thread will wake after lock released
+        self.pause_cond.notify()
+        # Now release the lock
+        self.pause_cond.release()
 
 #Overwrite the TextCtrl Class in order to control the float input
 class MyTextCtrl(wx.TextCtrl):
@@ -106,6 +164,9 @@ class MidSectionPanelPanel(wx.Panel):
         self.saveNextBtnLbl = "Save && Next"
 
         self.newPanel = True
+
+        self.MySW = None
+        self.threadingControl = None
 
 
         self.InitUI()
@@ -875,6 +936,10 @@ class MidSectionPanelPanel(wx.Panel):
         # self.velocityGrid.GetCellEditor(2, 0).SetControl(wx.Control(self))
 
 
+        #This line is the contoller for the timer(Muluken)
+        self.velocityGrid.Bind(wx.grid.EVT_GRID_CELL_LEFT_DCLICK, self.StopWatchTimer)
+
+
 
 
         self.velocityGrid.SetRowLabelSize(0)
@@ -931,6 +996,98 @@ class MidSectionPanelPanel(wx.Panel):
 
         self.wldlCorrectionCmbox.SetValue(self.corrections[0])
         self.iceAssemblyCmbbox.SetValue(self.iceAssemblySelections[5])
+
+    def StopWatchTimer(self,evt):
+        self.currow = evt.GetRow()
+        self.curcol = evt.GetCol()
+        position = wx.GetMousePosition()
+        posX = position.x
+        posY = position.y
+
+        position = (posX - 50, posY - 50)
+
+        # print position
+
+ 
+        
+
+        if self.curcol == 3:
+            self.dlg = wx.Dialog(self, title="Timer", size=(150, 170), pos=position)
+            dlgSizer = wx.BoxSizer(wx.VERTICAL)
+            timeTitle = wx.StaticText(self.dlg, label = 'Time(/s)',style=wx.ALIGN_LEFT, size=(-1, 20))
+            self.timeTextCtrl = wx.TextCtrl(self.dlg, size=(-1, 60), style=wx.TE_CENTRE)
+            self.timeTextCtrl.SetForegroundColour("Blue")
+            font1 = wx.Font(26, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
+            self.timeTextCtrl.SetFont(font1)
+            self.timeBtn = wx.Button(self.dlg, size = (-1, 20), label = 'Start')
+            confirmBtn = wx.Button(self.dlg, size = (-1, 20), label = 'Transfer')
+
+            self.timeBtn.Bind(wx.EVT_BUTTON, self.OnTimeBtn)
+            confirmBtn.Bind(wx.EVT_BUTTON, self.OnConfirmBtn)
+            self.dlg.Bind(wx.EVT_CLOSE, self.OnDlgClose)
+
+
+
+            dlgSizer.Add(timeTitle, 0.5, wx.EXPAND)
+            dlgSizer.Add(self.timeTextCtrl, 0.5, wx.EXPAND)
+            dlgSizer.Add(self.timeBtn, 1, wx.EXPAND)
+            dlgSizer.Add(confirmBtn, 1, wx.EXPAND)
+
+
+            self.dlg.SetSizer(dlgSizer)
+            self.dlg.ShowModal()
+
+        # print "OnLabelLeftDClick: (%d,%d)\n" % (evt.GetRow(),
+        #                                            evt.GetCol())
+        evt.Skip()
+
+    def OnDlgClose(self, event):
+        # print "OnDlgClose"
+        if self.threadingControl is not None and self.threadingControl.startRun:
+            if not self.threadingControl.paused:
+                # print "pause the thread"
+                self.threadingControl.pause()
+
+        event.Skip()
+
+
+    def OnConfirmBtn(self, evt):
+        if self.threadingControl is not None and self.threadingControl.startRun:
+            # print self.threadingControl.paused
+            # print self.threadingControl.startRun
+            if not self.threadingControl.paused:
+                self.threadingControl.pause()
+            times = self.timeTextCtrl.GetValue()
+            if times != 'Timing...':
+                self.velocityGrid.SetCellValue (self.currow, self.curcol, times)
+            self.dlg.Destroy()
+            self.threadingControl.stop()
+        evt.Skip()
+
+    def OnTimeBtn(self, evt):
+        label = self.timeBtn.GetLabel()
+        if label == 'Start' or label == 'Restart':
+            self.timeBtn.SetLabel(label = 'Stop')
+            # self.clockRec = clock()
+            self.MySW = wx.StopWatch()
+            if self.threadingControl is not None and not self.threadingControl.stopped():
+                self.threadingControl.stop()
+            self.threadingControl = ThreadingControl(self)
+            self.threadingControl.start()
+            # self.timeTextCtrl.SetValue('Timing...')
+        # elif label == 'Restart':
+        #     self.timeBtn.SetLabel(label = 'Stop')
+        #     self.threadingControl.resume
+        elif label == 'Stop':
+            self.timeBtn.SetLabel(label = 'Restart')
+
+            self.threadingControl.pause()
+            # timeSec = clock()-self.clockRec
+            # timeSec = str(timeSec-timeSec%0.1)
+            # self.timeTextCtrl.SetValue(timeSec)
+            # print timeSec
+        evt.Skip()
+
 
 
     def BindingEvents(self):

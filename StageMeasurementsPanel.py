@@ -114,7 +114,7 @@ class StageMeasurementsPanel(wx.Panel):
         self.mghMethodLbl = "       MGH Aggr.\n        Method:"
         self.mghMethods = ["", "Average", "Time-weighted"]
         self.references = [""]
-        self.srcChoices = ['', 'Reset (RS)', 'No Reset (NR)', 'Flushed (FL)', 'Found (FD)', 'Purged  (PU)', 'Recovered (RC)', 'Maintenance (MT)', 'G.C. Applied (GCA)', 'CTRL Cleared (CC)', 'DWL']
+        self.srcChoices = ['', 'Reset (RS)', 'No Reset (NR)', 'Flushed (FL)', 'Found (FD)', 'Purged  (PU)', 'Recovered (RC)', 'Maintenance (MT)', 'G.C. Applied (GCA)', 'CTRL Cleared (CC)', 'DWL', 'Changed Tank (CT)']
         self.BMs = []
         self.mghCalBtnLbl = "Calculate M.G.H."
         self.factors = ""
@@ -158,6 +158,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         textCtr.SetInsertionPoint(insertPoint)
         # while True:
         # 	raise Exception('I know Python!')
+
+        event.Skip()
 
 
 
@@ -257,6 +259,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         # self.stageLabelBtn.SetBackgroundColour('yellow')
         self.stageLabelCtrl1 = wx.TextCtrl(stageLabelPanel, style=wx.TE_PROCESS_ENTER, size=(self.colHeaderWidth, self.colHeaderHeight / 2))
         self.stageLabelCtrl1.Bind(wx.EVT_TEXT, self.OnTextType)
+        self.stageLabelCtrl1.Bind(wx.EVT_KEY_DOWN, self.OnTab)
 
         stageLabelSizerV.Add(stageLabelTxt, 0, wx.EXPAND)
         stageLabelSizerV.Add(self.stageLabelCtrl1, 0, wx.EXPAND)
@@ -293,6 +296,14 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         # self.stageLabelBtn2.Bind(wx.EVT_BUTTON, self.OnHGButton)
         self.stageLabelCtrl2 = wx.TextCtrl(stageLabelPanel2, style=wx.TE_PROCESS_ENTER, size=(self.colHeaderWidth, self.colHeaderHeight / 2))
         self.stageLabelCtrl2.Bind(wx.EVT_TEXT, self.OnTextType)
+
+        self.stageLabelCtrl2.Bind(wx.EVT_KEY_DOWN, self.OnTab)
+
+        # for i in self.stageLabelCtrl1.GetParent().GetParent().GetChildren():
+        #     for p in i.GetChildren():
+        #         print type(p)
+        # self.stageLabelCtrl1.MoveAfterInTabOrder(self.stageLabelCtrl2)
+
 
 
         stageLabelSizer2V.Add(stageLabelTxt2, 0, wx.EXPAND)
@@ -337,11 +348,13 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.bmLeft = wx.ComboBox(self.wlSublabelPanelL, choices=self.BMs, style=wx.CB_DROPDOWN, size=(self.colHeaderWidth + 10, self.colHeaderHeight/2))
         # self.bmLeft = wx.TextCtrl(self.wlSublabelPanelL, size=(self.colHeaderWidth + 10, self.colHeaderHeight/2))
         self.bmLeft.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
+        
 
 
 
 
         self.bmLeft.Bind(wx.EVT_TEXT, self.OnTextType)
+        self.bmLeft.Bind(wx.EVT_KEY_DOWN, self.OnTab)
         self.wlSublabelPanelLSizer.Add(self.bmLeft, 1, wx.EXPAND)
         # self.wlSublabelPanelLSizer.Add(self.wlr1Ckbox, 0, wx.EXPAND|wx.LEFT, 20)
 
@@ -350,8 +363,14 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.bmRight.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
 
 
+        
+
+
+
 
         self.bmRight.Bind(wx.EVT_TEXT, self.OnTextType)
+        self.bmRight.Bind(wx.EVT_KEY_DOWN, self.OnTab)
+        
         self.wlSublabelPanelRSizer.Add(self.bmRight, 1, wx.EXPAND)
         # self.wlSublabelPanelRSizer.Add(self.wlr2Ckbox, 0, wx.EXPAND|wx.LEFT, 20)
 
@@ -748,6 +767,50 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
 
     # On '+' button click, add a new entry into the Stage Measurements
+    def OnTab(self, evt):
+        if evt.GetKeyCode() == wx.WXK_TAB:
+            if evt.GetEventObject() == self.stageLabelCtrl1:
+                self.stageLabelCtrl2.SetFocus()
+            if evt.GetEventObject() == self.stageLabelCtrl2:
+                self.bmLeft.SetFocus()
+            if evt.GetEventObject() == self.bmLeft:
+                self.bmRight.SetFocus()
+            if evt.GetEventObject() == self.bmRight:
+                print self.entryNum
+            if evt.GetId()/100 == 2:
+                for s in self.stageColumnPanel.GetChildren():
+                    for t in s.GetChildren():
+                        if t.GetId() == evt.GetId()%100+300:
+                            t.SetFocus()
+            if evt.GetId()/100 == 3:
+                for s in self.stageColumnPanel2.GetChildren():
+                    for t in s.GetChildren():
+                        if t.GetId() == evt.GetId()%100+400:
+                            t.SetFocus()
+            if evt.GetId()/100 == 4:
+                for s in self.wlColumnPanel.GetChildren():
+                    for t in s.GetChildren():
+                        if t.GetId() == evt.GetId()%100+500:
+                            t.SetFocus()
+
+            if evt.GetId()/100 == 5:
+                for s in self.wlColumnPanel.GetChildren():
+                    for t in s.GetChildren():
+                        if t.GetId() == evt.GetId()%100+600:
+                            t.SetFocus()
+
+            if evt.GetId()/100 == 6:
+                if evt.GetId()%100 < self.entryNum:
+                    for s in self.stageColumnPanel.GetChildren():
+                        for t in s.GetChildren():
+                            if t.GetId() == evt.GetId()%100+300+1:
+                                t.SetFocus()
+                else:
+                    self.entryColumnPanel.SetFocus()
+
+        evt.Skip()
+
+
     def OnAddPress(self, e):
         if self.mode=="DEBUG":
             print "add"
@@ -784,14 +847,18 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         #Time col
         # tc = masked.TimeCtrl(self.timeValPanel, size=(self.colHeaderWidth, self.rowHeight), displaySeconds=False, name=otherName, style=wx.TE_CENTRE, fmt24hr=True)
         # tc.SetValue(wx.DateTime_Now().FormatTime())
-        tc = DropdownTime(False, parent=self.timeValPanel, name=otherName, size=(-1, self.rowHeight))
+        tc = DropdownTime(False, id = 200+self.entryNum, parent=self.timeValPanel, name=otherName, size=(-1, self.rowHeight))
         # tc.GetHourCtrl().Bind(wx.EVT_KILL_FOCUS, self.OnTimeUpdateMGH)
         # tc.GetMinuteCtrl().Bind(wx.EVT_KILL_FOCUS, self.OnTimeUpdateMGH)
-
+        tc.Bind(wx.EVT_KEY_DOWN, self.OnTab)
         tc.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.OnTimeUpdateMGH)
         tc.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.OnTimeUpdateMGH)
-        tc.GetHourCtrl().Bind(wx.EVT_KEY_DOWN, self.OnTimeUpdateMGH)
-        tc.GetMinuteCtrl().Bind(wx.EVT_KEY_DOWN, self.OnTimeUpdateMGH)
+        tc.GetHourCtrl().Bind(wx.EVT_KEY_UP, self.OnTimeUpdateMGH)
+        tc.GetMinuteCtrl().Bind(wx.EVT_KEY_UP, self.OnTimeUpdateMGH)
+
+
+        tc.cBtn.Bind(wx.EVT_BUTTON, self.OnCBtn)
+
         # tc.Bind(wx.EVT_KILL_FOCUS, self.CalculateAllMGH)
 
         if time is not None:
@@ -802,41 +869,48 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
 
         #HG col
-        hg = MyTextCtrl(self.stagePanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
+        hg = MyTextCtrl(self.stagePanel, id = 300+self.entryNum, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
         self.stageSizer.Add(hg, 0, wx.EXPAND)
 
         hg.Bind(wx.EVT_TEXT, self.NumberControl)
 
         hg.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         hg.Bind(wx.EVT_KILL_FOCUS, self.OnHGCalculateMGH)
+        hg.Bind(wx.EVT_KEY_DOWN, self.OnTab)
         if logger1 != None:
             hg.SetValue(logger1)
 
+
+
         #HG col 2
-        hg2 = MyTextCtrl(self.stagePanel2, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
+        hg2 = MyTextCtrl(self.stagePanel2, id = 400+self.entryNum, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
         hg2.Bind(wx.EVT_TEXT, self.NumberControl)
         hg2.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         hg2.Bind(wx.EVT_KILL_FOCUS, self.OnHG2CalculateMGH)
+
+        hg2.Bind(wx.EVT_KEY_DOWN, self.OnTab)
         self.stageSizer2.Add(hg2, 0, wx.EXPAND)
 
         if logger2 != None:
             hg.SetValue(logger2)
 
         #wl col L
-        wlL = MyTextCtrl(self.wlSubPanelL, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
+        wlL = MyTextCtrl(self.wlSubPanelL, id = 500+self.entryNum, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
         wlL.Bind(wx.EVT_TEXT, self.NumberControl)
         wlL.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         wlL.Bind(wx.EVT_KILL_FOCUS, self.OnWlr1CalculateMGH)
+        wlL.Bind(wx.EVT_KEY_DOWN, self.OnTab)
         self.wlSubSizerL.Add(wlL, 0, wx.EXPAND)
 
         if wl1 != None:
             wlL.SetValue(wl1)
 
         #wl col R
-        wlR = MyTextCtrl(self.wlSubPanelR, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
+        wlR = MyTextCtrl(self.wlSubPanelR, id = 600+self.entryNum, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
         wlR.Bind(wx.EVT_TEXT, self.NumberControl)
         wlR.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         wlR.Bind(wx.EVT_KILL_FOCUS, self.OnWlr2CalculateMGH)
+        wlR.Bind(wx.EVT_KEY_DOWN, self.OnTab)
         self.wlSubSizerR.Add(wlR, 0, wx.EXPAND)
 
         if wl2 != None:
@@ -2239,10 +2313,21 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             if resultCtrl is not None:
                 resultCtrl.SetValue("")
 
+    #Activate or Deactivate the row by row number
+    #And call OnTimeUpdateMGH event
+    def OnCBtn(self, event):
+        timeObj = event.GetEventObject().GetParent()
+        row = int(timeObj.GetName())
+        self.GetMghAggCheckbox(row).Enable(True)
+
+        timeObj.SetToCurrent()
+        self.OnTimeUpdateMGH(event)
+        event.Skip()
+
 
     #active or deactive the checkbox depends on the value of time
     def ActiveCheckbox(self, row):
-
+  
         if self.GetTimeVal(row) == ":":
             # warning = wx.MessageDialog(self.manager.manager.gui,"The row will not be included for the MGH calculation",
             #                                     "Time Reset!", wx.OK | wx.ICON_EXCLAMATION)

@@ -28,7 +28,7 @@ class EnvironmentConditionsPanel(wx.Panel):
 
         self.levelsTxtLbl = "Levels"
         self.cloudCoverTxtLbl = "Cloud Cover"
-        self.cloudCoverList = ["", "Clear", "Partly Cloudy", "Mostly Cloudy", "Cloudy"]
+        self.cloudCoverList = ["", "Clear", "Partly Cloudy", "Mostly Cloudy", "Cloudy", "Smokey"]
         self.precipTxtLbl = "Precipitation"
         self.precipList = ["", "No Precipitation", "Light Rain", "Moderate Rain", "Heavy Rain",
                            "Mist", "Light Snow", "Moderate Snow", "Heavy Snow", "Flurries",
@@ -41,7 +41,7 @@ class EnvironmentConditionsPanel(wx.Panel):
         self.windDirList = ["", "Blowing Upstream", "Blowing Downstream",
                             "Blowing Cross Stream", "Swirling/Variable"]
         self.batteryVoltageTxtLbl = "Battery Voltage (VB)"
-        self.gasSystemTxtLbl = "Gas System: Cyl."
+        self.gasSystemTxtLbl = "Gas System:\nCyl."
         self.feedTxtLbl = "Feed"
         self.bpmrotTxtLbl = ["", "BPM", "Rot"]
         self.intakeTxtLbl = "Intake Flushed"
@@ -221,16 +221,64 @@ class EnvironmentConditionsPanel(wx.Panel):
         gasSysAt2Txt = wx.StaticText(self, label=self.intakeTimeLbl)
         font2 = wx.Font(wx.FontInfo(7))
         gasSysTxt.SetFont(font2)
-        self.gasSysCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
+
+        #v1h1
+        self.gasSysCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(40, -1))
         self.gasSysCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.gasSysCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig3)
+        self.gasArrTime = DropdownTime(False, parent=self, size=(-1, -1))
 
-        self.gasSysDepCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
+
+        
+        #v2h1
+        self.bpmrotCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(40, -1))
+        self.bpmrotCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.bpmrotCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
+        self.bpmrotArrTime = DropdownTime(False, parent=self, size=(-1, -1))
+
+
+        #v1h3
+        feedTxt = wx.StaticText(self, label=self.feedTxtLbl)#, style=wx.ALIGN_CENTRE_HORIZONTAL)
+        feedAtTxt = wx.StaticText(self, label=self.intakeTimeLbl)
+        feedAt2Txt = wx.StaticText(self, label=self.intakeTimeLbl)
+        self.feedCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(40, -1))
+        self.feedCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.feedCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
+        self.feedArrTime = DropdownTime(False, parent=self, size=(-1, -1))
+
+
+
+
+        #v1h2
+        self.gasSysDepCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(40, -1))
         self.gasSysDepCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.gasSysDepCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig3)
 
-        self.gasArrTime = DropdownTime(False, parent=self, size=(-1, -1))
+        
         self.gasDepTime = DropdownTime(False, parent=self, size=(-1, -1))
+
+        #v2h2
+        self.bpmrotDepCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(40, -1))
+        self.bpmrotDepCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.bpmrotDepCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
+
+        
+        self.bpmrotDepTime = DropdownTime(False, parent=self, size=(-1, -1))
+
+
+        #v3h2
+        self.feedDepCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(40, -1))
+        self.feedDepCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
+        self.feedDepCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
+
+        
+        self.feedDepTime = DropdownTime(False, parent=self, size=(-1, -1))
+
+
+
+        #v0h0
+        self.bpmrotCmbo = wx.ComboBox(self, choices=self.bpmrotTxtLbl, style=wx.CB_READONLY, size=(50, -1))
+        self.bpmrotCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
 
 
         gasPressV1H2.Add(gasSysTxt, 0, wx.EXPAND|wx.TOP, 20)
@@ -243,63 +291,28 @@ class EnvironmentConditionsPanel(wx.Panel):
         gasPressV3H2.Add(self.gasDepTime, 0)
 
 
-
-
-
         #Feed Ctrl
-        
-        feedTxt = wx.StaticText(self, label=self.feedTxtLbl)#, style=wx.ALIGN_CENTRE_HORIZONTAL)
-        feedAtTxt = wx.StaticText(self, label=self.intakeTimeLbl)
-        feedAt2Txt = wx.StaticText(self, label=self.intakeTimeLbl)
-        self.feedCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
-        self.feedCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.feedCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
+        gasPressV1H3.Add(feedTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
+        gasPressV2H3.Add(self.feedCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV2H3.Add(feedAtTxt, 0, wx.LEFT, 5)
+        gasPressV2H3.Add(self.feedArrTime, 0)
 
-        self.feedDepCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
-        self.feedDepCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.feedDepCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
-
-        self.feedArrTime = DropdownTime(False, parent=self, size=(-1, -1))
-        self.feedDepTime = DropdownTime(False, parent=self, size=(-1, -1))
-
-        gasPressV1H4.Add(feedTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 5)
-        gasPressV2H4.Add(self.feedCtrl, 0, wx.EXPAND|wx.LEFT, 5)
-        gasPressV2H4.Add(feedAtTxt, 0, wx.LEFT, 5)
-        gasPressV2H4.Add(self.feedArrTime, 0)
-
-        gasPressV3H4.Add(self.feedDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
-        gasPressV3H4.Add(feedAt2Txt, 0, wx.LEFT, 5)
-        gasPressV3H4.Add(self.feedDepTime, 0)
+        gasPressV3H3.Add(self.feedDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV3H3.Add(feedAt2Txt, 0, wx.LEFT, 5)
+        gasPressV3H3.Add(self.feedDepTime, 0)
 
         #BPM/ROT Cmbo and Ctrl
-        
-        self.bpmrotCmbo = wx.ComboBox(self, choices=self.bpmrotTxtLbl, style=wx.CB_READONLY, size=(50, -1))
-        self.bpmrotCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
         bpmrotAtTxt = wx.StaticText(self, label=self.intakeTimeLbl)
         bpmrotAt2Txt = wx.StaticText(self, label=self.intakeTimeLbl)
 
-        
-        self.bpmrotCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
-        self.bpmrotCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.bpmrotCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
+        gasPressV1H4.Add(self.bpmrotCmbo, 0, wx.EXPAND|wx.TOP, 10)
+        gasPressV2H4.Add(self.bpmrotCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV2H4.Add(bpmrotAtTxt, 0, wx.LEFT, 5)
+        gasPressV2H4.Add(self.bpmrotArrTime, 0)
 
-        self.bpmrotDepCtrl = MyTextCtrl(self, style=wx.TE_PROCESS_ENTER, size=(30, -1))
-        self.bpmrotDepCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.bpmrotDepCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Sig2)
-
-        self.bpmrotArrTime = DropdownTime(False, parent=self, size=(-1, -1))
-        self.bpmrotDepTime = DropdownTime(False, parent=self, size=(-1, -1))
-
-        gasPressV1H3.Add(self.bpmrotCmbo, 0, wx.EXPAND|wx.TOP, 10)
-        gasPressV2H3.Add(self.bpmrotCtrl, 0, wx.EXPAND|wx.LEFT, 5)
-        gasPressV2H3.Add(bpmrotAtTxt, 0, wx.LEFT, 5)
-        gasPressV2H3.Add(self.bpmrotArrTime, 0)
-
-        gasPressV3H3.Add(self.bpmrotDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
-        gasPressV3H3.Add(bpmrotAt2Txt, 0, wx.LEFT, 5)
-        gasPressV3H3.Add(self.bpmrotDepTime, 0)
-
-
+        gasPressV3H4.Add(self.bpmrotDepCtrl, 0, wx.EXPAND|wx.LEFT, 5)
+        gasPressV3H4.Add(bpmrotAt2Txt, 0, wx.LEFT, 5)
+        gasPressV3H4.Add(self.bpmrotDepTime, 0)
 
 
         #Intake/Orifice checkboxes

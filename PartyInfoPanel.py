@@ -50,7 +50,8 @@ class PartyInfoPanel(wx.Panel):
         reviewedSizer.Add(self.reviewedCB, 0, wx.EXPAND)
         reviewedSizer.Add((-1, -1), 1, wx.EXPAND)
         
-
+        controlRemarksSizer = wx.BoxSizer(wx.VERTICAL)
+        
         layoutSizer.Add(partySizer, 3, wx.EXPAND)
         layoutSizer.Add(completeSizer, 2, wx.EXPAND)
         layoutSizer.Add(checkSizer, 2, wx.EXPAND)

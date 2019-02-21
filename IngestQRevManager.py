@@ -90,10 +90,18 @@ def GetSoftware(filePath):
 
 #Moving Boat
 def GetLoop(filePath):
-    return GetRoot(filePath).find('QA').find('MovingBedTest').find('TestType').text
+    MovingBedTests = GetRoot(filePath).find('QA').findall('MovingBedTest')
+    for movingBedTest in MovingBedTests:
+        if movingBedTest.find('UserValid').text.lower() == "yes":
+            return movingBedTest.find('TestType').text
+    # return GetRoot(filePath).find('QA').find('MovingBedTest').find('TestType').text
 
 def GetDetected(filePath):
-    return GetRoot(filePath).find('QA').find('MovingBedTest').find('PercentMovingBed').text
+    MovingBedTests = GetRoot(filePath).find('QA').findall('MovingBedTest')
+    for movingBedTest in MovingBedTests:
+        if movingBedTest.find('UserValid').text.lower() == "yes":
+            return movingBedTest.find('PercentMovingBed').text
+
 
 def GetReference(filePath):
     return GetRoot(filePath).find('Processing').find('Navigation').find('Reference').text
@@ -164,7 +172,11 @@ def GetEndDateTime(filePath):
     return GetRoot(filePath).findall('Transect')[-1].find('EndDateTime').text[11:]
 
 def GetMessage(filePath):
-    return GetRoot(filePath).find('QA').find('MovingBedTest').find('Message').text
+    MovingBedTests = GetRoot(filePath).find('QA').findall('MovingBedTest')
+    for movingBedTest in MovingBedTests:
+        if movingBedTest.find('UserValid').text.lower() == "yes":
+            return movingBedTest.find('Message').text
+    # return GetRoot(filePath).find('QA').find('MovingBedTest').find('Message').text
 
 def GetQRevMessage(filePath):
     return GetRoot(filePath).find('QA').find('QRev_Message').text
@@ -288,14 +300,14 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
 
         movingBoatManager.SetTableValue(row, 4, tran[2])
 
-        movingBoatManager.SetTableValue(row, 5, tran[3])
-        movingBoatManager.SetTableColor(row, 5, color)
-
-        movingBoatManager.SetTableValue(row, 6, tran[4])
+        movingBoatManager.SetTableValue(row, 6, tran[3])
         movingBoatManager.SetTableColor(row, 6, color)
 
-        movingBoatManager.SetTableValue(row, 7, tran[5])
+        movingBoatManager.SetTableValue(row, 7, tran[4])
         movingBoatManager.SetTableColor(row, 7, color)
+
+        movingBoatManager.SetTableValue(row, 8, tran[5])
+        movingBoatManager.SetTableColor(row, 8, color)
 
         # movingBoatManager.SetTableValue(row, 8, tran[6])
         # movingBoatManager.SetTableColor(row, 8, color)
@@ -422,7 +434,7 @@ def AddDischargeSummary(filePath, disMeasManager):
     area = GetArea(filePath)
     vel = GetVelocity(filePath)
     dis = GetDischarge(filePath)
-    water = GetWaterTemp(filePath)
+    # water = GetWaterTemp(filePath)
     mbCorrection = GetMBCorrection(filePath)
 
 
@@ -461,12 +473,12 @@ def AddDischargeSummary(filePath, disMeasManager):
         
    
 
-    if water is not None:
-        disMeasManager.waterTempCtrl = water
-        myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
-        myEvent.SetEventObject(disMeasManager.GetWaterTempCtrl())
-        wx.PostEvent(disMeasManager.GetWaterTempCtrl(), myEvent)
-        disMeasManager.GetWaterTempCtrl().SetBackgroundColour(color)
+    # if water is not None:
+    #     disMeasManager.waterTempCtrl = water
+    #     myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
+    #     myEvent.SetEventObject(disMeasManager.GetWaterTempCtrl())
+    #     wx.PostEvent(disMeasManager.GetWaterTempCtrl(), myEvent)
+    #     disMeasManager.GetWaterTempCtrl().SetBackgroundColour(color)
 
     if mbCorrection is not None:
         disMeasManager.manager.movingBoatMeasurementsManager.mbCorrAppCtrl = mbCorrection

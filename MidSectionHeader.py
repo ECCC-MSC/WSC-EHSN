@@ -260,10 +260,12 @@ class MidSectionHeader(wx.Panel):
         startTimeTxt = wx.StaticText(self, label=self.startTimeLbl, size=(70, -1))
         self.startTimeCtrl = DropdownTime(False, parent=self, size=(150, -1), style=wx.BORDER_NONE)
         self.startTimeCtrl.Enable(False)
+        self.startTimeCtrl.HideCBtn()
 
         endTimeTxt = wx.StaticText(self, label=self.endTimeLbl, size=(70, -1))
         self.endTimeCtrl = DropdownTime(False, parent=self, size=(150, -1), style=wx.BORDER_NONE)
         self.endTimeCtrl.Enable(False)
+        self.endTimeCtrl.HideCBtn()
 
         rightH10Sizer.Add(startTimeTxt, 0, wx.EXPAND)
         rightH10Sizer.Add((-1,-1), 1, wx.EXPAND)

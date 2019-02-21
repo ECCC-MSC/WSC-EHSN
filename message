@@ -1,0 +1,17 @@
+V1.2.3
+2
+							
+
+VERSION 1.3 is now available. This version allows us to import discharge measurement data collected using external discharge measurement tools and softwares such as HFC, Flow Tracker (2), SxS Pro, etc., and has some bug fixes!
+
+
+*********************************ALERT - WARNING****************************************
+
+AQ3.10 dispatches all newly uploaded field visit Parameters to "ALL" by default. 
+
+****************************************************************************************
+
+Please report any EHSN issues through:
+
+https://watersurveyofcanada.atlassian.net/servicedesk/customer/portal/2
+

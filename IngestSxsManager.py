@@ -20,10 +20,34 @@ def GetStationID(filePath):
 def GetDate(filePath):
     channel = GetRoot(filePath)
     date = channel.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Date').text
-    year = date[6:]
-    month = date[3:5]
-    day = date[:2]
-    return year + "/" + month + "/" + day
+    if len(date) == 10:
+        year = date[6:]
+        month = date[3:5]
+        day = date[:2]
+        return year + "/" + month + "/" + day
+    elif len(date) == 9:
+        if date[1] == "/":
+            year = date[5:]
+            month = date[2:4]
+            day = str(0)+date[:1]
+            return year + "/" + month + "/" + day
+
+        else:
+            year = date[5:]
+            month = str+date[3:4]
+            day = date[:2]
+            return year + "/" + month + "/" + day
+    elif len(date) == 8:
+        year = date[4:]
+        month = str(0)+date[2:3]
+        day = str(0)+date[:1]
+        return year + "/" + month + "/" + day
+
+    else:
+        year ='0000'
+        month = '00'
+        day = '00'
+        return year + "/" + month + "/" + day
 
 
 
@@ -145,12 +169,12 @@ def AddDischargeSummary(filePath, disMeasManager):
         myEvent.SetEventObject(disMeasManager.GetDischCtrl())
         wx.PostEvent(disMeasManager.GetDischCtrl(), myEvent)
         disMeasManager.GetDischCtrl().SetBackgroundColour(color)
-    if water is not None and water != " " and water != "":
-        disMeasManager.waterTempCtrl = water
-        myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
-        myEvent.SetEventObject(disMeasManager.GetWaterTempCtrl())
-        wx.PostEvent(disMeasManager.GetWaterTempCtrl(), myEvent)
-        disMeasManager.GetWaterTempCtrl().SetBackgroundColour(color)
+    # if water is not None and water != " " and water != "":
+    #     disMeasManager.waterTempCtrl = water
+    #     myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
+    #     myEvent.SetEventObject(disMeasManager.GetWaterTempCtrl())
+    #     wx.PostEvent(disMeasManager.GetWaterTempCtrl(), myEvent)
+    #     disMeasManager.GetWaterTempCtrl().SetBackgroundColour(color)
     if air is not None and air != " " and air != "":
         disMeasManager.airTempCtrl = air
         myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
@@ -181,7 +205,7 @@ def AddDischargeDetail(filePath, instrDepManager, disManager):
     #     counter += 1
     color = instrDepManager.manager.gui.importedBGColor
 
-    instrDepManager.deploymentCmbo = "Ice Cover"
+    instrDepManager.deploymentCmbo = ""
     instrDepManager.GetDeploymentCmbo().SetBackgroundColour(color)
     instrDepManager.instrumentCmbo = "ADCP"
     instrDepManager.GetInstrumentCmbo().SetBackgroundColour(color)

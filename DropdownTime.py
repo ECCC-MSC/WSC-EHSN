@@ -44,8 +44,19 @@ class DropdownTime(wx.Panel):
             mySizer.Add(timeText2, 0, wx.TOP, 3)
             mySizer.Add(self.secondCmbox, 1, wx.RIGHT|wx.TOP, 3)
 
+        self.cBtn = wx.Button(self, label="C", size=(13, -1))
+        self.cBtn.Bind(wx.EVT_BUTTON, self.OnCurrent)
+        mySizer.Add(self.cBtn, 0)
+
         self.hourCmbox.Bind(wx.EVT_KEY_UP, self.OnTimeKeyUp)
         self.minuteCmbox.Bind(wx.EVT_KEY_UP, self.OnTimeKeyUp)
+
+
+    def HideCBtn(self):
+        self.cBtn.Hide()
+
+    def ShowCBtn(self):
+        self.CBtn.Show()
 
     def GenerateMinutes(self):
         a = list(range(60))
@@ -89,6 +100,10 @@ class DropdownTime(wx.Panel):
         self.minuteCmbox.ChangeValue("")
         if self.hasSecond:
             self.secondCmbox.ChangeValue("")
+
+
+    def OnCurrent(self, evt):
+        self.SetToCurrent()
 
 
     def SetToCurrent(self):

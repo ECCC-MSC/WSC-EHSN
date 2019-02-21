@@ -165,9 +165,8 @@ class DischargeMeasurementsPanel(wx.Panel):
 
         self.controlLbl = "Control Condition"
         self.contCondLbl = "Condition"
-        self.contCondList = ["", "Not Observed", "No Flow", "Clear", "Altered", "Debris", "Algae",
-                             "Weeds", "Fill", "Scour", "Shore Ice",
-                             "Complete Ice Cover", "Anchor Ice"]
+        self.contCondList = ["", "Unspecified", "No Flow", "Clear", "Altered", "Debris",
+                             "Vegetation", "Fill", "Scour", "Ice"]
         # self.picturedLbl = "Site and/or control pictures were taken."
 
 
@@ -527,12 +526,14 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.startTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.OnTimeChange)
         self.startTimeCtrl.GetHourCtrl().Bind(wx.EVT_KEY_UP, self.OnTimeChange)
         self.startTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_KEY_UP, self.OnTimeChange)
+        self.startTimeCtrl.cBtn.Bind(wx.EVT_BUTTON, self.OnCBtn)
         # self.startTimeCtrl.GetHourCtrl().Bind(wx.EVT_TEXT, self.OnTimeChange)
         # self.startTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_TEXT, self.OnTimeChange)
         self.endTimeCtrl.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.OnTimeChange)
         self.endTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_COMBOBOX, self.OnTimeChange)
         self.endTimeCtrl.GetHourCtrl().Bind(wx.EVT_KEY_UP, self.OnTimeChange)
         self.endTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_KEY_UP, self.OnTimeChange)
+        self.endTimeCtrl.cBtn.Bind(wx.EVT_BUTTON, self.OnCBtn)
         # self.endTimeCtrl.GetHourCtrl().Bind(wx.EVT_TEXT, self.OnTimeChange)
         # self.endTimeCtrl.GetMinuteCtrl().Bind(wx.EVT_TEXT, self.OnTimeChange)
 
@@ -544,6 +545,17 @@ class DischargeMeasurementsPanel(wx.Panel):
 
         self.SetSizerAndFit(self.layoutSizer)
         
+
+
+    #Activate or Deactivate the row by row number
+    #And call OnTimeUpdateMGH event
+    def OnCBtn(self, event):
+        timeObj = event.GetEventObject().GetParent()
+        timeObj.SetToCurrent()
+        self.OnTimeChange(event)
+        event.Skip()
+
+
     # used to calculate mean time
     def OnTimeChange(self, event):
 

@@ -442,6 +442,15 @@ class WaterLevelRunManager(object):
     def commentsCtrl(self, commentsCtrl):
         self.gui.commentsCtrl.SetValue(commentsCtrl)
 
+    #Surveyedby Value
+    @property
+    def surveyedbyCtrl(self):
+        return self.gui.surveyedbyCtrl.GetValue()
+
+    @surveyedbyCtrl.setter
+    def surveyedbyCtrl(self, surveyedbyCtrl):
+        self.gui.surveyedbyCtrl.SetValue(surveyedbyCtrl)
+
 
     #Return HG name header
     @property
@@ -521,10 +530,19 @@ class WaterLevelRunManager(object):
         return self.gui.levelNotes.IsEmpty()
 
 
-    def GetRb1(self):
-        return self.gui.rb1
-    def GetRb2(self):
-        return self.gui.rb2
+    #Conventional Leveling Radio button
+    def GetConventionalLevellingRb(self):
+        return self.gui.conventionalLevellingRb
+
+    def SetConventionalLevellingRb(self, val):
+        self.gui.SetConventionalLevellingRb(val)
+
+    #Total Staion Leveling Radio button
+    def GetTotalStationRb(self):
+        return self.gui.totalStationRb
+
+    def SetTotalStationRb(self, val):
+        self.gui.SetTotalStationRb(val)
 
     def GetHgText(self):
         return self.gui.hgText
@@ -532,6 +550,9 @@ class WaterLevelRunManager(object):
         return self.gui.hgText2
     def GetCommentsCtrl(self):
         return self.gui.commentsCtrl
+    def GetSurveyedByCtrl(self):
+        return self.gui.surveyedbyCtrl
+
         
 def main():
     app = wx.App()

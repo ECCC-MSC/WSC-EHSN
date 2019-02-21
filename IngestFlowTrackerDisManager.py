@@ -54,19 +54,20 @@ def GetDate(path):
     
 def AddDischargeSummary(path, disMeasManager):
 
-    startTime, endTime, airTemp, waterTemp, width, area, meanVelocity, discharge = GetDischargeSummary(path)
+    # startTime, endTime, airTemp, waterTemp, width, area, meanVelocity, discharge = GetDischargeSummary(path)
+    startTime, endTime, airTemp, width, area, meanVelocity, discharge = GetDischargeSummary(path)
     color = disMeasManager.manager.gui.importedBGColor
 
     if startTime is not None and startTime != "":
         disMeasManager.startTimeCtrl = startTime
     if endTime is not None and endTime != "":
         disMeasManager.endTimeCtrl = endTime
-    if waterTemp is not None and waterTemp != "":
-        disMeasManager.waterTempCtrl = waterTemp
-        myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
-        myEvent.SetEventObject(disMeasManager.GetWaterTempCtrl())
-        wx.PostEvent(disMeasManager.GetWaterTempCtrl(), myEvent)
-        disMeasManager.GetWaterTempCtrl().SetBackgroundColour(color)
+    # if waterTemp is not None and waterTemp != "":
+    #     disMeasManager.waterTempCtrl = waterTemp
+    #     myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
+    #     myEvent.SetEventObject(disMeasManager.GetWaterTempCtrl())
+    #     wx.PostEvent(disMeasManager.GetWaterTempCtrl(), myEvent)
+    #     disMeasManager.GetWaterTempCtrl().SetBackgroundColour(color)
     if width is not None and width != "":
         disMeasManager.widthCtrl = width
         myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
@@ -162,7 +163,7 @@ def GetInstrumentValues(path):
             elif data[0] == "Start_Edge":
                 startEdge = data[1]
             elif data[0] == "#_Stations" and finalData[index-1][0] == "Start_Edge":
-                numberOfPanels = data[1]
+                numberOfPanels = str(int(data[1])-2)
 
             elif "ISO" in data[0] and finalData[index+1][0] == "Overall":
                 uncertainISO = finalData[index+1][1]
@@ -185,7 +186,8 @@ def GetDischargeSummary(path):
     area = ""
     meanVelocity = ""
     discharge = ""
-
+    timesArray = []
+    count = 0
 
 
 
@@ -200,8 +202,8 @@ def GetDischargeSummary(path):
 
                 startTime = data[2][:5]
 
-            elif data[0] == "Mean_Temp":
-                waterTemp = data[1]
+            #elif data[0] == "Mean_Temp":
+                #waterTemp = data[1]
             elif data[0] == "Total_Width":
                 width = data[1]
             elif data[0] == "Total_Area":
@@ -211,11 +213,23 @@ def GetDischargeSummary(path):
             elif data[0] == "Total_Discharge":
                 discharge = data[1]
 
+            if data[0] == "00":
+                for time in finalData[count:len(finalData)]:
+                    timesArray.append(time[1]) #store all times from dis file into timesArray
 
-    endTime = finalData[-1][1]
+                timesArray = sorted(timesArray) #sorts time values in ascending order
+                endTime = timesArray[len(timesArray)-1] #ensures the correct endtime is stored even if times are not recorded in order 
+            
+            count=count+1
+
+    #print(timesArray)
+    #endTime = finalData[-1][1]
+    
     
 
-    return startTime, endTime, airTemp, waterTemp, width, area, meanVelocity, discharge
+    # return startTime, endTime, airTemp, waterTemp, width, area, meanVelocity, discharge
+    return startTime, endTime, airTemp, width, area, meanVelocity, discharge
+
 
 
 
