@@ -2100,8 +2100,11 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
     comments = LevelChecks.find('comments').text
     waterLevelRunManager.commentsCtrl = "" if comments is None else comments
 
-    surveyedby = LevelChecks.find('surveyedby').text
-    waterLevelRunManager.surveyedbyCtrl = "" if surveyedby is None else surveyedby
+    try:
+        surveyedby = LevelChecks.find('surveyedby').text
+        waterLevelRunManager.surveyedbyCtrl = "" if surveyedby is None else surveyedby
+    except:
+        waterLevelRunManager.surveyedbyCtrl = ""
 
     try:
         loggerName = LevelChecks.find('loggerName').text
