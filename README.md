@@ -14,8 +14,10 @@ requests
 qrcode  
 lxml  
 html2pdf (version 0.0.6)  
-suds-jurko (version 0.6)  
-html5lib (version 1.0b8)  
+suds-jurko (version 0.7)  
+html5lib (version 1.0b8)
+
+Upon downloading the repository, execute the following command to install all python modules: pip install -r requirements.txt  
 
 # EXCLUDED FILES
 
