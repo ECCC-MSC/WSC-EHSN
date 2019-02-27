@@ -61,7 +61,7 @@ def GetDate(path):
                         'november' : "11",
                         'december' : "12"}
 
-            return year + "/" + numMonth[month.lower()] + "/" + day
+            return (year + "/" + numMonth[month.lower()] + "/" + day)
 
 
 
