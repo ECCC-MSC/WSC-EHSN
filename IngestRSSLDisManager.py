@@ -40,13 +40,18 @@ def GetDate(path):
 
     for data in dataSet:
 
-        if data[0] == "Date Measured":
-            date = data[1]
-
-            month = date.split(", ")[1].split()[0]
-            day = date.split(", ")[1].split()[1]
-            year = date.split(", ")[2].rstrip()
-            # print month, day, year
+         if data[0] == "Date Measured":
+            date =  data[1]
+            if date.count(",") == 2 #when the name of day, month and year are all provided (Ex: Saturday, February 25, 2019)
+                month = date.split(", ")[1].split()[0]
+                day = date.split(", ")[1].split()[1]
+                year = date.split(", ")[2].rstrip()
+            elif date.count(",") == 1 #when the name of the day is not included in date  (Ex: February 25, 2019)
+                month = date.split(",")[0].split()[0]
+                day = date.split(",")[0].split()[1]
+                year = date.split(", ")[1]
+            else:
+                print("Date is not written in proper format in dis file")
 
             numMonth = {'january' : "01",
                         'february' : "02",
