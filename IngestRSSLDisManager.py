@@ -41,7 +41,7 @@ def GetDate(path):
     for data in dataSet:
 
         if data[0] == "Date Measured":
-            date = data[1]
+            date =  data[1]
             if date.count(",") == 2 #when the name of day, month and year are all provided (Ex: Saturday, February 25, 2019)
                 month = date.split(", ")[1].split()[0]
                 day = date.split(", ")[1].split()[1]
