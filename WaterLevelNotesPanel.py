@@ -1135,10 +1135,11 @@ class WaterLevelNotesPanel(wx.Panel):
         panel = event.GetEventObject().GetParent().GetParent().GetParent()
         runIndex = int(panel.GetName())
         closureCtrl = self.GetClosureText(runIndex)
-        if abs(float(closureCtrl.GetValue())) > 0.003:
-            closureCtrl.SetBackgroundColour("red")
-        else:
-            closureCtrl.SetBackgroundColour("white")
+        if closureCtrl.GetValue()!="":
+            if abs(float(closureCtrl.GetValue())) > 0.003:
+                closureCtrl.SetBackgroundColour("red")
+            else:
+                closureCtrl.SetBackgroundColour("white")
         closureCtrl.Refresh()
         
         event.Skip()

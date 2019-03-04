@@ -1718,7 +1718,7 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
 
     try:
         preUseCable = SiteConditions.find('preUseCable')
-        if preUseCable is None:
+        if preUseCable.text is None:
             instrDepManager.preUseCableCmboFromXml = ""
         else:
             instrDepManager.preUseCableCmboFromXml = preUseCable.text
