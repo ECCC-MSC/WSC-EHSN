@@ -53,8 +53,10 @@ import datetime
 import sys
 import threading
 
-
-
+# NG Upload support
+from timeseries_client import timeseries_client
+import tempfile
+import zipfile
 
 ###########################################
 #only used for generating excutable
@@ -333,6 +335,49 @@ class ElectronicHydrometricSurveyNotes:
         AquariusUploadManager.CheckFVVals(mode, self)
 
 
+    def UploadToNG(self, server, username, password):
+
+        with timeseries_client(server, username, password) as timeseries:
+            if timeseries.is3x():
+                # Bail if we know the server is 3.X
+                return False, None
+
+            try:
+                locationUniqueId = timeseries.getLocationUniqueId(self.genInfoManager.stnNumCmbo)
+
+                # Save the file to XML, PDF, and zip in a temp folder
+                tempdir = tempfile.mkdtemp()
+
+                xmlName = self.gui.SaveAsXMLAtUpload(tempdir, "")
+                xmlPath = join(tempdir, xmlName)
+                rootPath, _ = os.path.splitext(xmlPath)
+                pdfPath = rootPath + ".pdf"
+                pdfName = os.path.basename(pdfPath)
+                zipPath = rootPath + ".zip"
+                archiveName = join("attachments", pdfName)
+
+                with zipfile.ZipFile(zipPath, 'w') as zip:
+                    zip.write(xmlPath, os.path.basename(xmlPath))
+                    zip.write(pdfPath, archiveName)
+
+                # Upload the ZIP archive
+                with open(zipPath, 'rb') as zipStream:
+                    response = timeseries.acquisition.post("/locations/" + locationUniqueId + "/visits/upload/plugins",
+                                         files={'file': zipStream}).json()
+
+                return True, None
+
+            except requests.exceptions.HTTPError as e:
+
+                return True, str(e) + "\n\nTo show this HTTPError, I had to add 'password' to the response value."
+
+            except Exception as e:
+
+                return True, str(e) + "\n\nTo show this Exception, I had to add 'password' to the response value."
+
+            finally:
+                shutil.rmtree(tempdir)
+
 
     # Check if the values in the eHSN will cause an error during upload to AQ
     # Log in to AQ
@@ -343,9 +388,16 @@ class ElectronicHydrometricSurveyNotes:
     def ExportToAquarius(self, server, username, password, fvDate, discharge, levelNote):
 
 
-
         # Aquarius Login
         self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
+
+        # Try to figure out 3.X vs. NG
+        uploadedToNg, ngValue = self.UploadToNG(server, username, password)
+
+        if uploadedToNg:
+            self.gui.deleteProgressDialog()
+            return ngValue
+
         exists, value = AquariusUploadManager.AquariusLogin(mode, server, username, password)
 
         if exists:
