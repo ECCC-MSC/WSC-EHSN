@@ -2246,6 +2246,9 @@ def FieldReviewAsXMLTree(FieldReview, frChecklistManager):
     siteNotes = SubElement(FieldReview, "siteNotes")
     siteNotes.text = frChecklistManager.siteNotesCtrl
 
+    planNotes = SubElement(FieldReview, "planNotes")
+    planNotes.text = frChecklistManager.planNotesCtrl
+
     # pictured = SubElement(FieldReview, "pictured")
     # pictured.text = str(frChecklistManager.GetPicturedCkbox())
 
@@ -2276,6 +2279,11 @@ def FieldReviewFromXML(FieldReview, frChecklistManager):
 
     siteNotes = FieldReview.find('siteNotes').text
     frChecklistManager.siteNotesCtrl = "" if siteNotes is None else siteNotes
+    try:
+        planNotes = FieldReview.find('planNotes').text
+        frChecklistManager.planNotesCtrl = "" if planNotes is None else planNotes
+    except:
+        print "no plan notes"
 
     # try:
     #     pictured = FieldReview.find('pictured').text

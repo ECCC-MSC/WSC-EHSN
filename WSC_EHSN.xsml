@@ -451,6 +451,14 @@
 				</xsl:call-template>
 			</td>
 		</tr>
+		<tr>
+			<td align="left" colspan="4" height="80"><b>Plan Notes: </b><br/>
+				<xsl:call-template name="LFsToBRs">
+					<xsl:with-param name="input" select="planNotes"/>
+				</xsl:call-template>
+			</td>
+		</tr>
+
 		</table>
 </xsl:template>
 
