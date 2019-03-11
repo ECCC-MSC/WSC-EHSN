@@ -179,6 +179,14 @@ class FRChecklistManager(object):
     def siteNotesCtrl(self, siteNotesCtrl):
         self.gui.siteNotesCtrl.SetValue(siteNotesCtrl)
 
+    #Notes on Next Trip
+    @property
+    def planNotesCtrl(self):
+        return self.gui.planNotesCtrl.GetValue()
+
+    @planNotesCtrl.setter
+    def planNotesCtrl(self, planNotesCtrl):
+        self.gui.planNotesCtrl.SetValue(planNotesCtrl)
 
     # def GetPicturedCkbox(self):
     #     return self.gui.picturedCkbox.IsChecked()
@@ -190,6 +198,9 @@ class FRChecklistManager(object):
 
     def GetSiteNotesCtrl(self):
         return self.gui.siteNotesCtrl
+    def GetPlanNotesCtrl(self):
+        return self.gui.planNotesCtrl
+
     # def GetPicturedCkbox(self):
     #     return self.gui.picturedCkbox
 
