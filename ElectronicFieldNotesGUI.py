@@ -399,7 +399,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.rootPath = os.getcwd()
         self.saveAsDirectory = os.getcwd()
         self.inipath = self.saveAsDirectory + r'\AQ_Extracted_Data\iniPath.ini'
-        self.inipath2 = r'C:\Temp\eHSN\iniPath.ini'
+        self.tempPath = "c:\\temp\\eHSN\\"
         self.uploadSaveDir = os.getcwd()
 
         self.importedBGColor = "#48C9B0"
@@ -426,7 +426,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.SetFont(myFont)
 
         self.CreateStatusBar(style=wx.STB_SIZEGRIP|wx.STB_SHOW_TIPS|wx.STB_ELLIPSIZE_END|wx.FULL_REPAINT_ON_RESIZE)
-        self.SetStatusText("Backup located in C:\\temp\\eHSN\\")
+        self.SetStatusText("Backup located in " + self.tempPath)
 
         fileMenu = wx.Menu()
         fnew = fileMenu.Append(ID_FILE_NEW, self.fNewLabel, self.fNewDesc)
@@ -2863,10 +2863,10 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                     pass
 
             #if ini file is not present in AQ_Extracted then read from ini file stored in C:\Temp\eHSN folder     
-            elif os.path.exists(self.inipath2):
+            elif os.path.exists(self.tempPath + "iniPath.ini"):
                 print("temp path exists")
                 config = SafeConfigParser()
-                config.read(self.inipath2)
+                config.read(self.tempPath + "iniPath.ini")
                 try:
                     readPath = config.get('Initial_Path', 'Upload_Save_Path')
                     if os.path.exists(readPath):
@@ -3002,19 +3002,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 config.write(cfgfile)
                 cfgfile.close()
 
-        else:
-
-            cfgfile = open(self.inipath, 'w')
-            config = SafeConfigParser()
-            config.add_section('Initial_Path')
-            config.set('Initial_Path', 'Upload_Save_Path', resetpath)
-            self.uploadSaveDir = resetpath
-            config.write(cfgfile)
-            cfgfile.close()
-
         #Update inipath stored in C:\Temp\eHSN folder
-        if os.path.exists(self.inipath2):
-            config.read(self.inipath2)
+        if os.path.exists(self.tempPath + "iniPath.ini"):
+            config.read(self.tempPath + "iniPath.ini")
 
             try:
                 readPath = config.get('Initial_Path', 'Save_as_Path')
@@ -3027,7 +3017,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
                 for i in items:
                     if 'Save_as_Path' == i[0]:
-                        cfgfile = open(self.inipath2, 'w')
+                        cfgfile = open(self.tempPath + "iniPath.ini", 'w')
                         config.set('Initial_Path', 'Upload_Save_Path', resetpath)
                         if readPath is not None:
                             config.set('Initial_Path', 'Save_as_Path', readPath)
@@ -3037,7 +3027,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
                         break
 
-                cfgfile = open(self.inipath2, 'w')
+                cfgfile = open(self.tempPath + "iniPath.ini", 'w')
                 config = SafeConfigParser()
                 config.add_section('Initial_Path')
                 config.set('Initial_Path', 'Upload_Save_Path', resetpath)
@@ -3049,7 +3039,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
             except:
-                cfgfile = open(self.inipath2, 'a')
+                cfgfile = open(self.tempPath + "iniPath.ini", 'a')
                 config = SafeConfigParser()
                 config.add_section('Initial_Path')
                 config.set('Initial_Path', 'Upload_Save_Path', resetpath)
@@ -3059,7 +3049,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         else:
 
-            cfgfile = open(self.inipath2, 'w')
+            cfgfile = open(self.tempPath + "iniPath.ini", 'w')
             config = SafeConfigParser()
             config.add_section('Initial_Path')
             config.set('Initial_Path', 'Upload_Save_Path', resetpath)
