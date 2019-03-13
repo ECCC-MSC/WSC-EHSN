@@ -650,13 +650,16 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
 
 
         dmeasurement.Remarks = ""
+        asd = EHSN.disMeasManager.dischCombo.strip()
+        if EHSN.disMeasManager.dischCombo.strip() != "":
+            dmeasurement.Remarks = "Discharge Grade: " + EHSN.disMeasManager.dischCombo.strip() + "\n"
 
         if EHSN.disMeasManager.dischRemarksCtrl.strip() != "":
-            dmeasurement.Remarks = "Discharge Remarks: " + EHSN.disMeasManager.dischRemarksCtrl.strip() + "\n"
+            dmeasurement.Remarks += "Discharge Remarks: " + EHSN.disMeasManager.dischRemarksCtrl.strip() + "\n"
 
-            if EHSN.disMeasManager.ControlConditionRemarksCtrl.strip() != "":
-                dmeasurement.Remarks += ("Control Condition Remarks: " + EHSN.disMeasManager.ControlConditionRemarksCtrl.strip() + "\n")
-
+        if EHSN.disMeasManager.ControlConditionRemarksCtrl.strip() != "":
+            dmeasurement.Remarks += ("Control Condition Remarks: " + EHSN.disMeasManager.ControlConditionRemarksCtrl.strip() + "\n")
+        
 
 
 
