@@ -603,7 +603,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.form = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER)
         self.form.SetupScrolling()
 
-        self.titleHeader = TitleHeaderPanel(self.mode, self.form, style=wx.NO_BORDER)
+        self.titleHeader = TitleHeaderPanel(self.mode, self.version, self.form, style=wx.NO_BORDER)
         self.genInfo = GenInfoPanel(self.mode, self.form, style=wx.SIMPLE_BORDER)
         self.disMeas = DischargeMeasurementsPanel(self.mode, self.lang, self.form, style=wx.SIMPLE_BORDER)
 
