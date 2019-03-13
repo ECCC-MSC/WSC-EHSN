@@ -2849,32 +2849,35 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     #Read the initial file to get the initial save_as path
     def IniUploadSavePath(self):
-        if os.path.exists(self.inipath):
-            print("path exists")
-            config = SafeConfigParser()
-            config.read(self.inipath)
-            try:
-                readPath = config.get('Initial_Path', 'Upload_Save_Path')
-                if os.path.exists(readPath):
-                    self.uploadSaveDir = readPath
-            except:
-                pass
+        
+        try:
+            if os.path.exists(self.inipath):
+                print("path exists")
+                config = SafeConfigParser()
+                config.read(self.inipath)
+                try:
+                    readPath = config.get('Initial_Path', 'Upload_Save_Path')
+                    if os.path.exists(readPath):
+                        self.uploadSaveDir = readPath
+                except:
+                    pass
 
-        #if ini file is not present in AQ_Extracted then read from ini file stored in C:\Temp\eHSN folder        
-        elif os.path.exists(self.inipath2):
-            print("temp path exists")
-            config = SafeConfigParser()
-            config.read(self.inipath2)
-            try:
-                readPath = config.get('Initial_Path', 'Upload_Save_Path')
-                if os.path.exists(readPath):
-                    self.uploadSaveDir = readPath
-            except:
-                pass
+            #if ini file is not present in AQ_Extracted then read from ini file stored in C:\Temp\eHSN folder     
+            elif os.path.exists(self.inipath2):
+                print("temp path exists")
+                config = SafeConfigParser()
+                config.read(self.inipath2)
+                try:
+                    readPath = config.get('Initial_Path', 'Upload_Save_Path')
+                    if os.path.exists(readPath):
+                        self.uploadSaveDir = readPath
+                except:
+                    pass
 
-        else:
-            print("did not enter if statement")
-
+            else:
+                print("did not enter if statement")
+        except:
+            pass
 
     # #Reset the initial save_as path
     # def ResetSaveAsIni(self, resetpath):
@@ -2955,7 +2958,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         config = SafeConfigParser()
 
         #Update inipath stored in AQ_Extracted folder
-        if os.path.isfile(self.inipath):
+        if os.path.exists(self.inipath):
             config.read(self.inipath)
 
             try:
@@ -3010,7 +3013,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             cfgfile.close()
 
         #Update inipath stored in C:\Temp\eHSN folder
-        if os.path.isfile(self.inipath2):
+        if os.path.exists(self.inipath2):
             config.read(self.inipath2)
 
             try:
