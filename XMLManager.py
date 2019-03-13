@@ -548,6 +548,12 @@ def DischMeasFromXML(DisMeas, disMeasManager):
         else:
             disMeasManager.GetDischCtrl().SetBackgroundColour(white)
 
+    dischCombo = DisMeas.find('dischCombo')
+    if dischCombo is None or dischCombo.text is None:
+        disMeasManager.dischCombo = ""
+    else:
+        disMeasManager.dischCombo = dischCombo.text
+
     mmtTimeVal = DisMeas.find('mmtTimeVal').text
     disMeasManager.mmtValTxt = "" if mmtTimeVal is None else mmtTimeVal
 
