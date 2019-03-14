@@ -2852,7 +2852,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         
         try:
             if os.path.exists(self.inipath):
-                print("path exists")
+                print("1111111111111111111111111111111111")
                 config = SafeConfigParser()
                 config.read(self.inipath)
                 try:
@@ -2864,7 +2864,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
             #if ini file is not present in AQ_Extracted then read from ini file stored in C:\Temp\eHSN folder     
             elif os.path.exists(self.tempPath + "iniPath.ini"):
-                print("temp path exists")
+                print("22222222222222222222222222222222222")
                 config = SafeConfigParser()
                 config.read(self.tempPath + "iniPath.ini")
                 try:
@@ -2873,9 +2873,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                         self.uploadSaveDir = readPath
                 except:
                     pass
-
-            else:
-                print("did not enter if statement")
         except:
             pass
 
@@ -2959,6 +2956,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         #Update inipath stored in AQ_Extracted folder
         if os.path.exists(self.inipath):
+            print("3333333333333333333333333333")
             config.read(self.inipath)
 
             try:
@@ -3001,9 +2999,24 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.uploadSaveDir = resetpath
                 config.write(cfgfile)
                 cfgfile.close()
+        
+        else:
+            print("44444444444444444444444444444444")
+            try:
+                cfgfile = open(self.inipath, 'w')
+                config = SafeConfigParser()
+                config.add_section('Initial_Path')
+                config.set('Initial_Path', 'Upload_Save_Path', resetpath)
+                self.uploadSaveDir = resetpath
+                config.write(cfgfile)
+                cfgfile.close()
+
+            except:
+                pass
 
         #Update inipath stored in C:\Temp\eHSN folder
         if os.path.exists(self.tempPath + "iniPath.ini"):
+            print("5555555555555555555555555555555")
             config.read(self.tempPath + "iniPath.ini")
 
             try:
@@ -3048,7 +3061,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 cfgfile.close()
 
         else:
-
+            print("6666666666666666666666666666")
             cfgfile = open(self.tempPath + "iniPath.ini", 'w')
             config = SafeConfigParser()
             config.add_section('Initial_Path')
