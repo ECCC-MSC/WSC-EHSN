@@ -651,10 +651,13 @@ class ElectronicHydrometricSurveyNotes:
 
         EHSN = ElementTree.parse(filePath).getroot()
         XML_version = EHSN.get('version') #get the eHSN version used to create the XML file
-
-        if XML_version.split("_",1)[0] > EHSN_VERSION.split("_",1)[0]: #if eHSN version obtained from xml file is newer than user's eHSN version, display a warning
-            dlg = wx.MessageDialog(self.gui, "You are attempting to open an XML file for "+XML_version+" of eHSN using "+EHSN_VERSION+" of eHSN. There is no guarantee an older version of eHSN will open the file successfully so please update to the newest version.","EHSN Version Error", wx.OK | wx.ICON_ERROR)
-            dlg.ShowModal()
+        
+        try:
+            if XML_version.split("_",1)[0] > EHSN_VERSION.split("_",1)[0]: #if eHSN version obtained from xml file is newer than user's eHSN version, display a warning
+                dlg = wx.MessageDialog(self.gui, "You are attempting to open an XML file for "+XML_version+" of eHSN using "+EHSN_VERSION+" of eHSN. There is no guarantee an older version of eHSN will open the file successfully so please update to the newest version.","EHSN Version Error", wx.OK | wx.ICON_ERROR)
+                dlg.ShowModal()
+        except:
+            pass
 
         #First Page
         TitleHeader = EHSN.find('TitleHeader')
