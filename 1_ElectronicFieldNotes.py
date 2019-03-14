@@ -648,7 +648,6 @@ class ElectronicHydrometricSurveyNotes:
         if mode == "DEBUG":
             print "Opening File"
 
-
         EHSN = ElementTree.parse(filePath).getroot()
         XML_version = EHSN.get('version') #get the eHSN version used to create the XML file
         
