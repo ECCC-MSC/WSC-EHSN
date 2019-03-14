@@ -548,6 +548,12 @@ def DischMeasFromXML(DisMeas, disMeasManager):
         else:
             disMeasManager.GetDischCtrl().SetBackgroundColour(white)
 
+    dischCombo = DisMeas.find('dischCombo')
+    if dischCombo is None or dischCombo.text is None:
+        disMeasManager.dischCombo = ""
+    else:
+        disMeasManager.dischCombo = dischCombo.text
+
     mmtTimeVal = DisMeas.find('mmtTimeVal').text
     disMeasManager.mmtValTxt = "" if mmtTimeVal is None else mmtTimeVal
 
@@ -1718,7 +1724,7 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
 
     try:
         preUseCable = SiteConditions.find('preUseCable')
-        if preUseCable is None:
+        if preUseCable.text is None:
             instrDepManager.preUseCableCmboFromXml = ""
         else:
             instrDepManager.preUseCableCmboFromXml = preUseCable.text
@@ -2246,6 +2252,9 @@ def FieldReviewAsXMLTree(FieldReview, frChecklistManager):
     siteNotes = SubElement(FieldReview, "siteNotes")
     siteNotes.text = frChecklistManager.siteNotesCtrl
 
+    planNotes = SubElement(FieldReview, "planNotes")
+    planNotes.text = frChecklistManager.planNotesCtrl
+
     # pictured = SubElement(FieldReview, "pictured")
     # pictured.text = str(frChecklistManager.GetPicturedCkbox())
 
@@ -2276,6 +2285,11 @@ def FieldReviewFromXML(FieldReview, frChecklistManager):
 
     siteNotes = FieldReview.find('siteNotes').text
     frChecklistManager.siteNotesCtrl = "" if siteNotes is None else siteNotes
+    try:
+        planNotes = FieldReview.find('planNotes').text
+        frChecklistManager.planNotesCtrl = "" if planNotes is None else planNotes
+    except:
+        print "no plan notes"
 
     # try:
     #     pictured = FieldReview.find('pictured').text

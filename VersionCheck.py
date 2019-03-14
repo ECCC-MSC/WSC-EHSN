@@ -53,7 +53,7 @@ def Check(version, parent, alwaysShow):
                 msg += unicode(line)
         print ""
         f.close()
-
+        os.remove(fdir)
 
         myVersions = myVersion[1:].split('.')
         currentVersions = currentVersion.split('.')

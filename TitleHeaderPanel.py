@@ -2,12 +2,13 @@
 # Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 
 import wx
+EHSN_VERSION = "v1.3.1"
 
 class TitleHeaderPanel(wx.Panel):
-    def __init__(self, mode, *args, **kwargs):
+    def __init__(self, mode, eHSN_Version, *args, **kwargs):
         super(TitleHeaderPanel, self).__init__(*args, **kwargs)
 
-        self.titleLbl = "ELECTRONIC HYDROMETRIC SURVEY NOTES"
+        self.titleLbl = "ELECTRONIC HYDROMETRIC SURVEY NOTES " + eHSN_Version
         self.enteredInHWSLbl = "Data Entered in HWS?"
 
         self.mode = mode

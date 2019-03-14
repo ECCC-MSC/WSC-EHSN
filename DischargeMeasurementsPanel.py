@@ -735,7 +735,7 @@ class DischargeMeasurementsPanel(wx.Panel):
         return self.dischCombo.GetValue()
 
     def SetDischCombo(self,dischCombo):
-        self.dischCombo.SetValue()
+        self.dischCombo.SetValue(dischCombo)
 
 
     #Mmt Mean Time Ctrl
