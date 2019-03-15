@@ -1,11 +1,11 @@
 # All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
 # Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 
-from ftplib import FTP
 import wx
 import wx.lib.agw.genericmessagedialog as GMD
 import sys
 import os
+import requests
 
 def Check(version, parent, alwaysShow):
     # myVersion = "v1.1.4"
@@ -24,36 +24,17 @@ def Check(version, parent, alwaysShow):
 
 
     try:
-        ftp = FTP('nais.ec.gc.ca')
-        print ftp.login('wsctradesite', 'WSCtrade123')
+        message_url = "https://raw.githubusercontent.com/ECCC-MSC/WSC-EHSN/master/message"
+        response = requests.get(message_url)
+        response.raise_for_status()
+        msg = response.content.decode('Windows-1252')  # TODO: Consider encoding the message file as UTF-8
 
-        
-
-
-        ftp.cwd('WSC eHSN')
-        print "======================================"
-        ftp.retrlines('LIST')
-        fdir = 'message'
-        f = open(fdir,'wb')
-
-        ftp.retrbinary('RETR message.txt', f.write)
-        f.close()
-
-        f = open(fdir,'r')
-
-        for index, line in enumerate(f):
-            print '%s\t%s' % (index, line),
-            if index == 0:
-                currentVersion = line[1:]
-            elif index == 1:
-                rank = int(line)
-            else:
-                if isinstance(line, str):
-                    line = line.decode('latin-1')
-                msg += unicode(line)
+        print msg
         print ""
-        f.close()
-        os.remove(fdir)
+
+        lines = msg.splitlines()
+        currentVersion = lines[0][1:]
+        rank = int(lines[1])
 
         myVersions = myVersion[1:].split('.')
         currentVersions = currentVersion.split('.')
