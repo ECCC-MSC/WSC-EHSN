@@ -1429,7 +1429,7 @@ class ElectronicHydrometricSurveyNotes:
 
 
 
-# This is for the icon
+# This is for the icon 
 filename = 'myfilesname.type'
 if hasattr(sys, '_MEIPASS'):
     # PyInstaller >= 1.6
