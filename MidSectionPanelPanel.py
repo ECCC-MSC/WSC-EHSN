@@ -1272,7 +1272,7 @@ class MidSectionPanelPanel(wx.Panel):
 
         if rev == "0":
             return "0"
-        elif rev == "" or time == "" or slope == "" or intercept == "":
+        if rev == "" or time == "" or slope == "" or intercept == "":
             return ""
         elif reverse:
             return - (float(rev) / float(time) * float(slope) + float(intercept))

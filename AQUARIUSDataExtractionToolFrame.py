@@ -43,11 +43,12 @@ class AQUARIUSDataExtractionToolFrame(wx.Frame):
         self.bmReportPathLbl = "Benchmark Report(.csv)"
         self.minMaxHistLbl = "Include Hist. Min/Max?"
         self.minMaxHint = "Number of historical minimum and maximum discharge you would like to include!"
-
+        self.ngExportLabel = "Export the Data from AQUARIUS NG?"
         self.runButtonLbl = "Run"
         self.canButtonLbl = "Close"
 
         self.server = 'http://hws-aipoll.mb.ec.gc.ca'
+        self.ngserver = "http://wsc.aquaticinformatics.net/AQUARIUS/Publish/v2/"
         # self.server = 'http://hwp-app-stage2.to.on.ec.gc.ca'
         self.iconName = "icon_transparent.ico"
 
@@ -273,12 +274,15 @@ For example:\n\
 
         # Buttons
         buttonsSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.ngExportChk = wx.CheckBox(basePanel, label=self.ngExportLabel, style=wx.ALIGN_LEFT)
+        self.ngExportChk.SetValue(True)
         self.runButton = wx.Button(basePanel, label=self.runButtonLbl)
         self.runButton.Bind(wx.EVT_BUTTON, self.OnRun)
         self.canButton = wx.Button(basePanel, label=self.canButtonLbl)
         self.canButton.Bind(wx.EVT_BUTTON, self.OnCancel)
 
         buttonsSizer.Add((-1, -1), 1, wx.EXPAND)
+        buttonsSizer.Add(self.ngExportChk, 0, wx.EXPAND | wx.RIGHT, 4)
         buttonsSizer.Add(self.runButton, 0, wx.EXPAND|wx.RIGHT, 4)
         buttonsSizer.Add(self.canButton, 0, wx.EXPAND|wx.LEFT, 4)
 
@@ -401,19 +405,20 @@ For example:\n\
 
         # switch the next ling for debugging################################################################
         #try maximum 3 times if disconnected from server
-        for i in range(3):
-            try:
+        if not self.ExportFromNgChecked():
+            for i in range(3):
+                try:
 
-                self.manager.RunScript(self.path)
-                break
-            # except socket.error:
-            except:
-                print "error detected, reconnecting"
-                self.manager.RunScript(self.path)
-        else:
-            print "disconnected by the server"
-            print "========================================="
-            print socket.error
+                    self.manager.RunScript(self.path)
+                    break
+                # except socket.error:
+                except:
+                    print "error detected, reconnecting"
+                    self.manager.RunScript(self.path)
+            else:
+                print "disconnected by the server"
+                print "========================================="
+                print socket.error
 
         #######################################################################################################
 
@@ -436,23 +441,37 @@ For example:\n\
 
         #################################################################################################
 
-        self.manager.EHSNGui.ratingFileDir = self.path
-        if self.manager.EHSNGui.savedStationsPath == self.manager.EHSNGui.ratingFileDir + '\\stations.txt':
+            self.manager.EHSNGui.ratingFileDir = self.path
+            if self.manager.EHSNGui.savedStationsPath == self.manager.EHSNGui.ratingFileDir + '\\stations.txt':
 
-            try:
-                self.manager.EHSNGui.OpenStationFile(self.manager.EHSNGui.ratingFileDir + '\\stations.txt')
-                self.manager.EHSNGui.savedStationsPath = self.manager.EHSNGui.ratingFileDir + '\\stations.txt'
-            except:
-                print "error open station file --- OnRun extraction tool frame"
+                try:
+                    self.manager.EHSNGui.OpenStationFile(self.manager.EHSNGui.ratingFileDir + '\\stations.txt')
+                    self.manager.EHSNGui.savedStationsPath = self.manager.EHSNGui.ratingFileDir + '\\stations.txt'
+                except:
+                    print "error open station file --- OnRun extraction tool frame"
 
-        if self.manager.EHSNGui.savedLevelsPath == self.manager.EHSNGui.ratingFileDir + '\\levels.txt':
+            if self.manager.EHSNGui.savedLevelsPath == self.manager.EHSNGui.ratingFileDir + '\\levels.txt':
 
-            try:
-                self.manager.EHSNGui.OpenLevelFile(self.manager.EHSNGui.ratingFileDir + '\\levels.txt')
-                self.manager.EHSNGui.savedLevelsPath = self.manager.EHSNGui.ratingFileDir + '\\levels.txt'
-            except:
-                print "error open level file --- OnRun extraction tool frame"
+                try:
+                    self.manager.EHSNGui.OpenLevelFile(self.manager.EHSNGui.ratingFileDir + '\\levels.txt')
+                    self.manager.EHSNGui.savedLevelsPath = self.manager.EHSNGui.ratingFileDir + '\\levels.txt'
+                except:
+                    print "error open level file --- OnRun extraction tool frame"
+        else:
+            print("NG")
+            for i in range(3):
+                try:
 
+                    self.manager.RunScriptNg(self.path)
+                    break
+                # except socket.error:
+                except:
+                    print "error detected, reconnecting"
+                    self.manager.RunScriptNg(self.path)
+            else:
+                print "disconnected by the server"
+                print "========================================="
+                print socket.error
 
 
     def OnCancel(self, e):
@@ -500,7 +519,10 @@ For example:\n\
         return self.stationCtrl.GetValue().strip() == ""
 
     def GetURL(self):
-        return self.server
+        if not self.ExportFromNgChecked():
+            return self.server
+        else:
+            return self.ngserver
 
     def GetPath(self):
         return self.locText.GetLabel()
@@ -549,6 +571,9 @@ For example:\n\
 
     def RCIsChecked(self):
         return self.rcCkbox.IsChecked()
+
+    def ExportFromNgChecked(self):
+        return self.ngExportChk.IsChecked()
 
     def DataPeriodIsChecked(self):
         return self.dataPeriodCkbox.IsChecked()

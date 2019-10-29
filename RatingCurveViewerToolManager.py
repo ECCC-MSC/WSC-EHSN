@@ -10,6 +10,7 @@ import os
 import re
 import copy
 import math
+import json
 
 
 class RatingCurveViewerToolManager(object):
@@ -58,6 +59,8 @@ class RatingCurveViewerToolManager(object):
         self.validHistPoints = None  ## Historical points (includes label, discharge, and stage
         self._obsDisch = None  ## observed Discharge value
         self._obsStage = None  ## observed Stage value
+        self.qrpa = None  ## list of discharge (qr) rating points
+        self.hrpa = None  ## list of stage (hg) rating points
         self.Hr = None  ## used for shift calculations
         self.Qr = None  ## used for discharge calculations
         self.Shift = None  ## shift
@@ -122,7 +125,8 @@ class RatingCurveViewerToolManager(object):
                 self.ParseRatingXMLFile(filepath)
             elif extension == "txt":
                 self.ParseRatingTXTFile(filepath)
-
+            elif extension == 'json':
+                self.ParseRatingJsonFile(filepath)
 
     def OpenHistDataFile(self, filepath):
         #filepath formatting for gui
@@ -159,12 +163,16 @@ class RatingCurveViewerToolManager(object):
 
         if self.stnNum is not "":
             xmlfilepath = self.path + "\\" + self.stnNum + "_ratingcurves.xml"
+            jsonfilepath = self.path + "\\" + self.stnNum + "_ratingcurves_Ng.json"
             txtfilepath = self.path + "\\" + self.stnNum + "_RatingTable.txt"
             self.ratingCurveList = []
 
             print xmlfilepath
             if os.path.isfile(xmlfilepath):
                 self.OpenRatingFile(os.path.abspath(xmlfilepath))
+            elif os.path.isfile(jsonfilepath):
+                print jsonfilepath
+                self.OpenRatingFile(os.path.abspath(jsonfilepath))
             elif os.path.isfile(txtfilepath):
                 self.OpenRatingFile(os.path.abspath(txtfilepath))
             else:
@@ -187,11 +195,14 @@ class RatingCurveViewerToolManager(object):
 
         if self.stnNum is not "":
             fvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits.csv"
+            jsonfvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits_Ng.csv"
             csvfilepath = self.path + "\\" + self.stnNum + "_FieldVisitExport.csv"
 
             print fvFilePath
             if os.path.isfile(fvFilePath):
                 self.OpenHistDataFile(os.path.abspath(fvFilePath))
+            elif os.path.isfile(jsonfvFilePath):
+                self.OpenHistDataFile(os.path.abspath(jsonfvFilePath))
             elif os.path.isfile(csvfilepath):
                 self.OpenHistDataFile(os.path.abspath(csvfilepath))
             else:
@@ -214,7 +225,7 @@ class RatingCurveViewerToolManager(object):
         if self.mode == "DEBUG":
             print "RC file is ", extension
 
-        if extension.lower() == "txt" or extension.lower() == "xml":
+        if extension.lower() == "txt" or extension.lower() == "xml" or extension.lower() == "json":
             self.extension = extension
             return extension
         elif extension.lower() == "csv":
@@ -323,6 +334,77 @@ class RatingCurveViewerToolManager(object):
 
         return self.ratingCurveList
 
+    def ParseRatingJsonFile(self, filepath):
+        if self.mode == "DEBUG":
+            print "Parsing Json File"
+        # print"under constraction!!"
+        # Changing data stuff, reset self.data to None
+        self.data = None
+        self.period = None
+        self.curveNum = None
+        self.shiftDiffDisch = None
+        self.periodData = []
+        self.curveIdList = []
+
+        # Clear old table
+        if self.gui is not None:
+            self.gui.ClearAllAppRows()
+            self.gui.EnableXML(True)
+
+        json_filepath = str(filepath.replace('\\', '\\\\'))
+        # print type(json_filepath),json_filepath
+        try:
+            with open(json_filepath) as curves_data:
+                Curves = json.load(curves_data)
+                self.data = Curves
+                # print Curves
+        except:
+            print "Json file can't read."
+
+        curves_data = Curves['RatingCurves']
+        # print len(curves_data)
+        #curves_data.reverse()
+
+        for curv in curves_data:
+            curveId = str(curv['Id'])
+            curvePeriod = curv['PeriodsOfApplicability']
+            idNum = 1
+            self.curveIdList.append(curveId)
+            if self.gui is not None:
+                for curvPeriod in curvePeriod:
+                    curveFromDate = datetime.strptime(str(curvPeriod['StartTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
+                    if int(curveFromDate.strftime("%Y")) < 1800 or int(curveFromDate.strftime("%Y")) > 2500:
+                        convertedFromDate = ''
+                    else:
+                        convertedFromDate = curveFromDate.strftime("%B %d %Y")
+                    # curveFromDate = curvPeriod['StartTime']
+
+                    curveToDate = datetime.strptime(str(curvPeriod['EndTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
+                    if int(curveToDate.strftime("%Y")) < 1800 or int(curveToDate.strftime("%Y")) > 2500:
+                        convertedToDate = ''
+                    else:
+                        convertedToDate = curveToDate.strftime("%B %d %Y")
+                    # curveToDate = curvPeriod['EndTime']
+                    if idNum != 1:
+                        curveNewId = curveId + '(' + str(idNum) + ')'
+                    else:
+                        curveNewId = curveId
+                    idNum = idNum + 1
+                    # print curveNewId,convertedFromDate,convertedToDate
+
+                    self.gui.AddRowToAppRange(curveNewId, convertedFromDate, convertedToDate)
+
+                    curvPeriData = []
+                    curvPeriData.append(str(curveNewId))
+                    curvPeriData.append(str(convertedFromDate))
+                    curvPeriData.append(str(convertedToDate))
+
+                    self.periodData.append(curvPeriData)
+
+                # print self.curveIdList
+                self.gui.SetCurveCombo(self.curveIdList, self.rcIndex)
+
+        return self.ratingCurveList
 
     def OnRCUpdate(self, selectedCurveIndex):
         if self.gui is not None:
@@ -389,10 +471,37 @@ class RatingCurveViewerToolManager(object):
                     else:
                         shift, error = self.CalcTxtShiftQdiff(points, stage, disch)
 
+                # json file
+                else:
+                    RCType = self.data['RatingCurves'][selectedCurveIndex]['Type']
+                    points = self.data['RatingCurves'][selectedCurveIndex]
+                    # print points
+                    # print RCType
+
+                    # Check bounds
+                    hg_low = float(points['BaseRatingTable'][0]['InputValue'])
+                    hg_high = float(points['BaseRatingTable'][-1]['InputValue'])
+                    q_low = float(points['BaseRatingTable'][0]['OutputValue'])
+                    q_high = float(points['BaseRatingTable'][-1]['OutputValue'])
+                    # print i, stage, hg_high, hg_low, disch, q_low, q_high
+                    if stage > hg_high or stage < hg_low \
+                        or disch < q_low or disch > q_high:
+                        shift = ""
+                        error = ""
+
+                    elif RCType == "LinearTable":
+                        # print "Linear"
+                        shift, error = self.CalcLinShiftQdiffJson(points, stage, disch)
+                    elif RCType == "LogarithmicTable":
+                        # print "Logarithmic"
+                        shift, error = self.CalcLogShiftQdiffJson(points, stage, disch)
+
             self.gui.AddRowToHistData(date, str(stage), str(disch), str(width), str(area), str(waterVelo), str(error), str(shift), str(remarks))
 
         if self.gui is not None:
-            self.CalculateShiftDisch(self.obsStage, self.obsDisch, selectedCurveIndex)
+            ### TODO look at if this function will work for json too? if yes then remove the condition
+            if self.extension == "xml":
+                self.CalculateShiftDisch(self.obsStage, self.obsDisch, selectedCurveIndex)
 
 
     def ValidateQdiff(self, q, Qr):
@@ -438,6 +547,54 @@ class RatingCurveViewerToolManager(object):
         Hr=(1/a2 * (q - b2))
 
         return Qr, Hr
+
+    # TODO test if this will work if yes split later
+    def CalcLinShiftQdiffJson(self, points, hg, q):
+        a = None
+        b = None
+        a2 = None
+        b2 = None
+
+        # a and b to calculate Qdiff
+        # print len(points['BaseRatingTable'])
+        for i in range(len(points['BaseRatingTable'])):
+
+            hgpas = float(points['BaseRatingTable'][i]['InputValue'])
+            # print hgpas, hg
+
+            if hg < hgpas:
+                lowPoint = points['BaseRatingTable'][i - 1]
+                highPoint = points['BaseRatingTable'][i]
+                a = (highPoint['OutputValue'] - lowPoint['OutputValue']) / (
+                            highPoint['InputValue'] - lowPoint['InputValue'])
+                b = highPoint['OutputValue'] - a * highPoint['InputValue']
+
+                break
+
+        # find a and b to calculate Shift
+        for i in range(len(points['BaseRatingTable'])):
+            qpas = float(points['BaseRatingTable'][i]['OutputValue'])
+
+            if q < qpas:
+                lowPoint = points['BaseRatingTable'][i - 1]
+                highPoint = points['BaseRatingTable'][i]
+                a2 = (highPoint['OutputValue'] - lowPoint['OutputValue']) / (
+                            highPoint['InputValue'] - lowPoint['InputValue'])
+                b2 = highPoint['OutputValue'] - a2 * highPoint['InputValue']
+                break
+
+        # Do Calculations
+        # print a, hg, b
+        if a is not None and b is not None and a2 is not None and b2 is not None:
+            Qr = (a * hg) + b
+            Hr = (1 / a2 * (q - b2))
+            Shift = float(format(Hr - hg, ".3g"))
+            Qdiff = float(format(((q - Qr) / Qr) * 100, ".3g"))
+        else:
+            Shift = ''
+            Qdiff = ''
+
+        return Shift, Qdiff
 
 
     def CalcLogQrHr(self, points, hg, q):
@@ -514,6 +671,76 @@ class RatingCurveViewerToolManager(object):
 
         return Qr, Hr
 
+    # TODO test it and if work maybe split it later
+    def CalcLogShiftQdiffJson(self, points, hg, q):
+        offset = None
+        beta = None
+        c = None
+        qoffset = None
+        qbeta = None
+        qc = None
+        offsetList = []
+        breakPointList = []
+
+        for offset_val in points['Offsets']:
+            offsetList.append(offset_val['Offset'])
+            try:
+                breakPointList.append(offset_val['InputValue'])
+            except:
+                pass
+
+        for i in range(len(points['BaseRatingTable'])):
+            hgpas = float(points['BaseRatingTable'][i]['InputValue'])
+
+            if hg < hgpas:
+                lowPoint = points['BaseRatingTable'][i-1]
+                highPoint = points['BaseRatingTable'][i]
+                for nn in range(len(breakPointList)):
+                    if highPoint['InputValue']<=breakPointList[nn]:
+                        offset = offsetList[nn]
+                        beta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-offset)/(lowPoint['InputValue']-offset))
+                        c = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-offset, beta)
+                if offset is None:
+                    offset = offsetList[-1]
+                    beta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-offset)/(lowPoint['InputValue']-offset))
+                    c = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-offset, beta)
+                break
+
+
+        # find offset, beta, c to calculate Shift
+        for i in range(len(points['BaseRatingTable'])):
+            qpas = float(points['BaseRatingTable'][i]['OutputValue'])
+
+            if q < qpas:
+                lowPoint = points['BaseRatingTable'][i-1]
+                highPoint = points['BaseRatingTable'][i]
+                for nn in range(len(breakPointList)):
+                    if highPoint['InputValue']<=breakPointList[nn]:
+                        qoffset = offsetList[nn]
+                        qbeta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-qoffset)/(lowPoint['InputValue']-qoffset))
+                        qc = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-qoffset, beta)
+                if qoffset is None:
+                    qoffset = offsetList[-1]
+                    qbeta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-qoffset)/(lowPoint['InputValue']-qoffset))
+                    qc = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-qoffset, beta)
+                break
+
+        # Do the calculations
+        if c is not None and qc is not None and offset is not None and qoffset is not None and beta is not None and qbeta is not None:
+            Qr=c * (hg - offset)**beta
+            Hr=qoffset+(q/qc)**(1/qbeta)
+            Shift = float(format(Hr-hg,".3g"))
+            Qdiff = float(format(((q-Qr)/Qr)*100,".3g"))
+
+        else:
+            Shift = ''
+            Qdiff = ''
+
+        # print hgpas, qpas, offset, beta, qoffset, qbeta
+
+        return Shift, Qdiff
+
+
 
 
     def CalcLinShiftQdiff(self, points, hg, q):
@@ -568,10 +795,10 @@ class RatingCurveViewerToolManager(object):
                 break
 
         a1 = (qr_q2 - qr_q1) / (qr_hg2 - qr_hg1)
-        b1 = qr_q2 - a * qr_hg2
+        b1 = qr_q2 - a1 * qr_hg2
 
         a2 = (hr_q2 - hr_q1) / (hr_hg2 - hr_hg1)
-        b2 = hr_q2 - a2 * hg_hg2
+        b2 = hr_q2 - a2 * hr_hg2
 
         # Do calculations
         Qr = (a1*hg)+ b1

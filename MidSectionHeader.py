@@ -9,11 +9,17 @@ import numpy as np
 import math
 import sys
 import os
+import parser
+import xlsxwriter
 
 from DropdownTime import *
 import NumberControl
 from MidSectionSubPanelObj import *
 from MidSectionTransferFrame import *
+
+mode = "PRODUCTION"
+EHSN_VERSION = "v1.3.2"
+eHSN_WINDOW_SIZE = (965, 730)
 
 class MidSectionHeader(wx.Panel):
 
@@ -42,11 +48,15 @@ class MidSectionHeader(wx.Panel):
         self.avgVelLbl = "Avg Velocity (m/s)"
         self.totalDisLbl = u"Total Discharge (m\N{SUPERSCRIPT THREE}/s) "
         self.uncertLbl = "Uncertainty (ISO)(%)"
+        self.uncertLb2 = "Uncertainty (IVE)(%)"
         self.plotLbl = "Plot"
         self.updateSummaryLbl = "Update Summary"
+        self.uncertaintySummaryLbl = "Uncertainty Summary"
         self.startBankLbl = "Start Bank"
+        self.headerTitle = "Hydrometric Survey Notes " + EHSN_VERSION
         self.width = 50
-
+        self.switch = 0
+        self.testing = 1
 
         self.meterNoList = [""]
         self.slope1List = [""]
@@ -235,6 +245,8 @@ class MidSectionHeader(wx.Panel):
 
         rightH10Sizer = wx.BoxSizer(wx.HORIZONTAL)
         rightH11Sizer = wx.BoxSizer(wx.HORIZONTAL)
+        rightH12Sizer = wx.BoxSizer(wx.HORIZONTAL)
+        rightH13Sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         measurementSummaryTxt = wx.StaticText(self, label=self.measSummLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
         headerFont = wx.Font(15, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.BOLD, False)
@@ -315,20 +327,32 @@ class MidSectionHeader(wx.Panel):
 
         uncertainityTxt = wx.StaticText(self, label=self.uncertLbl)
         self.uncertaintyCtrl = wx.TextCtrl(self)
-        self.uncertaintyCtrl.Enable(False)
+        #self.uncertaintyCtrl.Enable(False)
 
         rightH8Sizer.Add(uncertainityTxt, 1, wx.EXPAND)
         rightH8Sizer.Add(self.uncertaintyCtrl, 1, wx.EXPAND)
 
+        uncertainity2Txt = wx.StaticText(self, label=self.uncertLb2)
+        self.uncertainty2Ctrl = wx.TextCtrl(self)
+        #self.uncertainty2Ctrl.Enable(False)
+
+        rightH12Sizer.Add(uncertainity2Txt, 1, wx.EXPAND)
+        rightH12Sizer.Add(self.uncertainty2Ctrl, 1, wx.EXPAND)
+
+
+        self.uncertaintySummaryBtn = wx.Button(self, label=self.uncertaintySummaryLbl)
+        self.uncertaintySummaryBtn.Bind(wx.EVT_BUTTON, self.OnUncertaintySummary)
+        #self.uncertaintySummaryBtn.Disable()
         self.updateSummaryBtn = wx.Button(self, label=self.updateSummaryLbl)
         self.updateSummaryBtn.Bind(wx.EVT_BUTTON, self.OnUpdateSummary)
+        #self.updateSummaryBtn.Disable()
         self.plotBtn = wx.Button(self, label=self.plotLbl,size=(15,-1))
         self.plotBtn.Bind(wx.EVT_BUTTON, self.OnPlot)
         #self.plotBtn.Disable()
+
+        rightH13Sizer.Add(self.uncertaintySummaryBtn, 1, wx.EXPAND)
         rightH9Sizer.Add(self.updateSummaryBtn, 1, wx.EXPAND)
         rightH9Sizer.Add(self.plotBtn, 1, wx.EXPAND)
-
-        
 
         rightSizer.Add(rightH1Sizer, 0, wx.EXPAND)
         rightSizer.Add(rightH10Sizer, 0, wx.EXPAND)
@@ -340,6 +364,8 @@ class MidSectionHeader(wx.Panel):
         rightSizer.Add(rightH6Sizer, 0, wx.EXPAND)
         rightSizer.Add(rightH7Sizer, 0, wx.EXPAND)
         rightSizer.Add(rightH8Sizer, 0, wx.EXPAND)
+        rightSizer.Add(rightH12Sizer, 0, wx.EXPAND)
+        rightSizer.Add(rightH13Sizer, 0, wx.EXPAND)
         rightSizer.Add(rightH9Sizer, 0, wx.EXPAND)
 
         self.layout.Add(leftSizer, 1, wx.EXPAND|wx.ALL, 10)
@@ -369,7 +395,12 @@ class MidSectionHeader(wx.Panel):
 
         event.Skip()
 
+    def OnUncertaintySummary(self, evt):
+        self.switch = 1
+        self.CalculateSummary()
+
     def OnUpdateSummary(self, evt):
+        self.switch = 0
         self.CalculateSummary()
 
     def OnPlot(self, event):
@@ -673,7 +704,27 @@ class MidSectionHeader(wx.Panel):
         return (y2 - y1) / (x2 / x1)
 
     def CalculateSummary(self):
+
+        #if self.testing == 1: return
+
         table = self.GetParent().table
+
+        standardUNC = "0"
+        accuracy = "0"
+        depthsummary = "0"
+        velocitysummary = "0"
+        widthsummary = "0"
+        methodsummary = "0"
+        numOfStations = "0"
+        expandedUNC = "0"
+        standardUNC2 = "0"
+        accuracy2 = "0"
+        depthsummary2 = "0"
+        velocitysummary2 = "0"
+        widthsummary2 = "0"
+        methodsummary2 = "--"
+        numOfStations2 = "--"
+        expandedUNC2 = "0"
 
         totalWidth = 0
         totalArea = 0
@@ -681,6 +732,7 @@ class MidSectionHeader(wx.Panel):
         width = ""
         area = ""
         discharge = ""
+
         for obj in table.panelObjs:
             if obj.width!="":
                 width = obj.width
@@ -698,10 +750,12 @@ class MidSectionHeader(wx.Panel):
                 totalDischarge += float(discharge)
 
         summary = []
+        panelCount = table.nextPanelNum - 1
 
-        summary.append(str(table.nextPanelNum - 1))
+        summary.append(str(panelCount))
         summary.append(str(totalWidth))
         summary.append(str(totalArea))
+
         if totalWidth != 0:
             summary.append(str(totalArea / totalWidth))
         else:
@@ -710,7 +764,556 @@ class MidSectionHeader(wx.Panel):
             summary.append(str(totalDischarge / totalArea))
         else:
             summary.append("")
+
         summary.append(str(totalDischarge))
+
+        #MAKE EXCEL SPREADSHEET------------------------------------------------------------------------------------------------------------------
+
+        # Create an new Excel file and add a worksheet
+        if os.path.exists('C:/temp/eHSN/Uncertainty_Report.xlsx'):
+            os.remove('C:/temp/eHSN/Uncertainty_Report.xlsx')
+            workbook = xlsxwriter.Workbook('C:/temp/eHSN/Uncertainty_Report.xlsx')
+            worksheet = workbook.add_worksheet()
+        else:
+            workbook = xlsxwriter.Workbook('C:/temp/eHSN/Uncertainty_Report.xlsx')
+            worksheet = workbook.add_worksheet()
+
+        # Add a bold format to use to highlight cells.
+        bold = workbook.add_format({'bold': True})
+
+        #Create columns
+        worksheet.write(0,0,"ISO Summary",bold)
+        worksheet.write(2,0,"Standard Unc",bold)
+        worksheet.write(3,0,"Accuracy")
+        worksheet.write(4,0,"Depth")
+        worksheet.write(5,0,"Velocity")
+        worksheet.write(6,0,"Width")
+        worksheet.write(7,0,"Method")
+        worksheet.write(8,0,"# Stations")
+        worksheet.write(9,0,"Expanded Unc",bold)
+        worksheet.write(2,1,"u68(Q)",bold)
+        worksheet.write(3,1,"us")
+        worksheet.write(4,1,"u(D)")
+        worksheet.write(5,1,"u(V)")
+        worksheet.write(6,1,"u(B)")
+        worksheet.write(7,1,"u(Vp)")
+        worksheet.write(8,1,"um")
+        worksheet.write(9,1,"u95(Q)",bold)
+
+        worksheet.write(11,0,"Panel #",bold)
+        worksheet.write(11,2,"U(B)",bold)
+        worksheet.write(11,3,"U(D)",bold)
+        worksheet.write(11,4,"Up(V)",bold)
+        worksheet.write(11,5,"n",bold)
+        worksheet.write(11,6,"Uc(V) 0.2")
+        worksheet.write(11,7,"Uc(V) 0.4")
+        worksheet.write(11,8,"Uc(V) 0.5")
+        worksheet.write(11,9,"Uc(V) 0.6")
+        worksheet.write(11,10,"Uc(V) 0.8")
+        worksheet.write(11,11,"Uc(V) 0.9")
+        worksheet.write(11,12,"Uc(V) avg",bold)
+        worksheet.write(11,13,"Ue(V) 0.2")
+        worksheet.write(11,14,"Ue(V) 0.4")
+        worksheet.write(11,15,"Ue(V) 0.5")
+        worksheet.write(11,16,"Ue(V) 0.6")
+        worksheet.write(11,17,"Ue(V) 0.8")
+        worksheet.write(11,18,"Ue(V) 0.9")
+        worksheet.write(11,19,"Ue(V) avg",bold)
+        worksheet.write(11,20,"U(V)",bold)
+        worksheet.write(11,21,"Qi^2*[U^2(Bi)+U^2(Di)+Up^2(Vi)+1/ni{Uc^2(Vi)+Ue^2(Vi))",bold)
+        worksheet.write(11,22,"Qi^2*U^2(Bi)")
+        worksheet.write(11,23,"Qi^2*U^2(Di)")
+        worksheet.write(11,24,"Qi^2*U^2(pi)")
+        worksheet.write(11,25,"Qi^2*U^2(Vi)")
+
+        worksheet.write(0,30,"IVE Summary",bold)
+        worksheet.write(2,30,"Standard Unc",bold)
+        worksheet.write(3,30,"Accuracy")
+        worksheet.write(4,30,"Depth")
+        worksheet.write(5,30,"Velocity")
+        worksheet.write(6,30,"Width")
+        worksheet.write(7,30,"Method")
+        worksheet.write(8,30,"# Stations")
+        worksheet.write(9,30,"Expanded Unc",bold)
+        worksheet.write(2,31,"u68(Q)",bold)
+        worksheet.write(3,31,"us")
+        worksheet.write(4,31,"u(D)")
+        worksheet.write(5,31,"u(V)")
+        worksheet.write(6,31,"u(B)")
+        worksheet.write(7,31,"u(Vp)")
+        worksheet.write(7,32,"-")
+        worksheet.write(8,31,"um")
+        worksheet.write(8,32,"-")
+        worksheet.write(9,31,"u95(Q)",bold)
+
+        worksheet.write(11,30,"Panel #",bold)
+        worksheet.write(11,31,"Ubi",bold)
+        worksheet.write(11,32,"wi",bold)
+        worksheet.write(11,33,"di,est",bold)
+        worksheet.write(11,34,"delta i, d",bold)
+        worksheet.write(11,35,"delta I, D^2/(2*(1-wi+wi2)",bold)
+        worksheet.write(11,36,"Sd/di",bold)
+        worksheet.write(11,37,"Vi,est")
+        worksheet.write(11,38,"delta i,v")
+        worksheet.write(11,39,"Sv**")
+        worksheet.write(11,40,"Sv/vi")
+        worksheet.write(11,41,"Qi^2*[U^2(Bi)+U^2(Di)+U^2(Vi))",bold)
+        worksheet.write(11,42,"Qi^2*U^2(Bi)",bold)
+        worksheet.write(11,43,"Qi^2*U^2(Di)",bold)
+        worksheet.write(11,44,"Qi^2*U^2(Vi)",bold)
+
+
+        #----------------------------------------------------------------------------------------------------------------------
+
+
+        #UNCERTAINTY CALCULATIONS-------------------------------------------------------------------------------------
+
+        #ISO
+
+        widthU = 0
+        depthU = 0
+        velocityU = 0
+        n = 0
+        characteristicU = 0
+        fluctuationU = 0
+        fluctuationEQ1 = "(2.3+2.732*math.e**(-0.0146*timef)) + (46.896*math.e**(-0.006*timef))*math.e**(-(13.72-0.009*timef)*meanVelocityf)"
+        fluctuationEQ2 = "(5.128*math.e**(-0.004217*timef)) + (91.82*math.e**(-0.00353*timef))*math.e**(-(17.35+0.02326*timef)*meanVelocityf)"
+        fluctuationEQ1Parsed = parser.expr(fluctuationEQ1).compile()
+        fluctuationEQ2Parsed = parser.expr(fluctuationEQ2).compile()
+        fluctuation = 0
+        characteristic = 0
+        uncertaintySum1 = 0
+        uncertaintySum2 = 0
+        uncertaintySum3 = 0
+        uncertaintySeries1 = 0
+        uncertaintySeries2 = 0
+        uncertaintySeries3 = 0
+        uncertaintySeries4 = 0
+        w = 0
+        x = 0
+        y = 0
+        z = 0
+        row = 12
+        distanceList = []
+        effectiveDepthList = []
+        meanVelocityList = []
+
+        if panelCount!=0:
+
+            for obj in table.panelObjs:
+
+                widthU = 0
+                depthU = 0
+                velocityU = 0
+                characteristicU = 0
+                fluctuationU = 0
+                characteristic = 0
+                fluctuation = 0
+                distanceList.append(float(obj.distance))
+
+                if obj.corrMeanVelocity != "":
+                    meanVelocityList.append(float(obj.corrMeanVelocity))
+                else:
+                    meanVelocityList.append(0)
+
+                if obj.area != "" and obj.width != "" :
+                    totalEffectiveDepth = float(obj.area)/float(obj.width)
+                else:
+                    totalEffectiveDepth = 0
+                effectiveDepthList.append(totalEffectiveDepth)
+
+                if isinstance(obj,PanelObj): #not factoring edge panels as of now
+
+                    #Panel Numbers
+                    worksheet.write(row,0,obj.panelNum)
+
+                    #Relative Uncertainty in the Measurement of Width between Verticals U(B)
+                    widthU = 0.005
+                    worksheet.write(row, 2, widthU)
+
+                    #Depth Uncertainty U(D)
+                    if totalEffectiveDepth != "":
+                        if float(totalEffectiveDepth) < 0.3:
+                            depthU = 0.0015
+                        else:
+                            depthU = 0.005
+                        worksheet.write(row, 3, depthU)
+
+                    #Uncertainty due to the Limited Number of Velocity Points Taken in Each Vertical (3.5.1.1) Up(V)
+                    if (len(obj.depths) != 0):
+                        if len(obj.depths) == 1:
+                            velocityU = 0.075
+                        elif len(obj.depths) == 2:
+                            velocityU = 0.035
+                        elif len(obj.depths) == 3:
+                            velocityU = 0.03
+                        else:
+                            velocityU = 0.15
+                        worksheet.write(row, 4, velocityU)
+
+                    #N = Number of velocity points
+                    if (len(obj.depthObs) != 0):
+                        n = float((len(obj.depthObs)))
+                        worksheet.write(row, 5, n)
+
+                    #Uncertainty on the Characteristics of the Measurement Instrument (3.5.2.1) Uc(V)
+                    if (len(obj.pointVels) != 0):
+                        column = 0
+                        count = 0
+                        c = 0
+                        for velocity in obj.pointVels:
+
+                            if obj.depths[count] == "0.2":
+                                column = 6
+                            elif obj.depths[count]  == "0.4":
+                                column = 7
+                            elif obj.depths[count]  == "0.5":
+                                column = 8
+                            elif obj.depths[count]  == "0.6":
+                                column = 9
+                            elif obj.depths[count]  == "0.8":
+                                column = 10
+                            elif obj.depths[count]  == "0.9":
+                                column = 11
+
+                            if abs(float(velocity)) <= 0.03:
+                                c = (0.01*10)
+                                worksheet.write(row, column, c)
+                                characteristic = characteristic + c**2
+
+                            elif abs(float(velocity)) <= 0.5:
+                                c = 0.01*(0.22*(abs(float(velocity))**(-1*1.08)))
+                                worksheet.write(row, column, c)
+                                characteristic = characteristic + c**2
+
+                            else:
+                                c = (0.01*0.5)
+                                worksheet.write(row, column, c)
+                                characteristic = characteristic + c**2
+
+
+                            count = count + 1
+
+                        characteristicU = math.sqrt(characteristic) #calculate average of all sub panels
+                        worksheet.write(row, 12, characteristicU)
+
+                    #Uncertainty due to Fluctuation of the Velocity during the Measurement (3.5.3)
+                    if (len(obj.depthObs)!=0):
+                        count = 0
+                        column = 0
+                        f = 0
+
+                        for depth in obj.depths:
+
+                            meanVelocityf = abs(float(obj.corrMeanVelocity))
+                            timef = float(obj.revTimes[count])
+
+                            if depth == "0.2":
+                                column = 13
+                            elif depth == "0.4":
+                                column = 14
+                            elif depth == "0.5":
+                                column = 15
+                            elif depth == "0.6":
+                                column = 16
+                            elif depth == "0.8":
+                                column = 17
+                            elif depth == "0.9":
+                                column = 18
+
+                            if ((depth == "0.2") or (depth == "0.4") or (depth == "0.5") or (depth == "0.6") or (depth == "Surface")):
+                                f = eval(fluctuationEQ1Parsed)
+                                worksheet.write(row, column, f)
+                                fluctuation = fluctuation + f**2
+
+                            elif ((depth == "0.8") or (depth == "0.9")):
+                                f = eval(fluctuationEQ2Parsed)
+                                worksheet.write(row, column, f)
+                                fluctuation = fluctuation + f**2
+
+                            count = count+1
+
+                        fluctuationU = math.sqrt(fluctuation) / 100 #calculative average of all sub panels
+                        worksheet.write(row, 19, fluctuationU)
+
+                    #U(V)
+                    uncertaintySum1 = math.sqrt(velocityU**2+(1.000/n*(characteristicU**2 + fluctuationU**2)))
+                    worksheet.write(row, 20, uncertaintySum1)
+
+                    #Series summation
+                    uncertaintySum2 = float(obj.discharge)**2 * ((widthU**2) + (depthU**2) + uncertaintySum1**2)
+                    worksheet.write(row, 21, uncertaintySum2)
+                    uncertaintySum3 = uncertaintySum3 + uncertaintySum2
+
+                    #Qi^2*U^2(Bi)
+                    uncertaintySeries1 = float(obj.discharge)**2 * widthU**2
+                    worksheet.write(row, 22, uncertaintySeries1)
+                    w = w + uncertaintySeries1
+
+                    #Qi^2*U^2(Di)
+                    uncertaintySeries2 = float(obj.discharge)**2 * depthU**2
+                    worksheet.write(row, 23, uncertaintySeries2)
+                    x = x + uncertaintySeries2
+
+                    #Qi^2*U^2(pi)
+                    uncertaintySeries3 = float(obj.discharge)**2 * velocityU**2
+                    worksheet.write(row, 24, uncertaintySeries3)
+                    y = y + uncertaintySeries3
+
+                    #Qi^2*U^2(Vi)
+                    uncertaintySeries4 = float(obj.discharge)**2 * fluctuationU**2
+                    worksheet.write(row, 25, uncertaintySeries4)
+                    z = z + uncertaintySeries4
+
+                row = row+1
+
+
+            #Power Fit (u = 32*numOfPanels^(-0.88)) (3.1.1)
+            powerfitU = (32*(float(panelCount)**(-0.88)))*0.01
+
+            #Systematic Uncertainty (3.2.1)
+            systematicU = 0.01
+            worksheet.write(3,2,str(systematicU*100)+"%")
+            accuracy = str(systematicU*100)+"%"
+
+            xx = str(round(math.sqrt((x)/(totalDischarge**2))*100, 1)) + "%"
+            worksheet.write(4,2,xx)
+            depthsummary = str(round(math.sqrt((x)/(totalDischarge**2))*100, 1)) + "%"
+
+            zz = str(round(math.sqrt((z)/(totalDischarge**2))*100,1)) + "%"
+            worksheet.write(5,2,zz)
+            velocitysummary = str(round(math.sqrt((z)/(totalDischarge**2))*100,1)) + "%"
+
+            ww = str(round(math.sqrt((w)/(totalDischarge**2))*100,1)) + "%"
+            worksheet.write(6,2,ww)
+            widthsummary = str(round(math.sqrt((w)/(totalDischarge**2))*100,1)) + "%"
+
+            yy = str(round(math.sqrt((y)/(totalDischarge**2))*100,1)) + "%"
+            worksheet.write(7,2,yy)
+            methodsummary = str(round(math.sqrt((y)/(totalDischarge**2))*100,1)) + "%"
+
+            worksheet.write(8,2,str(round(powerfitU*100,1))+"%")
+            numOfStations = str(round(powerfitU*100,1))+"%"
+
+            k=2
+            uncertaintyTotal = (uncertaintySum3/((totalDischarge)**2))
+
+            uncertainty68 = math.sqrt(powerfitU**2 + systematicU**2 + uncertaintyTotal)
+            worksheet.write(2,2,str(round(uncertainty68*100,1))+"%",bold)
+            standardUNC = str(round(uncertainty68*100,1))+"%"
+
+            uncertainty95 = uncertainty68*k
+            worksheet.write(9,2,str(round(uncertainty95*100,1))+"%",bold)
+            expandedUNC = str(round(uncertainty95*100,1))+"%"
+
+            summary.append(str(uncertainty95*100))
+
+        else:
+            summary.append("")
+
+
+        #IVE
+
+        row = 12
+        count = 0
+        sumd = 0
+        sumv = 0
+        uncertaintySum4 = 0
+        totalDischarge2 = 0
+        x = 0
+        y = 0
+        z = 0
+
+        if panelCount!=0:
+
+            #to calculate sumd, sumv and totaldischarge(excluding edges and first/last panels)
+            for obj in table.panelObjs:
+
+                if obj.discharge != "" and count > 1 and count < (len(table.panelObjs)-2):
+                    totalDischarge2 = totalDischarge2 + float(obj.discharge)
+
+                #Piers
+                if not isinstance(obj,PanelObj) and count > 0 and count < (len(table.panelObjs)-1):
+                    wi = float((distanceList[count+1] - distanceList[count]) / (distanceList[count+1] - distanceList[count-1]))
+                    di = float(wi*effectiveDepthList[count-1]+((1-wi)*effectiveDepthList[count+1]))
+                    id1 = float(effectiveDepthList[count] - di)
+                    id2 = float(id1**2 / (2*(1-wi+(wi**2))))
+
+                    if count > 1 and count < (len(table.panelObjs)-2):
+                            sumd = sumd + id2
+
+                #Panels
+                if isinstance(obj,PanelObj):
+                    wi = float((distanceList[count+1] - distanceList[count]) / (distanceList[count+1] - distanceList[count-1]))
+                    di = float(wi*effectiveDepthList[count-1]+((1-wi)*effectiveDepthList[count+1]))
+                    id1 = float(effectiveDepthList[count] - di)
+                    id2 = float(id1**2 / (2*(1-wi+(wi**2))))
+
+                    if count > 1 and count < (len(table.panelObjs)-2):
+                            sumd = sumd + id2
+
+                    vi = float(wi*meanVelocityList[count-1]+((1-wi)*meanVelocityList[count+1]))
+                    iv = float(meanVelocityList[count]-vi)
+                    sv = float(iv**2 / (2*(1-wi+(wi**2))))
+
+                    if count > 1 and count < (len(table.panelObjs)-2) and (meanVelocityList[count-1] != 0) and (meanVelocityList[count+1] != 0):
+                        sumv = sumv + sv
+
+                count = count+1
+
+
+            count = 0
+            for obj in table.panelObjs:
+
+                #Piers
+                if not isinstance(obj,PanelObj) and count > 0 and count < (len(table.panelObjs)-1):
+
+                    #Relative Uncertainty in the Measurement of Width between Verticals U(B) 3.3.1
+                    widthU = 0.005
+                    worksheet.write(row,31,widthU)
+
+                    #wi 2.2
+                    wi = float((distanceList[count+1] - distanceList[count]) / (distanceList[count+1] - distanceList[count-1]))
+                    worksheet.write(row,32,str(wi))
+
+                    #di, est
+                    di = float(wi*effectiveDepthList[count-1]+((1-wi)*effectiveDepthList[count+1]))
+                    worksheet.write(row,33,str(di))
+
+                    #delta i,d
+                    id1 = float(effectiveDepthList[count]) - float(di)
+                    worksheet.write(row,34,str(id1))
+
+                    #Delta I, D^2/(2*(1-wi+wi^2)
+                    id2 = float(id1**2 / (2*(1-wi+(wi**2))))
+                    worksheet.write(row,35,str(id2))
+
+                    #Sd/di
+                    sd = float(math.sqrt( (1/(float(panelCount)-2))*sumd))
+                    sddi = float(sd / effectiveDepthList[count])
+                    worksheet.write(row,36,str(sddi))
+
+                #Panels
+                if isinstance(obj,PanelObj):
+
+                    #Panel Numbers
+                    worksheet.write(row,30,obj.panelNum)
+
+                    #Relative Uncertainty in the Measurement of Width between Verticals U(B) 3.3.1
+                    widthU = 0.005
+                    worksheet.write(row,31,widthU)
+
+                    #wi 2.2
+                    wi = float((distanceList[count+1] - distanceList[count]) / (distanceList[count+1] - distanceList[count-1]))
+                    worksheet.write(row,32,str(wi))
+
+                    #di, est
+                    di = float(wi*effectiveDepthList[count-1]+((1-wi)*effectiveDepthList[count+1]))
+                    worksheet.write(row,33,str(di))
+
+                    #delta i,d
+                    id1 = float(effectiveDepthList[count]) - float(di)
+                    worksheet.write(row,34,str(id1))
+
+                    #Delta I, D^2/(2*(1-wi+wi^2)
+                    id2 = float(id1**2 / (2*(1-wi+(wi**2))))
+                    worksheet.write(row,35,str(id2))
+
+                    #Sd/di
+                    sd = float(math.sqrt( (1/(float(panelCount)-2))*sumd))
+                    sddi = float(sd / effectiveDepthList[count])
+                    worksheet.write(row,36,str(sddi))
+
+                    #Vi,est
+                    if (meanVelocityList[count-1] != 0 and meanVelocityList[count+1] != 0):
+                        vi = float(wi*meanVelocityList[count-1]+((1-wi)*meanVelocityList[count+1]))
+                    else:
+                        vi = "N/A"
+                    worksheet.write(row,37,str(vi))
+
+                    #delta i, v
+                    if (meanVelocityList[count-1] != 0 and meanVelocityList[count+1] != 0):
+                        iv = float(meanVelocityList[count]-vi)
+                    else:
+                        iv = "N/A"
+                    worksheet.write(row,38,str(iv))
+
+                    #Sv
+                    if (meanVelocityList[count-1] != 0 and meanVelocityList[count+1] != 0):
+                        sv = float(iv**2 / (2*(1-wi+(wi**2))))
+                    else:
+                        sv = "N/A"
+                    worksheet.write(row,39,str(sv))
+
+                    #Sv/vi
+                    sv2 = float(math.sqrt((1/(float(panelCount)-2))*sumv))
+                    svvi = float(sv2 / meanVelocityList[count])
+                    worksheet.write(row,40,str(svvi))
+
+                    #Qi^2*[U^2(Bi)+U^2(Di)+U^2(Vi)]
+                    uncertaintySeries5 = float(obj.discharge)**2 * ( (widthU**2) + (sddi**2) + (svvi**2) )
+                    worksheet.write(row,41,uncertaintySeries5)
+
+                    #Qi^2*U^2(Bi)
+                    uncertaintySeries6 = float(obj.discharge)**2 * (widthU**2)
+                    worksheet.write(row,42,uncertaintySeries6)
+
+                    #Qi^2*U^2(Di)
+                    uncertaintySeries7 = float(obj.discharge)**2 * (sddi**2)
+                    worksheet.write(row,43,uncertaintySeries7)
+
+                    #Qi^2*U^2(Vi)
+                    uncertaintySeries8 = float(obj.discharge)**2 * (svvi**2)
+                    worksheet.write(row,44,uncertaintySeries8)
+
+                    if count > 1 and count < (len(table.panelObjs)-2):
+                        uncertaintySum4 = uncertaintySum4 + uncertaintySeries5
+                        x = x + uncertaintySeries6
+                        y = y + uncertaintySeries7
+                        z = z + uncertaintySeries8
+
+
+                count = count + 1
+                row = row + 1
+
+            #Power Fit (u = 32*numOfPanels^(-0.88)) (3.1.1)
+            powerfitU = (32*(float(panelCount)**(-0.88)))*0.01
+
+            #Systematic Uncertainty (3.2.1)
+            systematicU = 0.01
+            worksheet.write(3,32,str(systematicU*100)+"%")
+            accuracy2 = str(systematicU*100)+"%"
+
+            yy = str(round(math.sqrt((y)/(totalDischarge2**2))*100,1)) + "%"
+            worksheet.write(4,32,yy)
+            depthsummary2 = str(round(math.sqrt((y)/(totalDischarge2**2))*100,1)) + "%"
+
+            zz = str(round(math.sqrt((z)/(totalDischarge2**2))*100,1)) + "%"
+            worksheet.write(5,32,zz)
+            velocitysummary2 = str(round(math.sqrt((z)/(totalDischarge2**2))*100,1)) + "%"
+
+            xx = str(round(math.sqrt((x)/(totalDischarge2**2))*100, 1)) + "%"
+            worksheet.write(6,32,xx)
+            widthsummary2 = str(round(math.sqrt((x)/(totalDischarge2**2))*100, 1)) + "%"
+
+            uncertaintyTotal2 = (uncertaintySum4/((totalDischarge2)**2))
+            uncertainty68 = math.sqrt(systematicU**2 + uncertaintyTotal2)
+            worksheet.write(2,32,str(round(uncertainty68*100,1))+"%",bold)
+            standardUNC2 = str(round(uncertainty68*100,1))+"%"
+
+            k=2
+            uncertainty95 = uncertainty68*k
+            worksheet.write(9,32,str(round(uncertainty95*100,1))+"%",bold)
+            expandedUNC2 = str(round(uncertainty95*100,1))+"%"
+
+            summary.append(str(uncertainty95*100))
+
+        else:
+            summary.append("")
+
+        workbook.close()
+        #----------------------------------------------------------------------------------------------------------------------------------------
+
         times = table.OrderedTimes()
         if len(times) > 0:
             summary.append(str(times[0]))
@@ -719,11 +1322,12 @@ class MidSectionHeader(wx.Panel):
             summary.append("")
             summary.append("")
 
-
         self.UpdateSummary(summary)
 
-        
-
+        #show Uncertainty Summary if 'Uncertainty Summary' button is clicked
+        if self.switch == 1:
+            dlg = wx.MessageDialog(None,"ISO\nAccuracy: "+accuracy+"\nDepth: "+depthsummary+"\nVelocity: "+velocitysummary+"\nWidth: "+widthsummary+"\nMethod: "+methodsummary+"\n# of Stations: "+numOfStations+"\nSTANDARD UNCERTAINTY: "+standardUNC+"\nEXPANDED UNCERTAINTY: "+expandedUNC+"\n\nIVE\nAccuracy: "+accuracy2+"\nDepth: "+depthsummary2+"\nVelocity: "+velocitysummary2+"\nWidth: "+widthsummary2+"\nMethod: "+methodsummary2+"\n# of Stations: "+numOfStations2+"\nSTANDARD UNCERTAINTY: "+standardUNC2+"\nEXPANDED UNCERTAINTY: "+expandedUNC2, "Uncertainty Summary", wx.OK | wx.ICON_INFORMATION)
+            dlg.ShowModal()
 
 
     def UpdateSummary(self, values):
@@ -751,9 +1355,19 @@ class MidSectionHeader(wx.Panel):
             self.totalDisCtrl.SetValue(sigfig.round_sig(float(values[5]),3))
         except:
             pass
-
-        self.startTimeCtrl.SetValue(values[6])
-        self.endTimeCtrl.SetValue(values[7])
+        try:
+            self.uncertaintyCtrl.SetValue(sigfig.round_sig(float(values[6]),3))
+        except:
+            pass
+        try:
+            self.uncertainty2Ctrl.SetValue(sigfig.round_sig(float(values[7]),3))
+        except:
+            pass
+        try:
+            self.startTimeCtrl.SetValue(values[8])
+            self.endTimeCtrl.SetValue(values[9])
+        except:
+            pass
         #self.totalDisCtrl.SetValue(str(round(float(values[5]),3)))
 
 

@@ -979,6 +979,42 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         return False
 
 
+    def SaveAsXMLNg(self, path):
+        try:
+            name = self.SaveAsXMLAtUploadNg(path).split('.')[0]
+            # info = wx.MessageDialog(self, "The xml and pdf files has also been saved.\n" \
+            #     + name + ".xml\n", "Done!",
+            #                         wx.OK)
+
+
+        except:
+
+            info = wx.MessageDialog(None, "Failed to save files", "Error!",
+                                wx.OK)
+            info.ShowModal()
+        return name
+
+    def SaveAsXMLAtUploadNg(self, path):
+        oldUploadRecord = None
+        if self.name == '':
+            defaultName = ''
+            if self.manager is not None:
+                date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
+                date = date.strftime("%Y%m%d")
+                defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.xml"
+
+        else:
+            defaultName = self.name.split(".")[0] + ".xml"
+
+        if path != "":
+            newpath = path + '\\' + defaultName
+            xml = self.manager.ExportAsXML(newpath, None)
+            # self.SaveAsPDFAtUpload(path, success, xml)
+            self.SetTitle(self.noteHeaderTxt + "   " + newpath)
+            self.name = defaultName
+            self.fullname = newpath
+
+        return defaultName
 
     #Save as pdf and xml before uploading to AQ
     def SaveAsPDFAndXML4Upload(self, path, success):

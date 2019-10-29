@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="WSC_EHSN.xsml"?>
-<EHSN version="v1.3.1">
+<EHSN version="v1.3.2">
 	<TitleHeader>
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
 		<station number=""/>
-		<date timezone="">2019/03/11</date>
+		<date timezone="">2019/10/29</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -62,7 +62,7 @@
 		<mgh/>
 		<mghCmbo/>
 		<discharge/>
-		<dischCombo>B</dischCombo>
+		<dischCombo/>
 		<mmtTimeVal/>
 		<shift/>
 		<diff/>
@@ -98,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/03/11</dataPeriodStart>
-		<dataPeriodEnd>2019/03/11</dataPeriodEnd>
+		<dataPeriodStart>2019/10/29</dataPeriodStart>
+		<dataPeriodEnd>2019/10/29</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -372,6 +372,7 @@
 			</FieldReviewTableRow>
 		</FieldReviewTable>
 		<siteNotes/>
+		<planNotes/>
 	</FieldReview>
 	<MovingBoatMeas empty="True">
 		<bedMaterial/>
