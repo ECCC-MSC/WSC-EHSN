@@ -20,12 +20,13 @@ class AquariusUploadDialog(wx.Dialog):
         self.product2 = self.configFile.find('product2').text
         self.product = self.configFile.find('product').text
         self.aqNg = self.configFile.find('ng').text
+        self.aqNgDev = self.configFile.find('devng').text
 
 
         self.mode = mode
 
         self.servers = {'1: Staging Server 1' : self.stage1, '2: Production2 Server': self.product2,
-                        '3: Production Server' : self.product, '4: AQUARIUS NG': self.aqNg}
+                        '3: Production Server' : self.product, '4: AQUARIUS NG': self.aqNg, '5: AQUARIUS NG DEV': self.aqNgDev}
 
         self.serverLbl = "Server:"
         self.usernameLbl = "Username:"
@@ -219,7 +220,7 @@ class AquariusUploadDialog(wx.Dialog):
         self.cancelButton.Enable(en)
 
     def UploadToAquarius(self, evt):
-        if self.serverCmbo.GetValue() != '4: AQUARIUS NG':
+        if self.serverCmbo.GetValue() != '4: AQUARIUS NG' and self.serverCmbo.GetValue() != '5: AQUARIUS NG DEV':
             try:
                 self.EnableButtons(False)
                 dlg = wx.MessageDialog(self, self.uploadConfirm, 'None', wx.YES_NO)

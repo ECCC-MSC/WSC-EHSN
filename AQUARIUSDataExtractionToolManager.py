@@ -1498,9 +1498,9 @@ class AQUARIUSDataExtractionToolManager(object):
                         # old
 
                         if formatdateFrom <= date <= formatdateTo :
-                            print "#################################################################"
-                            print "ADDED : " + date
-                            print "#################################################################"
+                           # print "#################################################################"
+                           # print "ADDED : " + date
+                           # print "#################################################################"
                             fieldDatalist.append(startTimeList[timeNum] + ',')
                             fieldDatalist.append(str(fieldVisitStage) + ',')
                             fieldDatalist.append(str(fieldVisitDischarge) + ',')

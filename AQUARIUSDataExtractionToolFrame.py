@@ -459,7 +459,7 @@ For example:\n\
                     print "error open level file --- OnRun extraction tool frame"
         else:
             print("NG")
-            for i in range(3):
+            for i in range(5):
                 try:
 
                     self.manager.RunScriptNg(self.path)

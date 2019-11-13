@@ -393,7 +393,6 @@ class RatingCurveViewerToolFrame(wx.Frame):
     def OpenHistDataFile(self, filepath):
         if self.manager is not None:
             self.manager.OpenHistDataFile(filepath)
-
             self.layoutSizer.Layout()
             self.Update()
             self.Refresh()

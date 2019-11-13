@@ -5,8 +5,8 @@
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
-		<station number=""/>
-		<date timezone="">2019/10/29</date>
+		<station number="01DC005">ANNAPOLIS RIVER AT WILMOT</station>
+		<date timezone="AST">2019/11/13</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -19,8 +19,18 @@
 		<WL2Header/>
 		<StageMeasTable>
 			<StageMeasRow row="0">
-				<time>:</time>
-				<HG1/>
+				<time>13:00</time>
+				<HG1>1.500</HG1>
+				<HG2/>
+				<WL1/>
+				<WL2/>
+				<SRC/>
+				<SRCApp/>
+				<MghCkbox>False</MghCkbox>
+			</StageMeasRow>
+			<StageMeasRow row="1">
+				<time>14:00</time>
+				<HG1>1.750</HG1>
 				<HG2/>
 				<WL1/>
 				<WL2/>
@@ -98,8 +108,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/10/29</dataPeriodStart>
-		<dataPeriodEnd>2019/10/29</dataPeriodEnd>
+		<dataPeriodStart>2019/11/13</dataPeriodStart>
+		<dataPeriodEnd>2019/11/13</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -174,7 +184,7 @@
 		<party/>
 		<completed/>
 		<checked/>
-		<reviewed>False</reviewed>
+		<reviewed>True</reviewed>
 	</PartyInfo>
 	<LevelNotes>
 		<LevelChecks>
