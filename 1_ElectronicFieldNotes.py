@@ -473,7 +473,7 @@ class ElectronicHydrometricSurveyNotes:
                 self.gui.deleteProgressDialog()
                 return "The username or the password is incorrect."
             except:
-                print token
+                #print token
                 exists = True
         except:
             print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password

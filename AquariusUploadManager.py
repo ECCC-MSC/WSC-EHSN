@@ -1512,7 +1512,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
 
             # get time value. Important to do this after checking to see if we have data
             # since otherwise the time field may be empty
-            measTime = datetime.datetime.strptime(str(EHSN.stageMeasManager.GetTimeVal(row)), "%H:%M")
+            measTime = datetime.datetime.strptime(str(EHSN.stageMeasManager.GetTimeVal(row)).strip(), "%H:%M")
             measTime = measTime.replace(dateInfo.year, dateInfo.month, dateInfo.day)
             measTime = str(measTime.isoformat()) + isoTail
 

@@ -212,12 +212,12 @@ class AQUARIUSDataExtractionToolManager(object):
         # counter = 0
         # while True:
         # Check authentication
-        print "here"
+        #print "here"
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
         Server = self.gui.GetURL()
-        print Server + "<-- Server name"
-        print Password + " <-- Password"
+        #print Server + "<-- Server name"
+        #print Password + " <-- Password"
 
         if Login == "":
             self.gui.CreateErrorDialog("Username field cannot be left blank.  Please use your AQUARIUS username.")
@@ -235,7 +235,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
             authcode = aq.text
 
-            print authcode
+            #print authcode
 
         except:
             self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
@@ -1121,7 +1121,7 @@ class AQUARIUSDataExtractionToolManager(object):
             try:
                 req = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
                 token = req.text
-                print "token --> " + token
+             #   print "token --> " + token
             except:
                 return -1
 
@@ -1215,7 +1215,6 @@ class AQUARIUSDataExtractionToolManager(object):
             else:
                 minMaxList = None
                 fv=aq.service.GetFieldVisitsByLocationChangedSince(locid, start)
-
 
 
             for i in range(len(fv[0])):
@@ -1392,8 +1391,8 @@ class AQUARIUSDataExtractionToolManager(object):
         timeTo = str(self.gui.GetDataPeriodTo()).replace("/", "-")
         formatdateFrom = timeFrom[6:10] + '-' + timeFrom[3:5] + '-' + timeFrom[0:2] + timeFrom[10:19]
         formatdateTo = timeTo[6:10] + '-' + timeTo[3:5] + '-' + timeTo[0:2]  + timeTo[10:19]
-        print "time from:" + formatdateFrom
-        print "time to:" + formatdateTo
+        #print "time from:" + formatdateFrom
+        #print "time to:" + formatdateTo
 
         if numMinMax is not None:
             minMaxList = []
@@ -1405,6 +1404,7 @@ class AQUARIUSDataExtractionToolManager(object):
             try:
                 #req = requests.get(Server + 'GetFieldVisitDescriptionList?LocationIdentifier=' + location + '&QueryFrom=' + timeFrom + '&QueryTo=' + timeTo + '&token=' + token)
                 req = requests.get(Server + 'GetFieldVisitDescriptionList?LocationIdentifier=' + location + '&token=' + token)
+                #print "Called GetFieldVisitDesriptionList"
                 fieldDescriptions = req.json()['FieldVisitDescriptions']
             except:
                 failedStations.append(location)
@@ -1429,6 +1429,7 @@ class AQUARIUSDataExtractionToolManager(object):
             for locid in locids:
                 # print "+++++",locid
                 req = requests.get(Server + 'GetFieldVisitData?FieldVisitIdentifier=' + locid + '&token=' + token)
+                #print "Called GetFieldVisitData - " + str(locid)
                 locinf = req.json()
                 fieldVisitReadings = locinf['InspectionActivity']['Readings']
 
@@ -1508,7 +1509,7 @@ class AQUARIUSDataExtractionToolManager(object):
                             fieldDatalist.append(' ' + '\n')
                             fieldVisitInfoList.append(fieldDatalist)
                         timeNum = timeNum + 1
-
+            # print "read all data"
             if numMinMax is not None:
                 maxDischarge = heapq.nlargest(numMinMax, minMaxList, key=lambda x:float(x[2][:-1]))
                 minDischarge = heapq.nsmallest(numMinMax, minMaxList, key=lambda x:float(x[2][:-1]))
@@ -1520,6 +1521,7 @@ class AQUARIUSDataExtractionToolManager(object):
                         for tableLine in fieldVisitInfoList:
                             if line == tableLine:
                                 tableLine[-1] = 'Hist. max' + line[-1]
+                #print "max added"
 
                 for line in minDischarge:
                     if line not in fieldVisitInfoList:
@@ -1529,6 +1531,7 @@ class AQUARIUSDataExtractionToolManager(object):
                         for tableLine in fieldVisitInfoList:
                             if line == tableLine:
                                 tableLine[-1] = 'Hist. min' + tableLine[-1]
+                #print "min added"
 
             fieldVisitInfoList = sorted(fieldVisitInfoList)
 

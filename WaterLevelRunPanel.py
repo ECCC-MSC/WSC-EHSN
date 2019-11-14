@@ -1426,7 +1426,7 @@ class WaterLevelRunPanel(wx.Panel):
 
     #Time Val Getter
     def GetTimeVal(self, row):
-        return self.GetTime(row).GetValue()
+        return self.GetTime(row).GetValue().replace(" ", "")
 
     #Time Val Setter
     def SetTimeVal(self, row, val):
