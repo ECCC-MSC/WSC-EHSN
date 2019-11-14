@@ -5,8 +5,8 @@
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
-		<station number="01DC005">ANNAPOLIS RIVER AT WILMOT</station>
-		<date timezone="AST">2019/11/13</date>
+		<station number=""/>
+		<date timezone="">2019/11/14</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -19,18 +19,8 @@
 		<WL2Header/>
 		<StageMeasTable>
 			<StageMeasRow row="0">
-				<time>13:00</time>
-				<HG1>1.500</HG1>
-				<HG2/>
-				<WL1/>
-				<WL2/>
-				<SRC/>
-				<SRCApp/>
-				<MghCkbox>False</MghCkbox>
-			</StageMeasRow>
-			<StageMeasRow row="1">
-				<time>14:00</time>
-				<HG1>1.750</HG1>
+				<time>:</time>
+				<HG1/>
 				<HG2/>
 				<WL1/>
 				<WL2/>
@@ -108,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/11/13</dataPeriodStart>
-		<dataPeriodEnd>2019/11/13</dataPeriodEnd>
+		<dataPeriodStart>2019/11/14</dataPeriodStart>
+		<dataPeriodEnd>2019/11/14</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -184,7 +174,7 @@
 		<party/>
 		<completed/>
 		<checked/>
-		<reviewed>True</reviewed>
+		<reviewed>False</reviewed>
 	</PartyInfo>
 	<LevelNotes>
 		<LevelChecks>
@@ -463,12 +453,12 @@
 				<MmtSummary>
 					<StartDate/>
 					<EndDate/>
-					<TotalQ/>
-					<TotalArea/>
-					<TotalWidth/>
+					<TotalQ>0.00</TotalQ>
+					<TotalArea>0.00</TotalArea>
+					<TotalWidth>0.0</TotalWidth>
 					<AverageVelocity/>
 					<AverageDepth/>
-					<NumberOfPanels/>
+					<NumberOfPanels>0</NumberOfPanels>
 					<Uncertainty/>
 				</MmtSummary>
 			</MmtInitAndSummary>

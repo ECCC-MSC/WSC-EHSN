@@ -342,7 +342,7 @@ class MidSectionHeader(wx.Panel):
 
         self.uncertaintySummaryBtn = wx.Button(self, label=self.uncertaintySummaryLbl)
         self.uncertaintySummaryBtn.Bind(wx.EVT_BUTTON, self.OnUncertaintySummary)
-        #self.uncertaintySummaryBtn.Disable()
+        self.uncertaintySummaryBtn.Disable()
         self.updateSummaryBtn = wx.Button(self, label=self.updateSummaryLbl)
         self.updateSummaryBtn.Bind(wx.EVT_BUTTON, self.OnUpdateSummary)
         #self.updateSummaryBtn.Disable()

@@ -1392,8 +1392,6 @@ class AQUARIUSDataExtractionToolManager(object):
         timeTo = str(self.gui.GetDataPeriodTo()).replace("/", "-")
         formatdateFrom = timeFrom[6:10] + '-' + timeFrom[3:5] + '-' + timeFrom[0:2] + timeFrom[10:19]
         formatdateTo = timeTo[6:10] + '-' + timeTo[3:5] + '-' + timeTo[0:2]  + timeTo[10:19]
-        print timeFrom
-        print timeTo
         print "time from:" + formatdateFrom
         print "time to:" + formatdateTo
 
