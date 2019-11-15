@@ -1404,7 +1404,7 @@ class AQUARIUSDataExtractionToolManager(object):
             try:
                 #req = requests.get(Server + 'GetFieldVisitDescriptionList?LocationIdentifier=' + location + '&QueryFrom=' + timeFrom + '&QueryTo=' + timeTo + '&token=' + token)
                 req = requests.get(Server + 'GetFieldVisitDescriptionList?LocationIdentifier=' + location + '&token=' + token)
-                #print "Called GetFieldVisitDesriptionList"
+                print "Called GetFieldVisitDesriptionList"
                 fieldDescriptions = req.json()['FieldVisitDescriptions']
             except:
                 failedStations.append(location)
@@ -1429,7 +1429,7 @@ class AQUARIUSDataExtractionToolManager(object):
             for locid in locids:
                 # print "+++++",locid
                 req = requests.get(Server + 'GetFieldVisitData?FieldVisitIdentifier=' + locid + '&token=' + token)
-                #print "Called GetFieldVisitData - " + str(locid)
+                print "Called GetFieldVisitData - " + str(locid)
                 locinf = req.json()
                 fieldVisitReadings = locinf['InspectionActivity']['Readings']
 
@@ -1498,7 +1498,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
                         if formatdateFrom <= date <= formatdateTo :
                            # print "#################################################################"
-                           # print "ADDED : " + date
+                            print "ADDED : " + date
                            # print "#################################################################"
                             fieldDatalist.append(startTimeList[timeNum] + ',')
                             fieldDatalist.append(str(fieldVisitStage) + ',')
@@ -1509,7 +1509,7 @@ class AQUARIUSDataExtractionToolManager(object):
                             fieldDatalist.append(' ' + '\n')
                             fieldVisitInfoList.append(fieldDatalist)
                         timeNum = timeNum + 1
-            # print "read all data"
+            print "read all data"
             if numMinMax is not None:
                 maxDischarge = heapq.nlargest(numMinMax, minMaxList, key=lambda x:float(x[2][:-1]))
                 minDischarge = heapq.nsmallest(numMinMax, minMaxList, key=lambda x:float(x[2][:-1]))
@@ -1521,7 +1521,7 @@ class AQUARIUSDataExtractionToolManager(object):
                         for tableLine in fieldVisitInfoList:
                             if line == tableLine:
                                 tableLine[-1] = 'Hist. max' + line[-1]
-                #print "max added"
+                print "max added"
 
                 for line in minDischarge:
                     if line not in fieldVisitInfoList:
@@ -1531,7 +1531,7 @@ class AQUARIUSDataExtractionToolManager(object):
                         for tableLine in fieldVisitInfoList:
                             if line == tableLine:
                                 tableLine[-1] = 'Hist. min' + tableLine[-1]
-                #print "min added"
+                print "min added"
 
             fieldVisitInfoList = sorted(fieldVisitInfoList)
 

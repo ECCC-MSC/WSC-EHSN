@@ -83,7 +83,7 @@ if 0:
 
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v1.3.3"
+EHSN_VERSION = "v1.3.2"
 eHSN_WINDOW_SIZE = (965, 730)
 
 # import wx.lib.inspection
