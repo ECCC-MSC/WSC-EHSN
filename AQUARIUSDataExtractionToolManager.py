@@ -1402,10 +1402,8 @@ class AQUARIUSDataExtractionToolManager(object):
         for location in locations:
             dataEmpty = True
             try:
-                #req = requests.get(Server + 'GetFieldVisitDescriptionList?LocationIdentifier=' + location + '&QueryFrom=' + timeFrom + '&QueryTo=' + timeTo + '&token=' + token)
-                req = requests.get(Server + 'GetFieldVisitDescriptionList?LocationIdentifier=' + location + '&token=' + token)
-                print "Called GetFieldVisitDesriptionList"
-                fieldDescriptions = req.json()['FieldVisitDescriptions']
+                req = requests.get(Server + 'GetFieldVisitDataByLocation?LocationIdentifier=' + location + '&token=' + token)
+                fieldDescriptions = req.json()['FieldVisitData']
             except:
                 failedStations.append(location)
                 continue
@@ -1416,70 +1414,53 @@ class AQUARIUSDataExtractionToolManager(object):
             startTimeList = []
             timeNum = 0
             for i in range(len(fieldDescriptions)):
+                #print timeNum
                 fieldVisitData = fieldDescriptions[i]
                 fieldId = fieldVisitData['Identifier']
                 locids.append(fieldId)
                 fieldStartTime = str(fieldVisitData['StartTime'])
-                fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[' + self.timeZones[
-                    '-' + fieldStartTime[len(fieldStartTime) - 4:len(fieldStartTime) - 3]] + ']'
-                # fieldStartTime = fieldStartTime[0:10]+' '+fieldStartTime[11:19]+'['+'UTC'+fieldStartTime[len(fieldStartTime)-6:len(fieldStartTime)]+']'
+                fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[' + self.timeZones['-' + fieldStartTime[len(fieldStartTime) - 4:len(fieldStartTime) - 3]] + ']'
                 startTimeList.append(fieldStartTime)
 
-            # print locids
-            for locid in locids:
-                # print "+++++",locid
-                req = requests.get(Server + 'GetFieldVisitData?FieldVisitIdentifier=' + locid + '&token=' + token)
-                print "Called GetFieldVisitData - " + str(locid)
-                locinf = req.json()
-                fieldVisitReadings = locinf['InspectionActivity']['Readings']
+            #for locid in locids:
+                try:
+                    fieldVisitReadings = fieldVisitData['InspectionActivity']['Readings']
+                except:
+                    pass
 
                 if len(fieldVisitReadings) != 0:
-                    '''
-                    Add time in all section
-                    '''
 
-                    # Stage (m)
+                    # stage
                     fieldVisitStage = ''
                     for i in fieldVisitReadings:
                         if i['Parameter'] == 'Stage':
                             fieldVisitStage = i['Value']['Numeric']
                             break
-
-                    if fieldVisitStage == '':
-                        # print("Stage value of id ",locid,"is empty")
+                    if fieldVisitStage == "":
                         pass
 
-                    # Discharge (m^3/s)
+                    # discharge
                     try:
-                        fieldVisitDischarge = locinf['DischargeActivities'][0]['DischargeSummary']['Discharge'][
-                            'Numeric']
+                        fieldVisitDischarge = fieldVisitData['DischargeActivities'][0]['DischargeSummary']['Discharge']['Numeric']
                     except:
-                        # print("Discharge value of id ",locid,"is empty")
                         fieldVisitDischarge = ''
 
-                    # width(m)
+                    # width
                     try:
-                        fieldVisitWidth = \
-                        locinf['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Width']['Numeric']
+                        fieldVisitWidth = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Width']['Numeric']
                     except:
-                        # print("Width value of id ",locid,"is empty")
                         fieldVisitWidth = ''
 
-                    # Area(m^2)
+                    # Area
                     try:
-                        fieldVisitArea = \
-                        locinf['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Area']['Numeric']
+                        fieldVisitArea = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Area']['Numeric']
                     except:
-                        # print("Area value of id ",locid,"is empty")
                         fieldVisitArea = ''
 
-                    # velocity(m/s)
+                    # velocity
                     try:
-                        fieldVisitVelocity = \
-                        locinf['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['VelocityAverage'][
-                            'Numeric']
+                        fieldVisitVelocity = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['VelocityAverage']['Numeric']
                     except:
-                        # print("Velocity value of id ",locid,"is empty")
                         fieldVisitVelocity = ''
 
                     if str(fieldVisitStage) != '' and str(fieldVisitDischarge) != '':
@@ -1498,7 +1479,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
                         if formatdateFrom <= date <= formatdateTo :
                            # print "#################################################################"
-                            print "ADDED : " + date
+                           # print "ADDED : " + date + str(fieldVisitStage)
                            # print "#################################################################"
                             fieldDatalist.append(startTimeList[timeNum] + ',')
                             fieldDatalist.append(str(fieldVisitStage) + ',')
@@ -1508,8 +1489,10 @@ class AQUARIUSDataExtractionToolManager(object):
                             fieldDatalist.append(str(fieldVisitVelocity) + ',')
                             fieldDatalist.append(' ' + '\n')
                             fieldVisitInfoList.append(fieldDatalist)
-                        timeNum = timeNum + 1
-            print "read all data"
+                else:
+                    pass
+                timeNum = timeNum + 1
+            #print "read all data"
             if numMinMax is not None:
                 maxDischarge = heapq.nlargest(numMinMax, minMaxList, key=lambda x:float(x[2][:-1]))
                 minDischarge = heapq.nsmallest(numMinMax, minMaxList, key=lambda x:float(x[2][:-1]))
@@ -1521,7 +1504,7 @@ class AQUARIUSDataExtractionToolManager(object):
                         for tableLine in fieldVisitInfoList:
                             if line == tableLine:
                                 tableLine[-1] = 'Hist. max' + line[-1]
-                print "max added"
+                #print "max added"
 
                 for line in minDischarge:
                     if line not in fieldVisitInfoList:
@@ -1531,48 +1514,10 @@ class AQUARIUSDataExtractionToolManager(object):
                         for tableLine in fieldVisitInfoList:
                             if line == tableLine:
                                 tableLine[-1] = 'Hist. min' + tableLine[-1]
-                print "min added"
+                #print "min added"
 
             fieldVisitInfoList = sorted(fieldVisitInfoList)
 
-            '''
-            # print fieldVisitInfoList
-            # print "!!!!",len(fieldVisitInfoList)
-            if len(fieldVisitInfoList) > 0:
-                # for min max checkbox
-                # print location
-                if numMinMax is not None:
-                    disChargeList.sort()
-                    nullNum = 0
-
-                    for i in range(len(disChargeList)):
-                        if disChargeList[i] != '':
-                            continue
-                        else:
-                            nullNum = nullNum + 1
-
-                    disChargeList = disChargeList[:len(disChargeList) - nullNum]
-                    disChargeList = disChargeList[0:numMinMax] + disChargeList[
-                                                                 len(disChargeList) - numMinMax:len(disChargeList)]
-                    # print disChargeList
-
-                    fieldDischargeList = []
-                    for i in range(len(disChargeList)):
-                        fieldDischargeList.append(str(disChargeList[i]) + ',')
-
-                    if len(fieldDischargeList) < numMinMax:
-                        # print("The number of information is less than the min/max number.")
-                        pass
-                    else:
-                        for elem in fieldVisitInfoList:
-                            if elem[2] in fieldDischargeList[0:numMinMax]:
-                                elem[6] = 'Hint min \n'
-                            if elem[2] in fieldDischargeList[numMinMax:]:
-                                elem[6] = 'Hint max \n'
-                # print fieldVisitInfoList
-            else:
-                failedStations.append(location)
-            '''
             # print "####",len(fieldVisitInfoList)
             if len(fieldVisitInfoList) > 0:
                 while True:
