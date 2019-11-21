@@ -1419,6 +1419,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 fieldId = fieldVisitData['Identifier']
                 locids.append(fieldId)
                 fieldStartTime = str(fieldVisitData['StartTime'])
+                #fieldStartTime = str(fieldVisitData['DischargeActivities'][0]['DischargeSummary']['MeasurementTime'])
                 fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[' + self.timeZones['-' + fieldStartTime[len(fieldStartTime) - 4:len(fieldStartTime) - 3]] + ']'
                 startTimeList.append(fieldStartTime)
 
@@ -1431,6 +1432,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 if len(fieldVisitReadings) != 0:
 
                     # stage
+                    '''
                     fieldVisitStage = ''
                     for i in fieldVisitReadings:
                         if i['Parameter'] == 'Stage':
@@ -1438,6 +1440,12 @@ class AQUARIUSDataExtractionToolManager(object):
                             break
                     if fieldVisitStage == "":
                         pass
+                    '''
+                    # stage
+                    try:
+                        fieldVisitStage = fieldVisitData['DischargeActivities'][0]['DischargeSummary']['MeanGageHeight']['Numeric']
+                    except:
+                        fieldVisitStage = ''
 
                     # discharge
                     try:
@@ -1447,20 +1455,56 @@ class AQUARIUSDataExtractionToolManager(object):
 
                     # width
                     try:
-                        fieldVisitWidth = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Width']['Numeric']
+                        fieldVisitWidth1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Width']['Numeric']
                     except:
+                        fieldVisitWidth1 = ''
+
+                    try:
+                        fieldVisitWidth2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['Width']['Numeric']
+                    except:
+                        fieldVisitWidth2 = ''
+
+                    if fieldVisitWidth1 != '':
+                        fieldVisitWidth = fieldVisitWidth1
+                    elif fieldVisitWidth2 != '':
+                        fieldVisitWidth = fieldVisitWidth2
+                    else:
                         fieldVisitWidth = ''
 
                     # Area
                     try:
-                        fieldVisitArea = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Area']['Numeric']
+                        fieldVisitArea1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Area']['Numeric']
                     except:
+                        fieldVisitArea1 = ''
+
+                    try:
+                        fieldVisitArea2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['Area']['Numeric']
+                    except:
+                        fieldVisitArea2 = ''
+
+                    if fieldVisitArea1 != '':
+                        fieldVisitArea = fieldVisitArea1
+                    elif fieldVisitArea2 != '':
+                        fieldVisitArea = fieldVisitArea2
+                    else:
                         fieldVisitArea = ''
 
                     # velocity
                     try:
-                        fieldVisitVelocity = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['VelocityAverage']['Numeric']
+                        fieldVisitVelocity1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['VelocityAverage']['Numeric']
                     except:
+                        fieldVisitVelocity1 = ''
+
+                    try:
+                        fieldVisitVelocity2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['VelocityAverage']['Numeric']
+                    except:
+                        fieldVisitVelocity2 = ''
+
+                    if fieldVisitVelocity1 != '':
+                        fieldVisitVelocity = fieldVisitVelocity1
+                    elif fieldVisitVelocity2 != '':
+                        fieldVisitVelocity = fieldVisitVelocity2
+                    else:
                         fieldVisitVelocity = ''
 
                     if str(fieldVisitStage) != '' and str(fieldVisitDischarge) != '':

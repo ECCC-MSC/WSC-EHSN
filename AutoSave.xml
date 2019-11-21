@@ -6,7 +6,7 @@
 	</TitleHeader>
 	<GenInfo>
 		<station number=""/>
-		<date timezone="">2019/11/18</date>
+		<date timezone="">2019/11/21</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -98,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/11/18</dataPeriodStart>
-		<dataPeriodEnd>2019/11/18</dataPeriodEnd>
+		<dataPeriodStart>2019/11/21</dataPeriodStart>
+		<dataPeriodEnd>2019/11/21</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
