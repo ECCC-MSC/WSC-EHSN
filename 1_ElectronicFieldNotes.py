@@ -994,7 +994,6 @@ class ElectronicHydrometricSurveyNotes:
 
         self.stationNumProcessed = True
 
-
     def OnStationNumChange(self):
         if self.stationNumProcessed is False:
             self.ProcessStationNum()

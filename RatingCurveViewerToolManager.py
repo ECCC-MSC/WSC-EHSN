@@ -363,7 +363,7 @@ class RatingCurveViewerToolManager(object):
 
         curves_data = Curves['RatingCurves']
         # print len(curves_data)
-        #curves_data.reverse()
+        curves_data.reverse()
 
         for curv in curves_data:
             curveId = str(curv['Id'])
@@ -671,6 +671,66 @@ class RatingCurveViewerToolManager(object):
 
         return Qr, Hr
 
+    def CalcLogQrHrJson(self, points, hg, q):
+        offset = None
+        beta = None
+        c = None
+        qoffset = None
+        qbeta = None
+        qc = None
+        offsetList = []
+        breakPointList = []
+
+        for offset_val in points['Offsets']:
+            offsetList.append(offset_val['Offset'])
+            try:
+                breakPointList.append(offset_val['InputValue'])
+            except:
+                pass
+
+        for i in range(len(points['BaseRatingTable'])):
+            hgpas = float(points['BaseRatingTable'][i]['InputValue'])
+
+            if hg < hgpas:
+                lowPoint = points['BaseRatingTable'][i-1]
+                highPoint = points['BaseRatingTable'][i]
+                for nn in range(len(breakPointList)):
+                    if highPoint['InputValue']<=breakPointList[nn]:
+                        offset = offsetList[nn]
+                        beta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-offset)/(lowPoint['InputValue']-offset))
+                        c = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-offset, beta)
+                if offset is None:
+                    offset = offsetList[-1]
+                    beta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-offset)/(lowPoint['InputValue']-offset))
+                    c = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-offset, beta)
+                break
+
+
+        # find offset, beta, c to calculate Shift
+        for i in range(len(points['BaseRatingTable'])):
+            qpas = float(points['BaseRatingTable'][i]['OutputValue'])
+
+            if q < qpas:
+                lowPoint = points['BaseRatingTable'][i-1]
+                highPoint = points['BaseRatingTable'][i]
+                for nn in range(len(breakPointList)):
+                    if highPoint['InputValue']<=breakPointList[nn]:
+                        qoffset = offsetList[nn]
+                        qbeta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-qoffset)/(lowPoint['InputValue']-qoffset))
+                        qc = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-qoffset, beta)
+                if qoffset is None:
+                    qoffset = offsetList[-1]
+                    qbeta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-qoffset)/(lowPoint['InputValue']-qoffset))
+                    qc = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-qoffset, beta)
+                break
+
+        # Do the calculations
+        if c is not None and qc is not None and offset is not None and qoffset is not None and beta is not None and qbeta is not None:
+            Qr=c * (hg - offset)**beta
+            Hr=qoffset+(q/qc)**(1/qbeta)
+        # print hgpas, qpas, offset, beta, qoffset, qbeta
+        return Qr, Hr
+
     # TODO test it and if work maybe split it later
     def CalcLogShiftQdiffJson(self, points, hg, q):
         offset = None
@@ -739,8 +799,6 @@ class RatingCurveViewerToolManager(object):
         # print hgpas, qpas, offset, beta, qoffset, qbeta
 
         return Shift, Qdiff
-
-
 
 
     def CalcLinShiftQdiff(self, points, hg, q):
@@ -875,6 +933,8 @@ class RatingCurveViewerToolManager(object):
             if selectedCurveIndex < 0 or selectedCurveIndex >= len(self.ratingCurveList):
                 errorMessage = "Rating Curve file is invalid."
 
+        # TODO add checking for json file
+
         # Check if anything went wrong
         if errorMessage is not None:
             if self.gui is not None:
@@ -884,7 +944,6 @@ class RatingCurveViewerToolManager(object):
         # Reset shift/disch calculations
         self.shiftDiffDisch = None
         self.ResetPlotVars()
-
 
         # Store obsDisch, obsStage
         self.obsDisch = Qobserved
@@ -898,6 +957,58 @@ class RatingCurveViewerToolManager(object):
             return self.CalculateXMLShiftDisch(selectedCurveIndex)
         elif self.extension == "txt":
             return self.CalculateTXTShiftDisch(selectedCurveIndex)
+        elif self.extension == "json":
+            return self.CalculateJSONShiftDisch(selectedCurveIndex)
+
+    # Calculate shift and discharge for json file reading
+    def CalculateJSONShiftDisch(self, selectedCurveIndex):
+        RCType = self.data['RatingCurves'][selectedCurveIndex]['Type']
+        self.curveNum = self.data['RatingCurves'][selectedCurveIndex]['Id']
+
+        # points list
+        points = self.data['RatingCurves'][selectedCurveIndex]['BaseRatingTable']
+        calPoints = self.data['RatingCurves'][selectedCurveIndex]
+
+        # Determine Period (for historical data only)
+        start = None
+        end = None
+        for i, period in enumerate(self.data['RatingCurves'][selectedCurveIndex]['PeriodsOfApplicability']):
+            if i == 0:
+                start = datetime.strptime(str(period['StartTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
+                end = datetime.strptime(str(period['EndTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
+            else:
+                currStart = datetime.strptime(str(period['StartTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
+                currEnd = datetime.strptime(str(period['EndTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
+
+                if start > currStart:
+                    start = currStart
+                if end < currEnd:
+                    end = currEnd
+
+        if start is None or end is None:
+            self.period = None
+        else:
+            self.period = (start, end)
+
+
+        # assumes that the first point is lowest, last point is highest
+        # checks against high and low points first
+        hg_low = float(calPoints['BaseRatingTable'][0]['InputValue'])
+        hg_high = float(calPoints['BaseRatingTable'][-1]['InputValue'])
+        q_low = float(calPoints['BaseRatingTable'][0]['OutputValue'])
+        q_high = float(calPoints['BaseRatingTable'][-1]['OutputValue'])
+
+        errorMessage = self.ValidateCalculations(hg_low, hg_high, q_low, q_high)
+        if errorMessage is not None:
+            return errorMessage
+        #-----------------------Calculations: Shift and Discharge Diff(%)Shift and Discharge Diff(%)-----------------------#
+        #Calculations for Logarithmic Rating Curve Type.....
+        if RCType == "LinearTable":
+            self.CalculateLinearRCJson(calPoints, selectedCurveIndex)
+
+        #Calculations for Logarithmic Rating Curve Type.....
+        elif RCType == "LogarithmicTable":
+            self.CalculateLogRCJson(calPoints, selectedCurveIndex)
 
 
     def ValidateCalculations(self, hg_low, hg_high, q_low, q_high):
@@ -983,7 +1094,6 @@ class RatingCurveViewerToolManager(object):
         if errorMessage is not None:
             return errorMessage
 
-
         #-----------------------Calculations: Shift and Discharge Diff(%)Shift and Discharge Diff(%)-----------------------#
         #Calculations for Logarithmic Rating Curve Type.....
         if RCType == "Linear":
@@ -992,6 +1102,48 @@ class RatingCurveViewerToolManager(object):
         #Calculations for Logarithmic Rating Curve Type.....
         elif RCType == "Logarithmic":
             self.CalculateLogRC(points, selectedCurveIndex)
+
+    def CalcLinQrHrJson(self, points, hg, q):
+        a = None
+        b = None
+        a2 = None
+        b2 = None
+
+        # a and b to calculate Qdiff
+        # print len(points['BaseRatingTable'])
+        for i in range(len(points['BaseRatingTable'])):
+
+            hgpas = float(points['BaseRatingTable'][i]['InputValue'])
+            # print hgpas, hg
+
+            if hg < hgpas:
+                lowPoint = points['BaseRatingTable'][i - 1]
+                highPoint = points['BaseRatingTable'][i]
+                a = (highPoint['OutputValue'] - lowPoint['OutputValue']) / (
+                            highPoint['InputValue'] - lowPoint['InputValue'])
+                b = highPoint['OutputValue'] - a * highPoint['InputValue']
+
+                break
+
+        # find a and b to calculate Shift
+        for i in range(len(points['BaseRatingTable'])):
+            qpas = float(points['BaseRatingTable'][i]['OutputValue'])
+
+            if q < qpas:
+                lowPoint = points['BaseRatingTable'][i - 1]
+                highPoint = points['BaseRatingTable'][i]
+                a2 = (highPoint['OutputValue'] - lowPoint['OutputValue']) / (
+                            highPoint['InputValue'] - lowPoint['InputValue'])
+                b2 = highPoint['OutputValue'] - a2 * highPoint['InputValue']
+                break
+
+        # Do Calculations
+        # print a, hg, b
+        if a is not None and b is not None and a2 is not None and b2 is not None:
+            Qr = (a * hg) + b
+            Hr = (1 / a2 * (q - b2))
+
+        return Qr, Hr
 
 
     def CalculateLinearRC(self, points, selectedCurveIndex):
@@ -1011,6 +1163,34 @@ class RatingCurveViewerToolManager(object):
     def CalculateLogRC(self, points, selectedCurveIndex):
         # Do the calculations
         self.Qr, self.Hr = self.CalcLogQrHr(points, self.obsStage, self.obsDisch)
+
+        self.Shift = float(format(self.Hr-self.obsStage,".3g"))
+        self.Qdiff = self.ValidateQdiff(self.obsDisch, self.Qr)
+
+        # Set Text Fields in the gui
+        if self.gui is not None:
+            self.gui.SetCalcShift(str(self.Shift))
+            self.gui.SetRatedDisch(str(self.GetFormattedRatedDischarge()))
+            self.gui.SetDischDiff(str(self.Qdiff))
+
+
+    def CalculateLinearRCJson(self, points, selectedCurveIndex):
+        # Do Calculations
+        self.Qr, self.Hr = self.CalcLinQrHrJson(points, self.obsStage, self.obsDisch)
+
+        self.Shift = float(format(self.Hr-self.obsStage,".3g"))
+        self.Qdiff = self.ValidateQdiff(self.obsDisch, self.Qr)
+
+        # Set Text Fields in the gui
+        if self.gui is not None:
+            self.gui.SetCalcShift(str(self.Shift))
+            self.gui.SetRatedDisch(str(self.GetFormattedRatedDischarge()))
+            self.gui.SetDischDiff(str(self.Qdiff))
+
+
+    def CalculateLogRCJson(self, points, selectedCurveIndex):
+        # Do the calculations
+        self.Qr, self.Hr = self.CalcLogQrHrJson(points, self.obsStage, self.obsDisch)
 
         self.Shift = float(format(self.Hr-self.obsStage,".3g"))
         self.Qdiff = self.ValidateQdiff(self.obsDisch, self.Qr)

@@ -5,8 +5,8 @@
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
-		<station number=""/>
-		<date timezone="">2019/11/18</date>
+		<station number="01DC005">ANNAPOLIS RIVER AT WILMOT</station>
+		<date timezone="AST">2019/11/27</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -98,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/11/18</dataPeriodStart>
-		<dataPeriodEnd>2019/11/18</dataPeriodEnd>
+		<dataPeriodStart>2019/11/27</dataPeriodStart>
+		<dataPeriodEnd>2019/11/27</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
