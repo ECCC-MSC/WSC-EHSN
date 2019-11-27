@@ -1034,13 +1034,24 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                     + name + ".xml\n" + name + ".pdf", "Done!",
 	                                wx.OK)
 
-
         except:
 
             self.deleteProgressDialog()
             info = wx.MessageDialog(None, "Failed to save files", "Error!",
                                 wx.OK)
         info.ShowModal()
+
+    # Save xml and pdf file before uploading it to NG
+    def SaveAsPDFAndXML4UploadJson(self, path, success):
+        try:
+            if success:
+                name = self.SaveAsXMLAtUpload(path, success).rsplit('.', 1)[0]
+            else:
+                name = self.SaveAsXMLAtUpload(path, success).rsplit('.', 1)[0]
+        except:
+            self.deleteProgressDialog()
+            info = wx.MessageDialog(None, "Failed to save files", "Error!",wx.OK)
+            info.ShowModal()
 
     #Save as XML before uploading to AQ
     def SaveAsXMLAtUpload(self, path, success):
@@ -1054,10 +1065,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         else:
             defaultName = self.name.rsplit(".",1)[0] + ".xml"
-
-
-
-
 
         if path != "":
             newpath = path + '\\' + defaultName

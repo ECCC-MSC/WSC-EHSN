@@ -533,15 +533,34 @@ class ElectronicHydrometricSurveyNotes:
                 else:
                     self.gui.updateProgressDialog("Uploading...")
                     fvPath = fvPath.replace("\\", "\\\\")
+                    fvPathPdf = fvPath.replace("\\", "\\\\")
                     fvPath = fvPath + ".xml"
+                    fvPathPdf = fvPathPdf + ".pdf"
+
                     # print fvPath
                     files = {'file': open(fvPath, 'rb')}
+                    filesPdf = {'file': open(fvPathPdf, 'rb')}
 
                     req = requests.post("http://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=files)
                     visitUris = req.json()
                     # print visitUris
                     try:
                         visitUris = req.json()['ResponseStatus']['Message']
+                        self.gui.deleteProgressDialog()
+                        return visitUris
+                    except:
+                        try:
+                            visitUris = visitUris['VisitUris'][0]
+                            print visitUris
+                        except:
+                            self.gui.deleteProgressDialog()
+                            return "Failed"
+
+                    reqPdf = requests.post("http://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=filesPdf)
+                    visitUris = reqPdf.json()
+                    # print visitUris
+                    try:
+                        visitUris = reqPdf.json()['ResponseStatus']['Message']
                         self.gui.deleteProgressDialog()
                         return visitUris
                     except:

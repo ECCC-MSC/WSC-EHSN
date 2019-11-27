@@ -329,6 +329,7 @@ class AquariusUploadDialog(wx.Dialog):
                         password = self.passwordCtrl.GetValue()
                         fvDate = self.GetParent().manager.genInfoManager.datePicker
                         name = self.GetParent().SaveAsXMLNg(self.GetParent().uploadSaveDir)
+                        self.GetParent().SaveAsPDFAndXML4UploadJson(self.GetParent().uploadSaveDir, True)
                         # print self.GetParent().uploadSaveDir, name
                         fvPath = self.GetParent().uploadSaveDir+"\\"+name
                         print fvPath
