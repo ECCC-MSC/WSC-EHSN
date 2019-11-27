@@ -301,7 +301,6 @@ class RatingCurveViewerToolManager(object):
 
             self.gui.SetCurveCombo(self.ratingCurveList, self.rcIndex)
 
-
     def ParseRatingTXTFile(self, filepath):
         if self.mode == "DEBUG":
             print "Parsing TXT File"
@@ -369,7 +368,7 @@ class RatingCurveViewerToolManager(object):
             curveId = str(curv['Id'])
             curvePeriod = curv['PeriodsOfApplicability']
             idNum = 1
-            self.curveIdList.append(curveId)
+            self.ratingCurveList.append(curveId)
             if self.gui is not None:
                 for curvPeriod in curvePeriod:
                     curveFromDate = datetime.strptime(str(curvPeriod['StartTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
@@ -400,10 +399,7 @@ class RatingCurveViewerToolManager(object):
                     curvPeriData.append(str(convertedToDate))
 
                     self.periodData.append(curvPeriData)
-
-                # print self.curveIdList
-                self.gui.SetCurveCombo(self.curveIdList, self.rcIndex)
-
+                    self.gui.SetCurveCombo(self.ratingCurveList, self.rcIndex)
         return self.ratingCurveList
 
     def OnRCUpdate(self, selectedCurveIndex):
