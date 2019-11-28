@@ -5,8 +5,8 @@
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
-		<station number="01DC005">ANNAPOLIS RIVER AT WILMOT</station>
-		<date timezone="AST">2019/11/27</date>
+		<station number="02EA021"/>
+		<date timezone="EST">2019/11/28</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -52,18 +52,18 @@
 		<stageRemark/>
 	</StageMeas>
 	<DisMeas>
-		<startTime>:</startTime>
-		<endTime>:</endTime>
+		<startTime>11:05</startTime>
+		<endTime>11:54</endTime>
 		<airTemp/>
 		<waterTemp/>
-		<width/>
-		<area/>
-		<meanVel/>
+		<width imported="1">8.20</width>
+		<area imported="1">2.94</area>
+		<meanVel imported="1">0.509</meanVel>
 		<mgh/>
 		<mghCmbo/>
-		<discharge/>
+		<discharge imported="1">1.50</discharge>
 		<dischCombo/>
-		<mmtTimeVal/>
+		<mmtTimeVal>11:29</mmtTimeVal>
 		<shift/>
 		<diff/>
 		<curve/>
@@ -98,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/11/27</dataPeriodStart>
-		<dataPeriodEnd>2019/11/27</dataPeriodEnd>
+		<dataPeriodStart>2019/11/28</dataPeriodStart>
+		<dataPeriodEnd>2019/11/28</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -129,23 +129,23 @@
 	</MeasResults>
 	<InstrumentDeployment>
 		<GeneralInfo>
-			<methodType>None</methodType>
-			<deployment/>
+			<methodType>Mid-section</methodType>
+			<deployment imported="1">Wading</deployment>
 			<position/>
-			<instrument/>
-			<serialNum/>
+			<instrument imported="1">ADV</instrument>
+			<serialNum imported="1">FT2H1805021</serialNum>
 			<gauge1/>
 			<length>0</length>
 			<gaugePos>0</gaugePos>
 			<selectedGauge>gauge</selectedGauge>
 			<frequency/>
-			<firmware/>
-			<software/>
-			<manufacturer/>
-			<model/>
+			<firmware imported="1">1.30</firmware>
+			<software imported="1">1.6</software>
+			<manufacturer imported="1">SonTek</manufacturer>
+			<model imported="1">FlowTracker</model>
 		</GeneralInfo>
-		<MidsectionInfo empty="True">
-			<panelsNum/>
+		<MidsectionInfo empty="False">
+			<panelsNum imported="1">27</panelsNum>
 			<flowAngle/>
 			<coeff/>
 			<method/>
@@ -193,17 +193,17 @@
 	</LevelNotes>
 	<FieldReview>
 		<pass>False</pass>
-		<dependencyType/>
-		<midsectionType/>
+		<dependencyType>Mid-section</dependencyType>
+		<midsectionType>Flow Tracker</midsectionType>
 		<FieldReviewTable>
 			<FieldReviewTableRow row="0">
-				<label>Passed All Initial QA/QC?</label>
+				<label>Passed All Instrument QA/QC?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
 			<FieldReviewTableRow row="1">
-				<label>Software Input Same as Notes*?</label>
+				<label>Software Input Same as Notes?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
@@ -215,156 +215,54 @@
 				<text/>
 			</FieldReviewTableRow>
 			<FieldReviewTableRow row="3">
-				<label>Smooth Ship Track?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="4">
-				<label>Boat Speed &lt; Water Speed?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="5">
-				<label>Pitch, Roll &lt; 5°?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="6">
-				<label>No Ambiguity Velocity?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="7">
-				<label>Good Differential GPS Quality?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="8">
-				<label>Bed Contours as Expected for Site?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="9">
-				<label>Measured Q &gt; 50%?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="10">
-				<label>Missing Data &lt; 10%</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="11">
-				<label>Missing Data Distributed?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="12">
-				<label>Proper Edge Measurement Method?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="13">
-				<label>Each Edge &lt; 5% of Total Q?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="14">
-				<label>Velocity Profile Checked with extrap?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="15">
-				<label>Reciprocal Pairs?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="16">
-				<label>Moving Bed Corrected If Any?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="17">
-				<label>Directional Bias &lt; 5%?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="18">
-				<label>Total Exposure &gt; 720s?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="19">
-				<label>Standard Deviation/Mean &lt; 5%?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="20">
 				<label>Signal to Noise Ratio &gt; 4</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="21">
+			<FieldReviewTableRow row="4">
 				<label>Flow Angles Accounted for?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="22">
+			<FieldReviewTableRow row="5">
 				<label>Exposure Time/Location &gt; 40s?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="23">
-				<label>Valid Ensembles/Panel &gt; 30?</label>
-				<checked>False</checked>
-				<reviewed>False</reviewed>
-				<text/>
-			</FieldReviewTableRow>
-			<FieldReviewTableRow row="24">
+			<FieldReviewTableRow row="6">
 				<label>No Boundary or Spike Problem?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="25">
+			<FieldReviewTableRow row="7">
 				<label>Bed Contour as Expected for Site?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="26">
+			<FieldReviewTableRow row="8">
 				<label>Ice/Slush Depth as Expected?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="27">
+			<FieldReviewTableRow row="9">
+				<label>Velocity Profile Suitable?</label>
+				<checked>False</checked>
+				<reviewed>False</reviewed>
+				<text/>
+			</FieldReviewTableRow>
+			<FieldReviewTableRow row="10">
 				<label># Panels ≥ 20?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
 				<text/>
 			</FieldReviewTableRow>
-			<FieldReviewTableRow row="28">
+			<FieldReviewTableRow row="11">
 				<label>No Panel Q &gt; 10%?</label>
 				<checked>False</checked>
 				<reviewed>False</reviewed>
