@@ -1413,6 +1413,7 @@ class AQUARIUSDataExtractionToolManager(object):
             fieldVisitInfoList = []
             startTimeList = []
             timeNum = 0
+            hasReadings = False
             for i in range(len(fieldDescriptions)):
                 #print timeNum
                 fieldVisitData = fieldDescriptions[i]
@@ -1426,115 +1427,117 @@ class AQUARIUSDataExtractionToolManager(object):
             #for locid in locids:
                 try:
                     fieldVisitReadings = fieldVisitData['InspectionActivity']['Readings']
+                    hasReadings = True
                 except:
                     pass
 
-                if len(fieldVisitReadings) != 0:
+                if hasReadings:
+                    if len(fieldVisitReadings) != 0:
 
-                    # stage
-                    '''
-                    fieldVisitStage = ''
-                    for i in fieldVisitReadings:
-                        if i['Parameter'] == 'Stage':
-                            fieldVisitStage = i['Value']['Numeric']
-                            break
-                    if fieldVisitStage == "":
-                        pass
-                    '''
-                    # stage
-                    try:
-                        fieldVisitStage = fieldVisitData['DischargeActivities'][0]['DischargeSummary']['MeanGageHeight']['Numeric']
-                    except:
+                        # stage
+                        '''
                         fieldVisitStage = ''
+                        for i in fieldVisitReadings:
+                            if i['Parameter'] == 'Stage':
+                                fieldVisitStage = i['Value']['Numeric']
+                                break
+                        if fieldVisitStage == "":
+                            pass
+                        '''
+                        # stage
+                        try:
+                            fieldVisitStage = fieldVisitData['DischargeActivities'][0]['DischargeSummary']['MeanGageHeight']['Numeric']
+                        except:
+                            fieldVisitStage = ''
 
-                    # discharge
-                    try:
-                        fieldVisitDischarge = fieldVisitData['DischargeActivities'][0]['DischargeSummary']['Discharge']['Numeric']
-                    except:
-                        fieldVisitDischarge = ''
+                        # discharge
+                        try:
+                            fieldVisitDischarge = fieldVisitData['DischargeActivities'][0]['DischargeSummary']['Discharge']['Numeric']
+                        except:
+                            fieldVisitDischarge = ''
 
-                    # width
-                    try:
-                        fieldVisitWidth1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Width']['Numeric']
-                    except:
-                        fieldVisitWidth1 = ''
+                        # width
+                        try:
+                            fieldVisitWidth1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Width']['Numeric']
+                        except:
+                            fieldVisitWidth1 = ''
 
-                    try:
-                        fieldVisitWidth2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['Width']['Numeric']
-                    except:
-                        fieldVisitWidth2 = ''
+                        try:
+                            fieldVisitWidth2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['Width']['Numeric']
+                        except:
+                            fieldVisitWidth2 = ''
 
-                    if fieldVisitWidth1 != '':
-                        fieldVisitWidth = fieldVisitWidth1
-                    elif fieldVisitWidth2 != '':
-                        fieldVisitWidth = fieldVisitWidth2
+                        if fieldVisitWidth1 != '':
+                            fieldVisitWidth = fieldVisitWidth1
+                        elif fieldVisitWidth2 != '':
+                            fieldVisitWidth = fieldVisitWidth2
+                        else:
+                            fieldVisitWidth = ''
+
+                        # Area
+                        try:
+                            fieldVisitArea1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Area']['Numeric']
+                        except:
+                            fieldVisitArea1 = ''
+
+                        try:
+                            fieldVisitArea2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['Area']['Numeric']
+                        except:
+                            fieldVisitArea2 = ''
+
+                        if fieldVisitArea1 != '':
+                            fieldVisitArea = fieldVisitArea1
+                        elif fieldVisitArea2 != '':
+                            fieldVisitArea = fieldVisitArea2
+                        else:
+                            fieldVisitArea = ''
+
+                        # velocity
+                        try:
+                            fieldVisitVelocity1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['VelocityAverage']['Numeric']
+                        except:
+                            fieldVisitVelocity1 = ''
+
+                        try:
+                            fieldVisitVelocity2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['VelocityAverage']['Numeric']
+                        except:
+                            fieldVisitVelocity2 = ''
+
+                        if fieldVisitVelocity1 != '':
+                            fieldVisitVelocity = fieldVisitVelocity1
+                        elif fieldVisitVelocity2 != '':
+                            fieldVisitVelocity = fieldVisitVelocity2
+                        else:
+                            fieldVisitVelocity = ''
+
+                        if str(fieldVisitStage) != '' and str(fieldVisitDischarge) != '':
+                            newdate = startTimeList[timeNum]
+                            date = newdate[0:19]
+                            fieldDatalist = []
+
+                            if numMinMax is not None:
+                                minMaxLine = [startTimeList[timeNum]+ ',', str(fieldVisitStage) + ',', str(fieldVisitDischarge) + ',', str(fieldVisitWidth) + ',', str(fieldVisitArea) + ',', str(fieldVisitVelocity) + ',', ' ' + '\n']
+                                minMaxList.append(minMaxLine)
+
+                            # old
+                            #disChargeList = []
+                            #disChargeList.append(fieldVisitDischarge)
+                            # old
+
+                            if formatdateFrom <= date <= formatdateTo :
+                               # print "#################################################################"
+                               # print "ADDED : " + date + str(fieldVisitStage)
+                               # print "#################################################################"
+                                fieldDatalist.append(startTimeList[timeNum] + ',')
+                                fieldDatalist.append(str(fieldVisitStage) + ',')
+                                fieldDatalist.append(str(fieldVisitDischarge) + ',')
+                                fieldDatalist.append(str(fieldVisitWidth) + ',')
+                                fieldDatalist.append(str(fieldVisitArea) + ',')
+                                fieldDatalist.append(str(fieldVisitVelocity) + ',')
+                                fieldDatalist.append(' ' + '\n')
+                                fieldVisitInfoList.append(fieldDatalist)
                     else:
-                        fieldVisitWidth = ''
-
-                    # Area
-                    try:
-                        fieldVisitArea1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Area']['Numeric']
-                    except:
-                        fieldVisitArea1 = ''
-
-                    try:
-                        fieldVisitArea2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['Area']['Numeric']
-                    except:
-                        fieldVisitArea2 = ''
-
-                    if fieldVisitArea1 != '':
-                        fieldVisitArea = fieldVisitArea1
-                    elif fieldVisitArea2 != '':
-                        fieldVisitArea = fieldVisitArea2
-                    else:
-                        fieldVisitArea = ''
-
-                    # velocity
-                    try:
-                        fieldVisitVelocity1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['VelocityAverage']['Numeric']
-                    except:
-                        fieldVisitVelocity1 = ''
-
-                    try:
-                        fieldVisitVelocity2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['VelocityAverage']['Numeric']
-                    except:
-                        fieldVisitVelocity2 = ''
-
-                    if fieldVisitVelocity1 != '':
-                        fieldVisitVelocity = fieldVisitVelocity1
-                    elif fieldVisitVelocity2 != '':
-                        fieldVisitVelocity = fieldVisitVelocity2
-                    else:
-                        fieldVisitVelocity = ''
-
-                    if str(fieldVisitStage) != '' and str(fieldVisitDischarge) != '':
-                        newdate = startTimeList[timeNum]
-                        date = newdate[0:19]
-                        fieldDatalist = []
-
-                        if numMinMax is not None:
-                            minMaxLine = [startTimeList[timeNum]+ ',', str(fieldVisitStage) + ',', str(fieldVisitDischarge) + ',', str(fieldVisitWidth) + ',', str(fieldVisitArea) + ',', str(fieldVisitVelocity) + ',', ' ' + '\n']
-                            minMaxList.append(minMaxLine)
-
-                        # old
-                        #disChargeList = []
-                        #disChargeList.append(fieldVisitDischarge)
-                        # old
-
-                        if formatdateFrom <= date <= formatdateTo :
-                           # print "#################################################################"
-                           # print "ADDED : " + date + str(fieldVisitStage)
-                           # print "#################################################################"
-                            fieldDatalist.append(startTimeList[timeNum] + ',')
-                            fieldDatalist.append(str(fieldVisitStage) + ',')
-                            fieldDatalist.append(str(fieldVisitDischarge) + ',')
-                            fieldDatalist.append(str(fieldVisitWidth) + ',')
-                            fieldDatalist.append(str(fieldVisitArea) + ',')
-                            fieldDatalist.append(str(fieldVisitVelocity) + ',')
-                            fieldDatalist.append(' ' + '\n')
-                            fieldVisitInfoList.append(fieldDatalist)
-                else:
-                    pass
+                        pass
                 timeNum = timeNum + 1
             #print "read all data"
             if numMinMax is not None:
