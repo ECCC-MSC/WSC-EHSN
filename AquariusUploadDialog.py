@@ -22,7 +22,6 @@ class AquariusUploadDialog(wx.Dialog):
         self.aqNg = self.configFile.find('ng').text
         self.aqNgDev = self.configFile.find('devng').text
 
-
         self.mode = mode
 
         self.servers = {'1: Staging Server 1' : self.stage1, '2: Production2 Server': self.product2,

@@ -58,15 +58,41 @@ def AddDischargeSummary(filePath, disMeasManager):
         sHour += int(offset)
         eHour += int(offset)
 
+    # Add 0 if the hour is single digit after offset calculation
+    sHour_str = str(sHour)
+    eHour_str = str(eHour)
+    sMinute_str = str(sMinute)
+    eMinute_str = str(eMinute)
 
-    finalStartTime = str(sHour) + ":" + str(sMinute)
-    finalEndTime = str(eHour) + ":" + str(eMinute)
+    if len(sHour_str) < 2:
+        sHour_str = "0" + sHour_str
+    else:
+        sHour_str = sHour_str
+
+    if len(eHour_str) < 2:
+        eHour_str = "0" + eHour_str
+    else:
+        eHour_str = eHour_str
+
+    if len(sMinute_str) < 2:
+        sMinute_str = "0" + sMinute_str
+    else:
+        sMinute_str = sMinute_str
+
+    if len(eMinute_str) < 2:
+        eMinute_str = "0" + eMinute_str
+    else:
+        eMinute_str = eMinute_str
+
+
+    finalStartTime = sHour_str + ":" + sMinute_str
+    finalEndTime = eHour_str + ":" + eMinute_str
 
     # print finalStartTime
     # print finalEndTime
 
-    finalStartTime = "0" + finalStartTime if len(finalStartTime) < 5 else finalStartTime
-    finalEndTime = "0" + finalEndTime if len(finalEndTime) < 5 else finalEndTime
+    #finalStartTime = "0" + finalStartTime if len(finalStartTime) < 5 else finalStartTime
+    #finalEndTime = "0" + finalEndTime if len(finalEndTime) < 5 else finalEndTime
 
 
     calculations = (GetData(filePath)['Calculations'])
