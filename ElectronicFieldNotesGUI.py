@@ -1978,10 +1978,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.emptyStation = False
 
 
-
-
-
-
     def OpenLevelFile(self, file):
 
         self.stationLevel = []
@@ -1997,7 +1993,13 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                         # self.bm.append(line[1].rstrip())
                         self.bm.append(line[1])
                         self.ele.append(line[2].rstrip())
-                        self.desc.append(line[3].rstrip())
+                        if len(line) > 4:
+                            fulldesc = []
+                            for counter in range(3, len(line)):
+                                fulldesc.append(line[counter].rstrip() + ',')
+                            self.desc.append(str(fulldesc))
+                        else:
+                            self.desc.append(line[3].rstrip())
 
             self.stationLevel = self.stationLevel[1:]
             self.bm = self.bm[1:]

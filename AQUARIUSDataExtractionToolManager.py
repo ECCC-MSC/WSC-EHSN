@@ -982,17 +982,17 @@ class AQUARIUSDataExtractionToolManager(object):
         extractedBenchmarkList = totalBenchmarkList
         while True:
             try:
-                if os.path.isfile(path + '\\levels_Ng.txt'):
+                if os.path.isfile(path + '\\levels.txt'):
                     fileExists = True
-                    exportFile = open(path + '\\levels_Ng.txt', 'rU')
+                    exportFile = open(path + '\\levels.txt', 'rU')
                 else:
-                    exportFile = open(path + '\\levels_Ng.txt', "wb")
+                    exportFile = open(path + '\\levels.txt', "wb")
                 break
             except IOError:
                 print "Could not open file! Please close Excel!"
                 self.gui.DeleteProgressDialog()
                 res = self.gui.CreateTryAgainDialog(
-                    "Unable to write to file. Please close the file: levels_Ng.txt.\nTry again?")
+                    "Unable to write to file. Please close the file: levels.txt.\nTry again?")
                 if res == 0:
                     self.gui.CreateProgressDialog('Extraction In Progress...',
                                                   'Collecting data for Levels Information (levels.txt)')
@@ -1042,9 +1042,9 @@ class AQUARIUSDataExtractionToolManager(object):
 
             # Write to file
             exportFile.close()
-            exportFile = open(path + '\\levels_Ng.txt', "wb")
+            exportFile = open(path + '\\levels.txt', "wb")
             exportFile.close()
-            exportFile = open(path + '\\levels_Ng.txt', "a+")
+            exportFile = open(path + '\\levels.txt', "a+")
             exportFile.write("STATION,REFERENCE,ELEVATION,DESCRIPTION")
             for line in totalBenchmarkList:
                 # print line
