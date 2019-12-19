@@ -55,6 +55,8 @@ import threading
 import requests
 import re
 import json
+import shutil
+from zipfile import ZipFile
 
 
 
@@ -345,8 +347,6 @@ class ElectronicHydrometricSurveyNotes:
     # If it doesn't exist, create new FV
     def ExportToAquarius(self, server, username, password, fvDate, discharge, levelNote):
 
-
-
         # Aquarius Login
         self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
         exists, value = AquariusUploadManager.AquariusLogin(mode, server, username, password)
@@ -458,7 +458,7 @@ class ElectronicHydrometricSurveyNotes:
         # export ehsn to ng
     def ExportToAquariusNg(self, server, username, password, fvPath, fvDate):
 
-            # print "NG"
+        print "NG"
             # Aquarius Login
             # self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
 
@@ -481,6 +481,7 @@ class ElectronicHydrometricSurveyNotes:
             self.gui.deleteProgressDialog()
             return "Failed to login."
             # print exists
+        print "login"
         if exists:
 
                 # See if location exists
@@ -495,13 +496,13 @@ class ElectronicHydrometricSurveyNotes:
                 try:
                     locid = req.json()['LocationDescriptions'][0]['UniqueId']
                     exists = True
-                    # print locid
+                    print locid
                 except:
                     exists = False
-                    # print "Id not exist1"
+                    print "Id not exist1"
             except:
                 exists = False
-                # print "Id not exist"
+                print "Id not exist"
             if not exists:
                 self.gui.deleteProgressDialog()
                 return self.exportAQNoLoc
@@ -532,133 +533,52 @@ class ElectronicHydrometricSurveyNotes:
                     return self.exportAQExist
                 else:
                     self.gui.updateProgressDialog("Uploading...")
+                    print fvPath
+                    dirName = fvPath[-19:]
                     fvPath = fvPath.replace("\\", "\\\\")
                     fvPathPdf = fvPath.replace("\\", "\\\\")
                     fvPath = fvPath + ".xml"
                     fvPathPdf = fvPathPdf + ".pdf"
+                    xmlPath = fvPath[-23:]
+
+                    # make an empty directory
+                    try:
+                        os.mkdir(dirName)
+                        shutil.move(fvPathPdf, dirName)
+                    except:
+                        print 'error'
+
+                    uploadZipDir = dirName + ".zip"
+                    xmlPath = fvPath[-23:]
+                    zipObj = ZipFile(uploadZipDir, 'w')
+                    zipObj.write(xmlPath)
+
+                    shutil.move(dirName, uploadZipDir)
 
                     # print fvPath
-                    files = {'file': open(fvPath, 'rb')}
-                    filesPdf = {'file': open(fvPathPdf, 'rb')}
+                    # files = {'file': open(fvPath, 'rb')}
+                    files = {'file': open(uploadZipDir, 'rb')}
 
+                    print "Uploading"
                     req = requests.post("http://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=files)
                     visitUris = req.json()
                     # print visitUris
                     try:
                         visitUris = req.json()['ResponseStatus']['Message']
                         self.gui.deleteProgressDialog()
-                        print "1-visitUris: " + visitUris
+                        #print "1-visitUris: " + visitUris
                         return visitUris
                     except:
                         try:
                             visitUris = visitUris['VisitUris'][0]
-                            print "2-visitUris: " + visitUris
+                            #print "2-visitUris: " + visitUris
                         except:
                             self.gui.deleteProgressDialog()
-                            return "Failed"
-
-                    reqPdf = requests.post("http://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/attachments?token=" + token, files=filesPdf)
-                    url = reqPdf.json()
-                    # print visitUris
-                    try:
-                        url = reqPdf.json()['ResponseStatus']['Message']
-                        self.gui.deleteProgressDialog()
-                        filesPdf
-                        print "1-Url: " + url
-                        return url
-                    except:
-                        try:
-                            url = url['Url']
-                            print "=========================="
-                            print url
-                        except:
-                            self.gui.deleteProgressDialog()
-                            print "2-Url: " + url
                             return "Failed"
                 # return self.exportAQWarning
         self.gui.deleteProgressDialog()
         return None
-    '''
-    def ExportPdfToAquariusNg(self, server, username, password, fvPath, fvDate):
-        try:
-            req = requests.get(
-                "http://" + server + "/AQUARIUS/Publish/v2/GetAuthToken?Username=" + username + "&EncryptedPassword=" + password)
-            token = req.text
-            try:
-                toMessage = req.json()
-                exists = False
-                self.gui.deleteProgressDialog()
-                return "The username or the password is incorrect."
-            except:
-                exists = True
-        except:
-            print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
-            exists = False
-            self.gui.deleteProgressDialog()
-            return "Failed to login."
-        if exists:
-            try:
-                req = requests.get(
-                    "http://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
-                try:
-                    locid = req.json()['LocationDescriptions'][0]['UniqueId']
-                    exists = True
-                except:
-                    exists = False
-            except:
-                exists = False
-            if not exists:
-                self.gui.deleteProgressDialog()
-                return self.exportAQNoLoc
-            else:
-                self.gui.updateProgressDialog(self.exportAQLocMessage)
-                fvDate = str(datetime.datetime.strptime(str(fvDate), "%Y/%m/%d").strftime('%Y-%m-%d'))
-                fvDate1 = fvDate[:-2]
-                midtime = str(int(fvDate[-2:]) + 1)
-                if len(midtime) == 1:
-                    fvDate1 = fvDate1 + "0" + midtime
-                else:
-                    fvDate1 = fvDate1 + midtime
-                try:
-                    req = requests.get(
-                        "http://" + server + "/AQUARIUS/Publish/v2/GetFieldVisitDescriptionList?LocationIdentifier=" + self.genInfoManager.stnNumCmbo + "&QueryFrom=" + fvDate + "&QueryTo=" + fvDate1 + "&Token=" + token)
-                    fvexData = req.json()['FieldVisitDescriptions'][0]['Identifier']
-                    exists = True
-                except:
-                    exists = False
-                    # upload to NG
-                if exists:
-                    self.gui.deleteProgressDialog()
-                    return self.exportAQExist
-                else:
-                    self.gui.updateProgressDialog("Uploading...")
-                    fvPathPdf = fvPath.replace("\\", "\\\\")
-                    fvPathPdf = fvPathPdf + ".pdf"
 
-                    # print fvPath
-                    filesPdf = {'file': open(fvPathPdf, 'rb')}
-
-                    reqPdf = requests.post(
-                        "http://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/attachments?token=" + token,
-                        files=filesPdf)
-                    url = reqPdf.json()
-                    # print visitUris
-                    try:
-                        url = reqPdf.json()['ResponseStatus']['Message']
-                        self.gui.deleteProgressDialog()
-                        print "+++++++++++++++++++++++++++++++++"
-                        print "1-Url: " + url
-                        return url
-                    except:
-                        try:
-                            url = url['Url']
-                            print url
-                        except:
-                            print "2-Url: " + url
-                            return "Failed"
-                # return self.exportAQWarning
-        return None
-    '''
     # Checks the "Entered in HWS" checkbox at top of front page
     def ExportToAquariusSuccess(self):
         self.titleHeaderManager.enteredInHWSCB = True

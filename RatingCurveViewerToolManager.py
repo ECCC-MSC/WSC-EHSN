@@ -890,8 +890,8 @@ class RatingCurveViewerToolManager(object):
         listToDel = []
 
         for i, row in enumerate(histData):
-            print "####################"
-            print row
+            # print "####################"
+            # print row
             if row[1] == "" or row[2] == "":
                 listToDel.append(i)
             row[1] = "" if row[1] == "" else float(row[1])

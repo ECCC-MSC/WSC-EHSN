@@ -1057,7 +1057,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
         self.bmRight.Clear()
         # print items
-        print indexList
+        # print indexList
 
         if len(indexList) > 0:
             updatedItems = []

@@ -139,7 +139,6 @@ class EHSNGui(wx.Frame):
     def __init__(self, mode, ver, *args, **kwargs):
         super(EHSNGui, self).__init__(*args, **kwargs)
 
-
         self.version = ver
         self.noteHeaderTxt = "Hydrometric Survey Notes" + " " + self.version
         self.timezone = ""
@@ -149,7 +148,6 @@ class EHSNGui(wx.Frame):
         self.fullname = ""
 
         # self.dir = os.getcwd()
-        # print self.dir
         self.dir = os.path.dirname(os.path.realpath(sys.argv[0]))
 
         self.uploadDir = self.dir
@@ -396,11 +394,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.importSucessTitle = "Succesful import"
 
 
-        self.rootPath = os.getcwd()
-        self.saveAsDirectory = os.getcwd()
+        self.rootPath = self.dir
+        self.saveAsDirectory = self.dir
         self.inipath = self.saveAsDirectory + r'\AQ_Extracted_Data\iniPath.ini'
         self.tempPath = "c:\\temp\\eHSN\\"
-        self.uploadSaveDir = os.getcwd()
+        #self.uploadSaveDir = os.getcwd()
+        self.uploadSaveDir = self.dir
 
         self.importedBGColor = "#48C9B0"
 

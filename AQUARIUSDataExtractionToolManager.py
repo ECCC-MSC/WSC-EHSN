@@ -367,8 +367,6 @@ class AQUARIUSDataExtractionToolManager(object):
         Password = self.gui.GetPassword()
         Server = self.gui.GetURL()
 
-
-
         authcode = None
 
         stationsList = []
@@ -394,9 +392,6 @@ class AQUARIUSDataExtractionToolManager(object):
         # For each station in the stationlist
         locations = self.GetStationList()
 
-
-
-        
         for station in locations:
             # Check if real station
             locid = aq.service.GetLocationId(station)
@@ -431,10 +426,8 @@ class AQUARIUSDataExtractionToolManager(object):
                 failedStations.append(station)
                 continue
 
-
             # station name
             newStationLine.append(locationName)
-
 
             # Check row count
             row_count = sum(1 for row in reader)
@@ -443,7 +436,6 @@ class AQUARIUSDataExtractionToolManager(object):
             # reset position in file
             f.seek(0)
             reader = csv.reader(f, delimiter=',')
-
 
             offsetVal = None
             if row_count > 1:
@@ -463,12 +455,10 @@ class AQUARIUSDataExtractionToolManager(object):
             #     # print self.timeZones[offset]
             #     offsetVal = self.timeZones[offset]
 
-
             # offset for station
             newStationLine.append(self.timeZones[line[12]])
 
             stationsList.append(newStationLine)
-
 
         # Maybe check if the file can be written to
         fileExists = None
@@ -492,17 +482,12 @@ class AQUARIUSDataExtractionToolManager(object):
                     failedStations = locations
                     return
 
-
         if exportFile is not None:
             if not fileExists:
                 exportFile.write("STATION ID,STATION NAME,TIMEZONE")
-
             else:
                 # if file exists, read the file
                 # reader = csv.reader(exportFile, delimiter='\n')
-
-
-
                 readList = []
 
                 with open(path + '\\stations.txt', 'a+') as f:
@@ -510,19 +495,13 @@ class AQUARIUSDataExtractionToolManager(object):
                     for i, line in enumerate(reader):
                         if i > 0:
                             readList.append(line[0])
-
-
-
                 # print "-----------------"
                 # for j in readList:
                 #     print j
                 # print "-----------------"
-
-
                 removeIndices = []
 
                 for i, line in enumerate(stationsList):
-
 
                     if len(line) > 2:
 
@@ -549,13 +528,11 @@ class AQUARIUSDataExtractionToolManager(object):
                     outputLine = stationid + "," + unicode(stationName) + "," + timezone
                     writeList.append(outputLine)
 
-
             exportFile.close()
             exportFile = open(path + '\\stations.txt', 'a+')
             for line in writeList:
                 exportFile.write("\n")
                 exportFile.write(line.encode('utf8'))
-
 
             exportFile.close()
 

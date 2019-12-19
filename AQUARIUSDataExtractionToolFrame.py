@@ -473,6 +473,22 @@ For example:\n\
                 print "========================================="
                 print socket.error
 
+            self.manager.EHSNGui.ratingFileDir = self.path
+            if self.manager.EHSNGui.savedStationsPath == self.manager.EHSNGui.ratingFileDir + '\\stations.txt':
+
+                try:
+                    self.manager.EHSNGui.OpenStationFile(self.manager.EHSNGui.ratingFileDir + '\\stations.txt')
+                    self.manager.EHSNGui.savedStationsPath = self.manager.EHSNGui.ratingFileDir + '\\stations.txt'
+                except:
+                    print "error open station file --- OnRun extraction tool frame"
+
+            if self.manager.EHSNGui.savedLevelsPath == self.manager.EHSNGui.ratingFileDir + '\\levels.txt':
+
+                try:
+                    self.manager.EHSNGui.OpenLevelFile(self.manager.EHSNGui.ratingFileDir + '\\levels.txt')
+                    self.manager.EHSNGui.savedLevelsPath = self.manager.EHSNGui.ratingFileDir + '\\levels.txt'
+                except:
+                    print "error open level file --- OnRun extraction tool frame"
 
     def OnCancel(self, e):
         if self.mode == "DEBUG":
