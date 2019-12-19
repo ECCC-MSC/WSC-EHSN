@@ -545,16 +545,20 @@ class ElectronicHydrometricSurveyNotes:
                     try:
                         os.mkdir(dirName)
                         shutil.move(fvPathPdf, dirName)
+                        os.mkdir(dirName + "_a")
+                        shutil.move(dirName, dirName + "_a")
+                        shutil.move(xmlPath, dirName + "_a")
                     except:
                         print 'error'
 
+                    shutil.make_archive(dirName + "_a", 'zip', dirName + "_a")
+                    '''
                     uploadZipDir = dirName + ".zip"
-                    xmlPath = fvPath[-23:]
                     zipObj = ZipFile(uploadZipDir, 'w')
                     zipObj.write(xmlPath)
-
                     shutil.move(dirName, uploadZipDir)
-
+                    '''
+                    uploadZipDir = dirName + "_a.zip"
                     # print fvPath
                     # files = {'file': open(fvPath, 'rb')}
                     files = {'file': open(uploadZipDir, 'rb')}
