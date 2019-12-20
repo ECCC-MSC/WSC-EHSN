@@ -147,7 +147,7 @@ class EHSNGui(wx.Frame):
         self.name = ""
         self.fullname = ""
 
-        # self.dir = os.getcwd()
+        self.attdir = os.getcwd()
         self.dir = os.path.dirname(os.path.realpath(sys.argv[0]))
 
         self.uploadDir = self.dir
@@ -400,6 +400,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.tempPath = "c:\\temp\\eHSN\\"
         #self.uploadSaveDir = os.getcwd()
         self.uploadSaveDir = self.dir
+        self.uploadAttachDir = self.attdir
 
         self.importedBGColor = "#48C9B0"
 

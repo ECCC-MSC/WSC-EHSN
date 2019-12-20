@@ -57,6 +57,7 @@ import re
 import json
 import shutil
 from zipfile import ZipFile
+from distutils.dir_util import copy_tree
 
 
 
@@ -456,7 +457,7 @@ class ElectronicHydrometricSurveyNotes:
             return value
 
         # export ehsn to ng
-    def ExportToAquariusNg(self, server, username, password, fvPath, fvDate):
+    def ExportToAquariusNg(self, server, username, password, fvPath, attPath, fvDate):
 
         print "NG"
             # Aquarius Login
@@ -536,29 +537,33 @@ class ElectronicHydrometricSurveyNotes:
                     print fvPath
                     dirName = fvPath[-19:]
                     fvPath = fvPath.replace("\\", "\\\\")
+                    dirPath = fvPath.replace("\\", "/")
                     fvPathPdf = fvPath.replace("\\", "\\\\")
                     fvPath = fvPath + ".xml"
                     fvPathPdf = fvPathPdf + ".pdf"
                     xmlPath = fvPath[-23:]
-                    uploadDir = dirName + "_a"
+                    uploadDir = dirPath + "_a"
+
                     # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
-                    if os.path.exists(dirName) or os.path.exists(uploadDir) or os.path.exists(uploadDir + ".zip"):
+                    if os.path.exists(dirPath) or os.path.exists(dirPath + "_a") or os.path.exists(dirPath + "_a.zip"):
                         self.gui.deleteProgressDialog()
                         return self.exportAQExist
                     else:
                         try:
-                            os.mkdir(dirName)
-                            shutil.move(fvPathPdf, dirName)
+                            print os.getcwd()
+                            os.mkdir(dirPath)
+                            shutil.move(fvPathPdf, dirPath)
+                            copy_tree(attPath, dirPath)
                             os.mkdir(uploadDir)
-                            shutil.move(dirName, uploadDir)
-                            shutil.move(xmlPath, uploadDir)
+                            shutil.move(dirPath, uploadDir)
+                            shutil.move(fvPath, uploadDir)
                             shutil.make_archive(uploadDir, 'zip', uploadDir)
                         except:
                             print 'Error occured while creating zip file for upload'
                             self.gui.deleteProgressDialog()
                             return None
                     # create the zip file
-                    uploadZipDir = dirName + "_a.zip"
+                    uploadZipDir = uploadDir + ".zip"
 
                     # files = {'file': open(fvPath, 'rb')}
                     files = {'file': open(uploadZipDir, 'rb')}
