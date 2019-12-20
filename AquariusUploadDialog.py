@@ -5,6 +5,7 @@ import os
 import sys
 import datetime
 from xml.etree.ElementTree import Element
+import shutil
 
 from xml.etree import ElementTree
 class AquariusUploadDialog(wx.Dialog):
@@ -340,6 +341,7 @@ class AquariusUploadDialog(wx.Dialog):
                         else:
                             succ = wx.MessageDialog(None, 'Upload successful!', "Finish",
                                                     wx.OK | wx.ICON_NONE)
+                            shutil.rmtree(fvPath + "_a")
                             succ.ShowModal()
                 self.EnableButtons(True)
             except Exception as e:

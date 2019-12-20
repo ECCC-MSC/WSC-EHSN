@@ -540,42 +540,39 @@ class ElectronicHydrometricSurveyNotes:
                     fvPath = fvPath + ".xml"
                     fvPathPdf = fvPathPdf + ".pdf"
                     xmlPath = fvPath[-23:]
-
-                    # make an empty directory
-                    try:
-                        os.mkdir(dirName)
-                        shutil.move(fvPathPdf, dirName)
-                        os.mkdir(dirName + "_a")
-                        shutil.move(dirName, dirName + "_a")
-                        shutil.move(xmlPath, dirName + "_a")
-                    except:
-                        print 'error'
-
-                    shutil.make_archive(dirName + "_a", 'zip', dirName + "_a")
-                    '''
-                    uploadZipDir = dirName + ".zip"
-                    zipObj = ZipFile(uploadZipDir, 'w')
-                    zipObj.write(xmlPath)
-                    shutil.move(dirName, uploadZipDir)
-                    '''
+                    uploadDir = dirName + "_a"
+                    # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
+                    if os.path.exists(dirName) or os.path.exists(uploadDir) or os.path.exists(uploadDir + ".zip"):
+                        self.gui.deleteProgressDialog()
+                        return self.exportAQExist
+                    else:
+                        try:
+                            os.mkdir(dirName)
+                            shutil.move(fvPathPdf, dirName)
+                            os.mkdir(uploadDir)
+                            shutil.move(dirName, uploadDir)
+                            shutil.move(xmlPath, uploadDir)
+                            shutil.make_archive(uploadDir, 'zip', uploadDir)
+                        except:
+                            print 'Error occured while creating zip file for upload'
+                            self.gui.deleteProgressDialog()
+                            return None
+                    # create the zip file
                     uploadZipDir = dirName + "_a.zip"
-                    # print fvPath
+
                     # files = {'file': open(fvPath, 'rb')}
                     files = {'file': open(uploadZipDir, 'rb')}
 
                     print "Uploading"
                     req = requests.post("http://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=files)
                     visitUris = req.json()
-                    # print visitUris
                     try:
                         visitUris = req.json()['ResponseStatus']['Message']
                         self.gui.deleteProgressDialog()
-                        #print "1-visitUris: " + visitUris
                         return visitUris
                     except:
                         try:
                             visitUris = visitUris['VisitUris'][0]
-                            #print "2-visitUris: " + visitUris
                         except:
                             self.gui.deleteProgressDialog()
                             return "Failed"
