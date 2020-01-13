@@ -26,7 +26,7 @@ class AquariusUploadDialog(wx.Dialog):
         self.mode = mode
 
         self.servers = {'1: Staging Server 1' : self.stage1, '2: Production2 Server': self.product2,
-                        '3: Production Server' : self.product, '4: AQUARIUS NG': self.aqNg, '5: AQUARIUS NG DEV': self.aqNgDev}
+                        '3: Production Server' : self.product, '4: AQUARIUS NG': self.aqNg, '5. Aquarius NG Dev [for Testing Only]': self.aqNgDev}
 
         self.serverLbl = "Server:"
         self.usernameLbl = "Username:"
@@ -67,7 +67,7 @@ class AquariusUploadDialog(wx.Dialog):
         serverSubSizer = wx.BoxSizer(wx.HORIZONTAL)
         serverTxt = wx.StaticText(self, label=self.serverLbl)
         self.serverCmbo = wx.ComboBox(self, choices=sorted(self.servers.keys(), reverse=False),
-                                      value=sorted(self.servers.keys(), reverse=False)[2], style=wx.CB_READONLY)
+                                      value=sorted(self.servers.keys(), reverse=False)[3], style=wx.CB_READONLY)
         # serverSubSizer.Add((-1, -1), 1, wx.EXPAND)
         serverSubSizer.Add(serverTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 6)
         serverSizer.Add(serverSubSizer, 1, wx.EXPAND)
@@ -220,7 +220,7 @@ class AquariusUploadDialog(wx.Dialog):
         self.cancelButton.Enable(en)
 
     def UploadToAquarius(self, evt):
-        if self.serverCmbo.GetValue() != '4: AQUARIUS NG' and self.serverCmbo.GetValue() != '5: AQUARIUS NG DEV':
+        if self.serverCmbo.GetValue() != '4: AQUARIUS NG' and self.serverCmbo.GetValue() != '5. Aquarius NG Dev [for Testing Only]':
             try:
                 self.EnableButtons(False)
                 dlg = wx.MessageDialog(self, self.uploadConfirm, 'None', wx.YES_NO)

@@ -85,7 +85,7 @@ if 0:
 
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v1.3.2"
+EHSN_VERSION = "v2.0.0"
 eHSN_WINDOW_SIZE = (965, 730)
 
 # import wx.lib.inspection
@@ -542,21 +542,25 @@ class ElectronicHydrometricSurveyNotes:
                     xmlPath = fvPath[-23:]
                     uploadDir = dirName + "_a"
                     # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
-                    if os.path.exists(dirName) or os.path.exists(uploadDir) or os.path.exists(uploadDir + ".zip"):
+
+                    if os.path.exists(dirName):
+                        shutil.rmtree(dirName)
+                    if os.path.exists(uploadDir):
+                        shutil.rmtree(uploadDir)
+                    if os.path.exists(uploadDir + ".zip"):
+                        os.remove(uploadDir + ".zip")
+
+                    try:
+                        os.mkdir(dirName)
+                        shutil.move(fvPathPdf, dirName)
+                        os.mkdir(uploadDir)
+                        shutil.move(dirName, uploadDir)
+                        shutil.move(xmlPath, uploadDir)
+                        shutil.make_archive(uploadDir, 'zip', uploadDir)
+                    except:
+                        print 'Error occured while creating zip file for upload'
                         self.gui.deleteProgressDialog()
-                        return self.exportAQExist
-                    else:
-                        try:
-                            os.mkdir(dirName)
-                            shutil.move(fvPathPdf, dirName)
-                            os.mkdir(uploadDir)
-                            shutil.move(dirName, uploadDir)
-                            shutil.move(xmlPath, uploadDir)
-                            shutil.make_archive(uploadDir, 'zip', uploadDir)
-                        except:
-                            print 'Error occured while creating zip file for upload'
-                            self.gui.deleteProgressDialog()
-                            return None
+                        return None
                     # create the zip file
                     uploadZipDir = dirName + "_a.zip"
 
