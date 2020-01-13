@@ -539,7 +539,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
             self.manager.qrta = self.manager.qrpa
             self.manager.hgta = self.manager.hgpa
 
-            if self.manager.data['RatingCurves'][selectedCurveIndex]['Type'] == 'LogarithicTable':
+            if self.manager.data['RatingCurves'][selectedCurveIndex]['Type'] == 'LogarithmicTable':
                 #the list of the offset
                 offsetList = []
 
@@ -593,7 +593,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
                     c = disch1/math.pow(sta1-offset2, beta)
                     #print "c: "
                     #print c
-                    x = np.linspace(disch1, disch2, num)
+                    x = np.linspace(disch1, disch2, pointNum)
                     y = (x/c)**(1/beta) + offset2
 
                     print "x: "
