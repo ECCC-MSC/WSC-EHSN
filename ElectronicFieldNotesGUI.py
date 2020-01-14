@@ -295,7 +295,7 @@ class EHSNGui(wx.Frame):
         self.uploadOpenPdf = False
 
 
-        self.path = ''
+        self.path = self.dir
         self.savedName = ''
         self.savedPassword = ''
         self.savedServer = ""
@@ -1434,7 +1434,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def FileOpen(self, evt):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, self.fileOpenTitle, self.rootPath, '',
+        fileOpenDialog = wx.FileDialog(self, self.fileOpenTitle, self.path, '',
                             'Hydrometric Survey Notes (*.xml)|*.xml',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
