@@ -1590,6 +1590,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         aboutInfo.SetDescription(description)
         aboutInfo.SetCopyright("This code was developed by the Water Survey of Canada. \nFor support please submit an issue to: ")
         aboutInfo.SetWebSite("https://watersurveyofcanada.atlassian.net/")
+        aboutInfo.AddDeveloper("Xu Yan")
         aboutInfo.AddDeveloper("Wenbin Zhang")
         aboutInfo.AddDeveloper("Yugo Brunet")
         aboutInfo.AddDeveloper("Vincent Vallee")

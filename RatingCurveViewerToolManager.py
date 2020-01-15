@@ -167,11 +167,11 @@ class RatingCurveViewerToolManager(object):
             txtfilepath = self.path + "\\" + self.stnNum + "_RatingTable.txt"
             self.ratingCurveList = []
 
-            print xmlfilepath
+            # print xmlfilepath
             if os.path.isfile(xmlfilepath):
                 self.OpenRatingFile(os.path.abspath(xmlfilepath))
             elif os.path.isfile(jsonfilepath):
-                print jsonfilepath
+                # print jsonfilepath
                 self.OpenRatingFile(os.path.abspath(jsonfilepath))
             elif os.path.isfile(txtfilepath):
                 self.OpenRatingFile(os.path.abspath(txtfilepath))
@@ -417,7 +417,7 @@ class RatingCurveViewerToolManager(object):
             shift = None
             error = None
 
-            print row
+            # print row
 
             date = row[0]
             stage = row[1]

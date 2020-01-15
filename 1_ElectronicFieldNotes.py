@@ -496,7 +496,7 @@ class ElectronicHydrometricSurveyNotes:
                 try:
                     locid = req.json()['LocationDescriptions'][0]['UniqueId']
                     exists = True
-                    print locid
+                    # print locid
                 except:
                     exists = False
                     print "Id not exist1"
