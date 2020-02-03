@@ -1122,7 +1122,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 continue
             ratingCurveData = req.json()
 
-            with io.open(path + '\\' + station + "_ratingcurves_Ng.json", 'w', encoding='utf8') as outfile:
+            with io.open(path + '\\' + station + "_ratingcurves.json", 'w', encoding='utf8') as outfile:
                 str_ = json.dumps(ratingCurveData, indent=4, sort_keys=True, separators=(',', ': '), ensure_ascii=False)
                 outfile.write(to_unicode(str_))
 
@@ -1546,7 +1546,7 @@ class AQUARIUSDataExtractionToolManager(object):
             if len(fieldVisitInfoList) > 0:
                 while True:
                     try:
-                        outputfile = open(path + '\\' + location + "_FieldVisits_Ng.csv", "wb")
+                        outputfile = open(path + '\\' + location + "_FieldVisits.csv", "wb")
                         outputfile.write(
                             'Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n')
                         for m in fieldVisitInfoList:
