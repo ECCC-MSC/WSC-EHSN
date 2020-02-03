@@ -1527,7 +1527,7 @@ class MidSectionPanelPanel(wx.Panel):
     def UpdateSlushThickness(self, event):
         if self.slushCkbox.IsChecked():
             if self.waterSurfaceIceCtrl.GetValue() != "" and self.waterSurfaceSlushCtrl.GetValue() != "":
-                self.slushThicknessCtrl.SetValue(str(float(self.waterSurfaceSlushCtrl.GetValue()) - float(self.waterSurfaceIceCtrl.GetValue())))
+                self.slushThicknessCtrl.SetValue(str(float(self.waterSurfaceSlushCtrl.GetValue()) - float(self.waterIceAdjustCtrl.GetValue())))
             else:
                 self.slushThicknessCtrl.SetValue(self.waterSurfaceSlushCtrl.GetValue())
 
