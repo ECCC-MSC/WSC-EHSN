@@ -922,33 +922,47 @@ class AQUARIUSDataExtractionToolManager(object):
             # print staInfo
             for benchMark in staInfo:
                 benchMarkInfo = []
+                decommissioned = False
                 try:
-                    staRef = benchMark['Name']
-                    staRef.replace('\n', ' ')
+                    decom = benchMark['DecommissionedDate']
+                    decommissioned = True
                 except:
-                    staRef = ''
-                    print("The reference is empty.")
+                    decommissioned = False
 
-                try:
-                    refPoint = benchMark['ReferencePointPeriods']
-                    staElevation = refPoint[len(refPoint) - 1]['Elevation']
-                except:
-                    refPoint = ''
-                    print("The elevation is empty.")
+                    if not decommissioned:
+                        try:
+                            staRef = benchMark['Name']
+                            staRef.replace('\n', ' ')
+                        except:
+                            staRef = ''
+                            print("The reference is empty.")
 
-                try:
-                    staDescription = benchMark['Description']
-                    staDescription.replace('\n', ' ')
-                except:
-                    staDescription = ''
-                    print("The description is empty.")
+                        try:
+                            pmyRef = benchMark['PrimarySinceDate']
+                            staRef = staRef + "*"
+                        except:
+                            pmyRef = ''
 
-                benchMarkInfo.append(station)
-                benchMarkInfo.append(str(staRef))
-                benchMarkInfo.append(str(staElevation))
-                benchMarkInfo.append(str(staDescription))
+                        try:
+                            refPoint = benchMark['ReferencePointPeriods']
+                            staElevation = refPoint[len(refPoint) - 1]['Elevation']
+                        except:
+                            refPoint = ''
+                            print("The elevation is empty.")
 
-                totalBenchmarkList.append(benchMarkInfo)
+                        try:
+                            staDescription = benchMark['Description']
+                            staDescription.replace('\n', ' ')
+                        except:
+                            staDescription = ''
+                            print("The description is empty.")
+
+                        benchMarkInfo.append(station)
+                        benchMarkInfo.append(str(staRef))
+                        benchMarkInfo.append(str(staElevation))
+                        benchMarkInfo.append(str(staDescription))
+
+                        totalBenchmarkList.append(benchMarkInfo)
 
             # print totalBenchmarkList
 
