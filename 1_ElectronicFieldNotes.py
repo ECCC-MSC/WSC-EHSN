@@ -459,13 +459,16 @@ class ElectronicHydrometricSurveyNotes:
     def ExportToAquariusNg(self, server, username, password, fvPath, fvDate):
 
         print "NG"
-            # Aquarius Login
-            # self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
-
-            # get token
         self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
+
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + username + '", "EncryptedPassword": "' + password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = "http://" + server + "/AQUARIUS/Provisioning/v1/session"
         try:
-            req = requests.get("http://" + server + "/AQUARIUS/Publish/v2/GetAuthToken?Username=" + username + "&EncryptedPassword=" + password)
+            s.get(url)
+            req = s.post(url, data = data, headers = headers)
             token = req.text
             try:
                 toMessage = req.json()
@@ -476,7 +479,7 @@ class ElectronicHydrometricSurveyNotes:
                 #print token
                 exists = True
         except:
-            print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
+            # print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
             exists = False
             self.gui.deleteProgressDialog()
             return "Failed to login."
@@ -484,13 +487,6 @@ class ElectronicHydrometricSurveyNotes:
         print "login"
         if exists:
 
-                # See if location exists
-
-                # print self.genInfoManager.stnNumCmbo
-                # exists, locid = AquariusUploadManager.AquariusCheckLocInfo(mode, aq, self.genInfoManager.stnNumCmbo)
-                # print "http://"+server+"/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token="+token+"&LocationIdentifier="+self.genInfoManager.stnNumCmbo
-
-                # get the station unique id
             try:
                 req = requests.get("http://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
                 try:

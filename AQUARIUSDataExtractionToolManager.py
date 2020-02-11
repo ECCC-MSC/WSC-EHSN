@@ -230,30 +230,17 @@ class AQUARIUSDataExtractionToolManager(object):
                 "Station ID list field cannot be left blank.  Please enter the station ID that you are uploading.")
             return
 
+        s = requests.Session()
+        data = '{"Username": "'+Login+'", "EncryptedPassword": "'+Password+'", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            aq = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-
+            s.get(url)
+            aq = s.post(url, data = data, headers = headers)
             authcode = aq.text
-
-            #print authcode
-
         except:
             self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
             return -1
-
-        # # Check if stations exist
-        # locations = self.GetStationList()
-        # for station in locations:
-        #     # Check if real station
-        #     locid = aq.service.GetLocationId(station)
-        #     print locid
-
-        #     # is not a real station
-        #     if locid == 0:
-        #         self.gui.CreateErrorDialog("Station ID: " + station + " appears to be invalid")
-        #         return -2
-
-        # if the export file path does not exist, create a new folder
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -539,8 +526,7 @@ class AQUARIUSDataExtractionToolManager(object):
         return 0
 
     def GetStationInfoNg(self, aq, path, failedStations):
-        # SOAP Acquisition API
-        # Check Auth
+
         print "Get Station Info"
 
         Login = self.gui.GetUsername()
@@ -551,19 +537,17 @@ class AQUARIUSDataExtractionToolManager(object):
 
         stationsList = []
 
-        # login
+        s = requests.Session()
+        data = '{"Username": "'+Login+'", "EncryptedPassword": "'+Password+'", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            aq2 = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-
+            s.get(url)
+            aq = s.post(url, data = data, headers = headers)
+            MyAuthCode = aq.text
         except:
+            self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
             return -1
-
-        # print authcode
-
-        # Rest Authentication
-        r = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-        MyAuthCode = r.text
-        # print MyAuthCode
 
         # For each station in the stationlist
         locations = self.GetStationList()
@@ -901,18 +885,21 @@ class AQUARIUSDataExtractionToolManager(object):
         extractedBenchmarkList = []
         inactiveBMList = []
 
-        # login
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            req = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-            token = req.text
+            s.get(url)
+            aq = s.post(url, data=data, headers=headers)
+            token = aq.text
         except:
             return -1
 
         # for each station
         locations = self.GetStationList()
         for station in locations:
-            req = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-            token = req.text
             try:
                 req = requests.get(Server + "GetLocationData?LocationIdentifier=" + station + "&token=" + token)
             except:
@@ -1099,25 +1086,19 @@ class AQUARIUSDataExtractionToolManager(object):
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
 
-        # login
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            req = requests.get(Server+"GetAuthToken?Username="+Login+"&EncryptedPassword="+Password)
-            token = req.text
+            s.get(url)
+            aq = s.post(url, data=data, headers=headers)
+            token = aq.text
         except:
             return -1
 
-
         for station in stationList:
-            # Get token
-            try:
-                req = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-                token = req.text
-             #   print "token --> " + token
-            except:
-                return -1
-
-            # print token
-
             # Get rating curve Id
             try:
                 req = requests.get(
@@ -1363,17 +1344,20 @@ class AQUARIUSDataExtractionToolManager(object):
         return 0
 
     def GetFieldVisitNg(self, path, failedStations, numMinMax):
-        Server = self.gui.GetURL()
 
+        Server = self.gui.GetURL()
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
 
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            req = requests.get(Server + 'GetAuthToken?Username=' + Login + '&EncryptedPassword=' + Password)
-            token = req.text
-            # print token
-
-
+            s.get(url)
+            aq = s.post(url, data=data, headers=headers)
+            token = aq.text
         except:
             return -1
 
