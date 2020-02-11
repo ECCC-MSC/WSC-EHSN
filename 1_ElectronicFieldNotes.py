@@ -551,7 +551,7 @@ class ElectronicHydrometricSurveyNotes:
                         shutil.move(fvPathPdf, dirName)
                         os.mkdir(uploadDir)
                         shutil.move(dirName, uploadDir)
-                        shutil.move(xmlPath, uploadDir)
+                        shutil.move(fvPath, uploadDir)
                         shutil.make_archive(uploadDir, 'zip', uploadDir)
                     except:
                         print 'Error occured while creating zip file for upload'

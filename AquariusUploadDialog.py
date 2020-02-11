@@ -54,9 +54,6 @@ class AquariusUploadDialog(wx.Dialog):
 
         self.InitUI()
 
-
-
-
     def InitUI(self):
         if self.mode == "DEBUG":
             print "Aquarius Upload Dialog"
