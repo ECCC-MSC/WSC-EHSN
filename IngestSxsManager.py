@@ -20,34 +20,63 @@ def GetStationID(filePath):
 def GetDate(filePath):
     channel = GetRoot(filePath)
     date = channel.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Date').text
-    if len(date) == 10:
-        year = date[6:]
-        month = date[3:5]
-        day = date[:2]
-        return year + "/" + month + "/" + day
-    elif len(date) == 9:
-        if date[1] == "/":
-            year = date[5:]
-            month = date[2:4]
-            day = str(0)+date[:1]
-            return year + "/" + month + "/" + day
-
-        else:
-            year = date[5:]
-            month = str+date[3:4]
+    if '/' in date:
+        if len(date) == 10:
+            year = date[6:]
+            month = date[3:5]
             day = date[:2]
             return year + "/" + month + "/" + day
-    elif len(date) == 8:
-        year = date[4:]
-        month = str(0)+date[2:3]
-        day = str(0)+date[:1]
-        return year + "/" + month + "/" + day
+        elif len(date) == 9:
+            if date[1] == "/":
+                year = date[5:]
+                month = date[2:4]
+                day = str(0)+date[:1]
+                return year + "/" + month + "/" + day
 
-    else:
-        year ='0000'
-        month = '00'
-        day = '00'
-        return year + "/" + month + "/" + day
+            else:
+                year = date[5:]
+                month = str(0)+date[3:4]
+                day = date[:2]
+                return year + "/" + month + "/" + day
+        elif len(date) == 8:
+            year = date[4:]
+            month = str(0)+date[2:3]
+            day = str(0)+date[:1]
+            return year + "/" + month + "/" + day
+        else:
+            year ='0000'
+            month = '00'
+            day = '00'
+            return year + "/" + month + "/" + day
+
+    if '-' in date:
+        if len(date) == 10:
+            year = date[:4]
+            month = date[5:7]
+            day = date[8:]
+            return year + "/" + month + "/" + day
+        elif len(date) == 9:
+            if date[8] == "-":
+                year = date[:4]
+                month = date[5:7]
+                day = str(0) + date[8:]
+                return year + "/" + month + "/" + day
+
+            else:
+                year = date[:4]
+                month = str(0) + date[5:6]
+                day = date[8:]
+                return year + "/" + month + "/" + day
+        elif len(date) == 8:
+            year = date[:4]
+            month = str(0) + date[5:6]
+            day = str(0) + date[8:]
+            return year + "/" + month + "/" + day
+        else:
+            year = '0000'
+            month = '00'
+            day = '00'
+            return year + "/" + month + "/" + day
 
 
 
@@ -86,7 +115,7 @@ def PmTo24H(time):
     if sign.upper() == "PM" and int(t[:2]) < 12:
         return str(int(t[:2]) + 12) + t[2:]
     else:
-        return t 
+        return t
 
 
 
@@ -133,8 +162,14 @@ def AddDischargeSummary(filePath, disMeasManager):
     times = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Start_End_Time').text.split("/")
     water = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Water_Temp').text
     air = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Air_Temp').text
-    start = PmTo24H(times[0])
-    end = PmTo24H(times[1])
+    if 'M' in times[0]:
+        start = PmTo24H(times[0])
+    else:
+        start = times[0]
+    if 'M' in times[1]:
+        end = PmTo24H(times[1])
+    else:
+        end = times[1]
     color = disMeasManager.manager.gui.importedBGColor
     disMeasManager.startTimeCtrl = start
     disMeasManager.endTimeCtrl = end

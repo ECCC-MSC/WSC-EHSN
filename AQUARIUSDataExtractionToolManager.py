@@ -230,30 +230,17 @@ class AQUARIUSDataExtractionToolManager(object):
                 "Station ID list field cannot be left blank.  Please enter the station ID that you are uploading.")
             return
 
+        s = requests.Session()
+        data = '{"Username": "'+Login+'", "EncryptedPassword": "'+Password+'", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            aq = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-
+            s.get(url)
+            aq = s.post(url, data = data, headers = headers)
             authcode = aq.text
-
-            #print authcode
-
         except:
             self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
             return -1
-
-        # # Check if stations exist
-        # locations = self.GetStationList()
-        # for station in locations:
-        #     # Check if real station
-        #     locid = aq.service.GetLocationId(station)
-        #     print locid
-
-        #     # is not a real station
-        #     if locid == 0:
-        #         self.gui.CreateErrorDialog("Station ID: " + station + " appears to be invalid")
-        #         return -2
-
-        # if the export file path does not exist, create a new folder
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -539,8 +526,7 @@ class AQUARIUSDataExtractionToolManager(object):
         return 0
 
     def GetStationInfoNg(self, aq, path, failedStations):
-        # SOAP Acquisition API
-        # Check Auth
+
         print "Get Station Info"
 
         Login = self.gui.GetUsername()
@@ -551,19 +537,17 @@ class AQUARIUSDataExtractionToolManager(object):
 
         stationsList = []
 
-        # login
+        s = requests.Session()
+        data = '{"Username": "'+Login+'", "EncryptedPassword": "'+Password+'", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            aq2 = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-
+            s.get(url)
+            aq = s.post(url, data = data, headers = headers)
+            MyAuthCode = aq.text
         except:
+            self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
             return -1
-
-        # print authcode
-
-        # Rest Authentication
-        r = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-        MyAuthCode = r.text
-        # print MyAuthCode
 
         # For each station in the stationlist
         locations = self.GetStationList()
@@ -901,18 +885,21 @@ class AQUARIUSDataExtractionToolManager(object):
         extractedBenchmarkList = []
         inactiveBMList = []
 
-        # login
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            req = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-            token = req.text
+            s.get(url)
+            aq = s.post(url, data=data, headers=headers)
+            token = aq.text
         except:
             return -1
 
         # for each station
         locations = self.GetStationList()
         for station in locations:
-            req = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-            token = req.text
             try:
                 req = requests.get(Server + "GetLocationData?LocationIdentifier=" + station + "&token=" + token)
             except:
@@ -922,33 +909,47 @@ class AQUARIUSDataExtractionToolManager(object):
             # print staInfo
             for benchMark in staInfo:
                 benchMarkInfo = []
+                decommissioned = False
                 try:
-                    staRef = benchMark['Name']
-                    staRef.replace('\n', ' ')
+                    decom = benchMark['DecommissionedDate']
+                    decommissioned = True
                 except:
-                    staRef = ''
-                    print("The reference is empty.")
+                    decommissioned = False
 
-                try:
-                    refPoint = benchMark['ReferencePointPeriods']
-                    staElevation = refPoint[len(refPoint) - 1]['Elevation']
-                except:
-                    refPoint = ''
-                    print("The elevation is empty.")
+                    if not decommissioned:
+                        try:
+                            staRef = benchMark['Name']
+                            staRef.replace('\n', ' ')
+                        except:
+                            staRef = ''
+                            print("The reference is empty.")
 
-                try:
-                    staDescription = benchMark['Description']
-                    staDescription.replace('\n', ' ')
-                except:
-                    staDescription = ''
-                    print("The description is empty.")
+                        try:
+                            pmyRef = benchMark['PrimarySinceDate']
+                            staRef = staRef + "*"
+                        except:
+                            pmyRef = ''
 
-                benchMarkInfo.append(station)
-                benchMarkInfo.append(str(staRef))
-                benchMarkInfo.append(str(staElevation))
-                benchMarkInfo.append(str(staDescription))
+                        try:
+                            refPoint = benchMark['ReferencePointPeriods']
+                            staElevation = refPoint[len(refPoint) - 1]['Elevation']
+                        except:
+                            refPoint = ''
+                            print("The elevation is empty.")
 
-                totalBenchmarkList.append(benchMarkInfo)
+                        try:
+                            staDescription = benchMark['Description']
+                            staDescription.replace('\n', ' ')
+                        except:
+                            staDescription = ''
+                            print("The description is empty.")
+
+                        benchMarkInfo.append(station)
+                        benchMarkInfo.append(str(staRef))
+                        benchMarkInfo.append(str(staElevation))
+                        benchMarkInfo.append(str(staDescription))
+
+                        totalBenchmarkList.append(benchMarkInfo)
 
             # print totalBenchmarkList
 
@@ -1085,25 +1086,19 @@ class AQUARIUSDataExtractionToolManager(object):
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
 
-        # login
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            req = requests.get(Server+"GetAuthToken?Username="+Login+"&EncryptedPassword="+Password)
-            token = req.text
+            s.get(url)
+            aq = s.post(url, data=data, headers=headers)
+            token = aq.text
         except:
             return -1
 
-
         for station in stationList:
-            # Get token
-            try:
-                req = requests.get(Server + "GetAuthToken?Username=" + Login + "&EncryptedPassword=" + Password)
-                token = req.text
-             #   print "token --> " + token
-            except:
-                return -1
-
-            # print token
-
             # Get rating curve Id
             try:
                 req = requests.get(
@@ -1122,7 +1117,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 continue
             ratingCurveData = req.json()
 
-            with io.open(path + '\\' + station + "_ratingcurves_Ng.json", 'w', encoding='utf8') as outfile:
+            with io.open(path + '\\' + station + "_ratingcurves.json", 'w', encoding='utf8') as outfile:
                 str_ = json.dumps(ratingCurveData, indent=4, sort_keys=True, separators=(',', ': '), ensure_ascii=False)
                 outfile.write(to_unicode(str_))
 
@@ -1349,17 +1344,20 @@ class AQUARIUSDataExtractionToolManager(object):
         return 0
 
     def GetFieldVisitNg(self, path, failedStations, numMinMax):
-        Server = self.gui.GetURL()
 
+        Server = self.gui.GetURL()
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
 
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            req = requests.get(Server + 'GetAuthToken?Username=' + Login + '&EncryptedPassword=' + Password)
-            token = req.text
-            # print token
-
-
+            s.get(url)
+            aq = s.post(url, data=data, headers=headers)
+            token = aq.text
         except:
             return -1
 
@@ -1546,7 +1544,7 @@ class AQUARIUSDataExtractionToolManager(object):
             if len(fieldVisitInfoList) > 0:
                 while True:
                     try:
-                        outputfile = open(path + '\\' + location + "_FieldVisits_Ng.csv", "wb")
+                        outputfile = open(path + '\\' + location + "_FieldVisits.csv", "wb")
                         outputfile.write(
                             'Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n')
                         for m in fieldVisitInfoList:

@@ -57,7 +57,6 @@ import re
 import json
 import shutil
 from zipfile import ZipFile
-from distutils.dir_util import copy_tree
 
 
 
@@ -86,7 +85,7 @@ if 0:
 
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v1.3.2"
+EHSN_VERSION = "v2.0.0"
 eHSN_WINDOW_SIZE = (965, 730)
 
 # import wx.lib.inspection
@@ -457,16 +456,19 @@ class ElectronicHydrometricSurveyNotes:
             return value
 
         # export ehsn to ng
-    def ExportToAquariusNg(self, server, username, password, fvPath, attPath, fvDate):
+    def ExportToAquariusNg(self, server, username, password, fvPath, fvDate):
 
         print "NG"
-            # Aquarius Login
-            # self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
-
-            # get token
         self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
+
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + username + '", "EncryptedPassword": "' + password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = "http://" + server + "/AQUARIUS/Provisioning/v1/session"
         try:
-            req = requests.get("http://" + server + "/AQUARIUS/Publish/v2/GetAuthToken?Username=" + username + "&EncryptedPassword=" + password)
+            s.get(url)
+            req = s.post(url, data = data, headers = headers)
             token = req.text
             try:
                 toMessage = req.json()
@@ -477,7 +479,7 @@ class ElectronicHydrometricSurveyNotes:
                 #print token
                 exists = True
         except:
-            print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
+            # print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
             exists = False
             self.gui.deleteProgressDialog()
             return "Failed to login."
@@ -485,19 +487,12 @@ class ElectronicHydrometricSurveyNotes:
         print "login"
         if exists:
 
-                # See if location exists
-
-                # print self.genInfoManager.stnNumCmbo
-                # exists, locid = AquariusUploadManager.AquariusCheckLocInfo(mode, aq, self.genInfoManager.stnNumCmbo)
-                # print "http://"+server+"/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token="+token+"&LocationIdentifier="+self.genInfoManager.stnNumCmbo
-
-                # get the station unique id
             try:
                 req = requests.get("http://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
                 try:
                     locid = req.json()['LocationDescriptions'][0]['UniqueId']
                     exists = True
-                    print locid
+                    # print locid
                 except:
                     exists = False
                     print "Id not exist1"
@@ -537,33 +532,33 @@ class ElectronicHydrometricSurveyNotes:
                     print fvPath
                     dirName = fvPath[-19:]
                     fvPath = fvPath.replace("\\", "\\\\")
-                    dirPath = fvPath.replace("\\", "/")
                     fvPathPdf = fvPath.replace("\\", "\\\\")
                     fvPath = fvPath + ".xml"
                     fvPathPdf = fvPathPdf + ".pdf"
                     xmlPath = fvPath[-23:]
-                    uploadDir = dirPath + "_a"
-
+                    uploadDir = dirName + "_a"
                     # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
-                    if os.path.exists(dirPath) or os.path.exists(dirPath + "_a") or os.path.exists(dirPath + "_a.zip"):
+
+                    if os.path.exists(dirName):
+                        shutil.rmtree(dirName)
+                    if os.path.exists(uploadDir):
+                        shutil.rmtree(uploadDir)
+                    if os.path.exists(uploadDir + ".zip"):
+                        os.remove(uploadDir + ".zip")
+
+                    try:
+                        os.mkdir(dirName)
+                        shutil.move(fvPathPdf, dirName)
+                        os.mkdir(uploadDir)
+                        shutil.move(dirName, uploadDir)
+                        shutil.move(fvPath, uploadDir)
+                        shutil.make_archive(uploadDir, 'zip', uploadDir)
+                    except:
+                        print 'Error occured while creating zip file for upload'
                         self.gui.deleteProgressDialog()
-                        return self.exportAQExist
-                    else:
-                        try:
-                            print os.getcwd()
-                            os.mkdir(dirPath)
-                            shutil.move(fvPathPdf, dirPath)
-                            copy_tree(attPath, dirPath)
-                            os.mkdir(uploadDir)
-                            shutil.move(dirPath, uploadDir)
-                            shutil.move(fvPath, uploadDir)
-                            shutil.make_archive(uploadDir, 'zip', uploadDir)
-                        except:
-                            print 'Error occured while creating zip file for upload'
-                            self.gui.deleteProgressDialog()
-                            return None
+                        return None
                     # create the zip file
-                    uploadZipDir = uploadDir + ".zip"
+                    uploadZipDir = dirName + "_a.zip"
 
                     # files = {'file': open(fvPath, 'rb')}
                     files = {'file': open(uploadZipDir, 'rb')}

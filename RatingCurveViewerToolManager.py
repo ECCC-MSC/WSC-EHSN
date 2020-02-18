@@ -163,15 +163,15 @@ class RatingCurveViewerToolManager(object):
 
         if self.stnNum is not "":
             xmlfilepath = self.path + "\\" + self.stnNum + "_ratingcurves.xml"
-            jsonfilepath = self.path + "\\" + self.stnNum + "_ratingcurves_Ng.json"
+            jsonfilepath = self.path + "\\" + self.stnNum + "_ratingcurves.json"
             txtfilepath = self.path + "\\" + self.stnNum + "_RatingTable.txt"
             self.ratingCurveList = []
 
-            print xmlfilepath
+            # print xmlfilepath
             if os.path.isfile(xmlfilepath):
                 self.OpenRatingFile(os.path.abspath(xmlfilepath))
             elif os.path.isfile(jsonfilepath):
-                print jsonfilepath
+                # print jsonfilepath
                 self.OpenRatingFile(os.path.abspath(jsonfilepath))
             elif os.path.isfile(txtfilepath):
                 self.OpenRatingFile(os.path.abspath(txtfilepath))
@@ -195,7 +195,7 @@ class RatingCurveViewerToolManager(object):
 
         if self.stnNum is not "":
             fvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits.csv"
-            jsonfvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits_Ng.csv"
+            jsonfvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits.csv"
             csvfilepath = self.path + "\\" + self.stnNum + "_FieldVisitExport.csv"
 
             print fvFilePath
@@ -417,7 +417,7 @@ class RatingCurveViewerToolManager(object):
             shift = None
             error = None
 
-            print row
+            # print row
 
             date = row[0]
             stage = row[1]
