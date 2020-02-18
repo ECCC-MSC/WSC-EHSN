@@ -52,7 +52,11 @@ import suds
 import datetime
 import sys
 import threading
-
+import requests
+import re
+import json
+import shutil
+from zipfile import ZipFile
 
 
 
@@ -81,7 +85,7 @@ if 0:
 
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v1.3.2"
+EHSN_VERSION = "v2.0.0"
 eHSN_WINDOW_SIZE = (965, 730)
 
 # import wx.lib.inspection
@@ -107,6 +111,7 @@ class ElectronicHydrometricSurveyNotes:
         self.exportAQAppendFV = "It appears that a Field Visit exists for this date.  Press OK to append the HSN to this field visit."
         self.exportAQWarning = "Upload Warning!"
         self.exportAQCancel = "Upload cancelled"
+        self.exportAQExist = "Saving parsed data would result in duplicates!"
         self.exportAQFVUpdate = "Updating Field Visit in AQUARIUS"
         self.saveXMLErrorDesc = "Failed on saving to XML"
         self.saveXMLErrorTitle = "Failed on saving to XML"
@@ -342,8 +347,6 @@ class ElectronicHydrometricSurveyNotes:
     # If it doesn't exist, create new FV
     def ExportToAquarius(self, server, username, password, fvDate, discharge, levelNote):
 
-
-
         # Aquarius Login
         self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
         exists, value = AquariusUploadManager.AquariusLogin(mode, server, username, password)
@@ -451,6 +454,131 @@ class ElectronicHydrometricSurveyNotes:
         else:
             self.gui.deleteProgressDialog()
             return value
+
+        # export ehsn to ng
+    def ExportToAquariusNg(self, server, username, password, fvPath, fvDate):
+
+        print "NG"
+        self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
+
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + username + '", "EncryptedPassword": "' + password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = "http://" + server + "/AQUARIUS/Provisioning/v1/session"
+        try:
+            s.get(url)
+            req = s.post(url, data = data, headers = headers)
+            token = req.text
+            try:
+                toMessage = req.json()
+                exists = False
+                self.gui.deleteProgressDialog()
+                return "The username or the password is incorrect."
+            except:
+                #print token
+                exists = True
+        except:
+            # print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
+            exists = False
+            self.gui.deleteProgressDialog()
+            return "Failed to login."
+            # print exists
+        print "login"
+        if exists:
+
+            try:
+                req = requests.get("http://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
+                try:
+                    locid = req.json()['LocationDescriptions'][0]['UniqueId']
+                    exists = True
+                    # print locid
+                except:
+                    exists = False
+                    print "Id not exist1"
+            except:
+                exists = False
+                print "Id not exist"
+            if not exists:
+                self.gui.deleteProgressDialog()
+                return self.exportAQNoLoc
+            else:
+                self.gui.updateProgressDialog(self.exportAQLocMessage)
+                fvDate = str(datetime.datetime.strptime(str(fvDate), "%Y/%m/%d").strftime('%Y-%m-%d'))
+                fvDate1 = fvDate[:-2]
+                midtime = str(int(fvDate[-2:]) + 1)
+                if len(midtime) == 1:
+                    fvDate1 = fvDate1 + "0" + midtime
+                else:
+                    fvDate1 = fvDate1 + midtime
+
+                    # get the field visit data from NG check if the fv already exist
+                    # self.gui.updateProgressDialog(self.exportAQFVMessage)
+                try:
+                    req = requests.get("http://" + server + "/AQUARIUS/Publish/v2/GetFieldVisitDescriptionList?LocationIdentifier=" + self.genInfoManager.stnNumCmbo + "&QueryFrom=" + fvDate + "&QueryTo=" + fvDate1 + "&Token=" + token)
+                    fvexData = req.json()['FieldVisitDescriptions'][0]['Identifier']
+                    # print fvexData
+                    exists = True
+                except:
+                    # print "field data doesn't exist."
+                    exists = False
+
+                    # upload to NG
+                if exists:
+                    self.gui.deleteProgressDialog()
+                    return self.exportAQExist
+                else:
+                    self.gui.updateProgressDialog("Uploading...")
+                    print fvPath
+                    dirName = fvPath[-19:]
+                    fvPath = fvPath.replace("\\", "\\\\")
+                    fvPathPdf = fvPath.replace("\\", "\\\\")
+                    fvPath = fvPath + ".xml"
+                    fvPathPdf = fvPathPdf + ".pdf"
+                    xmlPath = fvPath[-23:]
+                    uploadDir = dirName + "_a"
+                    # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
+
+                    if os.path.exists(dirName):
+                        shutil.rmtree(dirName)
+                    if os.path.exists(uploadDir):
+                        shutil.rmtree(uploadDir)
+                    if os.path.exists(uploadDir + ".zip"):
+                        os.remove(uploadDir + ".zip")
+
+                    try:
+                        os.mkdir(dirName)
+                        shutil.move(fvPathPdf, dirName)
+                        os.mkdir(uploadDir)
+                        shutil.move(dirName, uploadDir)
+                        shutil.move(fvPath, uploadDir)
+                        shutil.make_archive(uploadDir, 'zip', uploadDir)
+                    except:
+                        print 'Error occured while creating zip file for upload'
+                        self.gui.deleteProgressDialog()
+                        return None
+                    # create the zip file
+                    uploadZipDir = dirName + "_a.zip"
+
+                    # files = {'file': open(fvPath, 'rb')}
+                    files = {'file': open(uploadZipDir, 'rb')}
+
+                    print "Uploading"
+                    req = requests.post("http://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=files)
+                    visitUris = req.json()
+                    try:
+                        visitUris = req.json()['ResponseStatus']['Message']
+                        self.gui.deleteProgressDialog()
+                        return visitUris
+                    except:
+                        try:
+                            visitUris = visitUris['VisitUris'][0]
+                        except:
+                            self.gui.deleteProgressDialog()
+                            return "Failed"
+                # return self.exportAQWarning
+        self.gui.deleteProgressDialog()
+        return None
 
     # Checks the "Entered in HWS" checkbox at top of front page
     def ExportToAquariusSuccess(self):
@@ -890,7 +1018,6 @@ class ElectronicHydrometricSurveyNotes:
         self.ProcessStationNum()
 
         self.stationNumProcessed = True
-
 
     def OnStationNumChange(self):
         if self.stationNumProcessed is False:

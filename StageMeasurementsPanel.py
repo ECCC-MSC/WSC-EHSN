@@ -1057,7 +1057,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
         self.bmRight.Clear()
         # print items
-
+        # print indexList
 
         if len(indexList) > 0:
             updatedItems = []
@@ -1353,7 +1353,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             row = maxrow - 1
 
         sizerItem = self.GetTimeValSizer().GetItem(row).GetWindow()
-        return sizerItem.GetValue()
+        return sizerItem.GetValue().replace(" ", "")
 
     #return the time panel object
     def GetTimePanel(self, row):

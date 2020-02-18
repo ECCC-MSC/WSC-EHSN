@@ -249,7 +249,7 @@ class WaterLevelRunManager(object):
 
     #Time Val Getter
     def GetTimeVal(self, row):
-        return self.gui.GetTimeVal(row)
+        return self.gui.GetTimeVal(row).replace(" ", "")
     
     #Time Val Setter
     def SetTimeVal(self, row, val):

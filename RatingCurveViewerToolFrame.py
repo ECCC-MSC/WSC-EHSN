@@ -305,8 +305,8 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
 
     def OnRatingInfo(self, evt):
-        filetypeString = 'Rating Curve Information Files (*.xml;*.txt)|*.xml;*.txt'
-
+        #filetypeString = 'Rating Curve Information Files (*.xml;*.txt)|*.xml;*.txt'
+        filetypeString = 'Rating Curve Information Files (*.xml;*.txt, *.json)|*.xml;*.txt;*.json'
         fileOpenDialog = wx.FileDialog(self, self.fileOpenTitle, self.path, '',
                             filetypeString, style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
@@ -393,7 +393,6 @@ class RatingCurveViewerToolFrame(wx.Frame):
     def OpenHistDataFile(self, filepath):
         if self.manager is not None:
             self.manager.OpenHistDataFile(filepath)
-
             self.layoutSizer.Layout()
             self.Update()
             self.Refresh()
@@ -515,10 +514,103 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
                 if self.manager.qrta is not None:
                     lns = plt.plot(self.manager.qrta, self.manager.hgta, color='r', label="Rating Curve")        # Plotting straight lines between the points
+        #else:
+        #    if self.manager.extension is not None and \
+        #        self.manager.qrta is not None and self.manager.hgta is not None:
+        #        lns = plt.plot(self.manager.qrta, self.manager.hgta, color='r', label="Rating Curve")        # Plotting straight lines between the points
+
+
+        # read from json file to plot rating curve
+        elif self.manager.extension == "json":
+            selectedCurveIndex = self.GetSelectedCurveIndex()
+
+            #discharge
+            qrta = []
+            #stage
+            hgta = []
+
+            for pot in self.manager.data['RatingCurves'][selectedCurveIndex]['BaseRatingTable']:
+                qrta.append(float(pot['OutputValue']))
+                hgta.append(float(pot['InputValue']))
+
+            self.manager.qrpa = qrta
+            self.manager.hgpa = hgta
+
+            self.manager.qrta = self.manager.qrpa
+            self.manager.hgta = self.manager.hgpa
+
+            if self.manager.data['RatingCurves'][selectedCurveIndex]['Type'] == 'LogarithmicTable':
+                #the list of the offset
+                offsetList = []
+
+                #the list of the break point
+                breakPointList = []
+
+                #the list of the curve points
+                curvePointList = []
+
+                for offset_val in self.manager.data['RatingCurves'][selectedCurveIndex]['Offsets']:
+                    offsetList.append(offset_val['Offset'])
+                    try:
+                        breakPointList.append(offset_val['InputValue'])
+                    except:
+                        pass
+                # print offsetList
+                # print breakPointList
+
+                for num in range(len(qrta)):
+                    curvePoint = []
+                    curvePoint.append(hgta[num])
+                    curvePoint.append(qrta[num])
+                    for nn in range(len(breakPointList)):
+                        if curvePoint[0]<=breakPointList[nn]:
+                            curvePoint.append(offsetList[nn])
+                            break
+                    if len(curvePoint)<3:
+                        curvePoint.append(offsetList[-1])
+                    curvePointList.append(curvePoint)
+                # print curvePointList
+
+                #the whole distance of the discharge
+                maxDis = curvePointList[-1][1]-curvePointList[0][1]
+
+                #calculate the equation
+                for equNum in range(len(curvePointList)-1):
+                    sta1 = curvePointList[equNum][0]
+                    disch1 = curvePointList[equNum][1]
+                    offset1 = curvePointList[equNum][2]
+
+                    sta2 = curvePointList[equNum+1][0]
+                    disch2 = curvePointList[equNum+1][1]
+                    offset2 = curvePointList[equNum+1][2]
+
+                    pointNum = int(max(1,800*(disch2-disch1)/maxDis))
+
+                    #print "all : "
+                    #print sta1,disch1,offset1,sta2,disch2,offset2
+                    beta = math.log10(disch2/disch1)/math.log10((sta2-offset2)/(sta1-offset2))
+
+                    c = disch1/math.pow(sta1-offset2, beta)
+                    #print "c: "
+                    #print c
+                    x = np.linspace(disch1, disch2, pointNum)
+                    y = (x/c)**(1/beta) + offset2
+
+                   # print "x: "
+                   # print x
+                   # print "y: "
+                   # print y
+
+                    lns = plt.plot(x, y, color="r", label="Rating Curve")
+                    #print "lns: "
+                    #print lns
+            else:
+                lns = plt.plot(qrta, hgta, color='r', label="Rating Curve")
         else:
             if self.manager.extension is not None and \
                 self.manager.qrta is not None and self.manager.hgta is not None:
                 lns = plt.plot(self.manager.qrta, self.manager.hgta, color='r', label="Rating Curve")        # Plotting straight lines between the points
+
 
         # Hist values
         if self.manager.dischargeHist is not None and self.manager.stageHist is not None:

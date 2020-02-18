@@ -4,6 +4,7 @@
 from AQUARIUSDataExtractionToolFrame import *
 import subprocess
 import os
+import io
 import sys
 from suds.client import Client
 from base64 import b64encode
@@ -15,6 +16,7 @@ import csv
 
 import requests
 import re
+import json
 
 import heapq
 
@@ -25,6 +27,10 @@ from operator import itemgetter
 
 from xml.etree import ElementTree
 
+try:
+    to_unicode = unicode
+except NameError:
+    to_unicode = str
 
 
 class AQUARIUSDataExtractionToolManager(object):
@@ -195,6 +201,141 @@ class AQUARIUSDataExtractionToolManager(object):
                 self.gui.DeleteProgressDialog()
                 self.gui.CreateErrorDialog("Getting Field Visit from AQUARIUS Failed")
 
+        if self.gui.ProgressDialogIsOpen():
+            self.gui.DeleteProgressDialog()
+            # counter += 1
+            # print "*****************************" + str(counter) + "********************************"
+
+        report = self.ReportOnFailedStations(failedStnInfo, failedLvlInfo, failedRatingInfo, failedHistMmts, path)
+
+    def RunScriptNg(self, path):
+        # counter = 0
+        # while True:
+        # Check authentication
+        #print "here"
+        Login = self.gui.GetUsername()
+        Password = self.gui.GetPassword()
+        Server = self.gui.GetURL()
+        #print Server + "<-- Server name"
+        #print Password + " <-- Password"
+
+        if Login == "":
+            self.gui.CreateErrorDialog("Username field cannot be left blank.  Please use your AQUARIUS username.")
+            return
+        elif Password == "":
+            self.gui.CreateErrorDialog("Password field cannot be left blank.  Please use your AQUARIUS password.")
+            return
+        elif self.gui.StationListIsEmpty():
+            self.gui.CreateErrorDialog(
+                "Station ID list field cannot be left blank.  Please enter the station ID that you are uploading.")
+            return
+
+        s = requests.Session()
+        data = '{"Username": "'+Login+'", "EncryptedPassword": "'+Password+'", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
+        try:
+            s.get(url)
+            aq = s.post(url, data = data, headers = headers)
+            authcode = aq.text
+        except:
+            self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
+            return -1
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        # Lists of stations that go wrong per method
+        failedStnInfo = []
+        failedLvlInfo = []
+        failedRatingInfo = []
+        failedHistMmts = []
+
+        # Check checkboxes for which items to retrieve
+        # if StationInfo checked
+        if self.gui.StnIsChecked():
+            self.gui.CreateProgressDialog('Extraction In Progress...',
+                                          'Collecting data for Station Information (stations.txt)')
+
+            res = self.GetStationInfoNg(aq, path, failedStnInfo)
+            self.CheckReturn(res)
+            if res == -1 or res == -2:
+                pass
+                self.gui.DeleteProgressDialog()
+                self.gui.CreateErrorDialog("Unable to write to file. Please make sure the file stations.txt is closed")
+            elif res != 0:
+                # unplanned response
+                self.gui.DeleteProgressDialog()
+                self.gui.CreateErrorDialog(
+                    "Something went wrong while collecting Levelling Information A few trouble shooting tips: \n" + \
+                    "\t1. Try reducing the list of stations you're extracting data for and try again.\n " + \
+                    "\t2. ometimes naming conventions within AQUARIUS are incorrect. Ensure that your naming conventions are correct.\n" + \
+                    "\t3. Sometimes I try and extract data that doesn't exist (e.g., a rating curve for a stage only station).  This can mess me up.  Make sure what you're asking me to extract exisits.\n" + \
+                    "If you're still having problems after this hint, please file a bug report.")
+
+        # if LevelsInfo checked
+        if self.gui.LvlIsChecked():
+            if self.gui.ProgressDialogIsOpen():
+                self.gui.UpdateProgressDialog('Collecting data for Levels Information (levels.txt)')
+            else:
+                self.gui.CreateProgressDialog('Extraction In Progress',
+                                              'Collecting data for Levels Information (levels.txt)')
+
+            res = self.GetLevelsInfoNg(aq, path, failedLvlInfo)
+            self.CheckReturn(res)
+            if res == -1 or res == -2:
+                pass
+            elif res != 0:
+                # unplanned response
+                self.gui.DeleteProgressDialog()
+                self.gui.CreateErrorDialog(
+                    "Something went wrong while collecting Levelling Information A few trouble shooting tips: \n" + \
+                    "\t1. Try reducing the list of stations you're extracting data for and try again.\n " + \
+                    "\t2. ometimes naming conventions within AQUARIUS are incorrect. Ensure that your naming conventions are correct.\n" + \
+                    "\t3. Sometimes I try and extract data that doesn't exist (e.g., a rating curve for a stage only station).  This can mess me up.  Make sure what you're asking me to extract exisits.\n" + \
+                    "If you're still having problems after this hint, please file a bug report.")
+
+        # if GetRatingInfo checked
+        if self.gui.RCIsChecked():
+            if self.gui.ProgressDialogIsOpen():
+                self.gui.UpdateProgressDialog('Collecting Rating Curve Information (StationID_ratingcurves.xml)')
+            else:
+                self.gui.CreateProgressDialog('Extraction In Progress...',
+                                              'Collecting Rating Curve Information (StationID_ratingcurves.xml)')
+
+            res = self.GetRatingInfoNg(path, failedRatingInfo)
+            self.CheckReturn(res)
+            if res == -1 or res == -2:
+                pass
+            elif res != 0:
+                # unplanned response
+                self.gui.DeleteProgressDialog()
+                self.gui.CreateErrorDialog(
+                    "Something went wrong while collecting Rating Curve Information  A few trouble shooting tips: \n" + \
+                    "\t1. Try reducing the list of stations you're extracting data for and try again.\n " + \
+                    "\t2. ometimes naming conventions within AQUARIUS are incorrect. Ensure that your naming conventions are correct.\n" + \
+                    "\t3. Sometimes I try and extract data that doesn't exist (e.g., a rating curve for a stage only station).  This can mess me up.  Make sure what you're asking me to extract exisits.\n" + \
+                    "If you're still having problems after this hint, please file a bug report.")
+
+        # if GetHistField checked
+        if self.gui.DataPeriodIsChecked():
+            if self.gui.ProgressDialogIsOpen():
+                self.gui.UpdateProgressDialog('Collecting Historical Field Mmts (StationID_FieldVisits.csv)')
+            else:
+                self.gui.CreateProgressDialog('Extraction In Progress...',
+                                              'Collecting Historical Field Mmts (StationID_FieldVisits.csv)')
+
+            if self.gui.IncludeMinMaxIsChecked():
+                numMinMax = self.gui.GetNumOfMinMax()
+            else:
+                numMinMax = None
+            res = self.GetFieldVisitNg(path, failedHistMmts, numMinMax)
+            self.CheckReturn(res)
+            if res == -1 or res == -2:
+                pass
+            elif res != 0:
+                self.gui.DeleteProgressDialog()
+                self.gui.CreateErrorDialog("Getting Field Visit from AQUARIUS Failed")
 
         if self.gui.ProgressDialogIsOpen():
             self.gui.DeleteProgressDialog()
@@ -212,8 +353,6 @@ class AQUARIUSDataExtractionToolManager(object):
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
         Server = self.gui.GetURL()
-
-
 
         authcode = None
 
@@ -240,9 +379,6 @@ class AQUARIUSDataExtractionToolManager(object):
         # For each station in the stationlist
         locations = self.GetStationList()
 
-
-
-        
         for station in locations:
             # Check if real station
             locid = aq.service.GetLocationId(station)
@@ -277,10 +413,8 @@ class AQUARIUSDataExtractionToolManager(object):
                 failedStations.append(station)
                 continue
 
-
             # station name
             newStationLine.append(locationName)
-
 
             # Check row count
             row_count = sum(1 for row in reader)
@@ -289,7 +423,6 @@ class AQUARIUSDataExtractionToolManager(object):
             # reset position in file
             f.seek(0)
             reader = csv.reader(f, delimiter=',')
-
 
             offsetVal = None
             if row_count > 1:
@@ -309,12 +442,10 @@ class AQUARIUSDataExtractionToolManager(object):
             #     # print self.timeZones[offset]
             #     offsetVal = self.timeZones[offset]
 
-
             # offset for station
             newStationLine.append(self.timeZones[line[12]])
 
             stationsList.append(newStationLine)
-
 
         # Maybe check if the file can be written to
         fileExists = None
@@ -338,17 +469,12 @@ class AQUARIUSDataExtractionToolManager(object):
                     failedStations = locations
                     return
 
-
         if exportFile is not None:
             if not fileExists:
                 exportFile.write("STATION ID,STATION NAME,TIMEZONE")
-
             else:
                 # if file exists, read the file
                 # reader = csv.reader(exportFile, delimiter='\n')
-
-
-
                 readList = []
 
                 with open(path + '\\stations.txt', 'a+') as f:
@@ -356,19 +482,13 @@ class AQUARIUSDataExtractionToolManager(object):
                     for i, line in enumerate(reader):
                         if i > 0:
                             readList.append(line[0])
-
-
-
                 # print "-----------------"
                 # for j in readList:
                 #     print j
                 # print "-----------------"
-
-
                 removeIndices = []
 
                 for i, line in enumerate(stationsList):
-
 
                     if len(line) > 2:
 
@@ -395,18 +515,147 @@ class AQUARIUSDataExtractionToolManager(object):
                     outputLine = stationid + "," + unicode(stationName) + "," + timezone
                     writeList.append(outputLine)
 
-
             exportFile.close()
             exportFile = open(path + '\\stations.txt', 'a+')
             for line in writeList:
                 exportFile.write("\n")
                 exportFile.write(line.encode('utf8'))
 
-
             exportFile.close()
 
         return 0
 
+    def GetStationInfoNg(self, aq, path, failedStations):
+
+        print "Get Station Info"
+
+        Login = self.gui.GetUsername()
+        Password = self.gui.GetPassword()
+        Server = self.gui.GetURL()
+
+        authcode = None
+
+        stationsList = []
+
+        s = requests.Session()
+        data = '{"Username": "'+Login+'", "EncryptedPassword": "'+Password+'", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
+        try:
+            s.get(url)
+            aq = s.post(url, data = data, headers = headers)
+            MyAuthCode = aq.text
+        except:
+            self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
+            return -1
+
+        # For each station in the stationlist
+        locations = self.GetStationList()
+        # print locations
+
+        writeList = []
+        for station in locations:
+            # Check if real station
+            locid1 = requests.get(Server + "GetLocationData?Token=" + MyAuthCode + "&LocationIdentifier=" + station)
+            locid = locid1.json()
+            # print locid
+
+            if 'ResponseStatus' in locid:
+                print locid['ResponseStatus']['Message']
+                failedStations.append(station)
+                continue
+
+            # new line in the csv
+            newStationLine = []
+
+            # GetLocations for station name
+            # stationID
+            newStationLine.append(station)
+
+            # command = ServerCall + "GetLocations?token=" + MyAuthCode + "&filter=Identifier=" + station
+            # # print "Sending command: " + command
+            # r = requests.get(command)
+
+            # f = StringIO.StringIO(unicode(r.text).encode("utf8"))
+            stId = station
+            stName = locid['LocationName']
+            stUtc = self.timeZones[str(locid['UtcOffset'])]
+            stIf = [stId, stName, stUtc]
+            writeList.append(stIf)
+
+        # print writeList
+
+        # Maybe check if the file can be written to
+        fileExists = None
+        exportFile = None
+        while True:
+            try:
+                if os.path.isfile(path + '\\stations.txt'):
+                    fileExists = True
+
+                    exportFile = open(path + '\\stations.txt', 'a+')
+                else:
+                    exportFile = open(path + '\\stations.txt', "wb")
+                break
+            except IOError:
+                print "Could not open file! Please close Excel!"
+
+                self.gui.DeleteProgressDialog()
+                res = self.gui.CreateTryAgainDialog(
+                    "Unable to write to file. Please close the file: stations.txt.\nTry again?")
+                if res == 0:
+                    self.gui.CreateProgressDialog('In Progress',
+                                                  'Collecting data for Station Information (stations.txt)')
+                else:
+                    failedStations = locations
+                    return
+
+        if exportFile is not None:
+            if not fileExists:
+                exportFile.write("STATION ID,STATION NAME,TIMEZONE")
+
+            else:
+                readList = []
+
+                with open(path + '\\stations.txt', 'a+') as f:
+                    reader = csv.reader(f, delimiter=",")
+                    for i, line in enumerate(reader):
+                        if i > 0:
+                            readList.append(line[0])
+
+                # print "-----------------"
+                # for j in readList:
+                #     print j
+                # print "-----------------"
+
+                removeIndices = []
+
+                for i in range(len(writeList)):
+
+                    if len(writeList[i]) > 2:
+
+                        for row in readList:
+                            if writeList[i][0] == row:
+                                print writeList[i][0] + " is in file"
+                                removeIndices.append(i)
+                                break
+
+                        # exportFile.seek(0)
+                        # reader = csv.reader(exportFile, delimiter=',')
+
+                removeIndices.reverse()
+                for i in removeIndices:
+                    writeList.remove(writeList[i])
+            exportFile.close()
+            exportFile = open(path + '\\stations.txt', 'a+')
+            for line in writeList:
+                exportFile.write("\n")
+                lineData = line[0] + ',' + line[1] + ',' + line[2]
+                exportFile.write(lineData.encode('utf8'))
+
+            exportFile.close()
+
+        return 0
 
     # Taken from http://stackoverflow.com/questions/904041/reading-a-utf8-csv-file-with-python
     def unicode_csv_reader(self, utf8_data, dialect=csv.excel, **kwargs):
@@ -442,6 +691,7 @@ class AQUARIUSDataExtractionToolManager(object):
         imp1 = Import('http://www.w3.org/2001/XMLSchema')
         doctor = ImportDoctor(imp1)
         try:
+            # aq2 = Client(Server + '/AQUARIUS/AquariusDataService.svc?wsdl')
             aq2 = Client(Server + '/AQUARIUS/AquariusDataService.svc?wsdl', doctor=doctor)
         except:
             print "Client(Server + '/AQUARIUS/AquariusDataService.svc?wsdl', doctor=doctor)"
@@ -624,6 +874,166 @@ class AQUARIUSDataExtractionToolManager(object):
 
         return 0
 
+    def GetLevelsInfoNg(self, aq, path, failedStations):
+        print "Level Info Checked"
+
+        Login = self.gui.GetUsername()
+        Password = self.gui.GetPassword()
+        Server = self.gui.GetURL()
+
+        totalBenchmarkList = []
+        extractedBenchmarkList = []
+        inactiveBMList = []
+
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
+        try:
+            s.get(url)
+            aq = s.post(url, data=data, headers=headers)
+            token = aq.text
+        except:
+            return -1
+
+        # for each station
+        locations = self.GetStationList()
+        for station in locations:
+            try:
+                req = requests.get(Server + "GetLocationData?LocationIdentifier=" + station + "&token=" + token)
+            except:
+                failedStations.append(station)
+                return -1
+            staInfo = req.json()['ReferencePoints']
+            # print staInfo
+            for benchMark in staInfo:
+                benchMarkInfo = []
+                decommissioned = False
+                try:
+                    decom = benchMark['DecommissionedDate']
+                    decommissioned = True
+                except:
+                    decommissioned = False
+
+                    if not decommissioned:
+                        try:
+                            staRef = benchMark['Name']
+                            staRef.replace('\n', ' ')
+                        except:
+                            staRef = ''
+                            print("The reference is empty.")
+
+                        try:
+                            pmyRef = benchMark['PrimarySinceDate']
+                            staRef = staRef + "*"
+                        except:
+                            pmyRef = ''
+
+                        try:
+                            refPoint = benchMark['ReferencePointPeriods']
+                            staElevation = refPoint[len(refPoint) - 1]['Elevation']
+                        except:
+                            refPoint = ''
+                            print("The elevation is empty.")
+
+                        try:
+                            staDescription = benchMark['Description']
+                            staDescription.replace('\n', ' ')
+                        except:
+                            staDescription = ''
+                            print("The description is empty.")
+
+                        benchMarkInfo.append(station)
+                        benchMarkInfo.append(str(staRef))
+                        benchMarkInfo.append(str(staElevation))
+                        benchMarkInfo.append(str(staDescription))
+
+                        totalBenchmarkList.append(benchMarkInfo)
+
+            # print totalBenchmarkList
+
+        # Maybe check if file can be written to
+
+        fileExists = None
+        exportFile = None
+        extractedBenchmarkList = totalBenchmarkList
+        while True:
+            try:
+                if os.path.isfile(path + '\\levels.txt'):
+                    fileExists = True
+                    exportFile = open(path + '\\levels.txt', 'rU')
+                else:
+                    exportFile = open(path + '\\levels.txt', "wb")
+                break
+            except IOError:
+                print "Could not open file! Please close Excel!"
+                self.gui.DeleteProgressDialog()
+                res = self.gui.CreateTryAgainDialog(
+                    "Unable to write to file. Please close the file: levels.txt.\nTry again?")
+                if res == 0:
+                    self.gui.CreateProgressDialog('Extraction In Progress...',
+                                                  'Collecting data for Levels Information (levels.txt)')
+                else:
+                    failedStations = locations
+                    return
+
+        if exportFile is not None:
+            if fileExists:
+
+                # if file exists, read the file
+                # import file (if exists) by parsing as csv
+                # reader = csv.reader(exportFile, delimiter=',')
+
+                reader = self.unicode_csv_reader(exportFile)
+                # print reader
+
+                fileBMList = []
+                for row in reader:
+                    fileBMList.append(row)
+                # print fileBMList
+
+                fileBMList = fileBMList[1:]
+
+                removeIndices = []
+
+                # update lists
+                for bm in fileBMList:
+                    for ebm in extractedBenchmarkList:
+                        if bm[0] == ebm[0] and bm[1] == ebm[1]:
+                            bm[2] = ebm[2]
+                            bm[3] = ebm[3]
+                            break
+
+                # combine lists
+                for ebm in extractedBenchmarkList:
+                    bmFound = False
+                    for bm in fileBMList:
+                        if bm[0] == ebm[0] and bm[1] == ebm[1]:
+                            bmFound = True
+                            break
+
+                    if not bmFound:
+                        fileBMList.append(ebm)
+
+                # totalBenchmarkList = sorted(fileBMList, key=itemgetter(0, 1))
+
+            # Write to file
+            exportFile.close()
+            exportFile = open(path + '\\levels.txt', "wb")
+            exportFile.close()
+            exportFile = open(path + '\\levels.txt', "a+")
+            exportFile.write("STATION,REFERENCE,ELEVATION,DESCRIPTION")
+            for line in totalBenchmarkList:
+                # print line
+                exportFile.write("\n")
+                lineData = line[0] + ',' + line[1] + ',' + line[2] + ',' + line[3]
+                # print lineData
+                exportFile.write(lineData.encode('utf8'))
+
+            exportFile.close()
+
+        return 0
 
     def GetRatingInfo(self, path, failedStations):
         if self.mode == "DEBUG":
@@ -666,6 +1076,56 @@ class AQUARIUSDataExtractionToolManager(object):
 
         return 0
 
+    def GetRatingInfoNg(self, path, failedStations):
+        if self.mode == "DEBUG":
+            print "Manager Run Script"
+
+        stationList = self.GetStationList()
+        Server = self.gui.GetURL()
+        path = self.gui.GetPath()
+        Login = self.gui.GetUsername()
+        Password = self.gui.GetPassword()
+
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
+        try:
+            s.get(url)
+            aq = s.post(url, data=data, headers=headers)
+            token = aq.text
+        except:
+            return -1
+
+        for station in stationList:
+            # Get rating curve Id
+            try:
+                req = requests.get(
+                    Server + "GetRatingModelDescriptionList?LocationIdentifier=" + station + "&token=" + token)
+                ratingCurveId = req.json()['RatingModelDescriptions'][0]['Identifier']
+            except:
+                failedStations.append(station)
+                continue
+
+            # Get rating curve data
+            try:
+                req = requests.get(
+                    Server + "GetRatingCurveList?RatingModelIdentifier=" + ratingCurveId + "&token=" + token)
+            except:
+                failedStations.append(station)
+                continue
+            ratingCurveData = req.json()
+
+            with io.open(path + '\\' + station + "_ratingcurves.json", 'w', encoding='utf8') as outfile:
+                str_ = json.dumps(ratingCurveData, indent=4, sort_keys=True, separators=(',', ': '), ensure_ascii=False)
+                outfile.write(to_unicode(str_))
+
+        # if not self.gui.DataPeriodIsChecked():
+        #     self.gui.DeleteProgressDialog()
+        #     self.gui.CreateMessageDialog("File saved to " + self.gui.path, "Done!")
+
+        return 0
 
     def GetFieldVisit(self, path, failedStations, numMinMax):
         Server = self.gui.GetURL()
@@ -727,7 +1187,6 @@ class AQUARIUSDataExtractionToolManager(object):
             else:
                 minMaxList = None
                 fv=aq.service.GetFieldVisitsByLocationChangedSince(locid, start)
-
 
 
             for i in range(len(fv[0])):
@@ -882,6 +1341,230 @@ class AQUARIUSDataExtractionToolManager(object):
 
                 failedStations.append(location)
 
+        return 0
+
+    def GetFieldVisitNg(self, path, failedStations, numMinMax):
+
+        Server = self.gui.GetURL()
+        Login = self.gui.GetUsername()
+        Password = self.gui.GetPassword()
+
+        # Login
+        s = requests.Session()
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
+        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
+        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
+        try:
+            s.get(url)
+            aq = s.post(url, data=data, headers=headers)
+            token = aq.text
+        except:
+            return -1
+
+        locations = self.GetStationList()
+        timeFrom = str(self.gui.GetDataPeriodFrom()).replace("/", "-")
+        timeTo = str(self.gui.GetDataPeriodTo()).replace("/", "-")
+        formatdateFrom = timeFrom[6:10] + '-' + timeFrom[3:5] + '-' + timeFrom[0:2] + timeFrom[10:19]
+        formatdateTo = timeTo[6:10] + '-' + timeTo[3:5] + '-' + timeTo[0:2]  + timeTo[10:19]
+        #print "time from:" + formatdateFrom
+        #print "time to:" + formatdateTo
+
+        if numMinMax is not None:
+            minMaxList = []
+        else:
+            minMaxList = None
+
+        for location in locations:
+            dataEmpty = True
+            try:
+                req = requests.get(Server + 'GetFieldVisitDataByLocation?LocationIdentifier=' + location + '&token=' + token)
+                fieldDescriptions = req.json()['FieldVisitData']
+            except:
+                failedStations.append(location)
+                continue
+
+            locids = []
+            disChargeList = []
+            fieldVisitInfoList = []
+            startTimeList = []
+            timeNum = 0
+            hasReadings = False
+            for i in range(len(fieldDescriptions)):
+                #print timeNum
+                fieldVisitData = fieldDescriptions[i]
+                fieldId = fieldVisitData['Identifier']
+                locids.append(fieldId)
+                fieldStartTime = str(fieldVisitData['StartTime'])
+                #fieldStartTime = str(fieldVisitData['DischargeActivities'][0]['DischargeSummary']['MeasurementTime'])
+                fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[' + self.timeZones['-' + fieldStartTime[len(fieldStartTime) - 4:len(fieldStartTime) - 3]] + ']'
+                startTimeList.append(fieldStartTime)
+
+            #for locid in locids:
+                try:
+                    fieldVisitReadings = fieldVisitData['InspectionActivity']['Readings']
+                    hasReadings = True
+                except:
+                    pass
+
+                if hasReadings:
+                    if len(fieldVisitReadings) != 0:
+
+                        # stage
+                        '''
+                        fieldVisitStage = ''
+                        for i in fieldVisitReadings:
+                            if i['Parameter'] == 'Stage':
+                                fieldVisitStage = i['Value']['Numeric']
+                                break
+                        if fieldVisitStage == "":
+                            pass
+                        '''
+                        # stage
+                        try:
+                            fieldVisitStage = fieldVisitData['DischargeActivities'][0]['DischargeSummary']['MeanGageHeight']['Numeric']
+                        except:
+                            fieldVisitStage = ''
+
+                        # discharge
+                        try:
+                            fieldVisitDischarge = fieldVisitData['DischargeActivities'][0]['DischargeSummary']['Discharge']['Numeric']
+                        except:
+                            fieldVisitDischarge = ''
+
+                        # width
+                        try:
+                            fieldVisitWidth1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Width']['Numeric']
+                        except:
+                            fieldVisitWidth1 = ''
+
+                        try:
+                            fieldVisitWidth2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['Width']['Numeric']
+                        except:
+                            fieldVisitWidth2 = ''
+
+                        if fieldVisitWidth1 != '':
+                            fieldVisitWidth = fieldVisitWidth1
+                        elif fieldVisitWidth2 != '':
+                            fieldVisitWidth = fieldVisitWidth2
+                        else:
+                            fieldVisitWidth = ''
+
+                        # Area
+                        try:
+                            fieldVisitArea1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['Area']['Numeric']
+                        except:
+                            fieldVisitArea1 = ''
+
+                        try:
+                            fieldVisitArea2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['Area']['Numeric']
+                        except:
+                            fieldVisitArea2 = ''
+
+                        if fieldVisitArea1 != '':
+                            fieldVisitArea = fieldVisitArea1
+                        elif fieldVisitArea2 != '':
+                            fieldVisitArea = fieldVisitArea2
+                        else:
+                            fieldVisitArea = ''
+
+                        # velocity
+                        try:
+                            fieldVisitVelocity1 = fieldVisitData['DischargeActivities'][0]['PointVelocityDischargeActivities'][0]['VelocityAverage']['Numeric']
+                        except:
+                            fieldVisitVelocity1 = ''
+
+                        try:
+                            fieldVisitVelocity2 = fieldVisitData['DischargeActivities'][0]['AdcpDischargeActivities'][0]['VelocityAverage']['Numeric']
+                        except:
+                            fieldVisitVelocity2 = ''
+
+                        if fieldVisitVelocity1 != '':
+                            fieldVisitVelocity = fieldVisitVelocity1
+                        elif fieldVisitVelocity2 != '':
+                            fieldVisitVelocity = fieldVisitVelocity2
+                        else:
+                            fieldVisitVelocity = ''
+
+                        if str(fieldVisitStage) != '' and str(fieldVisitDischarge) != '':
+                            newdate = startTimeList[timeNum]
+                            date = newdate[0:19]
+                            fieldDatalist = []
+
+                            if numMinMax is not None:
+                                minMaxLine = [startTimeList[timeNum]+ ',', str(fieldVisitStage) + ',', str(fieldVisitDischarge) + ',', str(fieldVisitWidth) + ',', str(fieldVisitArea) + ',', str(fieldVisitVelocity) + ',', ' ' + '\n']
+                                minMaxList.append(minMaxLine)
+
+                            # old
+                            #disChargeList = []
+                            #disChargeList.append(fieldVisitDischarge)
+                            # old
+
+                            if formatdateFrom <= date <= formatdateTo :
+                               # print "#################################################################"
+                               # print "ADDED : " + date + str(fieldVisitStage)
+                               # print "#################################################################"
+                                fieldDatalist.append(startTimeList[timeNum] + ',')
+                                fieldDatalist.append(str(fieldVisitStage) + ',')
+                                fieldDatalist.append(str(fieldVisitDischarge) + ',')
+                                fieldDatalist.append(str(fieldVisitWidth) + ',')
+                                fieldDatalist.append(str(fieldVisitArea) + ',')
+                                fieldDatalist.append(str(fieldVisitVelocity) + ',')
+                                fieldDatalist.append(' ' + '\n')
+                                fieldVisitInfoList.append(fieldDatalist)
+                    else:
+                        pass
+                timeNum = timeNum + 1
+            #print "read all data"
+            if numMinMax is not None:
+                maxDischarge = heapq.nlargest(numMinMax, minMaxList, key=lambda x:float(x[2][:-1]))
+                minDischarge = heapq.nsmallest(numMinMax, minMaxList, key=lambda x:float(x[2][:-1]))
+                for line in maxDischarge:
+                    if line not in fieldVisitInfoList:
+                        line[-1] = 'Hist. max' + line[-1]
+                        fieldVisitInfoList.append(line)
+                    else:
+                        for tableLine in fieldVisitInfoList:
+                            if line == tableLine:
+                                tableLine[-1] = 'Hist. max' + line[-1]
+                #print "max added"
+
+                for line in minDischarge:
+                    if line not in fieldVisitInfoList:
+                        line[-1] = 'Hist. min' + line[-1]
+                        fieldVisitInfoList.append(line)
+                    else:
+                        for tableLine in fieldVisitInfoList:
+                            if line == tableLine:
+                                tableLine[-1] = 'Hist. min' + tableLine[-1]
+                #print "min added"
+
+            fieldVisitInfoList = sorted(fieldVisitInfoList)
+
+            # print "####",len(fieldVisitInfoList)
+            if len(fieldVisitInfoList) > 0:
+                while True:
+                    try:
+                        outputfile = open(path + '\\' + location + "_FieldVisits.csv", "wb")
+                        outputfile.write(
+                            'Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n')
+                        for m in fieldVisitInfoList:
+                            for n in m:
+                                outputfile.write(n)
+                        outputfile.close()
+                        break
+                    except IOError:
+                        print "Could not open file! Please close Excel!"
+
+                        self.gui.DeleteProgressDialog()
+                        res = self.gui.CreateTryAgainDialog(
+                            "Unable to write to file. Please close the file: " + location + "_FieldVisits.csv.\nTry again?")
+                        self.gui.CreateProgressDialog('Extraction In Progress',
+                                                      'Collecting Historical Field Mmts (StationID_FieldVisits.csv)')
+                        if res == 0:
+                            pass
+                        else:
+                            failedStations.append(location)
+                            break
         return 0
 
     def CheckReturn(self, res):

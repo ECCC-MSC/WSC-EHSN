@@ -3640,10 +3640,11 @@ def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
                 if obj is not None:
                     midsecMeasurementsManager.AddRow(obj)
     except Exception as e:
-        #print str(e)
-        #exc_type, exc_obj, exc_tb = sys.exc_info()
-        #fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        #print(exc_type, fname, exc_tb.tb_lineno)
+
+        print str(e)
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
         print "Reading XML from version lower than 1_2_5"
         MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager)
 
@@ -3657,11 +3658,16 @@ def MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager):
 
     MidsectionInfo = MidsecMeas.find('MidsectionInfo')
 
-    startTimeCtrl = MidsectionInfo.find('startTimeCtrl').text
-    midsecMeasurementsManager.startTimeCtrl = "" if startTimeCtrl is None else startTimeCtrl
+    try:
 
-    endTimeCtrl = MidsectionInfo.find('endTimeCtrl').text
-    midsecMeasurementsManager.endTimeCtrl = "" if endTimeCtrl is None else endTimeCtrl
+        startTimeCtrl = MidsectionInfo.find('startTimeCtrl').text
+        midsecMeasurementsManager.startTimeCtrl = "" if startTimeCtrl is None else startTimeCtrl
+
+        endTimeCtrl = MidsectionInfo.find('endTimeCtrl').text
+        midsecMeasurementsManager.endTimeCtrl = "" if endTimeCtrl is None else endTimeCtrl
+
+    except:
+        pass
 
     measureSectionCtrl = MidsectionInfo.find('measureSectionCtrl').text
     midsecMeasurementsManager.measureSectionCtrl = "" if measureSectionCtrl is None else measureSectionCtrl

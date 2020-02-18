@@ -139,7 +139,6 @@ class EHSNGui(wx.Frame):
     def __init__(self, mode, ver, *args, **kwargs):
         super(EHSNGui, self).__init__(*args, **kwargs)
 
-
         self.version = ver
         self.noteHeaderTxt = "Hydrometric Survey Notes" + " " + self.version
         self.timezone = ""
@@ -148,8 +147,7 @@ class EHSNGui(wx.Frame):
         self.name = ""
         self.fullname = ""
 
-        # self.dir = os.getcwd()
-        # print self.dir
+        self.attdir = os.getcwd()
         self.dir = os.path.dirname(os.path.realpath(sys.argv[0]))
 
         self.uploadDir = self.dir
@@ -297,7 +295,7 @@ class EHSNGui(wx.Frame):
         self.uploadOpenPdf = False
 
 
-        self.path = ''
+        self.path = self.dir
         self.savedName = ''
         self.savedPassword = ''
         self.savedServer = ""
@@ -396,11 +394,13 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.importSucessTitle = "Succesful import"
 
 
-        self.rootPath = os.getcwd()
-        self.saveAsDirectory = os.getcwd()
+        self.rootPath = self.dir
+        self.saveAsDirectory = self.dir
         self.inipath = self.saveAsDirectory + r'\AQ_Extracted_Data\iniPath.ini'
         self.tempPath = "c:\\temp\\eHSN\\"
-        self.uploadSaveDir = os.getcwd()
+        #self.uploadSaveDir = os.getcwd()
+        self.uploadSaveDir = self.dir
+        self.uploadAttachDir = self.attdir
 
         self.importedBGColor = "#48C9B0"
 
@@ -979,6 +979,42 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         return False
 
 
+    def SaveAsXMLNg(self, path):
+        try:
+            name = self.SaveAsXMLAtUploadNg(path).split('.')[0]
+            # info = wx.MessageDialog(self, "The xml and pdf files has also been saved.\n" \
+            #     + name + ".xml\n", "Done!",
+            #                         wx.OK)
+
+
+        except:
+
+            info = wx.MessageDialog(None, "Failed to save files", "Error!",
+                                wx.OK)
+            info.ShowModal()
+        return name
+
+    def SaveAsXMLAtUploadNg(self, path):
+        oldUploadRecord = None
+        if self.name == '':
+            defaultName = ''
+            if self.manager is not None:
+                date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
+                date = date.strftime("%Y%m%d")
+                defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.xml"
+
+        else:
+            defaultName = self.name.split(".")[0] + ".xml"
+
+        if path != "":
+            newpath = path + '\\' + defaultName
+            xml = self.manager.ExportAsXML(newpath, None)
+            # self.SaveAsPDFAtUpload(path, success, xml)
+            self.SetTitle(self.noteHeaderTxt + "   " + newpath)
+            self.name = defaultName
+            self.fullname = newpath
+
+        return defaultName
 
     #Save as pdf and xml before uploading to AQ
     def SaveAsPDFAndXML4Upload(self, path, success):
@@ -998,13 +1034,24 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                     + name + ".xml\n" + name + ".pdf", "Done!",
 	                                wx.OK)
 
-
         except:
 
             self.deleteProgressDialog()
             info = wx.MessageDialog(None, "Failed to save files", "Error!",
                                 wx.OK)
         info.ShowModal()
+
+    # Save xml and pdf file before uploading it to NG
+    def SaveAsPDFAndXML4UploadJson(self, path, success):
+        try:
+            if success:
+                name = self.SaveAsXMLAtUpload(path, success).rsplit('.', 1)[0]
+            else:
+                name = self.SaveAsXMLAtUpload(path, success).rsplit('.', 1)[0]
+        except:
+            self.deleteProgressDialog()
+            info = wx.MessageDialog(None, "Failed to save files", "Error!",wx.OK)
+            info.ShowModal()
 
     #Save as XML before uploading to AQ
     def SaveAsXMLAtUpload(self, path, success):
@@ -1018,10 +1065,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         else:
             defaultName = self.name.rsplit(".",1)[0] + ".xml"
-
-
-
-
 
         if path != "":
             newpath = path + '\\' + defaultName
@@ -1392,7 +1435,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def FileOpen(self, evt):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, self.fileOpenTitle, self.rootPath, '',
+        fileOpenDialog = wx.FileDialog(self, self.fileOpenTitle, self.path, '',
                             'Hydrometric Survey Notes (*.xml)|*.xml',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
@@ -1548,6 +1591,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         aboutInfo.SetDescription(description)
         aboutInfo.SetCopyright("This code was developed by the Water Survey of Canada. \nFor support please submit an issue to: ")
         aboutInfo.SetWebSite("https://watersurveyofcanada.atlassian.net/")
+        aboutInfo.AddDeveloper("Xu Yan")
         aboutInfo.AddDeveloper("Wenbin Zhang")
         aboutInfo.AddDeveloper("Yugo Brunet")
         aboutInfo.AddDeveloper("Vincent Vallee")
@@ -1935,10 +1979,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.emptyStation = False
 
 
-
-
-
-
     def OpenLevelFile(self, file):
 
         self.stationLevel = []
@@ -1954,7 +1994,13 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                         # self.bm.append(line[1].rstrip())
                         self.bm.append(line[1])
                         self.ele.append(line[2].rstrip())
-                        self.desc.append(line[3].rstrip())
+                        if len(line) > 4:
+                            fulldesc = []
+                            for counter in range(3, len(line)):
+                                fulldesc.append(line[counter].rstrip() + ',')
+                            self.desc.append(str(fulldesc))
+                        else:
+                            self.desc.append(line[3].rstrip())
 
             self.stationLevel = self.stationLevel[1:]
             self.bm = self.bm[1:]

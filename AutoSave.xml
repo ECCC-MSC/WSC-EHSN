@@ -1,72 +1,72 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="WSC_EHSN.xsml"?>
-<EHSN version="v1.3.1">
+<EHSN version="v1.3.2">
 	<TitleHeader>
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
-		<station number=""/>
-		<date timezone="">2019/03/11</date>
+		<station number="01DC005">ANNAPOLIS RIVER AT WILMOT</station>
+		<date timezone="AST">2019/12/19</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
 		<Hg2Ckbox>False</Hg2Ckbox>
-		<Wlr1Ckbox>False</Wlr1Ckbox>
+		<Wlr1Ckbox>True</Wlr1Ckbox>
 		<Wlr2Ckbox>False</Wlr2Ckbox>
 		<HG1Header/>
 		<HG2Header/>
-		<WL1Header/>
+		<WL1Header>NS86-038</WL1Header>
 		<WL2Header/>
 		<StageMeasTable>
 			<StageMeasRow row="0">
-				<time>:</time>
+				<time>14:42</time>
 				<HG1/>
 				<HG2/>
-				<WL1/>
+				<WL1>3.990</WL1>
 				<WL2/>
 				<SRC/>
 				<SRCApp/>
-				<MghCkbox>False</MghCkbox>
+				<MghCkbox>True</MghCkbox>
 			</StageMeasRow>
 		</StageMeasTable>
 		<hgCkbox>False</hgCkbox>
 		<hg2Ckbox>False</hg2Ckbox>
-		<wlr1Ckbox>False</wlr1Ckbox>
+		<wlr1Ckbox>True</wlr1Ckbox>
 		<wlr2Ckbox>False</wlr2Ckbox>
 		<MGHHG1/>
 		<MGHHG2/>
-		<MGHWL1/>
+		<MGHWL1>3.990</MGHWL1>
 		<MGHWL2/>
 		<SRCHG1/>
 		<SRCHG2/>
 		<GCHG1/>
 		<GCHG2/>
-		<GCWL1/>
+		<GCWL1>0.000</GCWL1>
 		<GCWL2/>
 		<CMGHHG1/>
 		<CMGHHG2/>
-		<CMGHWL1/>
+		<CMGHWL1>3.990</CMGHWL1>
 		<CMGHWL2/>
-		<MghMethod/>
+		<MghMethod>Average</MghMethod>
 		<Factors/>
 		<stageRemark/>
 	</StageMeas>
 	<DisMeas>
-		<startTime>:</startTime>
-		<endTime>:</endTime>
+		<startTime>14:42</startTime>
+		<endTime>14:42</endTime>
 		<airTemp/>
 		<waterTemp/>
 		<width/>
 		<area/>
 		<meanVel/>
-		<mgh/>
-		<mghCmbo/>
-		<discharge/>
-		<dischCombo>B</dischCombo>
-		<mmtTimeVal/>
-		<shift/>
-		<diff/>
-		<curve/>
+		<mgh>3.990</mgh>
+		<mghCmbo>3.990  (WLR1)</mghCmbo>
+		<discharge>99.0</discharge>
+		<dischCombo/>
+		<mmtTimeVal>14:42</mmtTimeVal>
+		<shift>0.14</shift>
+		<diff>7.69</diff>
+		<curve>13.00</curve>
 		<condition/>
 		<dischargeRemark/>
 		<controlConditionRemark/>
@@ -98,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/03/11</dataPeriodStart>
-		<dataPeriodEnd>2019/03/11</dataPeriodEnd>
+		<dataPeriodStart>2019/12/19</dataPeriodStart>
+		<dataPeriodEnd>2019/12/19</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -174,7 +174,7 @@
 		<party/>
 		<completed/>
 		<checked/>
-		<reviewed>False</reviewed>
+		<reviewed>True</reviewed>
 	</PartyInfo>
 	<LevelNotes>
 		<LevelChecks>
@@ -372,6 +372,7 @@
 			</FieldReviewTableRow>
 		</FieldReviewTable>
 		<siteNotes/>
+		<planNotes/>
 	</FieldReview>
 	<MovingBoatMeas empty="True">
 		<bedMaterial/>
