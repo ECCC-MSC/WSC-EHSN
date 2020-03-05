@@ -732,7 +732,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
         # number Scaling from zoom
         ax.get_xaxis().get_major_formatter().set_useOffset(False)
         ax.get_yaxis().get_major_formatter().set_useOffset(False)
-
+        plt.savefig('sampleplot.png')
         plt.show()
 
 
