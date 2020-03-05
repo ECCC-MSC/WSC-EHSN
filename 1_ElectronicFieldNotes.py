@@ -1567,7 +1567,8 @@ elif '_MEIPASS2' in environ:
     chdir(environ['_MEIPASS2'])
     filename = join(environ['_MEIPASS2'], filename)
 else:
-    chdir(dirname(sys.argv[0]))
+    # chdir(dirname(sys.argv[0]))
+    chdir(dirname(os.path.realpath(__file__)))
     filename = join(dirname(sys.argv[0]), filename)
 
 
