@@ -29,11 +29,30 @@ class InstrumentDeploymentInfoManager(object):
     #Method Type Checkbox
     @property
     def methodCBListBox(self):
-        return self.gui.GetMethodCBListBox()
+        return self.gui.GetMethodCBListBox().GetValue()
 
     @methodCBListBox.setter
     def methodCBListBox(self, method):
         self.gui.SetMethodCBListBox(method)
+
+    #Structure Type Combobox
+    @property
+    def structureTypeCombo(self):
+        return self.GetStructureTypeCombo().GetValue()
+
+    @structureTypeCombo.setter
+    def structureTypeCombo(self, method):
+        self.gui.SetStructureTypeCombo(method)
+
+    #Monitoring Method Combobox
+    @property
+    def monitoringMethod(self):
+        return self.GetMonitoringMethodCombo().GetValue()
+
+    @monitoringMethod.setter
+    def monitoringMethod(self, method):
+        self.gui.SetMonitoringMethodCombo(method)
+
 
 
     def GetPicturedCkboxVal(self):
@@ -90,7 +109,7 @@ class InstrumentDeploymentInfoManager(object):
     #   with the appropriate list
     def OnDeploymentUpdate(self):
         if self.manager is not None:
-            checkList = self.methodCBListBox.GetValue()
+            checkList = self.methodCBListBox
             
             check = None
             if len(checkList) > 0:
@@ -555,7 +574,7 @@ class InstrumentDeploymentInfoManager(object):
         self.gui.SetControlConditionRemarksCtrl(val)
 
     def PrintEverything(self):
-        checkList = self.methodCBListBox.GetValue()
+        checkList = self.methodCBListBox
         
         check = None
         # if len(checkList) > 0:
@@ -614,6 +633,10 @@ class InstrumentDeploymentInfoManager(object):
         return self.gui.preUseCableCmbo
     def GetMethodCBListBox(self):
         return self.gui.methodCBListBox
+    def GetStructureTypeCombo(self):
+        return self.gui.GetStructureTypeCombo()
+    def GetMonitoringMethodCombo(self):
+        return self.gui.GetMonitoringMethodCombo()
     def GetDeploymentCmbo(self):
         return self.gui.deploymentCmbo
     def GetPositionMethodCmbo(self):

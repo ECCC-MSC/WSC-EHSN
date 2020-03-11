@@ -6,10 +6,10 @@
 	</TitleHeader>
 	<GenInfo>
 		<station number="02KF015">GRAHAM CREEK AT NEPEAN</station>
-		<date timezone="EST">2019/01/25</date>
+		<date timezone="EST">2020/03/11</date>
 	</GenInfo>
 	<StageMeas>
-		<HgCkbox>True</HgCkbox>
+		<HgCkbox>False</HgCkbox>
 		<Hg2Ckbox>False</Hg2Ckbox>
 		<Wlr1Ckbox>False</Wlr1Ckbox>
 		<Wlr2Ckbox>False</Wlr2Ckbox>
@@ -19,64 +19,54 @@
 		<WL2Header/>
 		<StageMeasTable>
 			<StageMeasRow row="0">
-				<time>10:09</time>
-				<HG1>1.000</HG1>
-				<HG2>1.000</HG2>
+				<time>:</time>
+				<HG1/>
+				<HG2/>
 				<WL1/>
 				<WL2/>
 				<SRC/>
 				<SRCApp/>
-				<MghCkbox>True</MghCkbox>
-			</StageMeasRow>
-			<StageMeasRow row="1">
-				<time>10:10</time>
-				<HG1>1.000</HG1>
-				<HG2>1.000</HG2>
-				<WL1/>
-				<WL2/>
-				<SRC/>
-				<SRCApp/>
-				<MghCkbox>True</MghCkbox>
+				<MghCkbox>False</MghCkbox>
 			</StageMeasRow>
 		</StageMeasTable>
-		<hgCkbox>True</hgCkbox>
+		<hgCkbox>False</hgCkbox>
 		<hg2Ckbox>False</hg2Ckbox>
 		<wlr1Ckbox>False</wlr1Ckbox>
 		<wlr2Ckbox>False</wlr2Ckbox>
-		<MGHHG1>1.000</MGHHG1>
+		<MGHHG1/>
 		<MGHHG2/>
 		<MGHWL1/>
 		<MGHWL2/>
-		<SRCHG1>0.000</SRCHG1>
+		<SRCHG1/>
 		<SRCHG2/>
-		<GCHG1>0.000</GCHG1>
+		<GCHG1/>
 		<GCHG2/>
 		<GCWL1/>
 		<GCWL2/>
-		<CMGHHG1>1.000</CMGHHG1>
+		<CMGHHG1/>
 		<CMGHHG2/>
 		<CMGHWL1/>
 		<CMGHWL2/>
-		<MghMethod>Average</MghMethod>
+		<MghMethod/>
 		<Factors/>
 		<stageRemark/>
 	</StageMeas>
 	<DisMeas>
-		<startTime>10:08</startTime>
-		<endTime>11:08</endTime>
-		<airTemp>1.0</airTemp>
-		<waterTemp>1.0</waterTemp>
-		<width>1.00</width>
-		<area>1.00</area>
-		<meanVel>1.00</meanVel>
-		<mgh>1.000</mgh>
-		<mghCmbo>1.000  (HG)</mghCmbo>
-		<discharge>1.00</discharge>
+		<startTime>:</startTime>
+		<endTime>:</endTime>
+		<airTemp/>
+		<waterTemp/>
+		<width/>
+		<area/>
+		<meanVel/>
+		<mgh/>
+		<mghCmbo/>
+		<discharge/>
 		<dischCombo/>
-		<mmtTimeVal>10:38</mmtTimeVal>
-		<shift>0.0287</shift>
-		<diff>23.9</diff>
-		<curve>10.00</curve>
+		<mmtTimeVal/>
+		<shift/>
+		<diff/>
+		<curve/>
 		<condition/>
 		<dischargeRemark/>
 		<controlConditionRemark/>
@@ -108,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/01/25</dataPeriodStart>
-		<dataPeriodEnd>2019/01/25</dataPeriodEnd>
+		<dataPeriodStart>2020/03/11</dataPeriodStart>
+		<dataPeriodEnd>2020/03/11</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -120,7 +110,7 @@
 		<SensorVals/>
 		<loggerTimeTable>
 			<loggerTimeCol1/>
-			<loggerTimeRemark1>Reset</loggerTimeRemark1>
+			<loggerTimeRemark1/>
 			<Hour7/>
 			<Minute7/>
 			<Hour9/>
@@ -175,6 +165,12 @@
 			<compassCali>False</compassCali>
 			<passedRev>False</passedRev>
 		</ADCPInfo>
+		<otherMethods>
+			<structureType/>
+		</otherMethods>
+		<engineeredStructures>
+			<monitoringMethod/>
+		</engineeredStructures>
 		<SiteConditions>
 			<pictured>False</pictured>
 			<preUseCable/>
@@ -184,42 +180,15 @@
 		<party/>
 		<completed/>
 		<checked/>
-		<reviewed>True</reviewed>
+		<reviewed>False</reviewed>
 	</PartyInfo>
 	<LevelNotes>
 		<LevelChecks>
 			<conventionalLevellingRb>True</conventionalLevellingRb>
 			<totalStationRb>False</totalStationRb>
 			<LevelChecksTable run="0">
-				<LevelChecksRow row="0">
-					<station>**BM 87-1</station>
-					<backsight>1.000</backsight>
-					<htInst>3.881</htInst>
-					<foresight/>
-					<elevation>2.881</elevation>
-					<establish>2.881</establish>
-					<comments/>
-				</LevelChecksRow>
-				<LevelChecksRow row="1">
-					<station>BM 87-3</station>
-					<backsight>1.100</backsight>
-					<htInst>4.981</htInst>
-					<foresight>2.000</foresight>
-					<elevation>3.881</elevation>
-					<establish>1.475</establish>
-					<comments/>
-				</LevelChecksRow>
-				<LevelChecksRow row="2">
-					<station>**BM 87-1</station>
-					<backsight/>
-					<htInst/>
-					<foresight>2.500</foresight>
-					<elevation>5.281</elevation>
-					<establish>2.881</establish>
-					<comments/>
-				</LevelChecksRow>
-				<closure>2.4</closure>
-				<upload>True</upload>
+				<closure/>
+				<upload/>
 			</LevelChecksTable>
 			<LevelChecksSummaryTable/>
 			<comments/>
@@ -231,7 +200,7 @@
 	<FieldReview>
 		<pass>False</pass>
 		<dependencyType/>
-		<midsectionType>All</midsectionType>
+		<midsectionType/>
 		<FieldReviewTable>
 			<FieldReviewTableRow row="0">
 				<label>Passed All Initial QA/QC?</label>
@@ -455,7 +424,7 @@
 					<InitialPoint/>
 					<UnmeasuredFlow/>
 					<TimeWeightedMeanWaterLevel/>
-					<measureSectionCtrl>Ice</measureSectionCtrl>
+					<measureSectionCtrl/>
 				</MmtInit>
 				<MetersUsed>
 					<Meter>

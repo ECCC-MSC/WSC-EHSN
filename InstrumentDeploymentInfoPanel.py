@@ -26,7 +26,12 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
         # self.adcpByMovingBoatLbl = "ADCP by Moving Boat"
         # self.midsectionLbl = "Mid-section"
+        self.measurementMethodsLbl = 'Measurement Method'
         self.measurementMethods = ['', 'Mid-section', 'ADCP by Moving Boat', 'Other Methods', 'Engineered Structures', ]
+        self.structureTypesLbl = 'Structure Type'
+        self.structureTypes = ['', 'Flume', 'Weir']
+        self.monitoringMethodsLbl = 'Monitoring Method'
+        self.monitoringMethods = ['', 'Estimated', 'Volumetric', 'Salt Diution', 'Tracer-dry', ]
         self.savedMeasurementMethodIndex = 0
 
         self.deploymentLbl = "Deployment"
@@ -165,26 +170,39 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
         #First Row of items
         #uses sizers and spacers to center items vertically
-        horizontalSizer1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.horizontalSizer1 = wx.BoxSizer(wx.HORIZONTAL)
 
         #Method Checkboxes
         methodListSizer = wx.BoxSizer(wx.VERTICAL)
-        # self.methodCBListBox = wx.CheckListBox(self, size=(-1, 45), choices=[self.adcpByMovingBoatLbl, self.midsectionLbl],\
-                # style=wx.LB_SINGLE)
-        # self.methodCBListBox = wx.CheckListBox(self, size=(-1, 45), choices=self.measurementMethods,\
-                # style=wx.LB_SINGLE)
+        self.methodCBListBoxLbl = wx.StaticText(self, label=self.measurementMethodsLbl, \
+                                 style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
         self.methodCBListBox = wx.ComboBox(self, size=(-1, 45), style=wx.CB_DROPDOWN, choices=self.measurementMethods)
-        # self.methodCBListBox.Bind(wx.EVT_CHECKLISTBOX, self.OnDeploymentCheckListCB)
-        # self.methodCBListBox.Bind(wx.EVT_LISTBOX, self.OnDeploymentCheckListBox)
         self.methodCBListBox.Bind(wx.EVT_COMBOBOX, self.OnDeploymentCheckListCB)
 
+        methodListSizer.Add(self.methodCBListBoxLbl, 0, wx.EXPAND)
         methodListSizer.Add(self.methodCBListBox, 0, wx.EXPAND)
 
+        #structure type Combo Box
+        self.structureTypeSizer = wx.BoxSizer(wx.VERTICAL)
+        self.structureTypeTxt = wx.StaticText(self, label=self.structureTypesLbl,\
+                                            style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
+        self.structureTypeCombo = wx.ComboBox(self, size=(155, 23), style=wx.CB_DROPDOWN, choices=self.structureTypes)
+        self.structureTypeSizer.Add(self.structureTypeTxt, 0, wx.EXPAND)
+        self.structureTypeSizer.Add(self.structureTypeCombo, 0, wx.EXPAND)
+
+        #Monitoring method Combo Box
+        self.monitoringMethodSizer = wx.BoxSizer(wx.VERTICAL)
+        self.monitoringMethodTxt = wx.StaticText(self, label=self.monitoringMethodsLbl,\
+                                            style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
+        self.monitoringMethodCombo = wx.ComboBox(self, size=(155, 23), style=wx.CB_DROPDOWN, choices=self.monitoringMethods)
+        self.monitoringMethodSizer.Add(self.monitoringMethodTxt, 0, wx.EXPAND)
+        self.monitoringMethodSizer.Add(self.monitoringMethodCombo, 0, wx.EXPAND)
 
 
 
         #Deployment Combo Box
-        self.deploymentTxt = wx.StaticText(self, label=self.deploymentLbl, style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
+        self.deploymentTxt = wx.StaticText(self, label=self.deploymentLbl, \
+                                            style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
         self.deploymentCmbo = wx.ComboBox(self, size=(155, 23), style=wx.CB_DROPDOWN)
         self.deploymentCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
         self.deploymentCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
@@ -209,13 +227,19 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
 
-        horizontalSizer1.Add(methodListSizer, 0, wx.EXPAND|wx.LEFT, 5)
-        horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
-        horizontalSizer1.Add(deploymentSizerV, 0, wx.EXPAND|wx.LEFT, 5)
-        horizontalSizer1.Add((25, -1), 1, wx.EXPAND)
+        self.horizontalSizer1.Add(methodListSizer, 0, wx.EXPAND|wx.LEFT, 5)
+        self.horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
+        self.horizontalSizer1.Add(self.structureTypeSizer, 0, wx.EXPAND|wx.LEFT, 5)
+        self.horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
+        self.horizontalSizer1.Add(self.monitoringMethodSizer, 0, wx.EXPAND|wx.LEFT, 5)
+        self.horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
+        self.horizontalSizer1.Add(deploymentSizerV, 0, wx.EXPAND|wx.LEFT, 5)
+        self.horizontalSizer1.Add((25, -1), 1, wx.EXPAND)
+        self.horizontalSizer1.Hide(self.structureTypeSizer, True)
+        self.horizontalSizer1.Hide(self.monitoringMethodSizer, True)
 
-        # horizontalSizer1.Add(positionMethodSizerV, 0, wx.EXPAND|wx.LEFT, 5)
-        # horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
+        # self.horizontalSizer1.Add(positionMethodSizerV, 0, wx.EXPAND|wx.LEFT, 5)
+        # self.horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
 
 
 
@@ -847,7 +871,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 #         controlRemarksSizer.Add(genSizer, 2, wx.EXPAND)
 
 
-        self.layoutSizer.Add(horizontalSizer1, 0, wx.EXPAND|wx.ALL, 5)
+        self.layoutSizer.Add(self.horizontalSizer1, 0, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(horizontalSizer2, 0, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(horizontalSizer3, 0, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(horizontalSizer4, 0, wx.EXPAND|wx.ALL, 5)
@@ -867,13 +891,6 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         # for i in checked:
             # self.methodCBListBox.Check(i, check=False)
 
-    # Check the checkbox according to the highlighted listbox item
-    # def OnDeploymentCheckListBox(self, event):
-        # set_trace()
-        # index = self.methodCBListBox.GetSelection()
-        # self.methodCBListBox.Check(index, check=True)
-
-        # self.OnDeploymentCheckListCB(event)
 
     #After import from the *.dis, double checking the overwriting, and updating corresponding instrument panel and Field reveiw checklist 
     def DeploymentCheckListCBCkecking4MidSection(self):
@@ -951,6 +968,21 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             return True
 
 
+    def RefreshDeploymentMethod(self):
+        if self.savedMeasurementMethodIndex != 3:
+            self.horizontalSizer1.Hide(self.structureTypeSizer, True)
+            self.structureTypeCombo.SetValue('')
+        else:
+            self.horizontalSizer1.Show(self.structureTypeSizer, True)
+
+	if self.savedMeasurementMethodIndex != 4:
+	    self.horizontalSizer1.Hide(self.monitoringMethodSizer, True)
+	    self.monitoringMethodCombo.SetValue('')
+	else:
+	    self.horizontalSizer1.Show(self.monitoringMethodSizer, True)
+        self.Refresh()
+
+
     # Called when the deployment method is changed
     # update the FRChecklist to appropriate list
     # Enable the appropriate fields according to Deployment Type
@@ -976,6 +1008,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
         self.savedMeasurementMethodIndex = selection.index(obj.GetValue())
+        self.RefreshDeploymentMethod()
+
         # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
             # dlg = wx.MessageDialog(self, self.deploymentWarning%selection[(e.GetInt()+1)%2], 'Warning',
                               # wx.YES_NO | wx.ICON_QUESTION)
@@ -1394,6 +1428,18 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.DeploymentCheckListUpdate()
 
 
+    def GetStructureTypeCombo(self):
+        return self.structureTypeCombo
+
+    def SetStructureTypeCombo(self, method):
+        if method in self.structureTypes:
+            self.structureTypeCombo.SetValue(method)
+
+    def GetMonitoringMethodCombo(self):
+	return self.monitoringMethodCombo
+    def SetMonitoringMethodCombo(self, method):
+	if method in self.monitoringMethods:
+	    self.monitoringMethodCombo.SetValue(method)
 
 
 

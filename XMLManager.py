@@ -11,6 +11,7 @@ import time
 import ast
 import sys, os
 import traceback
+from pdb import set_trace
 
 
 #Calculate the mean time
@@ -1271,11 +1272,11 @@ def MeasResultsFromXML(MeasResults, measResultsManager):
 def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     bkColor = instrDepManager.manager.gui.importedBGColor
     # checkList = instrDepManager.methodCBListBox.GetCheckedStrings()
-    checkList = instrDepManager.methodCBListBox.GetValue()
+    checkList = instrDepManager.methodCBListBox
 
     check = None
     if len(checkList) > 0:
-        check = checkList[0]
+        check = checkList
 
     GeneralInfo = SubElement(InstrumentDeployment, 'GeneralInfo')
     method = SubElement(GeneralInfo, 'methodType')
@@ -1408,6 +1409,16 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
         not instrDepManager.passedFieldRevCB:
         ADCPInfo.attrib['empty'] = 'True'
 
+    #Other methods
+    otherMethods = SubElement(InstrumentDeployment, 'otherMethods')
+    structureType = SubElement(otherMethods, 'structureType')
+    structureType.text = str(instrDepManager.structureTypeCombo)
+
+
+    #Engineered Structures
+    engineeredStructures = SubElement(InstrumentDeployment, 'engineeredStructures')
+    monitoringMethod = SubElement(engineeredStructures, 'monitoringMethod')
+    monitoringMethod.text = str(instrDepManager.monitoringMethod)
 
     #SiteConditions Panel
     SiteConditions = SubElement(InstrumentDeployment, 'SiteConditions')
@@ -1477,8 +1488,39 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     instrDepManager.gui.CheckListReset()
     GeneralInfo = InstrumentDeployment.find('GeneralInfo')
     method = GeneralInfo.find('methodType').text
-    instrDepManager.methodCBListBox = "" if method is None else method
+    if method in instrDepManager.gui.measurementMethods:
+        instrDepManager.gui.savedMeasurementMethodIndex = instrDepManager.gui.measurementMethods.index(method)
+        instrDepManager.GetMethodCBListBox().SetValue(method)
+    else:
+        instrDepManager.gui.savedMeasurementMethodIndex = 0
+        instrDepManager.GetMethodCBListBox().SetValue('')
+    # instrDepManager.methodCBListBox = "" if method is None else method
     instrDepManager.OnDeploymentUpdate()
+
+    try:
+        otherMethods = InstrumentDeployment.find('otherMethods')
+        structureType = otherMethods.find('structureType')
+    except:
+        structureType = None
+
+    if structureType is None:
+        instrDepManager.structureTypeCombo = ''
+    else:
+        instrDepManager.structureTypeCombo = structureType.text
+        
+
+    try:
+        engineeredStructures = InstrumentDeployment.find('engineeredStructures')
+        monitoringMethod = engineeredStructures.find('monitoringMethod')
+    except:
+        monitoringMethod = None
+
+    if monitoringMethod is None:
+        instrDepManager.monitoringMethod = ''
+    else:
+        instrDepManager.monitoringMethod = monitoringMethod.text
+
+
 
     deployment = GeneralInfo.find('deployment')
     if deployment.text is None:
