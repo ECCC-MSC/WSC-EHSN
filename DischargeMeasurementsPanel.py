@@ -610,7 +610,7 @@ class DischargeMeasurementsPanel(wx.Panel):
     # Any update will affect data on moving boat
     def OnChangeUpdateMovingBoat(self, event):
         if self.manager is not None:
-            if self.manager.manager.instrDepManager.methodCBListBox.IsChecked(0):
+            if self.manager.manager.instrDepManager.methodCBListBox.GetCurrentSelection()==2:
                 self.manager.manager.movingBoatMeasurementsManager.recalculate()
         event.Skip()
         

@@ -90,11 +90,11 @@ class InstrumentDeploymentInfoManager(object):
     #   with the appropriate list
     def OnDeploymentUpdate(self):
         if self.manager is not None:
-            checkList = self.methodCBListBox.GetCheckedStrings()
+            checkList = self.methodCBListBox.GetValue()
             
             check = None
             if len(checkList) > 0:
-                check = checkList[0]
+                check = checkList
 
                 
         #bug fix for keep the field review data
@@ -555,11 +555,12 @@ class InstrumentDeploymentInfoManager(object):
         self.gui.SetControlConditionRemarksCtrl(val)
 
     def PrintEverything(self):
-        checkList = self.methodCBListBox.GetCheckedStrings()
+        checkList = self.methodCBListBox.GetValue()
         
         check = None
-        if len(checkList) > 0:
-            check = checkList[0]
+        # if len(checkList) > 0:
+        if checkList != '':
+            check = checkList
 
             
         print "Method: %s" %  check

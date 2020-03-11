@@ -3,6 +3,7 @@
 
 import wx
 import NumberControl
+from pdb import set_trace
 # import wx.lib.intctrl
 
 #Overwrite the TextCtrl Class in order to control the float input
@@ -23,8 +24,11 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     def __init__(self, mode, *args, **kwargs):
         super(InstrumentDeploymentInfoPanel, self).__init__(*args, **kwargs)
 
-        self.adcpByMovingBoatLbl = "ADCP by Moving Boat"
-        self.midsectionLbl = "Mid-section"
+        # self.adcpByMovingBoatLbl = "ADCP by Moving Boat"
+        # self.midsectionLbl = "Mid-section"
+        self.measurementMethods = ['', 'Mid-section', 'ADCP by Moving Boat', 'Other Methods', 'Engineered Structures', ]
+        self.savedMeasurementMethodIndex = 0
+
         self.deploymentLbl = "Deployment"
         self.deploymentMidsecList = ["", "Wading", "Bridge Upstream", "Bridge Downstream",
                                      "Tethered Bridge Upstream", "Tethered Bridge Downstream",
@@ -165,9 +169,14 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
         #Method Checkboxes
         methodListSizer = wx.BoxSizer(wx.VERTICAL)
-        self.methodCBListBox = wx.CheckListBox(self, size=(-1, 45), choices=[self.adcpByMovingBoatLbl, self.midsectionLbl], style=wx.LB_SINGLE)
-        self.methodCBListBox.Bind(wx.EVT_CHECKLISTBOX, self.OnDeploymentCheckListCB)
-        self.methodCBListBox.Bind(wx.EVT_LISTBOX, self.OnDeploymentCheckListBox)
+        # self.methodCBListBox = wx.CheckListBox(self, size=(-1, 45), choices=[self.adcpByMovingBoatLbl, self.midsectionLbl],\
+                # style=wx.LB_SINGLE)
+        # self.methodCBListBox = wx.CheckListBox(self, size=(-1, 45), choices=self.measurementMethods,\
+                # style=wx.LB_SINGLE)
+        self.methodCBListBox = wx.ComboBox(self, size=(-1, 45), style=wx.CB_DROPDOWN, choices=self.measurementMethods)
+        # self.methodCBListBox.Bind(wx.EVT_CHECKLISTBOX, self.OnDeploymentCheckListCB)
+        # self.methodCBListBox.Bind(wx.EVT_LISTBOX, self.OnDeploymentCheckListBox)
+        self.methodCBListBox.Bind(wx.EVT_COMBOBOX, self.OnDeploymentCheckListCB)
 
         methodListSizer.Add(self.methodCBListBox, 0, wx.EXPAND)
 
@@ -852,31 +861,33 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
     # Reset Checklist so that neither checkbox is checked
     def CheckListReset(self):
-        checked = list(self.methodCBListBox.GetCheckedItems())
+        self.methodCBListBox.SetValue('')
+        # checked = list(self.methodCBListBox.GetCheckedItems())
 
-        for i in checked:
-            self.methodCBListBox.Check(i, check=False)
+        # for i in checked:
+            # self.methodCBListBox.Check(i, check=False)
 
     # Check the checkbox according to the highlighted listbox item
-    def OnDeploymentCheckListBox(self, event):
+    # def OnDeploymentCheckListBox(self, event):
+        # set_trace()
+        # index = self.methodCBListBox.GetSelection()
+        # self.methodCBListBox.Check(index, check=True)
 
-
-        index = self.methodCBListBox.GetSelection()
-        self.methodCBListBox.Check(index, check=True)
-
-        self.OnDeploymentCheckListCB(event)
+        # self.OnDeploymentCheckListCB(event)
 
     #After import from the *.dis, double checking the overwriting, and updating corresponding instrument panel and Field reveiw checklist 
     def DeploymentCheckListCBCkecking4MidSection(self):
 
-        if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
+        # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
+        if self.savedMeasurementMethodIndex == 2:
             dlg = wx.MessageDialog(self, self.deploymentWarning%'Moving Boat', 'Warning',
                               wx.YES_NO | wx.ICON_QUESTION)
             res = dlg.ShowModal()
             if res == wx.ID_YES:
                 dlg.Destroy()
-                self.methodCBListBox.Check(1)
-                self.methodCBListBox.Check(0, False)
+                # self.methodCBListBox.Check(1)
+                # self.methodCBListBox.Check(0, False)
+                self.methodCBListBox.SetValue(self.measurementMethods[1])
                 self.DeploymentCheckListUpdate()
 
                 if self.manager is not None:
@@ -885,8 +896,9 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
             elif res == wx.ID_NO:
                 dlg.Destroy()
-                self.methodCBListBox.Check(0)
-                self.methodCBListBox.Check(1, False)
+                # self.methodCBListBox.Check(0)
+                # self.methodCBListBox.Check(1, False)
+                self.methodCBListBox.SetValue(self.measurementMethods[2])
 
                 self.DeploymentCheckListUpdate()
 
@@ -904,14 +916,16 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     #After import from the *.dis, double checking the overwriting, and updating corresponding instrument panel and Field reveiw checklist 
     def DeploymentCheckListCBCkecking4MovingBoat(self):
 
-        if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
+        # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
+        if self.savedMeasurementMethodIndex == 1:
             dlg = wx.MessageDialog(self, self.deploymentWarning%'Midsection', 'Warning',
                               wx.YES_NO | wx.ICON_QUESTION)
             res = dlg.ShowModal()
             if res == wx.ID_YES:
                 dlg.Destroy()
-                self.methodCBListBox.Check(0)
-                self.methodCBListBox.Check(1, False)
+                # self.methodCBListBox.Check(0)
+                # self.methodCBListBox.Check(1, False)
+                self.methodCBListBox.SetValue(self.measurementMethods[2])
                 self.DeploymentCheckListUpdate()
 
                 if self.manager is not None:
@@ -920,8 +934,9 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
             elif res == wx.ID_NO:
                 dlg.Destroy()
-                self.methodCBListBox.Check(1)
-                self.methodCBListBox.Check(0, False)
+                # self.methodCBListBox.Check(1)
+                # self.methodCBListBox.Check(0, False)
+                self.methodCBListBox.SetValue(self.measurementMethods[1])
 
                 self.DeploymentCheckListUpdate()
 
@@ -940,9 +955,11 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     # update the FRChecklist to appropriate list
     # Enable the appropriate fields according to Deployment Type
     def OnDeploymentCheckListCB(self, e):
-        selection = [self.adcpByMovingBoatLbl, self.midsectionLbl]
-        if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
-            dlg = wx.MessageDialog(self, self.deploymentWarning%selection[(e.GetInt()+1)%2], 'Warning',
+        # selection = [self.adcpByMovingBoatLbl, self.midsectionLbl]
+        selection = self.measurementMethods
+        obj = e.GetEventObject()
+        if obj.GetCurrentSelection() != self.savedMeasurementMethodIndex and self.savedMeasurementMethodIndex != 0:
+            dlg = wx.MessageDialog(self, self.deploymentWarning%selection[self.savedMeasurementMethodIndex], 'Warning',
                               wx.YES_NO | wx.ICON_QUESTION)
             res = dlg.ShowModal()
             if res == wx.ID_YES:
@@ -950,37 +967,55 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
             elif res == wx.ID_NO:
                 dlg.Destroy()
-                self.methodCBListBox.Check(e.GetInt(), check=False)
+                # self.methodCBListBox.Check(e.GetInt(), check=False)
+                self.methodCBListBox.SetValue(self.measurementMethods[self.savedMeasurementMethodIndex])
                 return False
 
 
-        if len(list(self.methodCBListBox.GetCheckedItems())) == 0:
-            dlg = wx.MessageDialog(self, self.deploymentWarning%selection[e.GetInt()], 'Warning',
-                              wx.YES_NO | wx.ICON_QUESTION)
-            res = dlg.ShowModal()
-            if res == wx.ID_YES:
-                dlg.Destroy()
-
-            elif res == wx.ID_NO:
-                dlg.Destroy()
-                self.methodCBListBox.Check(e.GetInt(), check=True)
-                return
 
 
 
+        self.savedMeasurementMethodIndex = selection.index(obj.GetValue())
+        # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
+            # dlg = wx.MessageDialog(self, self.deploymentWarning%selection[(e.GetInt()+1)%2], 'Warning',
+                              # wx.YES_NO | wx.ICON_QUESTION)
+            # res = dlg.ShowModal()
+            # if res == wx.ID_YES:
+                # dlg.Destroy()
+
+            # elif res == wx.ID_NO:
+                # dlg.Destroy()
+                # self.methodCBListBox.Check(e.GetInt(), check=False)
+                # return False
+
+
+        # if len(list(self.methodCBListBox.GetCheckedItems())) == 0:
+            # dlg = wx.MessageDialog(self, self.deploymentWarning%selection[e.GetInt()], 'Warning',
+                              # wx.YES_NO | wx.ICON_QUESTION)
+            # res = dlg.ShowModal()
+            # if res == wx.ID_YES:
+                # dlg.Destroy()
+
+            # elif res == wx.ID_NO:
+                # dlg.Destroy()
+                # self.methodCBListBox.Check(e.GetInt(), check=True)
+                # return
 
 
 
 
-        checked = list(self.methodCBListBox.GetCheckedItems())
 
-        lenChecked = len(checked)
 
-        if lenChecked > 0:
-            checked.remove(e.GetInt())
 
-        for i in checked:
-            self.methodCBListBox.Check(i, check=False)
+        # checked = list(self.methodCBListBox.GetCheckedItems())
+
+        # lenChecked = len(checked)
+
+        # if lenChecked > 0:
+            # checked.remove(e.GetInt())
+
+        # for i in checked
+            # self.methodCBListBox.Check(i, check=False)
 
         self.DeploymentCheckListUpdate()
 
@@ -997,18 +1032,19 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     # Update the Dropdown list of Deployment Methods
     def DeploymentCheckListUpdate(self):
         # print "DeploymentCheckListUpdate"
-        checked = list(self.methodCBListBox.GetCheckedItems())
-        lenChecked = len(checked)
+        # checked = list(self.methodCBListBox.GetCheckedItems())
+        # lenChecked = len(checked)
 
         # print "checked length %s" % lenChecked
 
-        if lenChecked > 0:
-            checked = list(self.methodCBListBox.GetCheckedItems())
-            check = checked[0]
+        # if lenChecked > 0:
+        if self.savedMeasurementMethodIndex != 0:
+            # checked = list(self.methodCBListBox.GetCheckedItems())
+            # check = checked[0]
 
-            self.InfoUpdate(check)
+            self.InfoUpdate(self.savedMeasurementMethodIndex)
 
-            if check == 0: #ADCP
+            if self.savedMeasurementMethodIndex == 2: #ADCP
                 self.UpdateComboBox(self.deploymentCmbo, self.deploymentADCPList)
                 self.UpdateComboBox(self.modelCmbo, self.modelList1)
                 self.UpdateComboBox(self.instrumentCmbo, ['ADCP'])
@@ -1018,7 +1054,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
                     if self.manager.manager is not None:
                         self.manager.manager.FlatNoteBook.GetPage(2).Enable(True)
                         self.manager.manager.FlatNoteBook.GetPage(3).Enable(False)
-            elif check == 1: #MidSection
+            elif self.savedMeasurementMethodIndex == 1: #MidSection
                 # self.instrumentCmbo.SetValue('')
                 self.UpdateComboBox(self.deploymentCmbo, self.deploymentMidsecList)
                 self.UpdateComboBox(self.modelCmbo, self.modelList)
@@ -1052,7 +1088,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.EnableAdcpInfo(False)
             self.instrumentCmbo.SetValue('')
         else:
-            if check == 0: #ADCP
+            if check == 2: #ADCP
                 self.EnableAdcpInfo(True)
                 self.EnableMidsectionInfo(False)
 
@@ -1065,16 +1101,16 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
     # When a checkbox is clicked, update the view accordingly
-    def OnDeploymentSelect(self, evt):
-        checked = list(self.methodCBListBox.GetCheckedItems())
-        # print checked
-        lenChecked = len(checked)
+    # def OnDeploymentSelect(self, evt):
+        # checked = list(self.methodCBListBox.GetCheckedItems())
+        # # print checked
+        # lenChecked = len(checked)
 
-        if lenChecked > 0:
-            check = checked[0]
+        # if lenChecked > 0:
+            # check = checked[0]
 
-            if check == 1: #1 = Midsection
-                self.DeploymentUpdate()
+            # if check == 1: #1 = Midsection
+                # self.DeploymentUpdate()
 
     # Updates the view depending on which checkbox is clicked
     def DeploymentUpdate(self):
@@ -1279,7 +1315,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         if self.instrumentCmbo.GetValue() == 'ADCP':
             self.UpdateComboBox(self.modelCmbo, self.modelList1)
             self.EnableAdcpInfo(True)
-            if(self.methodCBListBox.GetCheckedStrings()[0]==self.adcpByMovingBoatLbl):
+            if(self.methodCBListBox.GetValue()==self.measurementMethods[2]):
                 self.EnableMidsectionInfo(False)
             else:
                 self.EnableMidsectionInfo(True)
@@ -1306,7 +1342,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
             self.UpdateComboBox(self.modelCmbo, self.modelList2)
             self.manufactureCmbo.SetValue('')
-            if self.methodCBListBox.IsChecked(1):
+            # if self.methodCBListBox.IsChecked(1):
+            if self.methodCBListBox.GetValue() == self.measurementMethods[1]:
                 self.EnableAdcpInfo(True)
                 self.EnableMidsectionInfo(True)
             else:
@@ -1338,7 +1375,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     # Any update on discharge measurement will affect data on moving boat
     def OnChangeUpdateMovingBoat(self):
         if self.manager is not None:
-            if self.methodCBListBox.IsChecked(0):
+            if self.savedMeasurementMethodIndex == 2:
                 self.manager.manager.movingBoatMeasurementsManager.recalculate()
             else:
                 self.manager.manager.movingBoatMeasurementsManager.Clear()
@@ -1352,7 +1389,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         depMethodList = list(self.methodCBListBox.GetItems())
         if method in depMethodList:
             index = depMethodList.index(method)
-            self.methodCBListBox.Check(index, check=True)
+            # self.methodCBListBox.Check(index, check=True)
+            self.methodCBListBox.SetValue(self.measurementMethods[index])
         self.DeploymentCheckListUpdate()
 
 
@@ -1368,8 +1406,9 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.deploymentCmbo.SetValue(deploymentCmbo)
         # self.gui.DeploymentUpdate()
 
-        depMethodLen = len(self.methodCBListBox.GetCheckedStrings())
-        if depMethodLen <= 0:
+        # depMethodLen = len(self.methodCBListBox.GetCheckedStrings())
+        # if depMethodLen <= 0:
+        if self.savedMeasurementMethodIndex == 0:
             self.InfoUpdate(None)
 
     #Position Method Ctrl

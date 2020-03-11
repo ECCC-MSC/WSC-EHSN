@@ -1270,7 +1270,8 @@ def MeasResultsFromXML(MeasResults, measResultsManager):
 # Create XML structure for Instrument and Deployment information
 def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     bkColor = instrDepManager.manager.gui.importedBGColor
-    checkList = instrDepManager.methodCBListBox.GetCheckedStrings()
+    # checkList = instrDepManager.methodCBListBox.GetCheckedStrings()
+    checkList = instrDepManager.methodCBListBox.GetValue()
 
     check = None
     if len(checkList) > 0:
