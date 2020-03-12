@@ -99,6 +99,18 @@ class WaterLevelRunManager(object):
         return self.levelNotes.GetStation(run, row)
 
 
+    #Return the Hour for specific circuit and row number:
+    def GetLevelNotesTime(self, run, row):
+        return self.levelNotes.GetTime(run, row)
+
+    #Return the Hour for specific circuit and row number:
+    def GetLevelNotesHour(self, run, row):
+        return self.levelNotes.GetHour(run, row)
+
+    #Return the Minute for specific circuit and row number:
+    def GetLevelNotesMinute(self, run, row):
+        return self.levelNotes.GetMinute(run, row)
+
 
     #Return the backsight for specific circuit and row number:
     def GetLevelNotesBacksight(self, run, row):

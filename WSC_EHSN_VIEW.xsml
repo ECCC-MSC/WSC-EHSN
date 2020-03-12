@@ -913,6 +913,7 @@
 		<tbody>
 		<tr>
 			<th>Station</th>
+			<th>Time</th>
 			<th>Backsight</th>
 			<th>Height of Instrument</th>
 			<th>Foresight</th>
@@ -927,6 +928,7 @@
 			<xsl:for-each select="$TABLE/LevelChecksRow">
 				<tr>
 					<td><xsl:value-of select="station"/></td>
+					<td><xsl:value-of select="time"/></td>
 					<td><xsl:value-of select="backsight"/></td>
 					<td><font color="blue"><xsl:value-of select="htInst"/></font></td>
 					<td><xsl:value-of select="foresight"/></td>

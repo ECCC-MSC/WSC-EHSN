@@ -11,6 +11,7 @@ import wx.lib.agw.toasterbox as tb
 import re
 import NumberControl
 from time import clock
+from DropdownTime import *
 
 class MyTextCtrl(wx.TextCtrl):
     def __init__(self, *args, **kwargs):
@@ -28,6 +29,7 @@ class WaterLevelNotesPanel(wx.Panel):
         self.manager = manager
 
         self.stationLbl = "Station"
+        self.timeLbl = "Time"
         self.BSLbl = "Backsight"
         self.HTInstLbl = "Height of Instrument"
         self.FSLbl = "Foresight"
@@ -105,11 +107,24 @@ class WaterLevelNotesPanel(wx.Panel):
         #station column
         stationTxtPanel = wx.Panel(self, style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
         stationTxtPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
-        stationTxt = wx.StaticText(stationTxtPanel, label=self.stationLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.headerCol + 6, self.headerRow))
+        stationTxt = wx.StaticText(stationTxtPanel, label=self.stationLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, \
+                                    size=(self.headerCol + 6, self.headerRow))
         stationTxtPanelSizer.Add(stationTxt, 1, wx.EXPAND)
         stationTxtPanel.SetSizer(stationTxtPanelSizer)
 
         levelNotesHeader.Add(stationTxtPanel, 1, wx.EXPAND)
+
+
+        #Time column
+        timeTxtPanel = wx.Panel(self, style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
+        timeTxtPanelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        timeTxt = wx.StaticText(timeTxtPanel, label=self.timeLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, \
+                                size=(self.headerCol+6, self.headerRow))
+        timeTxtPanelSizer.Add(timeTxt, 1, wx.EXPAND)
+        timeTxtPanel.SetSizer(timeTxtPanelSizer)
+
+        levelNotesHeader.Add(timeTxtPanel, 1, wx.EXPAND)
+
 
 
         #BS column
@@ -525,12 +540,16 @@ class WaterLevelNotesPanel(wx.Panel):
 
         stationsCmbo.MoveAfterInTabOrder(oldButton)
 
+        timeCtrl = DropdownTime(False, parent=panel, size=(self.headerCol, self.entryRow))
+        timeCtrl.MoveAfterInTabOrder(stationsCmbo)
+
+
         if self.manager is not None:
             if self.manager.manager is not None:
                 if self.manager.manager.manager is not None:
                     stationsCmbo.Bind(wx.EVT_TEXT, self.manager.manager.manager.gui.OnLevelNoteStationSelect)
         BSCtrl = MyTextCtrl(panel, style=wx.TE_CENTRE, name=oldname, size=(self.headerCol, self.entryRow))
-        BSCtrl.MoveAfterInTabOrder(stationsCmbo)
+        BSCtrl.MoveAfterInTabOrder(timeCtrl)
         BSCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         BSCtrl.Bind(wx.EVT_TEXT, self.OnBacksightUpdateHI)
         BSCtrl.Bind(wx.EVT_KILL_FOCUS, self.OnKillFocus)
@@ -633,6 +652,7 @@ class WaterLevelNotesPanel(wx.Panel):
 
         # rowSizer.Add(checkbox, 0, wx.EXPAND)
         rowSizer.Add(stationsCmbo, 1, wx.EXPAND)
+        rowSizer.Add(timeCtrl, 1, wx.EXPAND)
         rowSizer.Add(BSCtrl, 1, wx.EXPAND)
         rowSizer.Add(HTInstCtrl, 1, wx.EXPAND)
         rowSizer.Add(FSCtrl, 1, wx.EXPAND)
@@ -683,6 +703,7 @@ class WaterLevelNotesPanel(wx.Panel):
 
 
                     BSCtrl.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.manager.gui.OnAutoSave)
+                    timeCtrl.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.manager.gui.OnAutoSave)
                     FSCtrl.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.manager.gui.OnAutoSave)
                     elevCtrl.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.manager.gui.OnAutoSave)
                     commentsCtrl.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.manager.gui.OnAutoSave)
@@ -1454,7 +1475,7 @@ class WaterLevelNotesPanel(wx.Panel):
             if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
                 if self.GetNumberOfRuns() > run:
                     if self.GetRunEntryNumber(run) > row:
-                        return self.GetRowSizer(run, row).GetItem(2).GetWindow()
+                        return self.GetRowSizer(run, row).GetItem(3).GetWindow()
 
 
 
@@ -1464,7 +1485,7 @@ class WaterLevelNotesPanel(wx.Panel):
             if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
                 if self.GetNumberOfRuns() > run:
                     if self.GetRunEntryNumber(run) > row:
-                        return self.GetRowSizer(run, row).GetItem(3).GetWindow()
+                        return self.GetRowSizer(run, row).GetItem(4).GetWindow()
 
 
 
@@ -1475,7 +1496,7 @@ class WaterLevelNotesPanel(wx.Panel):
             if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
                 if self.GetNumberOfRuns() > run:
                     if self.GetRunEntryNumber(run) > row:
-                        return self.GetRowSizer(run, row).GetItem(4).GetWindow()
+                        return self.GetRowSizer(run, row).GetItem(5).GetWindow()
 
 
 
@@ -1486,7 +1507,7 @@ class WaterLevelNotesPanel(wx.Panel):
             if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
                 if self.GetNumberOfRuns() > run:
                     if self.GetRunEntryNumber(run) > row:
-                        return self.GetRowSizer(run, row).GetItem(5).GetSizer().GetItem(0).GetWindow()
+                        return self.GetRowSizer(run, row).GetItem(6).GetSizer().GetItem(0).GetWindow()
 
     #Return the elevation for specific circuit and row number:
     def GetElevationCheckbox(self, run, row):
@@ -1494,7 +1515,7 @@ class WaterLevelNotesPanel(wx.Panel):
             if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
                 if self.GetNumberOfRuns() > run:
                     if self.GetRunEntryNumber(run) > row:
-                        return self.GetRowSizer(run, row).GetItem(5).GetSizer().GetItem(1).GetWindow()
+                        return self.GetRowSizer(run, row).GetItem(6).GetSizer().GetItem(1).GetWindow()
 
 
 
@@ -1504,7 +1525,7 @@ class WaterLevelNotesPanel(wx.Panel):
             if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
                 if self.GetNumberOfRuns() > run:
                     if self.GetRunEntryNumber(run) > row:
-                        return self.GetRowSizer(run, row).GetItem(7).GetSizer().GetItem(0).GetWindow()
+                        return self.GetRowSizer(run, row).GetItem(8).GetSizer().GetItem(0).GetWindow()
 
 
     #Return the Established Elevation for specific circuit and row number:
@@ -1513,7 +1534,7 @@ class WaterLevelNotesPanel(wx.Panel):
             if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
                 if self.GetNumberOfRuns() > run:
                     if self.GetRunEntryNumber(run) > row:
-                        return self.GetRowSizer(run, row).GetItem(7).GetSizer().GetItem(1).GetWindow()
+                        return self.GetRowSizer(run, row).GetItem(8).GetSizer().GetItem(1).GetWindow()
 
 
     #Return the Established Elevation button for specific circuit and row number:
@@ -1522,7 +1543,7 @@ class WaterLevelNotesPanel(wx.Panel):
             if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
                 if self.GetNumberOfRuns() > run:
                     if self.GetRunEntryNumber(run) > row:
-                        return self.GetRowSizer(run, row).GetItem(7).GetSizer().GetItem(2).GetWindow()
+                        return self.GetRowSizer(run, row).GetItem(8).GetSizer().GetItem(2).GetWindow()
 
 
     #Return the comments for specific circuit and row number:
@@ -1531,7 +1552,31 @@ class WaterLevelNotesPanel(wx.Panel):
             if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
                 if self.GetNumberOfRuns() > run:
                     if self.GetRunEntryNumber(run) > row:
-                        return self.GetRowSizer(run, row).GetItem(6).GetWindow()
+                        return self.GetRowSizer(run, row).GetItem(7).GetWindow()
+
+    #Return the Time for specific circuit and row number:
+    def GetTime(self, run, row):
+        if run >= 0 and run < len(self.runSizer.GetChildren()):
+            if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
+                if self.GetNumberOfRuns() > run:
+                    if self.GetRunEntryNumber(run) > row:
+                        return self.GetRowSizer(run, row).GetItem(2).GetWindow()
+
+    #Return the hour for specific circuit and row number:
+    def GetHour(self, run, row):
+        if run >= 0 and run < len(self.runSizer.GetChildren()):
+            if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
+                if self.GetNumberOfRuns() > run:
+                    if self.GetRunEntryNumber(run) > row:
+                        return self.GetRowSizer(run, row).GetItem(2).GetWindow().GetHour()
+
+    #Return the minute for specific circuit and row number:
+    def GetMinute(self, run, row):
+        if run >= 0 and run < len(self.runSizer.GetChildren()):
+            if row < len(self.GetLevelNotesSizerV(run).GetChildren()) - 1 and row >= 0:
+                if self.GetNumberOfRuns() > run:
+                    if self.GetRunEntryNumber(run) > row:
+                        return self.GetRowSizer(run, row).GetItem(2).GetWindow().GetMinute()
 
     #Disable scrolling function for combobox
     def NoScrolling(self, evt):

@@ -29,9 +29,9 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.measurementMethodsLbl = 'Measurement Method'
         self.measurementMethods = ['', 'Mid-section', 'ADCP by Moving Boat', 'Other Methods', 'Engineered Structures', ]
         self.structureTypesLbl = 'Structure Type'
-        self.structureTypes = ['', 'Flume', 'Weir']
+        self.structureTypes = ['', 'Weir', 'Flume']
         self.monitoringMethodsLbl = 'Monitoring Method'
-        self.monitoringMethods = ['', 'Estimated', 'Volumetric', 'Salt Diution', 'Tracer-dry', ]
+        self.monitoringMethods = ['', 'Estimated', 'Volumetric', 'Salt Dilution', 'Tracer-dry', ]
         self.savedMeasurementMethodIndex = 0
 
         self.deploymentLbl = "Deployment"
@@ -176,29 +176,29 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         methodListSizer = wx.BoxSizer(wx.VERTICAL)
         self.methodCBListBoxLbl = wx.StaticText(self, label=self.measurementMethodsLbl, \
                                  style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
-        self.methodCBListBox = wx.ComboBox(self, size=(-1, 45), style=wx.CB_DROPDOWN, choices=self.measurementMethods)
+        self.methodCBListBox = wx.ComboBox(self, size=(-1, 45), style=wx.CB_READONLY, choices=self.measurementMethods)
         self.methodCBListBox.Bind(wx.EVT_COMBOBOX, self.OnDeploymentCheckListCB)
+        # self.methodCBListBox.Bind(wx.EVT_TEXT, self.OnDeploymentCheckListCB)
 
         methodListSizer.Add(self.methodCBListBoxLbl, 0, wx.EXPAND)
         methodListSizer.Add(self.methodCBListBox, 0, wx.EXPAND)
 
-        #structure type Combo Box
-        self.structureTypeSizer = wx.BoxSizer(wx.VERTICAL)
-        self.structureTypeTxt = wx.StaticText(self, label=self.structureTypesLbl,\
-                                            style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
-        self.structureTypeCombo = wx.ComboBox(self, size=(155, 23), style=wx.CB_DROPDOWN, choices=self.structureTypes)
-        self.structureTypeSizer.Add(self.structureTypeTxt, 0, wx.EXPAND)
-        self.structureTypeSizer.Add(self.structureTypeCombo, 0, wx.EXPAND)
 
         #Monitoring method Combo Box
         self.monitoringMethodSizer = wx.BoxSizer(wx.VERTICAL)
         self.monitoringMethodTxt = wx.StaticText(self, label=self.monitoringMethodsLbl,\
                                             style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
-        self.monitoringMethodCombo = wx.ComboBox(self, size=(155, 23), style=wx.CB_DROPDOWN, choices=self.monitoringMethods)
+        self.monitoringMethodCombo = wx.ComboBox(self, size=(155, 23), style=wx.CB_READONLY, choices=self.monitoringMethods)
         self.monitoringMethodSizer.Add(self.monitoringMethodTxt, 0, wx.EXPAND)
         self.monitoringMethodSizer.Add(self.monitoringMethodCombo, 0, wx.EXPAND)
 
-
+        #structure type Combo Box
+        self.structureTypeSizer = wx.BoxSizer(wx.VERTICAL)
+        self.structureTypeTxt = wx.StaticText(self, label=self.structureTypesLbl,\
+                                            style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
+        self.structureTypeCombo = wx.ComboBox(self, size=(155, 23), style=wx.CB_READONLY, choices=self.structureTypes)
+        self.structureTypeSizer.Add(self.structureTypeTxt, 0, wx.EXPAND)
+        self.structureTypeSizer.Add(self.structureTypeCombo, 0, wx.EXPAND)
 
         #Deployment Combo Box
         self.deploymentTxt = wx.StaticText(self, label=self.deploymentLbl, \
@@ -220,23 +220,16 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
 
-
-
-
-
-
-
-
         self.horizontalSizer1.Add(methodListSizer, 0, wx.EXPAND|wx.LEFT, 5)
-        self.horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
-        self.horizontalSizer1.Add(self.structureTypeSizer, 0, wx.EXPAND|wx.LEFT, 5)
         self.horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
         self.horizontalSizer1.Add(self.monitoringMethodSizer, 0, wx.EXPAND|wx.LEFT, 5)
         self.horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
+        self.horizontalSizer1.Add(self.structureTypeSizer, 0, wx.EXPAND|wx.LEFT, 5)
+        self.horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
         self.horizontalSizer1.Add(deploymentSizerV, 0, wx.EXPAND|wx.LEFT, 5)
         self.horizontalSizer1.Add((25, -1), 1, wx.EXPAND)
-        self.horizontalSizer1.Hide(self.structureTypeSizer, True)
         self.horizontalSizer1.Hide(self.monitoringMethodSizer, True)
+        self.horizontalSizer1.Hide(self.structureTypeSizer, True)
 
         # self.horizontalSizer1.Add(positionMethodSizerV, 0, wx.EXPAND|wx.LEFT, 5)
         # self.horizontalSizer1.Add((5, -1), 1, wx.EXPAND)
@@ -885,7 +878,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
     # Reset Checklist so that neither checkbox is checked
     def CheckListReset(self):
-        self.methodCBListBox.SetValue('')
+        self.SetMethodCBListBox(self.measurementMethods[0])
         # checked = list(self.methodCBListBox.GetCheckedItems())
 
         # for i in checked:
@@ -903,9 +896,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             res = dlg.ShowModal()
             if res == wx.ID_YES:
                 dlg.Destroy()
-                # self.methodCBListBox.Check(1)
-                # self.methodCBListBox.Check(0, False)
-                self.methodCBListBox.SetValue(self.measurementMethods[1])
+                self.SetMethodCBListBox(self.measurementMethods[1])
                 self.DeploymentCheckListUpdate()
 
                 if self.manager is not None:
@@ -914,17 +905,10 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
             elif res == wx.ID_NO:
                 dlg.Destroy()
-                # self.methodCBListBox.Check(0)
-                # self.methodCBListBox.Check(1, False)
-                # self.methodCBListBox.SetValue(self.measurementMethods[2])
 
-                # self.DeploymentCheckListUpdate()
-
-                # if self.manager is not None:
-                    # self.manager.OnDeploymentUpdate()
                 return False
         else:
-            self.methodCBListBox.SetValue(self.measurementMethods[1])
+            self.SetMethodCBListBox(self.measurementMethods[1])
             self.DeploymentCheckListUpdate()
 
             if self.manager is not None:
@@ -943,9 +927,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             res = dlg.ShowModal()
             if res == wx.ID_YES:
                 dlg.Destroy()
-                # self.methodCBListBox.Check(0)
-                # self.methodCBListBox.Check(1, False)
-                self.methodCBListBox.SetValue(self.measurementMethods[2])
+                self.SetMethodCBListBox(self.measurementMethods[2])
                 self.DeploymentCheckListUpdate()
 
                 if self.manager is not None:
@@ -954,17 +936,11 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
             elif res == wx.ID_NO:
                 dlg.Destroy()
-                # self.methodCBListBox.Check(1)
-                # self.methodCBListBox.Check(0, False)
-                # self.methodCBListBox.SetValue(self.measurementMethods[1])
-
-                # self.DeploymentCheckListUpdate()
-
                 if self.manager is not None:
                     self.manager.OnDeploymentUpdate()
                 return False
         else:
-            self.methodCBListBox.SetValue(self.measurementMethods[2])
+            self.SetMethodCBListBox(self.measurementMethods[2])
             self.DeploymentCheckListUpdate()
 
             if self.manager is not None:
@@ -975,15 +951,17 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     def RefreshDeploymentMethod(self):
 	if self.methodCBListBox.GetValue() in self.measurementMethods:
 	    self.savedMeasurementMethodIndex = self.measurementMethods.index(self.methodCBListBox.GetValue())
-        if self.savedMeasurementMethodIndex != 3:
+        if self.savedMeasurementMethodIndex != 4:
             self.horizontalSizer1.Hide(self.structureTypeSizer, True)
-            self.structureTypeCombo.SetValue('')
+            # self.structureTypeCombo.SetValue('')
+            self.SetStructureTypeCombo('')
         else:
             self.horizontalSizer1.Show(self.structureTypeSizer, True)
 
-	if self.savedMeasurementMethodIndex != 4:
+	if self.savedMeasurementMethodIndex != 3:
 	    self.horizontalSizer1.Hide(self.monitoringMethodSizer, True)
-	    self.monitoringMethodCombo.SetValue('')
+	    # self.monitoringMethodCombo.SetValue('')
+            self.SetMonitoringMethodCombo('')
 	else:
 	    self.horizontalSizer1.Show(self.monitoringMethodSizer, True)
 
@@ -997,74 +975,34 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         # selection = [self.adcpByMovingBoatLbl, self.midsectionLbl]
         selection = self.measurementMethods
         obj = e.GetEventObject()
+        # print(self.savedMeasurementMethodIndex, obj.GetCurrentSelection())
+        flag = True
         if obj.GetCurrentSelection() != self.savedMeasurementMethodIndex and self.savedMeasurementMethodIndex != 0:
             dlg = wx.MessageDialog(self, self.deploymentWarning%selection[self.savedMeasurementMethodIndex], 'Warning',
                               wx.YES_NO | wx.ICON_QUESTION)
             res = dlg.ShowModal()
             if res == wx.ID_YES:
                 dlg.Destroy()
-
-            elif res == wx.ID_NO:
+            # elif res == wx.ID_NO:
+            else:
                 dlg.Destroy()
-                # self.methodCBListBox.Check(e.GetInt(), check=False)
-                self.methodCBListBox.SetValue(self.measurementMethods[self.savedMeasurementMethodIndex])
-                return False
+                self.methodCBListBox.SetSelection(self.savedMeasurementMethodIndex)
+                flag = False
+
+        if flag:
+            self.savedMeasurementMethodIndex = selection.index(obj.GetValue())
+            self.RefreshDeploymentMethod()
 
 
+            self.DeploymentCheckListUpdate()
+
+            if self.manager is not None:
+                self.manager.OnDeploymentUpdate()
+
+            e.Skip()
+        
 
 
-
-        self.savedMeasurementMethodIndex = selection.index(obj.GetValue())
-        self.RefreshDeploymentMethod()
-
-        # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
-            # dlg = wx.MessageDialog(self, self.deploymentWarning%selection[(e.GetInt()+1)%2], 'Warning',
-                              # wx.YES_NO | wx.ICON_QUESTION)
-            # res = dlg.ShowModal()
-            # if res == wx.ID_YES:
-                # dlg.Destroy()
-
-            # elif res == wx.ID_NO:
-                # dlg.Destroy()
-                # self.methodCBListBox.Check(e.GetInt(), check=False)
-                # return False
-
-
-        # if len(list(self.methodCBListBox.GetCheckedItems())) == 0:
-            # dlg = wx.MessageDialog(self, self.deploymentWarning%selection[e.GetInt()], 'Warning',
-                              # wx.YES_NO | wx.ICON_QUESTION)
-            # res = dlg.ShowModal()
-            # if res == wx.ID_YES:
-                # dlg.Destroy()
-
-            # elif res == wx.ID_NO:
-                # dlg.Destroy()
-                # self.methodCBListBox.Check(e.GetInt(), check=True)
-                # return
-
-
-
-
-
-
-
-        # checked = list(self.methodCBListBox.GetCheckedItems())
-
-        # lenChecked = len(checked)
-
-        # if lenChecked > 0:
-            # checked.remove(e.GetInt())
-
-        # for i in checked
-            # self.methodCBListBox.Check(i, check=False)
-
-        self.DeploymentCheckListUpdate()
-
-        if self.manager is not None:
-            self.manager.OnDeploymentUpdate()
-
-        e.Skip()
-        return True
 
 
 
@@ -1072,16 +1010,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     # Enable appropriate fields according to Deployment Type
     # Update the Dropdown list of Deployment Methods
     def DeploymentCheckListUpdate(self):
-        # print "DeploymentCheckListUpdate"
-        # checked = list(self.methodCBListBox.GetCheckedItems())
-        # lenChecked = len(checked)
-
-        # print "checked length %s" % lenChecked
-
-        # if lenChecked > 0:
         if self.savedMeasurementMethodIndex != 0:
-            # checked = list(self.methodCBListBox.GetCheckedItems())
-            # check = checked[0]
 
             self.InfoUpdate(self.savedMeasurementMethodIndex)
 
@@ -1428,12 +1357,10 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         return self.methodCBListBox
 
     def SetMethodCBListBox(self, method):
-        depMethodList = list(self.methodCBListBox.GetItems())
-        if method in depMethodList:
-            index = depMethodList.index(method)
-            # self.methodCBListBox.Check(index, check=True)
-            self.methodCBListBox.SetValue(self.measurementMethods[index])
-        self.DeploymentCheckListUpdate()
+        if method in self.measurementMethods:
+            index = self.measurementMethods.index(method)
+            self.methodCBListBox.SetSelection(index)
+            self.DeploymentCheckListUpdate()
 
 
     def GetStructureTypeCombo(self):
@@ -1441,13 +1368,14 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
     def SetStructureTypeCombo(self, method):
         if method in self.structureTypes:
-            self.structureTypeCombo.SetValue(method)
+            # self.structureTypeCombo.SetValue(method)
+            self.structureTypeCombo.SetSelection(self.structureTypes.index(method))
 
     def GetMonitoringMethodCombo(self):
 	return self.monitoringMethodCombo
     def SetMonitoringMethodCombo(self, method):
 	if method in self.monitoringMethods:
-	    self.monitoringMethodCombo.SetValue(method)
+	    self.monitoringMethodCombo.SetSelection(self.monitoringMethods.index(method))
 
 
 

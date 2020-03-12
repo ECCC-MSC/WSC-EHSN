@@ -8,6 +8,7 @@ from MidSectionSubPanel import *
 from MidSectionSubPanelObj import *
 
 import win32gui
+from pdb import set_trace
 
 
 
@@ -111,13 +112,11 @@ class MidSectionSummaryTable(wx.Panel):
         self.addBtn.Bind(wx.EVT_BUTTON, self.OnAdd)
         layout.Add(self.summaryTable, 0, wx.EXPAND|wx.ALL, 20)
         layout.Add(self.addBtn, 0, wx.ALL, 20)
-
-        self.GetParent().GetParent().GetParent().GetParent().Bind(wx.EVT_SIZE, self.OnSize)
+        # self.GetParent().GetParent().GetParent().GetParent().Bind(wx.EVT_SIZE, self.OnSize)
         self.subPanel = None
 
 
     def OnSize(self, event):
-
         size = event.GetSize()
         width = size.GetWidth()
         height = size.GetHeight()

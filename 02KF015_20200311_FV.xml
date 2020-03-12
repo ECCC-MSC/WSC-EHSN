@@ -52,18 +52,18 @@
 		<stageRemark/>
 	</StageMeas>
 	<DisMeas>
-		<startTime>:</startTime>
-		<endTime>:</endTime>
+		<startTime>13:55</startTime>
+		<endTime>14:30</endTime>
 		<airTemp/>
 		<waterTemp/>
-		<width/>
-		<area/>
-		<meanVel/>
+		<width imported="1">11.0</width>
+		<area imported="1">3.91</area>
+		<meanVel imported="1">0.631</meanVel>
 		<mgh/>
 		<mghCmbo/>
-		<discharge/>
+		<discharge imported="1">2.47</discharge>
 		<dischCombo/>
-		<mmtTimeVal/>
+		<mmtTimeVal>14:12</mmtTimeVal>
 		<shift/>
 		<diff/>
 		<curve/>
@@ -130,28 +130,28 @@
 	<InstrumentDeployment>
 		<GeneralInfo>
 			<methodType>Other Methods</methodType>
-			<deployment/>
+			<deployment imported="1">Wading</deployment>
 			<position/>
-			<instrument/>
-			<serialNum imported="1"/>
+			<instrument imported="1">ADV</instrument>
+			<serialNum imported="1">FT2H1640009</serialNum>
 			<gauge1/>
 			<length>0</length>
 			<gaugePos>0</gaugePos>
 			<selectedGauge>gauge</selectedGauge>
 			<frequency/>
-			<firmware/>
-			<software/>
-			<manufacturer/>
-			<model/>
+			<firmware imported="1">1.17</firmware>
+			<software imported="1">1.2</software>
+			<manufacturer imported="1">SonTek</manufacturer>
+			<model imported="1">FlowTracker</model>
 			<otherMethods>
-				<structureType>Flume</structureType>
+				<structureType/>
 			</otherMethods>
 			<engineeredStructures>
-				<monitoringMethod/>
+				<monitoringMethod>Salt Dilution</monitoringMethod>
 			</engineeredStructures>
 		</GeneralInfo>
-		<MidsectionInfo empty="True">
-			<panelsNum/>
+		<MidsectionInfo empty="False">
+			<panelsNum imported="1">23</panelsNum>
 			<flowAngle/>
 			<coeff/>
 			<method/>
@@ -187,8 +187,56 @@
 			<conventionalLevellingRb>True</conventionalLevellingRb>
 			<totalStationRb>False</totalStationRb>
 			<LevelChecksTable run="0">
+				<LevelChecksRow row="0">
+					<station>RP1</station>
+					<hour>16</hour>
+					<minute>46</minute>
+					<time>16:46</time>
+					<backsight>12.000</backsight>
+					<htInst>15.000</htInst>
+					<foresight/>
+					<elevation>3.000</elevation>
+					<establish>adf</establish>
+					<comments>sdf</comments>
+				</LevelChecksRow>
+				<LevelChecksRow row="1">
+					<station>TP1</station>
+					<hour>16</hour>
+					<minute>46</minute>
+					<time>16:46</time>
+					<backsight>33.000</backsight>
+					<htInst>36.000</htInst>
+					<foresight>12.000</foresight>
+					<elevation>3.000</elevation>
+					<establish>ff</establish>
+					<comments>dsfff</comments>
+				</LevelChecksRow>
+				<LevelChecksRow row="2">
+					<station>RP2</station>
+					<hour>16</hour>
+					<minute>46</minute>
+					<time>16:46</time>
+					<backsight>44.000</backsight>
+					<htInst>77.000</htInst>
+					<foresight>3.000</foresight>
+					<elevation>33.000</elevation>
+					<establish>ff</establish>
+					<comments>ff</comments>
+				</LevelChecksRow>
+				<LevelChecksRow row="3">
+					<station>RP1</station>
+					<hour/>
+					<minute/>
+					<time/>
+					<backsight>55.000</backsight>
+					<htInst>128.000</htInst>
+					<foresight>4.000</foresight>
+					<elevation>73.000</elevation>
+					<establish>ff</establish>
+					<comments>fff</comments>
+				</LevelChecksRow>
 				<closure/>
-				<upload/>
+				<upload>False</upload>
 			</LevelChecksTable>
 			<LevelChecksSummaryTable/>
 			<comments/>
@@ -200,7 +248,7 @@
 	<FieldReview>
 		<pass>False</pass>
 		<dependencyType>Other Methods</dependencyType>
-		<midsectionType>All</midsectionType>
+		<midsectionType>Flow Tracker</midsectionType>
 		<FieldReviewTable>
 			<FieldReviewTableRow row="0">
 				<label>Passed All Initial QA/QC?</label>
