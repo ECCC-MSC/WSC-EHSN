@@ -133,7 +133,7 @@
 			<deployment/>
 			<position/>
 			<instrument/>
-			<serialNum/>
+			<serialNum imported="1"/>
 			<gauge1/>
 			<length>0</length>
 			<gaugePos>0</gaugePos>
@@ -146,6 +146,9 @@
 			<otherMethods>
 				<structureType>Flume</structureType>
 			</otherMethods>
+			<engineeredStructures>
+				<monitoringMethod/>
+			</engineeredStructures>
 		</GeneralInfo>
 		<MidsectionInfo empty="True">
 			<panelsNum/>
@@ -168,9 +171,6 @@
 			<compassCali>False</compassCali>
 			<passedRev>False</passedRev>
 		</ADCPInfo>
-		<engineeredStructures>
-			<monitoringMethod/>
-		</engineeredStructures>
 		<SiteConditions>
 			<pictured>False</pictured>
 			<preUseCable/>
@@ -200,7 +200,7 @@
 	<FieldReview>
 		<pass>False</pass>
 		<dependencyType>Other Methods</dependencyType>
-		<midsectionType/>
+		<midsectionType>All</midsectionType>
 		<FieldReviewTable>
 			<FieldReviewTableRow row="0">
 				<label>Passed All Initial QA/QC?</label>

@@ -1498,7 +1498,7 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     instrDepManager.OnDeploymentUpdate()
 
     try:
-        otherMethods = InstrumentDeployment.find('otherMethods')
+        otherMethods = GeneralInfo.find('otherMethods')
         structureType = otherMethods.find('structureType')
     except:
         structureType = None
@@ -1510,7 +1510,7 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
         
 
     try:
-        engineeredStructures = InstrumentDeployment.find('engineeredStructures')
+        engineeredStructures = GeneralInfo.find('engineeredStructures')
         monitoringMethod = engineeredStructures.find('monitoringMethod')
     except:
         monitoringMethod = None

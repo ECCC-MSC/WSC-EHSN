@@ -2779,13 +2779,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         # print self.manager.GetLocalTimeUtcOffsetFromFt2()
         # print tzCmbo
         print "self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]", self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]
-        if tz != self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]:
-            info = wx.MessageDialog(self, self.tzMatchErrMsg, self.tzMatchErrTitle,
-                                     wx.OK | wx.ICON_ERROR)
+        # if tz != self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]:
+            # info = wx.MessageDialog(self, self.tzMatchErrMsg, self.tzMatchErrTitle,
+                                     # wx.OK | wx.ICON_ERROR)
 
-            # info.GetMessage().SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, "")) 
-            info.ShowModal()
-            return False
+            # info.ShowModal()
+            # return False
 
         return True
 
