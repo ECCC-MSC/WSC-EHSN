@@ -6,7 +6,7 @@
 	</TitleHeader>
 	<GenInfo>
 		<station number="02KF015">GRAHAM CREEK AT NEPEAN</station>
-		<date timezone="EST">2020/03/11</date>
+		<date timezone="EST">2020/03/12</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -98,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2020/03/11</dataPeriodStart>
-		<dataPeriodEnd>2020/03/11</dataPeriodEnd>
+		<dataPeriodStart>2020/03/12</dataPeriodStart>
+		<dataPeriodEnd>2020/03/12</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -143,6 +143,12 @@
 			<software/>
 			<manufacturer/>
 			<model/>
+			<otherMethods>
+				<structureType/>
+			</otherMethods>
+			<engineeredStructures>
+				<monitoringMethod/>
+			</engineeredStructures>
 		</GeneralInfo>
 		<MidsectionInfo empty="True">
 			<panelsNum/>
@@ -165,12 +171,6 @@
 			<compassCali>False</compassCali>
 			<passedRev>False</passedRev>
 		</ADCPInfo>
-		<otherMethods>
-			<structureType/>
-		</otherMethods>
-		<engineeredStructures>
-			<monitoringMethod/>
-		</engineeredStructures>
 		<SiteConditions>
 			<pictured>False</pictured>
 			<preUseCable/>

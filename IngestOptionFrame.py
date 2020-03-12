@@ -123,13 +123,13 @@ class IngestOptionFrame(wx.Frame):
         overwrite = False
         if self.dischargeDetailCkbox.IsChecked():
             if self.inType == ID_QREV:
-                self.GetParent().manager.instrDepManager.GetMethodCBListBox().Check(0)
+                # self.GetParent().manager.instrDepManager.GetMethodCBListBox().Check(0)
                 overwrite = self.GetParent().instrDep.DeploymentCheckListCBCkecking4MovingBoat()
 
                     
             # elif self.inType == ID_FT or self.inType == ID_HFC or self.inType == ID_FT2 or self.inType == ID_MMT or self.inType == ID_RSSL:
             else:
-                self.GetParent().manager.instrDepManager.GetMethodCBListBox().Check(1)
+                # self.GetParent().manager.instrDepManager.GetMethodCBListBox().Check(1)
                 overwrite = self.GetParent().instrDep.DeploymentCheckListCBCkecking4MidSection()
             if overwrite:
                 if self.inType == ID_QREV:
@@ -151,6 +151,7 @@ class IngestOptionFrame(wx.Frame):
                 elif self.inType == ID_RSSL:
 
                     self.GetParent().manager.AddDischargeDetailFromRssl()
+		# self.GetParent().instrDep.RefreshDeploymentMethod()
 
         if self.movingBoatCkbox.IsChecked():
             if self.inType == ID_QREV:

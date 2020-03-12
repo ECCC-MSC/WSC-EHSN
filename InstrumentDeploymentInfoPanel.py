@@ -104,7 +104,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.contCondList = ["", "Not Observed", "No Flow", "Clear", "Altered", "Debris", "Algae",
                              "Weeds", "Fill", "Scour", "Shore Ice",
                              "Complete Ice Cover", "Anchor Ice"]
-        self.deploymentWarning = "Unchecking %s will cause loss of entered data such as field review. Are you sure you want to uncheck this selection? "
+        self.deploymentWarning = "Unselecting %s will cause loss of entered data such as field review. Are you sure you want to unselect this selection? "
         self.positionMethods = ["", "Tagline", "Marked bridge railing"]
         self.locatedList = ["On Rod"]
         self.numberOfPanelsList = []
@@ -896,8 +896,9 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     def DeploymentCheckListCBCkecking4MidSection(self):
 
         # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
-        if self.savedMeasurementMethodIndex == 2:
-            dlg = wx.MessageDialog(self, self.deploymentWarning%'Moving Boat', 'Warning',
+        if self.savedMeasurementMethodIndex != 1 and self.savedMeasurementMethodIndex != 0:
+	    savedMeasurement = self.measurementMethods[self.savedMeasurementMethodIndex]
+            dlg = wx.MessageDialog(self, self.deploymentWarning%savedMeasurement, 'Warning',
                               wx.YES_NO | wx.ICON_QUESTION)
             res = dlg.ShowModal()
             if res == wx.ID_YES:
@@ -915,14 +916,15 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
                 dlg.Destroy()
                 # self.methodCBListBox.Check(0)
                 # self.methodCBListBox.Check(1, False)
-                self.methodCBListBox.SetValue(self.measurementMethods[2])
+                # self.methodCBListBox.SetValue(self.measurementMethods[2])
 
-                self.DeploymentCheckListUpdate()
+                # self.DeploymentCheckListUpdate()
 
-                if self.manager is not None:
-                    self.manager.OnDeploymentUpdate()
+                # if self.manager is not None:
+                    # self.manager.OnDeploymentUpdate()
                 return False
         else:
+            self.methodCBListBox.SetValue(self.measurementMethods[1])
             self.DeploymentCheckListUpdate()
 
             if self.manager is not None:
@@ -934,8 +936,9 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     def DeploymentCheckListCBCkecking4MovingBoat(self):
 
         # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
-        if self.savedMeasurementMethodIndex == 1:
-            dlg = wx.MessageDialog(self, self.deploymentWarning%'Midsection', 'Warning',
+        if self.savedMeasurementMethodIndex != 0 and self.savedMeasurementMethodIndex != 2:
+	    savedMeasurement = self.measurementMethods[self.savedMeasurementMethodIndex]
+            dlg = wx.MessageDialog(self, self.deploymentWarning%savedMeasurement, 'Warning',
                               wx.YES_NO | wx.ICON_QUESTION)
             res = dlg.ShowModal()
             if res == wx.ID_YES:
@@ -953,14 +956,15 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
                 dlg.Destroy()
                 # self.methodCBListBox.Check(1)
                 # self.methodCBListBox.Check(0, False)
-                self.methodCBListBox.SetValue(self.measurementMethods[1])
+                # self.methodCBListBox.SetValue(self.measurementMethods[1])
 
-                self.DeploymentCheckListUpdate()
+                # self.DeploymentCheckListUpdate()
 
                 if self.manager is not None:
                     self.manager.OnDeploymentUpdate()
                 return False
         else:
+            self.methodCBListBox.SetValue(self.measurementMethods[2])
             self.DeploymentCheckListUpdate()
 
             if self.manager is not None:
@@ -969,6 +973,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
     def RefreshDeploymentMethod(self):
+	if self.methodCBListBox.GetValue() in self.measurementMethods:
+	    self.savedMeasurementMethodIndex = self.measurementMethods.index(self.methodCBListBox.GetValue())
         if self.savedMeasurementMethodIndex != 3:
             self.horizontalSizer1.Hide(self.structureTypeSizer, True)
             self.structureTypeCombo.SetValue('')
@@ -980,6 +986,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 	    self.monitoringMethodCombo.SetValue('')
 	else:
 	    self.horizontalSizer1.Show(self.monitoringMethodSizer, True)
+
         self.Refresh()
 
 
@@ -1104,6 +1111,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.manager.manager.FlatNoteBook.GetPage(2).Enable(True)
             self.manager.manager.FlatNoteBook.GetPage(3).Enable(True)
         self.OnChangeUpdateMovingBoat()
+        self.RefreshDeploymentMethod()
         self.manager.manager.gui.Layout()
 
 

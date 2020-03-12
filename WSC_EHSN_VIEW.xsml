@@ -674,13 +674,27 @@
 
 		<tr class="noborder">
 			<td class="noborder" align="left"><b>Method: </b><xsl:value-of select="methodType"/></td>
+            <td class="noborder" align="left">
+                <xsl:choose>
+                    <xsl:when test="methodType='Other Methods'">
+                        <b>Structure Type: </b><xsl:value-of select="otherMethods/structureType"/>
+                    </xsl:when>
+                    <xsl:when test="methodType='Engineered Structures'">
+                        <b>Engineered Structure: </b><xsl:value-of select="engineeredStructures/monitoringMethod"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </td>
 			<td class="noborder" align="left"><b>Deployment Method:  </b><xsl:value-of select="deployment"/></td>
-			<td class="noborder" align="left"><b>Position Method: </b><xsl:value-of select="position"/></td>
 			
 		</tr>
 		<tr class="noborder">
+			<td class="noborder" align="left"><b>Position Method: </b><xsl:value-of select="position"/></td>
 			<td class="noborder" align="left"> <b>Instrument Type: </b><xsl:value-of select="instrument"/></td>
 			<td class="noborder" align="left"> <b>Serial/Meter Number: </b><xsl:value-of select="serialNum"/></td>
+		</tr>
+		<tr class="noborder">
 			<td class="noborder" align="left">
 				<xsl:value-of select="gauge1"/>
 				
@@ -704,8 +718,6 @@
 				
 				<xsl:value-of select="selectedGauge"/>
 			</td>
-		</tr>
-		<tr class="noborder">
 			<td class="noborder" align="left"><b>Manufacturer: </b><xsl:value-of select="manufacturer"/></td>
 			<td class="noborder" align="left"><b>Model: </b><xsl:value-of select="model"/></td>
 		</tr>

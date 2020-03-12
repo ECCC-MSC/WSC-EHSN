@@ -1410,13 +1410,13 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
         ADCPInfo.attrib['empty'] = 'True'
 
     #Other methods
-    otherMethods = SubElement(InstrumentDeployment, 'otherMethods')
+    otherMethods = SubElement(GeneralInfo, 'otherMethods')
     structureType = SubElement(otherMethods, 'structureType')
     structureType.text = str(instrDepManager.structureTypeCombo)
 
 
     #Engineered Structures
-    engineeredStructures = SubElement(InstrumentDeployment, 'engineeredStructures')
+    engineeredStructures = SubElement(GeneralInfo, 'engineeredStructures')
     monitoringMethod = SubElement(engineeredStructures, 'monitoringMethod')
     monitoringMethod.text = str(instrDepManager.monitoringMethod)
 

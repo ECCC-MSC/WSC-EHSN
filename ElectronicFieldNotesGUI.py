@@ -2402,12 +2402,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                         return
 
 
-                self.manager.instrDepManager.GetMethodCBListBox().Check(1)
+                # self.manager.instrDepManager.GetMethodCBListBox().Check(1)
                 if self.instrDep.DeploymentCheckListCBCkecking4MidSection():
 
 
                     self.manager.OpenEHSNMidsection(self.ehsnMidDir)
-
+		    self.instrDep.RefreshDeploymentMethod()
                     info = wx.MessageDialog(self, self.importSucessMsg, self.importSucessTitle,
                                          wx.OK | wx.ICON_INFORMATION)
                     info.ShowModal()

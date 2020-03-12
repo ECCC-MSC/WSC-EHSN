@@ -6,7 +6,7 @@
 	</TitleHeader>
 	<GenInfo>
 		<station number="02KF015">GRAHAM CREEK AT NEPEAN</station>
-		<date timezone="EST">2020/03/11</date>
+		<date timezone="EST">2020/03/12</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -98,8 +98,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2020/03/11</dataPeriodStart>
-		<dataPeriodEnd>2020/03/11</dataPeriodEnd>
+		<dataPeriodStart>2020/03/12</dataPeriodStart>
+		<dataPeriodEnd>2020/03/12</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -129,7 +129,7 @@
 	</MeasResults>
 	<InstrumentDeployment>
 		<GeneralInfo>
-			<methodType>Engineered Structures</methodType>
+			<methodType>Other Methods</methodType>
 			<deployment/>
 			<position/>
 			<instrument/>
@@ -143,6 +143,9 @@
 			<software/>
 			<manufacturer/>
 			<model/>
+			<otherMethods>
+				<structureType>Flume</structureType>
+			</otherMethods>
 		</GeneralInfo>
 		<MidsectionInfo empty="True">
 			<panelsNum/>
@@ -165,11 +168,8 @@
 			<compassCali>False</compassCali>
 			<passedRev>False</passedRev>
 		</ADCPInfo>
-		<otherMethods>
-			<structureType/>
-		</otherMethods>
 		<engineeredStructures>
-			<monitoringMethod>Estimated</monitoringMethod>
+			<monitoringMethod/>
 		</engineeredStructures>
 		<SiteConditions>
 			<pictured>False</pictured>
@@ -199,7 +199,7 @@
 	</LevelNotes>
 	<FieldReview>
 		<pass>False</pass>
-		<dependencyType>Engineered Structures</dependencyType>
+		<dependencyType>Other Methods</dependencyType>
 		<midsectionType/>
 		<FieldReviewTable>
 			<FieldReviewTableRow row="0">
