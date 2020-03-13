@@ -926,7 +926,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
                         try:
                             pmyRef = benchMark['PrimarySinceDate']
-                            staRef = "*" + staRef
+                            staRef = "**" + staRef
                         except:
                             pmyRef = ''
 
