@@ -695,6 +695,7 @@ class RatingCurveViewerToolManager(object):
                         offset = offsetList[nn]
                         beta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-offset)/(lowPoint['InputValue']-offset))
                         c = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-offset, beta)
+                        break
                 if offset is None:
                     offset = offsetList[-1]
                     beta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-offset)/(lowPoint['InputValue']-offset))
@@ -714,6 +715,7 @@ class RatingCurveViewerToolManager(object):
                         qoffset = offsetList[nn]
                         qbeta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-qoffset)/(lowPoint['InputValue']-qoffset))
                         qc = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-qoffset, beta)
+                        break
                 if qoffset is None:
                     qoffset = offsetList[-1]
                     qbeta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-qoffset)/(lowPoint['InputValue']-qoffset))
