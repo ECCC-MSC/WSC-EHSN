@@ -2077,8 +2077,14 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
                     waterLevelRunManager.AddEntry(run)
                     rowIndex = row
                 station = LevelChecksRow.find('station').text
-                hour = LevelChecksRow.find('hour').text
-                minute = LevelChecksRow.find('minute').text
+                hour = ""
+                minute = ""
+                if LevelChecksRow.find('hour') is not None:
+                    hour = LevelChecksRow.find('hour').text
+                if LevelChecksRow.find('minute') is not None:
+                    minute = LevelChecksRow.find('minute').text
+                # hour = LevelChecksRow.find('hour').text
+                # minute = LevelChecksRow.find('minute').text
                 backsight = LevelChecksRow.find('backsight').text
                 htInst = LevelChecksRow.find('htInst').text
                 foresight = LevelChecksRow.find('foresight').text
