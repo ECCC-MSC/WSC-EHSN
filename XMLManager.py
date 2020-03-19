@@ -1409,16 +1409,15 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
         not instrDepManager.passedFieldRevCB:
         ADCPInfo.attrib['empty'] = 'True'
 
-    #Other methods
+    # Other methods
     otherMethods = SubElement(GeneralInfo, 'otherMethods')
-    structureType = SubElement(otherMethods, 'structureType')
-    structureType.text = str(instrDepManager.structureTypeCombo)
-
-
-    #Engineered Structures
-    engineeredStructures = SubElement(GeneralInfo, 'engineeredStructures')
-    monitoringMethod = SubElement(engineeredStructures, 'monitoringMethod')
+    monitoringMethod = SubElement(otherMethods, 'monitoringMethod')
     monitoringMethod.text = str(instrDepManager.monitoringMethod)
+
+    # Engineered Structures
+    engineeredStructures = SubElement(GeneralInfo, 'engineeredStructures')
+    structureType = SubElement(engineeredStructures, 'structureType')
+    structureType.text = str(instrDepManager.structureTypeCombo)
 
     #SiteConditions Panel
     SiteConditions = SubElement(InstrumentDeployment, 'SiteConditions')
