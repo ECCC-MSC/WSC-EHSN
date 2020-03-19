@@ -1410,13 +1410,13 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
         ADCPInfo.attrib['empty'] = 'True'
 
     # Other methods
-    otherMethods = SubElement(GeneralInfo, 'otherMethods')
-    monitoringMethod = SubElement(otherMethods, 'monitoringMethod')
+    # otherMethods = SubElement(GeneralInfo, 'otherMethods')
+    monitoringMethod = SubElement(GeneralInfo, 'monitoringMethod')
     monitoringMethod.text = str(instrDepManager.monitoringMethod)
 
     # Engineered Structures
-    engineeredStructures = SubElement(GeneralInfo, 'engineeredStructures')
-    structureType = SubElement(engineeredStructures, 'structureType')
+    # engineeredStructures = SubElement(GeneralInfo, 'engineeredStructures')
+    structureType = SubElement(GeneralInfo, 'structureType')
     structureType.text = str(instrDepManager.structureTypeCombo)
 
     #SiteConditions Panel
@@ -1497,8 +1497,8 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     instrDepManager.OnDeploymentUpdate()
 
     try:
-        otherMethods = GeneralInfo.find('otherMethods')
-        structureType = otherMethods.find('structureType')
+        # otherMethods = GeneralInfo.find('otherMethods')
+        structureType = GeneralInfo.find('structureType')
     except:
         structureType = None
 
@@ -1509,8 +1509,8 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
         
 
     try:
-        engineeredStructures = GeneralInfo.find('engineeredStructures')
-        monitoringMethod = engineeredStructures.find('monitoringMethod')
+        # engineeredStructures = GeneralInfo.find('engineeredStructures')
+        monitoringMethod = GeneralInfo.find('monitoringMethod')
     except:
         monitoringMethod = None
 
