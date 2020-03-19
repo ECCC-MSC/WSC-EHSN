@@ -18,7 +18,7 @@ from MidSectionSubPanelObj import *
 from MidSectionTransferFrame import *
 
 mode = "PRODUCTION"
-EHSN_VERSION = "v2.0.0"
+EHSN_VERSION = "v2.1.0"
 eHSN_WINDOW_SIZE = (965, 730)
 
 class MidSectionHeader(wx.Panel):
