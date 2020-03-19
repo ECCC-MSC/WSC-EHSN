@@ -352,12 +352,13 @@ class FRChecklistPanel(wx.Panel):
             self.ctrlSizer.Add(entryCtrl, 0, wx.EXPAND)
             if self.manager is not None:
             	if self.manager.manager is not None:
-            		if (not self.manager.manager.instrDepManager.gui.methodCBListBox.IsChecked(0) and \
-            			not self.manager.manager.instrDepManager.gui.methodCBListBox.IsChecked(1)) or \
-            		(self.manager.manager.instrDepManager.gui.methodCBListBox.IsChecked(1)\
-            			and self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'adv' and \
-            			self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'adcp'\
-            			and self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'current meter'):
+                            # if (not self.manager.manager.instrDepManager.gui.methodCBListBox.IsChecked(0) and \
+                                    # not self.manager.manager.instrDepManager.gui.methodCBListBox.IsChecked(1)) or \
+                        if (self.manager.manager.instrDepManager.gui.methodCBListBox.GetCurrentSelection() == 2 or \
+                        self.manager.manager.instrDepManager.gui.methodCBListBox.GetCurrentSelection() == 1 \
+                        and self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'adv' and \
+                        self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'adcp' \
+                        and self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'current meter'):
             			labelTextLbl.Enable(False)
             			labelPanel.Enable(False)
             			revCB.Enable(False)

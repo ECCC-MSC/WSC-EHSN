@@ -1455,6 +1455,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.path = path
                 self.LoadDefaultConfig()
                 self.manager.OpenFile(path)
+		self.instrDep.RefreshDeploymentMethod()
 
                 # After loading XML, If lock was checked, lock everything
                 #if self.titleHeader.enteredInHWSCB.GetValue():
@@ -2401,12 +2402,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                         return
 
 
-                self.manager.instrDepManager.GetMethodCBListBox().Check(1)
+                # self.manager.instrDepManager.GetMethodCBListBox().Check(1)
                 if self.instrDep.DeploymentCheckListCBCkecking4MidSection():
 
 
                     self.manager.OpenEHSNMidsection(self.ehsnMidDir)
-
+		    self.instrDep.RefreshDeploymentMethod()
                     info = wx.MessageDialog(self, self.importSucessMsg, self.importSucessTitle,
                                          wx.OK | wx.ICON_INFORMATION)
                     info.ShowModal()
@@ -2778,13 +2779,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         # print self.manager.GetLocalTimeUtcOffsetFromFt2()
         # print tzCmbo
         print "self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]", self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]
-        if tz != self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]:
-            info = wx.MessageDialog(self, self.tzMatchErrMsg, self.tzMatchErrTitle,
-                                     wx.OK | wx.ICON_ERROR)
+        # if tz != self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]:
+            # info = wx.MessageDialog(self, self.tzMatchErrMsg, self.tzMatchErrTitle,
+                                     # wx.OK | wx.ICON_ERROR)
 
-            # info.GetMessage().SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, "")) 
-            info.ShowModal()
-            return False
+            # info.ShowModal()
+            # return False
 
         return True
 

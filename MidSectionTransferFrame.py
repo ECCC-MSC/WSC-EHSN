@@ -144,7 +144,9 @@ class MidSectionTransferFrame(wx.Frame):
             transferCommon = True
 
         if transferCommon:
-            instrDep.methodCBListBox.Check(1)
+            # instrDep.methodCBListBox.Check(1)
+            # instrDep.methodCBListBox.SetValue(instrDep.measurementMethods[1])
+            instrDep.SetMethodCBListBox(instrDep.measurementMethods[1])
             instrDep.DeploymentCheckListCBCkecking4MidSection()
 
             instrDep.instrumentCmbo.SetValue("Current Meter")

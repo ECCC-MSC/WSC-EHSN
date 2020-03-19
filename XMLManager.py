@@ -11,6 +11,7 @@ import time
 import ast
 import sys, os
 import traceback
+from pdb import set_trace
 
 
 #Calculate the mean time
@@ -1270,11 +1271,12 @@ def MeasResultsFromXML(MeasResults, measResultsManager):
 # Create XML structure for Instrument and Deployment information
 def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     bkColor = instrDepManager.manager.gui.importedBGColor
-    checkList = instrDepManager.methodCBListBox.GetCheckedStrings()
+    # checkList = instrDepManager.methodCBListBox.GetCheckedStrings()
+    checkList = instrDepManager.methodCBListBox
 
     check = None
     if len(checkList) > 0:
-        check = checkList[0]
+        check = checkList
 
     GeneralInfo = SubElement(InstrumentDeployment, 'GeneralInfo')
     method = SubElement(GeneralInfo, 'methodType')
@@ -1407,6 +1409,15 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
         not instrDepManager.passedFieldRevCB:
         ADCPInfo.attrib['empty'] = 'True'
 
+    # Other methods
+    # otherMethods = SubElement(GeneralInfo, 'otherMethods')
+    monitoringMethod = SubElement(GeneralInfo, 'monitoringMethod')
+    monitoringMethod.text = str(instrDepManager.monitoringMethod)
+
+    # Engineered Structures
+    # engineeredStructures = SubElement(GeneralInfo, 'engineeredStructures')
+    structureType = SubElement(GeneralInfo, 'structureType')
+    structureType.text = str(instrDepManager.structureTypeCombo)
 
     #SiteConditions Panel
     SiteConditions = SubElement(InstrumentDeployment, 'SiteConditions')
@@ -1476,8 +1487,39 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     instrDepManager.gui.CheckListReset()
     GeneralInfo = InstrumentDeployment.find('GeneralInfo')
     method = GeneralInfo.find('methodType').text
-    instrDepManager.methodCBListBox = "" if method is None else method
+    if method in instrDepManager.gui.measurementMethods:
+        instrDepManager.gui.savedMeasurementMethodIndex = instrDepManager.gui.measurementMethods.index(method)
+        instrDepManager.methodCBListBox = method
+    else:
+        instrDepManager.gui.savedMeasurementMethodIndex = 0
+        instrDepManager.methodCBListBox = ""
+    # instrDepManager.methodCBListBox = "" if method is None else method
     instrDepManager.OnDeploymentUpdate()
+
+    try:
+        # otherMethods = GeneralInfo.find('otherMethods')
+        structureType = GeneralInfo.find('structureType')
+    except:
+        structureType = None
+
+    if structureType is None:
+        instrDepManager.structureTypeCombo = ''
+    else:
+        instrDepManager.structureTypeCombo = structureType.text
+        
+
+    try:
+        # engineeredStructures = GeneralInfo.find('engineeredStructures')
+        monitoringMethod = GeneralInfo.find('monitoringMethod')
+    except:
+        monitoringMethod = None
+
+    if monitoringMethod is None:
+        instrDepManager.monitoringMethod = ''
+    else:
+        instrDepManager.monitoringMethod = monitoringMethod.text
+
+
 
     deployment = GeneralInfo.find('deployment')
     if deployment.text is None:
@@ -1819,6 +1861,8 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
 
 
             stationText = waterLevelRunManager.GetLevelNotesStation(i, j).GetValue() if waterLevelRunManager.GetLevelNotesStation(i, j).GetValue() is not None else ''
+            hourText = waterLevelRunManager.GetLevelNotesHour(i, j).GetValue() if waterLevelRunManager.GetLevelNotesHour(i, j).GetValue() is not None else ''
+            minuteText = waterLevelRunManager.GetLevelNotesMinute(i, j).GetValue() if waterLevelRunManager.GetLevelNotesMinute(i, j).GetValue() is not None else ''
             backsightText = waterLevelRunManager.GetLevelNotesBacksight(i, j).GetValue() if waterLevelRunManager.GetLevelNotesBacksight(i, j).GetValue() is not None else ''
             heightOfInstrumentText = waterLevelRunManager.GetLevelNotesHI(i, j).GetValue() if waterLevelRunManager.GetLevelNotesHI(i, j).GetValue() is not None else ''
             foresightText = waterLevelRunManager.GetLevelNotesForesight(i, j).GetValue() if waterLevelRunManager.GetLevelNotesForesight(i, j).GetValue() is not None else ''
@@ -1844,12 +1888,28 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
             if commentsText != "" and commentsText is not None:
                 notEmptyRow = True
 
+            if hourText != "" and hourText is not None and minuteText != "" and minuteText is not None:
+                notEmptyRow = True
+
             if notEmptyRow:
                 # Add row to the LevelChecksTable
 
                 LevelChecksRow = SubElement(LevelChecksTable, 'LevelChecksRow', row=str(j))
                 station = SubElement(LevelChecksRow, 'station')
                 station.text = stationText
+
+                hour = SubElement(LevelChecksRow, 'hour')
+                hour.text = hourText
+
+                minute = SubElement(LevelChecksRow, 'minute')
+                minute.text = minuteText
+
+                time = SubElement(LevelChecksRow, 'time')
+                if hourText != "" or minuteText != "":
+                    time.text = hourText + ":" + minuteText
+                else:
+                    time.text = ""
+
 
                 backsight = SubElement(LevelChecksRow, 'backsight')
                 backsight.text = backsightText
@@ -2016,6 +2076,14 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
                     waterLevelRunManager.AddEntry(run)
                     rowIndex = row
                 station = LevelChecksRow.find('station').text
+                hour = ""
+                minute = ""
+                if LevelChecksRow.find('hour') is not None:
+                    hour = LevelChecksRow.find('hour').text
+                if LevelChecksRow.find('minute') is not None:
+                    minute = LevelChecksRow.find('minute').text
+                # hour = LevelChecksRow.find('hour').text
+                # minute = LevelChecksRow.find('minute').text
                 backsight = LevelChecksRow.find('backsight').text
                 htInst = LevelChecksRow.find('htInst').text
                 foresight = LevelChecksRow.find('foresight').text
@@ -2027,6 +2095,8 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
                 comments = LevelChecksRow.find('comments').text
 
                 waterLevelRunManager.GetLevelNotesStation(run, row).ChangeValue("" if station is None else station)
+                waterLevelRunManager.GetLevelNotesTime(run, row).ChangeHourVal("" if hour is None else hour)
+                waterLevelRunManager.GetLevelNotesTime(run, row).ChangeMinuteVal("" if minute is None else minute)
                 waterLevelRunManager.GetLevelNotesBacksight(run, row).ChangeValue("" if backsight is None else backsight)
                 waterLevelRunManager.GetLevelNotesHI(run, row).ChangeValue("" if htInst is None else htInst)
                 waterLevelRunManager.GetLevelNotesForesight(run, row).ChangeValue("" if foresight is None else foresight)
