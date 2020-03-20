@@ -532,6 +532,7 @@ class ElectronicHydrometricSurveyNotes:
                     print fvPath
                     dirName = fvPath[-19:]
                     fvPath = fvPath.replace("\\", "\\\\")
+                    dirPath = fvPath.replace("\\", "/")
                     fvPathPdf = fvPath.replace("\\", "\\\\")
                     fvPath = fvPath + ".xml"
                     fvPathPdf = fvPathPdf + ".pdf"
@@ -1567,8 +1568,7 @@ elif '_MEIPASS2' in environ:
     chdir(environ['_MEIPASS2'])
     filename = join(environ['_MEIPASS2'], filename)
 else:
-    # chdir(dirname(sys.argv[0]))
-    chdir(dirname(os.path.realpath(__file__)))
+    chdir(dirname(sys.argv[0]))
     filename = join(dirname(sys.argv[0]), filename)
 
 
