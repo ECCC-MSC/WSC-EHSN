@@ -47,7 +47,7 @@ class AQUARIUSDataExtractionToolManager(object):
                           '-6' : 'CST',
                           '-5' : 'EST',
                           '-4' : 'AST',
-                          '-3' : 'NST',
+                          '-3.5' : 'NST',
                           '-0' : 'UTC'}
 
         self.scriptLoc = scriptLoc
@@ -1064,8 +1064,6 @@ class AQUARIUSDataExtractionToolManager(object):
 
             # re = subprocess.call(arg, stdout=FNULL, stderr=FNULL, shell=False)
 
-
-
             if re != 0:
                 failedStations.append(station)
                 continue
@@ -1396,7 +1394,11 @@ class AQUARIUSDataExtractionToolManager(object):
                 locids.append(fieldId)
                 fieldStartTime = str(fieldVisitData['StartTime'])
                 #fieldStartTime = str(fieldVisitData['DischargeActivities'][0]['DischargeSummary']['MeasurementTime'])
-                fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[' + self.timeZones['-' + fieldStartTime[len(fieldStartTime) - 4:len(fieldStartTime) - 3]] + ']'
+                print fieldStartTime[-5:]
+                if fieldStartTime[-5:] == "03:30":
+                    fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[NST]'
+                else:
+                    fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[' + self.timeZones['-' + fieldStartTime[len(fieldStartTime) - 4:len(fieldStartTime) - 3]] + ']'
                 startTimeList.append(fieldStartTime)
 
             #for locid in locids:
