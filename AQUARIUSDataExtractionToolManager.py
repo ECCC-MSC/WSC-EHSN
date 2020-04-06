@@ -979,6 +979,7 @@ class AQUARIUSDataExtractionToolManager(object):
                     return
 
         if exportFile is not None:
+            '''
             if fileExists:
 
                 # if file exists, read the file
@@ -1017,12 +1018,9 @@ class AQUARIUSDataExtractionToolManager(object):
                         fileBMList.append(ebm)
 
                 # totalBenchmarkList = sorted(fileBMList, key=itemgetter(0, 1))
-
+            '''
             # Write to file
-            exportFile.close()
-            exportFile = open(path + '\\levels.txt', "wb")
-            exportFile.close()
-            exportFile = open(path + '\\levels.txt', "a+")
+            exportFile = open(path + '\\levels.txt', "w+")
             exportFile.write("STATION,REFERENCE,ELEVATION,DESCRIPTION")
             for line in totalBenchmarkList:
                 # print line
@@ -1394,7 +1392,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 locids.append(fieldId)
                 fieldStartTime = str(fieldVisitData['StartTime'])
                 #fieldStartTime = str(fieldVisitData['DischargeActivities'][0]['DischargeSummary']['MeasurementTime'])
-                print fieldStartTime[-5:]
+                # print fieldStartTime[-5:]
                 if fieldStartTime[-5:] == "03:30":
                     fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[NST]'
                 else:
