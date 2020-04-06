@@ -2439,11 +2439,11 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 return
 
             #Timezone if invalid (eHSN or external file or not matching)
-            if evt.GetId() == ID_IMPORT_FT2:
-                if not self.TimeZoneValidationImportFt2():
-                    if self.ft2FtDir != '':
-                        shutil.rmtree(self.ft2FtDir.rsplit('.',1)[0])
-                    return
+            # if evt.GetId() == ID_IMPORT_FT2:
+                # if not self.TimeZoneValidationImportFt2():
+                    # if self.ft2FtDir != '':
+                        # shutil.rmtree(self.ft2FtDir.rsplit('.',1)[0])
+                    # return
 
             if evt.GetId() == ID_IMPORT_SXSMMT:
                 info = wx.MessageDialog(None, self.sxsImportAttentionMsg, self.sxsImportAttentionTitle,
