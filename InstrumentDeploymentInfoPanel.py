@@ -111,6 +111,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.picturedLbl = "Site and/or control pictures were taken."
         self.preUseCableLbl = "Pre-use Cableway Inspection"
         self.preUseCableList = ["Not-required", "Passed", "Failed"]
+        self.measureInfoMsg = 'Engineered structure and Other methods will be uploaded to Mid-section at this time.'
+
         self.numberRange = list(range(20, 51))
         for i in self.numberRange:
             self.numberOfPanelsList.append(str(i))
@@ -176,12 +178,19 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         methodListSizer = wx.BoxSizer(wx.VERTICAL)
         self.methodCBListBoxLbl = wx.StaticText(self, label=self.measurementMethodsLbl, \
                                  style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
-        self.methodCBListBox = wx.ComboBox(self, size=(-1, 45), style=wx.CB_READONLY, choices=self.measurementMethods)
+        self.methodCBListBox = wx.ComboBox(self, size=(-1, -1), style=wx.CB_READONLY, choices=self.measurementMethods)
         self.methodCBListBox.Bind(wx.EVT_COMBOBOX, self.OnDeploymentCheckListCB)
         # self.methodCBListBox.Bind(wx.EVT_TEXT, self.OnDeploymentCheckListCB)
+        self.measureInfoButton = wx.Button(self, size=(20, 20), label="!")
+        self.measureInfoButton.SetForegroundColour('red')
+        self.measureInfoButton.Bind(wx.EVT_BUTTON, self.OnMeasureInfoBtn)
 
-        methodListSizer.Add(self.methodCBListBoxLbl, 0, wx.EXPAND)
-        methodListSizer.Add(self.methodCBListBox, 0, wx.EXPAND)
+        methodListSizerH = wx.BoxSizer(wx.HORIZONTAL)
+        methodListSizerH.Add(self.methodCBListBox, 0, wx.EXPAND)
+        methodListSizerH.Add(self.measureInfoButton, 0, wx.EXPAND)
+
+        methodListSizer.Add(self.methodCBListBoxLbl, 1, wx.EXPAND)
+        methodListSizer.Add(methodListSizerH, 0, wx.EXPAND)
 
 
         #Monitoring method Combo Box
@@ -1068,6 +1077,10 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
                 self.EnableMidsectionInfo(True)
                 self.EnableAdcpInfo(True)
 
+            elif check == 3 or check == 4: #Other methods or Engineered Structures
+                self.EnableAdcpInfo(False)
+                self.EnableMidsectionInfo(False)
+
             self.EnableGeneralInfo(True)
 
 
@@ -1849,6 +1862,16 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     # def OnDiagTestCB(self, evt):
     #     ctrl = evt.GetEventObject()
 
+    #information button on measurement method
+    def OnMeasureInfoBtn(self, event):
+        dlg = wx.MessageDialog(self, self.measureInfoMsg, 'Information', wx.OK)
+
+        res = dlg.ShowModal()
+        if res == wx.ID_OK:
+            dlg.Destroy()
+        else:
+            dlg.Destroy()
+        return
 
 
 def main():
