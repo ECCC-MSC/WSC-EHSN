@@ -129,6 +129,9 @@ def AddDischargeSummary(path, disMeasManager):
                 meanVelocity = data[1].rstrip()
             elif data[0] == "Total Q":
                 discharge = data[1].rstrip()
+            elif data[0] == "Overall":
+                uncertainty = data[2].rstrip()[:-1]
+                # print(uncertainty)
 
     color = disMeasManager.manager.gui.importedBGColor
 
@@ -164,6 +167,9 @@ def AddDischargeSummary(path, disMeasManager):
             SigByCtrl3(disMeasManager.GetDischCtrl())
         disMeasManager.GetDischCtrl().SetBackgroundColour(color)
 
+    if uncertainty is not None and uncertainty != "":
+        disMeasManager.uncertaintyCtrl = str(round(float(uncertainty)*2, 2))
+        disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
     # print PmTo24H(startTime)
     # print PmTo24H(endTime)
     # # print waterTemp

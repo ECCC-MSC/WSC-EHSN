@@ -14,6 +14,7 @@ class MidSectionTransferFrame(wx.Frame):
         self.numberPanelsLbl = "Number of Panels"
         self.meterNumberLbl = "Meter Number"
         self.mmntTimeLbl = "Mmnt Start/End Time"
+        self.uncertaintyLbl = 'Uncertainty'
 
         self.transferTitle = "Transfer selected values to the front page"
 
@@ -47,7 +48,8 @@ class MidSectionTransferFrame(wx.Frame):
         self.meanVelocityCkbox = wx.CheckBox(mainPanel, label=self.meanVelocityLbl, style=wx.ALIGN_LEFT)
         self.dischargeCkbox = wx.CheckBox(mainPanel, label=self.dischargeLbl, style=wx.ALIGN_LEFT)
         self.meterNumberCkbox = wx.CheckBox(mainPanel, label=self.meterNumberLbl, style=wx.ALIGN_LEFT)
-        
+        self.uncertaintyCkbox = wx.CheckBox(mainPanel, label=self.uncertaintyLbl, style=wx.ALIGN_LEFT)
+
         
 
 
@@ -57,6 +59,7 @@ class MidSectionTransferFrame(wx.Frame):
         self.dischargeCkbox.SetValue(True)
         self.numberPanelsCkbox.SetValue(True)
         self.meterNumberCkbox.SetValue(True)
+        self.uncertaintyCkbox.SetValue(True)
         self.mmntTimeCkbox.SetValue(True)
 
         self.cancelBtn = wx.Button(mainPanel, label=self.cancelBtnLbl)
@@ -80,7 +83,8 @@ class MidSectionTransferFrame(wx.Frame):
         self.layoutSizer.Add(self.dischargeCkbox, 1, wx.EXPAND|wx.ALL, 5)
         
         self.layoutSizer.Add(self.meterNumberCkbox, 1, wx.EXPAND|wx.ALL, 5)
-        
+        self.layoutSizer.Add(self.uncertaintyCkbox, 1, wx.EXPAND|wx.ALL, 5)
+
         
 
         self.layoutSizer.Add(btnSizer, 1, wx.EXPAND|wx.ALL, 5)
@@ -101,6 +105,7 @@ class MidSectionTransferFrame(wx.Frame):
         discharge = None
         numOfPanels = None
         meterNum = None
+        uncertainty = None
 
         transferCommon = False
 
@@ -134,6 +139,11 @@ class MidSectionTransferFrame(wx.Frame):
             instrDep.serialCmbo.SetValue(meterNum)
             transferCommon = True
 
+
+        if self.uncertaintyCkbox.GetValue() and self.GetParent().uncertainty2Ctrl.GetValue() != "":
+            uncertainty = str(round(float(self.GetParent().uncertainty2Ctrl.GetValue()), 2))
+            dischargePanel.uncertaintyCtrl.SetValue(uncertainty)
+            transferCommon = True
 
         if self.mmntTimeCkbox.GetValue() and self.GetParent().startTimeCtrl.GetValue() != "" \
                 and self.GetParent().endTimeCtrl.GetValue() != "":

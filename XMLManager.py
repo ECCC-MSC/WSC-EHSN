@@ -420,10 +420,12 @@ def DischMeasAsXMLTree(DisMeas, disMeasManager):
     discharge = SubElement(DisMeas, 'discharge')
     discharge.text = str(disMeasManager.dischCtrl)
 
-    dischCombo = SubElement(DisMeas, 'dischCombo')
-    dischCombo.text = str(disMeasManager.dischCombo)
+    # dischCombo = SubElement(DisMeas, 'dischCombo')
+    # dischCombo.text = str(disMeasManager.dischCombo)
 
 
+    uncertainty = SubElement(DisMeas, 'uncertainty')
+    uncertainty.text = str(disMeasManager.uncertaintyCtrl)
 
     mmtTimeVal = SubElement(DisMeas, 'mmtTimeVal')
     mmtTimeVal.text = str(disMeasManager.mmtValTxt)
@@ -460,6 +462,8 @@ def DischMeasAsXMLTree(DisMeas, disMeasManager):
         mgh.attrib['imported'] = "1"
     if disMeasManager.GetDischCtrl().GetBackgroundColour() == bkColor:
         discharge.attrib['imported'] = "1"
+    if disMeasManager.GetUncertaintyCtrl().GetBackgroundColour() == bkColor:
+        uncertainty.attrib['imported'] = "1"
     if disMeasManager.GetShiftCtrl().GetBackgroundColour() == bkColor:
         shift.attrib['imported'] = "1"
     if disMeasManager.GetDiffCtrl().GetBackgroundColour() == bkColor:
@@ -549,11 +553,21 @@ def DischMeasFromXML(DisMeas, disMeasManager):
         else:
             disMeasManager.GetDischCtrl().SetBackgroundColour(white)
 
-    dischCombo = DisMeas.find('dischCombo')
-    if dischCombo is None or dischCombo.text is None:
-        disMeasManager.dischCombo = ""
+    uncertainty = DisMeas.find('uncertainty')
+    if uncertainty.text is None:
+        disMeasManager.uncertaintyCtrl = ""
     else:
-        disMeasManager.dischCombo = dischCombo.text
+        disMeasManager.uncertaintyCtrl = uncertainty.text
+        if "imported" in uncertainty.attrib and uncertainty.attrib['imported'] == "1":
+            disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(bkColor)
+        else:
+            disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(white)
+
+    # dischCombo = DisMeas.find('dischCombo')
+    # if dischCombo is None or dischCombo.text is None:
+        # disMeasManager.dischCombo = ""
+    # else:
+        # disMeasManager.dischCombo = dischCombo.text
 
     mmtTimeVal = DisMeas.find('mmtTimeVal').text
     disMeasManager.mmtValTxt = "" if mmtTimeVal is None else mmtTimeVal

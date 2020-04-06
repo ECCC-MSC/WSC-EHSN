@@ -48,6 +48,9 @@ def GetVelocity(filePath):
 def GetDischarge(filePath):
     return GetRoot(filePath).find('ChannelSummary').find('Discharge').find('Total').text
 
+def GetUncertainty(filePath):
+    return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('Total').text
+
 def GetMBCorrection(filePath):
     return GetRoot(filePath).find('ChannelSummary').find('Discharge').find('MovingBedPercentCorrection').text
 
@@ -434,6 +437,7 @@ def AddDischargeSummary(filePath, disMeasManager):
     area = GetArea(filePath)
     vel = GetVelocity(filePath)
     dis = GetDischarge(filePath)
+    uncert = str(round(float(GetUncertainty(filePath)), 2))
     # water = GetWaterTemp(filePath)
     mbCorrection = GetMBCorrection(filePath)
 
@@ -471,7 +475,14 @@ def AddDischargeSummary(filePath, disMeasManager):
         disMeasManager.manager.movingBoatMeasurementsManager.gui.finalDischCtrl.SetBackgroundColour(color)
 
         
-   
+    if uncert is not None:
+        disMeasManager.uncertaintyCtrl = uncert
+        myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
+        myEvent.SetEventObject(disMeasManager.GetUncertaintyCtrl())
+        wx.PostEvent(disMeasManager.GetUncertaintyCtrl(), myEvent)
+        disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
+
+
 
     # if water is not None:
     #     disMeasManager.waterTempCtrl = water

@@ -447,6 +447,7 @@
 				<th>Mean Velocity (m/s)</th>
 				<th>Corrected MGH (m)</th>
 				<th>Discharge (m<sup>3</sup>/s)</th>
+				<th>Uncertainty  (%)</th>
 			</tr>
 			<tr>
 				<td align="center"><xsl:value-of select="startTime"/></td>
@@ -500,6 +501,14 @@
 					</xsl:otherwise>
 				</xsl:choose>
 
+				<xsl:choose>
+					<xsl:when test="uncertainty/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="uncertainty"/><xsl:value-of select="uncertaintyCtrl"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><xsl:value-of select="uncertainty"/><xsl:value-of select="uncertaintyCtrl"/></td>
+					</xsl:otherwise>
+				</xsl:choose>
 
 
 
@@ -540,7 +549,7 @@
 
 				<!-- <td align="center"><font color="blue"><xsl:value-of select="diff"/></font></td> -->
 				<th>Curve #</th>
-				<td align="center" colspan = "1"><font color="blue"><xsl:value-of select="curve"/></font></td>
+				<td align="center" colspan = "2"><font color="blue"><xsl:value-of select="curve"/></font></td>
 			</tr>
 			<tr>
 				<th align="center" colspan = "1">Control Condition</th>
@@ -555,7 +564,7 @@
 			</tr>
 			<tr>
 				<th align="center" colspan = "2">Discharge Activity Remarks</th>
-				<td colspan = "7" style="text-align:left;vertical-align:top;word-wrap:break-word">
+				<td colspan = "8" style="text-align:left;vertical-align:top;word-wrap:break-word">
 					<xsl:call-template name="LFsToBRs">
 						<xsl:with-param name="input" select="dischargeRemark"/>
 					</xsl:call-template>
