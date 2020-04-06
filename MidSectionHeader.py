@@ -17,6 +17,8 @@ import NumberControl
 from MidSectionSubPanelObj import *
 from MidSectionTransferFrame import *
 
+from pdb import set_trace
+
 mode = "PRODUCTION"
 EHSN_VERSION = "v2.1.0"
 eHSN_WINDOW_SIZE = (965, 730)
@@ -72,7 +74,11 @@ class MidSectionHeader(wx.Panel):
         self.startBanks = ["Left", "Right"]
         self.dir = self.GetParent().GetParent().GetParent().GetParent().dir
         self.transferBtnLbl = "Transfer to Front Page"
-        self.transferFrameSize = (420, 300)
+        self.transferFrameSize = (420, 310)
+
+        self.color_cursor = "#33E6FF"
+        self.color_body = "#91c7f7"
+	self.color_saved = "#0F5D68"
 
         if hasattr(sys, '_MEIPASS'):
             self.myBitmapFront = os.path.join(sys._MEIPASS, "backarrow.png")
@@ -417,23 +423,24 @@ class MidSectionHeader(wx.Panel):
             self.plotBtn.Enable()
         event.Skip()
 
-    def GeneratePlot(self):
+    def GeneratePlot(self, cursorX=0, cursorY=0):
 
         panelObjs = self.GetParent().table.panelObjs
 
         isIncreasing = True
-        if float(panelObjs[0].distance) > float(panelObjs[1].distance):
-            isIncreasing = False
+        if len(panelObjs) > 0:
+            if float(panelObjs[0].distance) > float(panelObjs[1].distance):
+                isIncreasing = False
 
 
         width, height = wx.GetDisplaySize()
 
-        fig, ax = plt.subplots(2, facecolor="white", sharex=True, figsize=(width/80*0.8,height/80*0.8))
-        velo = ax[0].twinx()
+        fig, self.ax = plt.subplots(2, facecolor="white", sharex=True, figsize=(width/80*0.8,height/80*0.8))
+        velo = self.ax[0].twinx()
 
         
 
-        for tk in ax[0].get_xticklabels():
+        for tk in self.ax[0].get_xticklabels():
             tk.set_visible(True)
 
         tagmarkList = []
@@ -582,7 +589,7 @@ class MidSectionHeader(wx.Panel):
 
 
         # Plot Flow
-        lns1, = ax[0].step(flowTagList, flowList,where='mid',linewidth=2, color="purple", label="Discharge(q/Q%)")
+        lns1, = self.ax[0].step(flowTagList, flowList,where='mid',linewidth=2, color="purple", label="Discharge(q/Q%)")
         # Plot Velocity
         lns2, = velo.plot(veloTagList, veloList, color="blue", label="Velocity")
 
@@ -603,26 +610,24 @@ class MidSectionHeader(wx.Panel):
 
         
 
-        ax[1].invert_yaxis()
+        self.ax[1].invert_yaxis()
         if ("right" in leftOrRight.lower() and not isIncreasing) or ("left" in leftOrRight.lower() and isIncreasing):
-            ax[0].set_xlim(newMinX, newMaxX)
+            self.ax[0].set_xlim(newMinX, newMaxX)
 
         else:
-            ax[0].set_xlim(newMaxX, newMinX)
+            self.ax[0].set_xlim(newMaxX, newMinX)
 
 
-        # Depth curve
 
-        lns3 = ax[1].fill_between(np.array(depthTagList),np.array(depthList), facecolor="#91c7f7", edgecolor="#91c7f7", label="River Body")
         # Ice
-        lns4 = ax[1].fill_between(iceTagList,bottomIceList, facecolor="#5b5858", edgecolor="#5b5858", label="Ice")
-        lns5 = ax[1].fill_between(slushTagList,bottomSlushList, facecolor="#e5e5e5", edgecolor="#e5e5e5", label="Slush Ice")
+        lns4 = self.ax[1].fill_between(iceTagList,bottomIceList, facecolor="#5b5858", edgecolor="#5b5858", label="Ice")
+        lns5 = self.ax[1].fill_between(slushTagList,bottomSlushList, facecolor="#e5e5e5", edgecolor="#e5e5e5", label="Slush Ice")
 
 
         # observation points for panel
         for tagmark, depthObs in zip(panelTagmarkList, depthObsList):
             for point in depthObs:
-                lns6, = ax[1].plot(tagmark, point, "ro", marker="s", label="Obsevation Points")
+                lns6, = self.ax[1].plot(tagmark, point, "ro", marker="s", label="Obsevation Points")
         # Lines
         if isIncreasing:
             
@@ -632,23 +637,40 @@ class MidSectionHeader(wx.Panel):
             y = np.interp(tagmarkLineList, depthTagList[::-1], depthList[::-1])
 
 
-        ax[1].stem(tagmarkLineList, y, markerfmt=" ", label="Panel Boundary", linefmt="#00143d")
-        lns7, = ax[1].plot(1,1,color="#00143d") #This is a proxy; just for the legend
+        self.ax[1].stem(tagmarkLineList, y, markerfmt=" ", label="Panel Boundary", linefmt="#00143d")
+        lns7, = self.ax[1].plot(1,1,color="#00143d") #This is a proxy; just for the legend
 
        
+        # Depth curve
+        aTagmarkLineList = sorted(tagmarkLineList)
+        aDepthTagList = sorted(depthTagList)
+        if not isIncreasing:
+            aY = y[::-1]
+            aDepthList = depthList[::-1]
+        else:
+            aY = y
+            aDepthList = depthList
+        aTuples = sorted(list(set(zip(aTagmarkLineList, aY) + zip(aDepthTagList, aDepthList))), \
+                                                    key=lambda x: x[0])
+        unpackTuples = zip(*aTuples)
+        tags = unpackTuples[0]
+        depths = unpackTuples[1]
 
-        lns = [lns1, lns2, lns3, lns4, lns5, lns6, lns7]
+        self.savedIndex = -1
+        lns3_cursor = self.ax[1].fill_between(np.array(depthTagList),np.array(depthList), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+        lns = [lns1, lns2, lns3_cursor, lns4, lns5, lns6, lns7]
+
         labels=["Discharge(q/Q%)","Velocity","River Body","Ice","Slush Ice","Obsevation Points","Panel Boundary"]
 
 
-        ax[1].legend(lns,labels,prop={'size':9}, loc='lower left', numpoints=1, borderaxespad=0.)
+        self.ax[1].legend(lns,labels,prop={'size':9}, loc='lower left', numpoints=1, borderaxespad=0.)
 
         lns7.set_visible(False)
 
 
-        ax[0].spines['left'].set_color('purple')
-        ax[0].yaxis.label.set_color('purple')
-        ax[0].tick_params(axis='y', colors='purple')
+        self.ax[0].spines['left'].set_color('purple')
+        self.ax[0].yaxis.label.set_color('purple')
+        self.ax[0].tick_params(axis='y', colors='purple')
         velo.spines['right'].set_color('blue')
         velo.yaxis.label.set_color('blue')
         velo.tick_params(axis='y', colors='blue')
@@ -660,22 +682,22 @@ class MidSectionHeader(wx.Panel):
         minVel = float(min(veloList))
         maxFV = maxFlow if maxFlow > maxVel else maxVel
         minFV = minFlow if minFlow < minVel else minVel
-        ax[0].set_ylim(minFV, maxFV * 1.1)
+        self.ax[0].set_ylim(minFV, maxFV * 1.1)
 
         
 
 
         maxY = float(max(y))
-        ax[1].set_ylim(maxY * 1.1, 0)
+        self.ax[1].set_ylim(maxY * 1.1, 0)
 
-        ax[0].set_ylabel("Discharge (q/Q%)", fontsize=14, color="purple")
+        self.ax[0].set_ylabel("Discharge (q/Q%)", fontsize=14, color="purple")
         velo.set_ylabel("Velocity (m/s)", fontsize=14, color="b")
-        ax[1].set_xlabel("Tagmark (m)", fontsize=14)
-        ax[1].set_ylabel("Depth (m)", fontsize=14)
+        self.ax[1].set_xlabel("Tagmark (m)", fontsize=14)
+        self.ax[1].set_ylabel("Depth (m)", fontsize=14)
 
-        ax[1].locator_params(axis='both', nbins=10)
-        ax[1].yaxis.set_ticks_position('both')
-        ax[1].tick_params(labeltop=False, labelright=True)
+        self.ax[1].locator_params(axis='both', nbins=10)
+        self.ax[1].yaxis.set_ticks_position('both')
+        self.ax[1].tick_params(labeltop=False, labelright=True)
 
 
 
@@ -686,19 +708,215 @@ class MidSectionHeader(wx.Panel):
 
 
 
-        ax[0].grid('on')
-        ax[1].grid('on')
+        self.ax[0].grid('on')
+        self.ax[1].grid('on')
 
-        ax[0].autoscale_view(True,True,True)
-        ax[1].autoscale_view(True,True,True)
+        self.ax[0].autoscale_view(True,True,True)
+        self.ax[1].autoscale_view(True,True,True)
 
 
         pltManager = plt.get_current_fig_manager()
         pltManager.window.wm_geometry("+50+0")
 
-        plt.show()
-
+        # plt.show()
         self.plotBtn.Enable(True)
+
+        return self, fig, self.ax[1], tags, depths, tagmarkLineList, depthTagList, depthList
+
+    #Refill ax2 with light color
+    def fill_ax2_mouse_over(self, cursorX, cursorY, tags, depths, tagmarkLineList, depthTagList, depthList):
+
+        for index, tag in enumerate(tags[:-1]):
+            #there is a saved highlighted panel
+            if self.savedIndex != -1:
+                #cursor in the valid area
+                if tags[index] < cursorX < tags[index+1] and (cursorY < depths[index] or cursorY < depths[index+1]):
+                    #cursor not on the highlighted panel
+                    if ((tags[index] in tagmarkLineList and self.savedIndex != index) or (tags[index] not in tagmarkLineList and self.savedIndex != index - 1)):
+                        #first panel
+                        if index == 0:
+                            print("case 1")
+                            lns3_cursor = self.ax[1].fill_between(np.array(tags[:2]),np.array(depths[:2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                            lns3_body1 = self.ax[1].fill_between(np.array(tags[1:self.savedIndex+1]),np.array(depths[1:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                            if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
+                                lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                            else:
+                                lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+3]),np.array(depths[self.savedIndex:self.savedIndex+3]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                            lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+2:]),np.array(depths[self.savedIndex+2:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        #last panel
+                        elif index == len(tags) - 2:
+                            print("case 2")
+                            lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex+1]),np.array(depths[:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                            if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
+                                lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+1:-1]),np.array(depths[self.savedIndex+1:-1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                            else:
+                                lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+3]),np.array(depths[self.savedIndex:self.savedIndex+3]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+2:-1]),np.array(depths[self.savedIndex+2:-1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                            lns3_cursor = self.ax[1].fill_between(np.array(tags[-2:]),np.array(depths[-2:]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                        #on the tagmark line
+                        elif tag in tagmarkLineList:
+                            if depths[index] == 0 or depths[index+1] == 0:
+                                print("case 3")
+                                if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
+                                    if index < self.savedIndex:
+                                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+2]),np.array(depths[index:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                        lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:self.savedIndex+1]),np.array(depths[index+1:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                        lns3_body3 = self.ax[1].fill_between(np.array(tags[self.savedIndex+1:]),np.array(depths[self.savedIndex+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    else:
+                                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex+1]),np.array(depths[:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                        lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+1:index+1]),np.array(depths[self.savedIndex+1:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+2]),np.array(depths[index:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                        lns3_body3 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                else:
+                                    if index < self.savedIndex:
+                                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+2]),np.array(depths[index:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                        lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:self.savedIndex+1]),np.array(depths[index+1:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+3]),np.array(depths[self.savedIndex:self.savedIndex+3]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                        lns3_body3 = self.ax[1].fill_between(np.array(tags[self.savedIndex+2:]),np.array(depths[self.savedIndex+2:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    else:
+                                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex+1]),np.array(depths[:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+3]),np.array(depths[self.savedIndex:self.savedIndex+3]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                        lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+2:index+1]),np.array(depths[self.savedIndex+2:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+2]),np.array(depths[index:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                        lns3_body3 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                            else:
+                                print("case 4")
+                                if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
+                                    if index < self.savedIndex:
+                                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+3]),np.array(depths[index:index+3]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                        lns3_body2 = self.ax[1].fill_between(np.array(tags[index+2:self.savedIndex+1]),np.array(depths[index+2:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                        lns3_body3 = self.ax[1].fill_between(np.array(tags[self.savedIndex+1:]),np.array(depths[self.savedIndex+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    else:
+                                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex+1]),np.array(depths[:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                        lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+1:index+1]),np.array(depths[self.savedIndex+1:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+3]),np.array(depths[index:index+3]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                        lns3_body3 = self.ax[1].fill_between(np.array(tags[index+2:]),np.array(depths[index+2:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                else:
+                                    if index < self.savedIndex:
+                                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+3]),np.array(depths[index:index+3]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                        lns3_body2 = self.ax[1].fill_between(np.array(tags[index+2:self.savedIndex+1]),np.array(depths[index+2:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+3]),np.array(depths[self.savedIndex:self.savedIndex+3]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                        lns3_body3 = self.ax[1].fill_between(np.array(tags[self.savedIndex+2:]),np.array(depths[self.savedIndex+2:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    else:
+                                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex+1]),np.array(depths[:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+3]),np.array(depths[self.savedIndex:self.savedIndex+3]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                        lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+2:index+1]),np.array(depths[self.savedIndex+2:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                        lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+3]),np.array(depths[index:index+3]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                        lns3_body3 = self.ax[1].fill_between(np.array(tags[index+2:]),np.array(depths[index+2:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        #on the mearsurement point
+                        else:
+                            if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
+                                print("case 5")
+                                if index < self.savedIndex:
+                                    lns3_body1 = self.ax[1].fill_between(np.array(tags[:index]),np.array(depths[:index]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    lns3_cursor = self.ax[1].fill_between(np.array(tags[index-1:index+2]),np.array(depths[index-1:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                    lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:self.savedIndex+1]),np.array(depths[index+1:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                    lns3_body3 = self.ax[1].fill_between(np.array(tags[self.savedIndex+1:]),np.array(depths[self.savedIndex+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                else:
+                                    lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex+1]),np.array(depths[:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                    lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+1:index]),np.array(depths[self.savedIndex+1:index]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    lns3_cursor = self.ax[1].fill_between(np.array(tags[index-1:index+2]),np.array(depths[index-1:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                    lns3_body3 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                            else:
+                                print("case 6")
+                                if index < self.savedIndex:
+                                    lns3_body1 = self.ax[1].fill_between(np.array(tags[:index]),np.array(depths[:index]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    lns3_cursor = self.ax[1].fill_between(np.array(tags[index-1:index+2]),np.array(depths[index-1:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                    lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:self.savedIndex+1]),np.array(depths[index+1:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+3]),np.array(depths[self.savedIndex:self.savedIndex+3]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                    lns3_body3 = self.ax[1].fill_between(np.array(tags[self.savedIndex+2:]),np.array(depths[self.savedIndex+2:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                else:
+                                    lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex+1]),np.array(depths[:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+3]),np.array(depths[self.savedIndex:self.savedIndex+3]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                                    lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+2:index]),np.array(depths[self.savedIndex+2:index]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                                    lns3_cursor = self.ax[1].fill_between(np.array(tags[index-1:index+2]),np.array(depths[index-1:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                                    lns3_body3 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+
+                    #cursor on the highlighted panel
+                    else:
+                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex]),np.array(depths[:self.savedIndex]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
+                            lns3_cursor = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                            lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+1:]),np.array(depths[self.savedIndex+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        else:
+                            lns3_cursor = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+3]),np.array(depths[self.savedIndex:self.savedIndex+3]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                            lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+2:]),np.array(depths[self.savedIndex+2:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                    break
+
+
+            #no savedIndex
+            else:
+                if tags[index] < cursorX < tags[index+1] and (cursorY < depths[index] or cursorY < depths[index+1]):
+                    #first panel
+                    if index == 0:
+                        lns3_cursor = self.ax[1].fill_between(np.array(tags[:2]),np.array(depths[:2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                        lns3_body = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                    #last panel
+                    elif index == len(tags) - 2:
+                        print("case 2")
+                        lns3_body = self.ax[1].fill_between(np.array(tags[:-1]),np.array(depths[:-1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        lns3_cursor = self.ax[1].fill_between(np.array(tags[-2:]),np.array(depths[-2:]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                    #on the tagmark line
+                    elif tag in tagmarkLineList:
+                        if depths[index] == 0 or depths[index+1] == 0:
+                            lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                            lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+2]),np.array(depths[index:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                            lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        else:
+                            lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                            lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+3]),np.array(depths[index:index+3]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                            lns3_body2 = self.ax[1].fill_between(np.array(tags[index+2:]),np.array(depths[index+2:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                    #on the mearsurement point
+                    else:
+                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:index]),np.array(depths[:index]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        lns3_cursor = self.ax[1].fill_between(np.array(tags[index-1:index+2]),np.array(depths[index-1:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                        lns3_body3 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+
+                    break
+
+
+
+    #Refill ax2 with dark color
+    def fill_ax2_click(self, cursorX, cursorY, tags, depths, tagmarkLineList, depthTagList, depthList):
+        for index, tag in enumerate(tags[:-1]):
+            if tags[index] < cursorX < tags[index+1] and (cursorY < depths[index] or cursorY < depths[index+1]):
+                if tags[index] in tagmarkLineList:
+                    self.savedIndex = index
+                else:
+                    self.savedIndex = index - 1
+                if index == 0:
+                    lns3_saved = self.ax[1].fill_between(np.array(tags[:2]),np.array(depths[:2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                    lns3_body = self.ax[1].fill_between(np.array(tags[1:]),np.array(depths[1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                elif index == len(tags) - 2:
+                    lns3_body = self.ax[1].fill_between(np.array(tags[:-1]),np.array(depths[:-1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                    lns3_saved = self.ax[1].fill_between(np.array(tags[-2:]),np.array(depths[-2:]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                elif tag in tagmarkLineList:
+                    if depths[index] == 0 or depths[index+1] == 0:
+                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        lns3_saved = self.ax[1].fill_between(np.array(tags[index:index+2]),np.array(depths[index:index+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                        lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                    else:
+                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        lns3_saved = self.ax[1].fill_between(np.array(tags[index:index+3]),np.array(depths[index:index+3]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                        lns3_body2 = self.ax[1].fill_between(np.array(tags[index+2:]),np.array(depths[index+2:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                else:
+                    lns3_body1 = self.ax[1].fill_between(np.array(tags[:index]),np.array(depths[:index]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                    lns3_saved = self.ax[1].fill_between(np.array(tags[index-1:index+2]),np.array(depths[index-1:index+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                    lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+
+                break
+
 
     def CalculateSlop(self, x1, y1, x2, y2):
         return (y2 - y1) / (x2 / x1)
