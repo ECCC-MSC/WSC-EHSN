@@ -124,13 +124,13 @@ class DischargeMeasurementsManager(object):
 
 
     #Discharge Combobox
-    @property
-    def dischCombo(self):
-        return self.gui.GetDischCombo()
+    # @property
+    # def dischCombo(self):
+        # return self.gui.GetDischCombo()
 
-    @dischCombo.setter
-    def dischCombo(self, dischCombo):
-        self.gui.SetDischCombo(dischCombo)
+    # @dischCombo.setter
+    # def dischCombo(self, dischCombo):
+        # self.gui.SetDischCombo(dischCombo)
 
 
 
@@ -144,6 +144,14 @@ class DischargeMeasurementsManager(object):
         self.gui.SetDischCtrl(dischCtrl)
 
 
+    #Uncertainty Ctrl
+    @property
+    def uncertaintyCtrl(self):
+        return self.gui.GetUncertaintyCtrl()
+
+    @uncertaintyCtrl.setter
+    def uncertaintyCtrl(self, val):
+        self.gui.SetUncertaintyCtrl(val)
 
     #Mmt Mean Time Ctrl
     @property
@@ -301,8 +309,11 @@ class DischargeMeasurementsManager(object):
     def GetDischCtrl(self):
         return self.gui.dischCtrl
 
-    def GetDischCombo(self):
-    	return self.gui.dischCombo
+    def GetUncertaintyCtrl(self):
+        return self.gui.uncertaintyCtrl
+
+    # def GetDischCombo(self):
+            # return self.gui.dischCombo
 
     def GetShiftCtrl(self):
         return self.gui.shiftCtrl
