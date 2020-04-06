@@ -86,7 +86,7 @@ if 0:
 ##mode = "DEBUG"
 mode = "PRODUCTION"
 EHSN_VERSION = "v2.1.0"
-eHSN_WINDOW_SIZE = (965, 730)
+eHSN_WINDOW_SIZE = (1100, 730)
 
 # import wx.lib.inspection
 # wx.lib.inspection.InspectionTool().Show()
@@ -1568,7 +1568,8 @@ elif '_MEIPASS2' in environ:
     chdir(environ['_MEIPASS2'])
     filename = join(environ['_MEIPASS2'], filename)
 else:
-    chdir(dirname(sys.argv[0]))
+    # chdir(dirname(sys.argv[0]))
+    chdir(dirname(os.path.realpath(__file__)))
     filename = join(dirname(sys.argv[0]), filename)
 
 
