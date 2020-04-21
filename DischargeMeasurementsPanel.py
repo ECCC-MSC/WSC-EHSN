@@ -154,10 +154,15 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.correctMGHBtnHint = "This field is not directly uploaded to AQUARIUS. To ensure the correct gauge correction is uploaded, the Weighted M.G.H, SRC \
  and Gauge Correction must be entered in the EHSN stage summary table below."
 
-        self.uncertaintyInfoMsg = """- Flowtracker 1&2 -> IVE Method (1-Sigma)
-- QRev (ADCP Moving Boat)-......
-- eHSN - IVE Method (1-Sigma)"""
-
+        self.uncertaintyInfoMsg = """
+All uncertainty values reported here are 2-sigma value
+- FlowTracker (2*Uncertainty Value reported in *.dis File)
+- FlowTracker2 (2*Uncertainty Value reported in *.ft File)
+- SxS Pro (1*Uncertainty Value reported in *.xml File)
+- RSSL(2*Uncertainty Value reported in *.dis File)
+- QRev (1*Uncertainty Value reported in *.xml File)
+- eHSN Mid-section (IVE Value)
+"""
 
         self.timeFormat = "%H:%M"
         if lang == wx.LANGUAGE_ENGLISH:

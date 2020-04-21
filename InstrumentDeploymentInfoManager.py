@@ -109,11 +109,11 @@ class InstrumentDeploymentInfoManager(object):
     #   with the appropriate list
     def OnDeploymentUpdate(self):
         if self.manager is not None:
-            checkList = self.methodCBListBox
+            check = self.methodCBListBox
             
-            check = None
-            if len(checkList) > 0:
-                check = checkList
+            # check = None
+            # if len(checkList) > 0:
+                # check = checkList
 
                 
         #bug fix for keep the field review data

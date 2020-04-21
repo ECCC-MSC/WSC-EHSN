@@ -355,10 +355,10 @@ class FRChecklistPanel(wx.Panel):
                             # if (not self.manager.manager.instrDepManager.gui.methodCBListBox.IsChecked(0) and \
                                     # not self.manager.manager.instrDepManager.gui.methodCBListBox.IsChecked(1)) or \
                         if (self.manager.manager.instrDepManager.gui.methodCBListBox.GetCurrentSelection() == 2 or \
-                        self.manager.manager.instrDepManager.gui.methodCBListBox.GetCurrentSelection() == 1 \
+                        self.manager.manager.instrDepManager.gui.methodCBListBox.GetCurrentSelection() == 1) \
                         and self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'adv' and \
                         self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'adcp' \
-                        and self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'current meter'):
+                        and self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'current meter':
             			labelTextLbl.Enable(False)
             			labelPanel.Enable(False)
             			revCB.Enable(False)
@@ -390,6 +390,8 @@ class FRChecklistPanel(wx.Panel):
     # remove the checklist rows and then add new ones according
     # to the appropriate and selected list
     def changeDepType(self, depType):
+        # from pdb import set_trace
+        # set_trace()
         self.depTypeLbl.SetLabel(str(depType))
         self.colSizer.Layout()
 
