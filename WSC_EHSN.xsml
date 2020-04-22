@@ -594,6 +594,7 @@
 
 						<th rowspan="2">Sensor Reset Corr.</th>
 						<th rowspan="2"><font>Action Taken</font></th>
+						<th rowspan="2">Reading Type</th>
 						<th rowspan="2">M.G.H. Aggr.</th>
 					</tr>
 						
@@ -625,6 +626,23 @@
 									<xsl:when test="contains(SRCApp, 'CC')">CC</xsl:when>
 									<xsl:when test="contains(SRCApp, 'DWL')">DWL</xsl:when>
 									<xsl:when test="contains(SRCApp, 'CT')">CT</xsl:when>
+									<xsl:otherwise></xsl:otherwise>
+								</xsl:choose>
+							</td>
+							<td align="center">
+								<xsl:choose>
+									<xsl:when test="contains(ReadingType, 'Routine B')">Routine-B</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Routine A')">Routine-A</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Routine')">Routine</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Reset-B')">Reset-B</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Reset-A')">Reset-A</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Cleaning-B')">Cleaning-B</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Cleaning-A')">Cleaning-A</xsl:when>
+									<xsl:when test="contains(ReadingType, 'After C')">After Cal.</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Reference-P')">Primary Ref</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Reference')">Ref</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Extreme-Min')">Ext.-Min</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Extreme-Max')">Ext.-Max</xsl:when>
 									<xsl:otherwise></xsl:otherwise>
 								</xsl:choose>
 							</td>

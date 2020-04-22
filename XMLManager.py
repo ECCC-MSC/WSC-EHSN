@@ -138,6 +138,9 @@ def StageMeasAsXMLTree(StageMeas, stageMeasManager):
         MghCkbox = SubElement(StageMeasRow, 'MghCkbox')
         MghCkbox.text = str(stageMeasManager.GetMghAggCheckboxVal(row))
 
+        ReadingType = SubElement(StageMeasRow, 'ReadingType')
+        ReadingType.text = str(stageMeasManager.GetReadingTypeVal(row))
+
     hgCkbox = SubElement(StageMeas, 'hgCkbox')
     hgCkbox.text = str(stageMeasManager.GetHgCkbox().GetValue())
     hg2Ckbox = SubElement(StageMeas, 'hg2Ckbox')
@@ -251,12 +254,15 @@ def StageMeasFromXML(StageMeas, stageMeasManager):
         SRC = StageMeasRow.find('SRC').text
         SRCApp = StageMeasRow.find('SRCApp')
         MghCkbox = StageMeasRow.find('MghCkbox')
+        ReadingType = StageMeasRow.find('ReadingType')
 
 
         if SRCApp is not None:
             SRCApp = SRCApp.text
         if MghCkbox is not None:
             MghCkbox = MghCkbox.text
+        if ReadingType is not None:
+            ReadingType = ReadingType.text
 
         stageMeasManager.SetTimeVal(row, "" if time is None else time)
         stageMeasManager.SetHGVal(row, "" if HG1 is None else HG1)
@@ -266,6 +272,7 @@ def StageMeasFromXML(StageMeas, stageMeasManager):
         stageMeasManager.SetSrcSizerVal(row, "" if SRC is None else SRC)
         stageMeasManager.SetSrcAppSizerVal(row, "" if SRCApp is None else SRCApp)
         stageMeasManager.SetMghAggCheckbox(row, "" if MghCkbox is None else MghCkbox)
+        stageMeasManager.SetReadingTypeVal(row, "" if ReadingType is None else ReadingType)
         stageMeasManager.GetMghAggCheckbox(row).Enable(time.split(":")[0] != "" and time.split(":")[1] != "")
 
 
