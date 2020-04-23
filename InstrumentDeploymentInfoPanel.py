@@ -27,10 +27,11 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         # self.adcpByMovingBoatLbl = "ADCP by Moving Boat"
         # self.midsectionLbl = "Mid-section"
         self.measurementMethodsLbl = 'Measurement Method'
-        self.measurementMethods = ['', 'Mid-section', 'ADCP by Moving Boat', 'Other Methods', 'Engineered Structures', ]
+        # self.measurementMethods = ['', 'Mid-section', 'ADCP by Moving Boat', 'Other Methods', 'Engineered Structures', ]
+        self.measurementMethods = ['', 'Mid-section', 'ADCP by Moving Boat']
         self.structureTypesLbl = 'Structure Type'
         self.structureTypes = ['', 'Weir', 'Flume']
-        self.monitoringMethodsLbl = 'Monitoring Method'
+        self.monitoringMethodsLbl = 'Other Methods'
         self.monitoringMethods = ['', 'Estimated', 'Volumetric', 'Salt Dilution', 'Tracer-dry', ]
         self.savedMeasurementMethodIndex = 0
 

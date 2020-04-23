@@ -151,6 +151,7 @@ class MidSectionTransferFrame(wx.Frame):
             end = self.GetParent().endTimeCtrl.GetValue()
             dischargePanel.startTimeCtrl.SetValue(start)
             dischargePanel.endTimeCtrl.SetValue(end)
+            dischargePanel.UpdateMeanTime()
             transferCommon = True
 
         if transferCommon:
