@@ -3,6 +3,7 @@
 
 from MidSectionHeader import *
 from MidSectionSummaryTable import *
+from MidsectionImportPanel import MidsectionImportPanel
 
 
 class MidSectionMeasurementsPanel(wx.Panel):
@@ -20,16 +21,30 @@ class MidSectionMeasurementsPanel(wx.Panel):
         self.SetSizer(layout)
 
         self.header = MidSectionHeader(self.mode, self)
-        self.table = MidSectionSummaryTable(self)
+        self.table = MidSectionSummaryTable(self, size=(-1, 300))
+        # self.plot = MidsectionImportPanel(parent=self)
+        self.plot = None
+        # self.plot.Hide()
 
 
         layout.Add(self.header, 1, wx.EXPAND)
-        layout.Add(self.table, 4, wx.EXPAND|wx.ALL)
+        layout.Add(self.table, 1, wx.EXPAND|wx.BOTTOM, 20)
+        # layout.Add(self.plot, 0, wx.EXPAND|wx.ALL)
 
 
 
     def UpdateSummary(self, values):
         self.header.UpdateSummary(values)
+
+
+    def GetPlotPanel(self):
+        return self.plot
+
+    def GetHeaderPanel(self):
+        return self.header
+
+    def GetSumTablePanel(self):
+        return self.table
 
 def main():
     app = wx.App()

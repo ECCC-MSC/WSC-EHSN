@@ -561,7 +561,7 @@ def DischMeasFromXML(DisMeas, disMeasManager):
             disMeasManager.GetDischCtrl().SetBackgroundColour(white)
 
     uncertainty = DisMeas.find('uncertainty')
-    if uncertainty.text is None:
+    if uncertainty is None:
         disMeasManager.uncertaintyCtrl = ""
     else:
         disMeasManager.uncertaintyCtrl = uncertainty.text
@@ -3419,7 +3419,7 @@ def MidsecMeasAsXMLTree(MidsecMeas, midsecMeasurementsManager):
 # Set Midsection Measurements Information variables from existing XML structure
 def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
 
-    try:
+    # try:
 
         midsecMeasurementsManager.GetSummaryTable().DeleteRows(0, midsecMeasurementsManager.GetNumberRows())
         midsecMeasurementsManager.GetSummaryTable().AppendRows()
@@ -3730,14 +3730,14 @@ def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
 
                 if obj is not None:
                     midsecMeasurementsManager.AddRow(obj)
-    except Exception as e:
+    # except Exception as e:
 
-        print str(e)
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
-        print "Reading XML from version lower than 1_2_5"
-        MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager)
+        # print str(e)
+        # exc_type, exc_obj, exc_tb = sys.exc_info()
+        # fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        # print(exc_type, fname, exc_tb.tb_lineno)
+        # print "Reading XML from version lower than 1_2_5"
+        # MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager)
 
 
 # Set Midsection Measurements Information variables from version less than 1_2_5
@@ -3760,69 +3760,132 @@ def MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager):
     except:
         pass
 
-    measureSectionCtrl = MidsectionInfo.find('measureSectionCtrl').text
+    try:
+        measureSectionCtrl = MidsectionInfo.find('measureSectionCtrl').text
+    except:
+        measureSectionCtrl = None
     midsecMeasurementsManager.measureSectionCtrl = "" if measureSectionCtrl is None else measureSectionCtrl
 
-    deployMethodCtrl = MidsectionInfo.find('deployMethodCtrl').text
+    try:
+        deployMethodCtrl = MidsectionInfo.find('deployMethodCtrl').text
+    except:
+        deployMethodCtrl = None
     midsecMeasurementsManager.deployMethodCtrl = "" if deployMethodCtrl is None else deployMethodCtrl
 
-    meter1MeterNoCtrl = MidsectionInfo.find('meter1MeterNoCtrl').text
+    try:
+        meter1MeterNoCtrl = MidsectionInfo.find('meter1MeterNoCtrl').text
+    except:
+        meter1MeterNoCtrl = None
     midsecMeasurementsManager.meter1MeterNoCtrl = "" if meter1MeterNoCtrl is None else meter1MeterNoCtrl
 
-    meter1SlopeCtrl1 = MidsectionInfo.find('meter1SlopeCtrl1').text
+    try:
+        meter1SlopeCtrl1 = MidsectionInfo.find('meter1SlopeCtrl1').text
+    except:
+        meter1SlopeCtrl1 = None
     midsecMeasurementsManager.meter1SlopeCtrl1 = "" if meter1SlopeCtrl1 is None else meter1SlopeCtrl1
 
-    meter1InterceptCtrl1 = MidsectionInfo.find('meter1InterceptCtrl1').text
+    try:
+        meter1InterceptCtrl1 = MidsectionInfo.find('meter1InterceptCtrl1').text
+    except:
+        meter1InterceptCtrl1 = None
     midsecMeasurementsManager.meter1InterceptCtrl1 = "" if meter1InterceptCtrl1 is None else meter1InterceptCtrl1
 
-    meter1SlopeCtrl2 = MidsectionInfo.find('meter1SlopeCtrl2').text
+    try:
+        meter1SlopeCtrl2 = MidsectionInfo.find('meter1SlopeCtrl2').text
+    except:
+        meter1SlopeCtrl2 = None
     midsecMeasurementsManager.meter1SlopeCtrl2 = "" if meter1SlopeCtrl2 is None else meter1SlopeCtrl2
 
-    meter1InterceptCtrl2 = MidsectionInfo.find('meter1InterceptCtrl2').text
+    try:
+        meter1InterceptCtrl2 = MidsectionInfo.find('meter1InterceptCtrl2').text
+    except:
+        meter1InterceptCtrl2 = None
     midsecMeasurementsManager.meter1InterceptCtrl2 = "" if meter1InterceptCtrl2 is None else meter1InterceptCtrl2
 
-    meter1CalibDateCtrl = MidsectionInfo.find('meter1CalibDateCtrl').text
+    try:
+        meter1CalibDateCtrl = MidsectionInfo.find('meter1CalibDateCtrl').text
+    except:
+        meter1CalibDateCtrl = None
     midsecMeasurementsManager.meter1CalibDateCtrl = "" if meter1CalibDateCtrl is None else meter1CalibDateCtrl
 
-    meter2MeterNoCtrl = MidsectionInfo.find('meter2MeterNoCtrl').text
+    try:
+        meter2MeterNoCtrl = MidsectionInfo.find('meter2MeterNoCtrl').text
+    except:
+        meter2MeterNoCtrl = None
     midsecMeasurementsManager.meter2MeterNoCtrl = "" if meter2MeterNoCtrl is None else meter2MeterNoCtrl
 
-    meter2SlopeCtrl1 = MidsectionInfo.find('meter2SlopeCtrl1').text
+    try:
+        meter2SlopeCtrl1 = MidsectionInfo.find('meter2SlopeCtrl1').text
+    except:
+        meter2SlopeCtrl1 = None
     midsecMeasurementsManager.meter2SlopeCtrl1 = "" if meter2SlopeCtrl1 is None else meter2SlopeCtrl1
 
-    meter2InterceptCtrl1 = MidsectionInfo.find('meter2InterceptCtrl1').text
+    try:
+        meter2InterceptCtrl1 = MidsectionInfo.find('meter2InterceptCtrl1').text
+    except:
+        meter2InterceptCtrl1 = None
     midsecMeasurementsManager.meter2InterceptCtrl1 = "" if meter2InterceptCtrl1 is None else meter2InterceptCtrl1
 
-    meter2SlopeCtrl2 = MidsectionInfo.find('meter2SlopeCtrl2').text
+    try:
+        meter2SlopeCtrl2 = MidsectionInfo.find('meter2SlopeCtrl2').text
+    except:
+        meter2SlopeCtrl2 = None
     midsecMeasurementsManager.meter2SlopeCtrl2 = "" if meter2SlopeCtrl2 is None else meter2SlopeCtrl2
 
-    meter2InterceptCtrl2 = MidsectionInfo.find('meter2InterceptCtrl2').text
+    try:
+        meter2InterceptCtrl2 = MidsectionInfo.find('meter2InterceptCtrl2').text
+    except:
+        meter2InterceptCtrl2 = None
     midsecMeasurementsManager.meter2InterceptCtrl2 = "" if meter2InterceptCtrl2 is None else meter2InterceptCtrl2
 
-    meter2CalibDateCtrl = MidsectionInfo.find('meter2CalibDateCtrl').text
+    try:
+        meter2CalibDateCtrl = MidsectionInfo.find('meter2CalibDateCtrl').text
+    except:
+        meter2CalibDateCtrl = None
     midsecMeasurementsManager.meter2CalibDateCtrl = "" if meter2CalibDateCtrl is None else meter2CalibDateCtrl
 
-    numOfPanelCtrl = MidsectionInfo.find('numOfPanelCtrl').text
+    try:
+        numOfPanelCtrl = MidsectionInfo.find('numOfPanelCtrl').text
+    except:
+        numOfPanelCtrl = None
     midsecMeasurementsManager.numOfPanelCtrl = "" if numOfPanelCtrl is None else numOfPanelCtrl
 
-    widthCtrl = MidsectionInfo.find('widthCtrl').text
+    try:
+        widthCtrl = MidsectionInfo.find('widthCtrl').text
+    except:
+        widthCtrl = None
     midsecMeasurementsManager.widthCtrl = "" if widthCtrl is None else widthCtrl
 
-    areaCtrl = MidsectionInfo.find('areaCtrl').text
+    try:
+        areaCtrl = MidsectionInfo.find('areaCtrl').text
+    except:
+        areaCtrl = None
     midsecMeasurementsManager.areaCtrl = "" if areaCtrl is None else areaCtrl
 
 
 
-    avgDepthCtrl = MidsectionInfo.find('avgDepthCtrl').text
+    try:
+        avgDepthCtrl = MidsectionInfo.find('avgDepthCtrl').text
+    except:
+        avgDepthCtrl = None
     midsecMeasurementsManager.avgDepthCtrl = "" if avgDepthCtrl is None else avgDepthCtrl
 
-    avgVelCtrl = MidsectionInfo.find('avgVelCtrl').text
+    try:
+        avgVelCtrl = MidsectionInfo.find('avgVelCtrl').text
+    except:
+        avgVelCtrl = None
     midsecMeasurementsManager.avgVelCtrl = "" if avgVelCtrl is None else avgVelCtrl
 
-    totalDisCtrl = MidsectionInfo.find('totalDisCtrl').text
+    try:
+        totalDisCtrl = MidsectionInfo.find('totalDisCtrl').text
+    except:
+        totalDisCtrl = None
     midsecMeasurementsManager.totalDisCtrl = "" if totalDisCtrl is None else totalDisCtrl
 
-    uncertaintyCtrl = MidsectionInfo.find('uncertaintyCtrl').text
+    try:
+        uncertaintyCtrl = MidsectionInfo.find('uncertaintyCtrl').text
+    except:
+        uncertaintyCtrl = None
     midsecMeasurementsManager.uncertaintyCtrl = "" if uncertaintyCtrl is None else uncertaintyCtrl
 
 

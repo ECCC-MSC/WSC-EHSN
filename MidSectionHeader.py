@@ -16,6 +16,7 @@ from DropdownTime import *
 import NumberControl
 from MidSectionSubPanelObj import *
 from MidSectionTransferFrame import *
+from MidsectionImportPanel import MidsectionImportPanel
 
 from pdb import set_trace
 
@@ -78,7 +79,15 @@ class MidSectionHeader(wx.Panel):
 
         self.color_cursor = "#33E6FF"
         self.color_body = "#91c7f7"
-	self.color_saved = "#0F5D68"
+	self.color_saved = "#32B4BF"
+
+	self.color_saved_ice = "#0F5D68"
+	self.color_highlighted_ice = "#9EABAD"
+	self.color_body_ice = "#5A6A6C"
+
+	self.color_saved_slush = "#0F5D68"
+	self.color_highlighted_slush = "#0F5D68"
+	self.color_body_slush = "#e5e5e5"
 
         if hasattr(sys, '_MEIPASS'):
             self.myBitmapFront = os.path.join(sys._MEIPASS, "backarrow.png")
@@ -410,18 +419,31 @@ class MidSectionHeader(wx.Panel):
         self.CalculateSummary()
 
     def OnPlot(self, event):
-        self.plotBtn.Disable()
+        # try:
         # self.GeneratePlot()
-        try:
-            self.GeneratePlot()
-            self.plotBtn.Enable()
-        except Exception as e:
-            print str(e)
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print(exc_type, fname, exc_tb.tb_lineno)
-            self.plotBtn.Enable()
-        event.Skip()
+
+            summaryPanel = self.GetParent()
+            summarySizer = summaryPanel.GetSizer()
+            if summaryPanel.plot != None:
+                summaryPanel.plot.Hide()
+                summarySizer.Remove(2)
+                summaryPanel.plot = None
+            summaryPanel.plot = MidsectionImportPanel(summaryPanel, style=wx.SIMPLE_BORDER)
+            summarySizer.Add(summaryPanel.plot, 1, wx.EXPAND)
+            summaryPanel.GetParent().GetParent().Layout()
+            summaryPanel.GetParent().GetParent().Refresh()
+
+            # self.plotBtn.Enable()
+            self.GetParent().GetPlotPanel().Layout()
+            self.GetParent().GetPlotPanel().Refresh()
+        # except Exception as e:
+            # print str(e)
+            # exc_type, exc_obj, exc_tb = sys.exc_info()
+            # fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            # print(exc_type, fname, exc_tb.tb_lineno)
+            # self.plotBtn.Enable()
+        # self.plotBtn.Disable()
+        # event.Skip()
 
     def GeneratePlot(self, cursorX=0, cursorY=0):
 
@@ -619,9 +641,6 @@ class MidSectionHeader(wx.Panel):
 
 
 
-        # Ice
-        lns4 = self.ax[1].fill_between(iceTagList,bottomIceList, facecolor="#5b5858", edgecolor="#5b5858", label="Ice")
-        lns5 = self.ax[1].fill_between(slushTagList,bottomSlushList, facecolor="#e5e5e5", edgecolor="#e5e5e5", label="Slush Ice")
 
 
         # observation points for panel
@@ -658,12 +677,52 @@ class MidSectionHeader(wx.Panel):
 
         self.savedIndex = -1
         lns3_cursor = self.ax[1].fill_between(np.array(depthTagList),np.array(depthList), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+
+
+        # Ice
+        lns4 = self.ax[1].fill_between(iceTagList,bottomIceList, facecolor=self.color_body_ice, edgecolor=self.color_body_ice, label="Ice")
+        lns5 = self.ax[1].fill_between(slushTagList,bottomSlushList, facecolor=self.color_body_slush, edgecolor=self.color_body_slush, label="Slush Ice")
+
+
+
         lns = [lns1, lns2, lns3_cursor, lns4, lns5, lns6, lns7]
 
         labels=["Discharge(q/Q%)","Velocity","River Body","Ice","Slush Ice","Obsevation Points","Panel Boundary"]
 
 
-        self.ax[1].legend(lns,labels,prop={'size':9}, loc='lower left', numpoints=1, borderaxespad=0.)
+
+
+
+        # print("="*40)
+        # print("tags: {}".format(tags))
+        # print("len tags: {}".format(len(tags)))
+        # print("depths: {}".format(depths))
+        # print("len depths: {}".format(len(depths)))
+        # print()
+        # print("tagmarkLineList: {}".format(tagmarkLineList))
+        # print("len tagmarkLineList: {}".format(len(tagmarkLineList)))
+        # print("aY: {}".format(aY))
+        # print("len aY: {}".format(len(aY)))
+        # print()
+        # print("depthTagList: {}".format(depthTagList))
+        # print("len depthTagList: {}".format(len(depthTagList)))
+        # print("depthList: {}".format(depthList))
+        # print("len depthList: {}".format(len(depthList)))
+        # print()
+        # print("iceTagList: {}".format(iceTagList))
+        # print("len iceTagList: {}".format(len(iceTagList)))
+        # print("bottomIceList: {}".format(bottomIceList))
+        # print("len bottomIceList: {}".format(len(bottomIceList)))
+        # print()
+        # print("slushTagList: {}".format(slushTagList))
+        # print("len slushTagList: {}".format(len(slushTagList)))
+        # print("bottomSlushList: {}".format(bottomSlushList))
+        # print("len bottomSlushList: {}".format(len(bottomSlushList)))
+
+
+
+
+        self.ax[1].legend(lns,labels,prop={'size':5}, loc='lower left', numpoints=1, borderaxespad=0.)
 
         lns7.set_visible(False)
 
@@ -721,10 +780,12 @@ class MidSectionHeader(wx.Panel):
         # plt.show()
         self.plotBtn.Enable(True)
 
-        return self, fig, self.ax[1], tags, depths, tagmarkLineList, depthTagList, depthList
+        return fig, self.ax[1], tags, depths, tagmarkLineList, depthTagList, depthList, iceTagList, \
+                        bottomIceList, slushTagList, bottomSlushList
 
     #Refill ax2 with light color
-    def fill_ax2_mouse_over(self, cursorX, cursorY, tags, depths, tagmarkLineList, depthTagList, depthList):
+    def fill_ax2_mouse_over(self, cursorX, cursorY, tags, depths, tagmarkLineList, depthTagList, depthList,
+                            iceTagList, bottomIceList, slushTagList, bottomSlushList):
 
         for index, tag in enumerate(tags[:-1]):
             #there is a saved highlighted panel
@@ -735,8 +796,8 @@ class MidSectionHeader(wx.Panel):
                     if ((tags[index] in tagmarkLineList and self.savedIndex != index) or (tags[index] not in tagmarkLineList and self.savedIndex != index - 1)):
                         #first panel
                         if index == 0:
-                            print("case 1")
                             lns3_cursor = self.ax[1].fill_between(np.array(tags[:2]),np.array(depths[:2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
+                            # lns4_cursor = self.ax[1].fill_between(np.array(tags[:2]),np.array(depths[:2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
                             lns3_body1 = self.ax[1].fill_between(np.array(tags[1:self.savedIndex+1]),np.array(depths[1:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                             if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
                                 lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
@@ -745,7 +806,6 @@ class MidSectionHeader(wx.Panel):
                             lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+2:]),np.array(depths[self.savedIndex+2:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                         #last panel
                         elif index == len(tags) - 2:
-                            print("case 2")
                             lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex+1]),np.array(depths[:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                             if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
                                 lns3_saved = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
@@ -757,7 +817,6 @@ class MidSectionHeader(wx.Panel):
                         #on the tagmark line
                         elif tag in tagmarkLineList:
                             if depths[index] == 0 or depths[index+1] == 0:
-                                print("case 3")
                                 if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
                                     if index < self.savedIndex:
                                         lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
@@ -785,7 +844,6 @@ class MidSectionHeader(wx.Panel):
                                         lns3_cursor = self.ax[1].fill_between(np.array(tags[index:index+2]),np.array(depths[index:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
                                         lns3_body3 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                             else:
-                                print("case 4")
                                 if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
                                     if index < self.savedIndex:
                                         lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
@@ -815,7 +873,6 @@ class MidSectionHeader(wx.Panel):
                         #on the mearsurement point
                         else:
                             if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
-                                print("case 5")
                                 if index < self.savedIndex:
                                     lns3_body1 = self.ax[1].fill_between(np.array(tags[:index]),np.array(depths[:index]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                                     lns3_cursor = self.ax[1].fill_between(np.array(tags[index-1:index+2]),np.array(depths[index-1:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
@@ -829,7 +886,6 @@ class MidSectionHeader(wx.Panel):
                                     lns3_cursor = self.ax[1].fill_between(np.array(tags[index-1:index+2]),np.array(depths[index-1:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
                                     lns3_body3 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                             else:
-                                print("case 6")
                                 if index < self.savedIndex:
                                     lns3_body1 = self.ax[1].fill_between(np.array(tags[:index]),np.array(depths[:index]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                                     lns3_cursor = self.ax[1].fill_between(np.array(tags[index-1:index+2]),np.array(depths[index-1:index+2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
@@ -845,7 +901,7 @@ class MidSectionHeader(wx.Panel):
 
                     #cursor on the highlighted panel
                     else:
-                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex]),np.array(depths[:self.savedIndex]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:self.savedIndex+1]),np.array(depths[:self.savedIndex+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                         if depths[self.savedIndex] == 0 or depths[self.savedIndex+1] == 0:
                             lns3_cursor = self.ax[1].fill_between(np.array(tags[self.savedIndex:self.savedIndex+2]),np.array(depths[self.savedIndex:self.savedIndex+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
                             lns3_body2 = self.ax[1].fill_between(np.array(tags[self.savedIndex+1:]),np.array(depths[self.savedIndex+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
@@ -857,14 +913,13 @@ class MidSectionHeader(wx.Panel):
 
             #no savedIndex
             else:
-                if tags[index] < cursorX < tags[index+1] and (cursorY < depths[index] or cursorY < depths[index+1]):
+                if tags[index] <= cursorX < tags[index+1] and (cursorY <= depths[index] or cursorY < depths[index+1]):
                     #first panel
                     if index == 0:
                         lns3_cursor = self.ax[1].fill_between(np.array(tags[:2]),np.array(depths[:2]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
                         lns3_body = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                     #last panel
                     elif index == len(tags) - 2:
-                        print("case 2")
                         lns3_body = self.ax[1].fill_between(np.array(tags[:-1]),np.array(depths[:-1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                         lns3_cursor = self.ax[1].fill_between(np.array(tags[-2:]),np.array(depths[-2:]), facecolor=self.color_cursor, edgecolor=self.color_cursor, label="River Body")
                     #on the tagmark line
@@ -885,12 +940,34 @@ class MidSectionHeader(wx.Panel):
 
                     break
 
+        # Ice
+        lns4 = self.ax[1].fill_between(iceTagList,bottomIceList, facecolor=self.color_body_ice, edgecolor=self.color_body_ice, label="Ice")
+        lns5 = self.ax[1].fill_between(slushTagList,bottomSlushList, facecolor=self.color_body_slush, edgecolor=self.color_body_slush, label="Slush Ice")
 
 
     #Refill ax2 with dark color
-    def fill_ax2_click(self, cursorX, cursorY, tags, depths, tagmarkLineList, depthTagList, depthList):
+    def fill_ax2_click(self, cursorX, cursorY, tags, depths, tagmarkLineList, depthTagList, depthList, iceTagList, bottomIceList, slushTagList, bottomSlushList, end=False):
+        if cursorX == tags[-1]:
+            lns3_body = self.ax[1].fill_between(np.array(tags[:-1]),np.array(depths[:-1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+            lns3_saved = self.ax[1].fill_between(np.array(tags[-2:]),np.array(depths[-2:]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+            # Ice
+            lns4 = self.ax[1].fill_between(iceTagList,bottomIceList, facecolor=self.color_body_ice, edgecolor=self.color_body_ice, label="Ice")
+            lns5 = self.ax[1].fill_between(slushTagList,bottomSlushList, facecolor=self.color_body_slush, edgecolor=self.color_body_slush, label="Slush Ice")
+            return
+
         for index, tag in enumerate(tags[:-1]):
-            if tags[index] < cursorX < tags[index+1] and (cursorY < depths[index] or cursorY < depths[index+1]):
+            if tags[index] <= cursorX < tags[index+1] and (cursorY <= depths[index] or cursorY < depths[index+1]):
+                if end:
+                    lns3_body1 = self.ax[1].fill_between(np.array(tags[:index]),np.array(depths[:index]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                    lns3_saved = self.ax[1].fill_between(np.array(tags[index-1:index+1]),np.array(depths[index-1:index+1]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                    lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                    # Ice
+                    lns4 = self.ax[1].fill_between(iceTagList,bottomIceList, facecolor=self.color_body_ice, edgecolor=self.color_body_ice, label="Ice")
+                    lns5 = self.ax[1].fill_between(slushTagList,bottomSlushList, facecolor=self.color_body_slush, edgecolor=self.color_body_slush, label="Slush Ice")
+                    return
+
+        for index, tag in enumerate(tags[:-1]):
+            if tags[index] <= cursorX < tags[index+1] and (cursorY <= depths[index] or cursorY < depths[index+1]):
                 if tags[index] in tagmarkLineList:
                     self.savedIndex = index
                 else:
@@ -902,7 +979,11 @@ class MidSectionHeader(wx.Panel):
                     lns3_body = self.ax[1].fill_between(np.array(tags[:-1]),np.array(depths[:-1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                     lns3_saved = self.ax[1].fill_between(np.array(tags[-2:]),np.array(depths[-2:]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
                 elif tag in tagmarkLineList:
-                    if depths[index] == 0 or depths[index+1] == 0:
+                    if depths[index+2] == 0 and depths[index+1] == 0:
+                        lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                        lns3_saved = self.ax[1].fill_between(np.array(tags[index:index+2]),np.array(depths[index:index+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
+                        lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
+                    elif depths[index] == 0 and depths[index-1] == 0:
                         lns3_body1 = self.ax[1].fill_between(np.array(tags[:index+1]),np.array(depths[:index+1]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
                         lns3_saved = self.ax[1].fill_between(np.array(tags[index:index+2]),np.array(depths[index:index+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
                         lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
@@ -915,7 +996,10 @@ class MidSectionHeader(wx.Panel):
                     lns3_saved = self.ax[1].fill_between(np.array(tags[index-1:index+2]),np.array(depths[index-1:index+2]), facecolor=self.color_saved, edgecolor=self.color_saved, label="River Body")
                     lns3_body2 = self.ax[1].fill_between(np.array(tags[index+1:]),np.array(depths[index+1:]), facecolor=self.color_body, edgecolor=self.color_body, label="River Body")
 
-                break
+                # Ice
+                lns4 = self.ax[1].fill_between(iceTagList,bottomIceList, facecolor=self.color_body_ice, edgecolor=self.color_body_ice, label="Ice")
+                lns5 = self.ax[1].fill_between(slushTagList,bottomSlushList, facecolor=self.color_body_slush, edgecolor=self.color_body_slush, label="Slush Ice")
+                return
 
 
     def CalculateSlop(self, x1, y1, x2, y2):
@@ -1222,8 +1306,10 @@ class MidSectionHeader(wx.Panel):
                         f = 0
 
                         for depth in obj.depths:
-
-                            meanVelocityf = abs(float(obj.corrMeanVelocity))
+                            try:
+                                meanVelocityf = abs(float(obj.corrMeanVelocity))
+                            except:
+                                meanVelocityf = 0
                             timef = float(obj.revTimes[count])
 
                             if depth == "0.2":
@@ -1407,7 +1493,7 @@ class MidSectionHeader(wx.Panel):
                     worksheet.write(row,35,str(id2))
 
                     #Sd/di
-                    sd = float(math.sqrt( (1/(float(panelCount)-2))*sumd))
+                    sd = float(math.sqrt( (1/(float(panelCount)-3))*sumd))
                     sddi = float(sd / effectiveDepthList[count])
                     worksheet.write(row,36,str(sddi))
 
@@ -1438,7 +1524,7 @@ class MidSectionHeader(wx.Panel):
                     worksheet.write(row,35,str(id2))
 
                     #Sd/di
-                    sd = float(math.sqrt( (1/(float(panelCount)-2))*sumd))
+                    sd = float(math.sqrt( (1/(float(panelCount)-3))*sumd))
                     sddi = float(sd / effectiveDepthList[count])
                     worksheet.write(row,36,str(sddi))
 
@@ -1464,7 +1550,7 @@ class MidSectionHeader(wx.Panel):
                     worksheet.write(row,39,str(sv))
 
                     #Sv/vi
-                    sv2 = float(math.sqrt((1/(float(panelCount)-2))*sumv))
+                    sv2 = float(math.sqrt((1/(float(panelCount)-3))*sumv))
                     svvi = float(sv2 / meanVelocityList[count])
                     worksheet.write(row,40,str(svvi))
 

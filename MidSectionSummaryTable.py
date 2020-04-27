@@ -6,6 +6,7 @@ import sigfig
 from wx.grid import *
 from MidSectionSubPanel import *
 from MidSectionSubPanelObj import *
+from wx.lib.scrolledpanel import ScrolledPanel
 
 import win32gui
 from pdb import set_trace
@@ -13,7 +14,7 @@ from pdb import set_trace
 
 
 
-class MidSectionSummaryTable(wx.Panel):
+class MidSectionSummaryTable(ScrolledPanel):
     def __init__(self, *args, **kwargs):
         super(MidSectionSummaryTable, self).__init__(*args, **kwargs)
         self.channelLbl = "Channel Condition"
@@ -52,6 +53,10 @@ class MidSectionSummaryTable(wx.Panel):
         self.nextPid = 100
         self.subpanel = None
 
+        self.colour1 = (220,230,240)
+        self.colour2 = (255,245,235)
+        self.colour_highlight = "Blue"
+
 
         self.InitUI()
 
@@ -59,10 +64,12 @@ class MidSectionSummaryTable(wx.Panel):
 
     def InitUI(self):
         layout = wx.BoxSizer(wx.VERTICAL)
+        self.SetupScrolling()
         self.SetSizer(layout)
 
         self.summaryTable = Grid(self)
         self.summaryTable.CreateGrid(1, 14)
+        self.summaryTable.SetSelectionMode(wx.grid.Grid.SelectRows)
 
         self.summaryTable.SetColLabelValue(0, self.panelNumLbl)
         self.summaryTable.SetColLabelValue(1, self.distanceLbl)
@@ -81,7 +88,7 @@ class MidSectionSummaryTable(wx.Panel):
 
         self.summaryTable.SetColLabelSize(60)
 
-        self.summaryTable.SetRowLabelSize(40)
+        # self.summaryTable.SetRowLabelSize(40)
         self.summaryTable.HideRowLabels()
 
         #self.summaryTable.SetColFormatFloat(1, precision=3)
@@ -101,18 +108,19 @@ class MidSectionSummaryTable(wx.Panel):
         self.summaryTable.SetColFormatFloat(13, precision=1)
 
         self.summaryTable.Bind(EVT_GRID_CELL_RIGHT_CLICK, self.OnRightClick)
+        self.summaryTable.Bind(EVT_GRID_CELL_LEFT_CLICK, self.OnLeftClick)
         self.summaryTable.EnableEditing(False)
 
         self.summaryTable.AutoSize()
-        self.summaryTable.SetColSize(0, 60)
+        # self.summaryTable.SetColSize(0, 60)
 
 
 
         self.addBtn = wx.Button(self, label="+", size=(-1, -1))
         self.addBtn.Bind(wx.EVT_BUTTON, self.OnAdd)
-        layout.Add(self.summaryTable, 0, wx.EXPAND|wx.ALL, 20)
+        layout.Add(self.summaryTable, 1, wx.EXPAND|wx.ALL, 20)
         layout.Add(self.addBtn, 0, wx.ALL, 20)
-        # self.GetParent().GetParent().GetParent().GetParent().Bind(wx.EVT_SIZE, self.OnSize)
+        self.GetParent().GetParent().GetParent().GetParent().Bind(wx.EVT_SIZE, self.OnSize)
         self.subPanel = None
 
 
@@ -122,7 +130,7 @@ class MidSectionSummaryTable(wx.Panel):
         height = size.GetHeight()
 
         for col in range(14):
-            self.summaryTable.SetColSize(col, width/(14 + 2))
+            self.summaryTable.SetColSize(col, width/14-5)
 
         event.Skip()
 
@@ -1081,14 +1089,74 @@ class MidSectionSummaryTable(wx.Panel):
                 obj.area = ""
                 obj.discharge = ""
 
+    def GetSumTable(self):
+        return self.summaryTable
+
+    def OnLeftClick(self, event):
+        if len(self.panelObjs) > 0:
+            rowIdx = event.GetRow()
+            self.summaryTable.SelectRow(rowIdx)
+
+            pName = self.summaryTable.GetCellValue(rowIdx, 0)
+            try:
+                tagmark = float(self.summaryTable.GetCellValue(rowIdx, 1))
+                if rowIdx < (self.summaryTable.GetNumberRows() - 1):
+                    try:
+                        float(self.summaryTable.GetCellValue(rowIdx+1, 1))
+                    except:
+                        self.summaryTable.SelectRow(rowIdx+1, addToSelected=True)
+                        if rowIdx < (self.summaryTable.GetNumberRows() - 2):
+                            try:
+                                float(self.summaryTable.GetCellValue(rowIdx+2, 1))
+                            except:
+                                self.summaryTable.SelectRow(rowIdx+2, addToSelected=True)
 
 
+            except:
+                if rowIdx < (self.summaryTable.GetNumberRows() - 1):
+                    try:
+                        float(self.summaryTable.GetCellValue(rowIdx+1, 1))
+                    except:
+                        self.summaryTable.SelectRow(rowIdx+1, addToSelected=True)
+
+                rowIdx -= 1
+                self.summaryTable.SelectRow(rowIdx, addToSelected=True)
+                try:
+                    tagmark = float(self.summaryTable.GetCellValue(rowIdx, 1))
+                except:
+                    rowIdx -= 1
+                    tagmark = float(self.summaryTable.GetCellValue(rowIdx, 1))
+                    self.summaryTable.SelectRow(rowIdx, addToSelected=True)
+
+            if "P" in pName:
+                depth = 0
+            else:
+                depth = float(self.summaryTable.GetCellValue(rowIdx, 3))
+            if "Start P" in pName:
+                end = True
+            else:
+                end = False
+
+            plotPanel = self.GetParent().GetPlotPanel()
+            if plotPanel != None:
+                tags = (plotPanel.GetTags())
+                depths = (plotPanel.GetDepths())
+                tagmarkLineList = (plotPanel.GetTagmarkLineList())
+                depthTagList = (plotPanel.GetDepthTagList())
+                depthList = (plotPanel.GetDepthList())
+                iceTagList = (plotPanel.GetIceTagList())
+                bottomIceList = (plotPanel.GetBottomIceList())
+                slushTagList = (plotPanel.GetSlushTagList())
+                bottomSlushList = (plotPanel.GetBottomSlushList())
+
+                headerPanel = self.GetParent().GetHeaderPanel()
+                headerPanel.fill_ax2_click(tagmark, depth, tags, depths, tagmarkLineList, depthTagList, depthList, iceTagList, bottomIceList, slushTagList, bottomSlushList, end)
+                self.GetParent().Layout()
+                self.GetParent().Refresh()
 
     def TransferFromObjToTable(self):
         counter = 0
         coloured = False
-        colour1 = (220,230,240)
-        colour2 = (255,245,235)
         self.summaryTable.ClearGrid()
 
         rows = self.summaryTable.GetNumberRows()
@@ -1104,6 +1172,7 @@ class MidSectionSummaryTable(wx.Panel):
 
         for obj in self.panelObjs:
             oldCounter = counter
+            colour_white = "white"
             if isinstance(obj, EdgeObj):
                 # obj.ToString()
                 start = obj.startOrEnd
@@ -1122,15 +1191,15 @@ class MidSectionSummaryTable(wx.Panel):
     
                         if coloured:
                             for col in range(14):
-                                self.summaryTable.SetCellBackgroundColour(oldCounter, col, colour1)
+                                self.summaryTable.SetCellBackgroundColour(oldCounter, col, self.colour1)
                         else:
                             for col in range(14):
-                                self.summaryTable.SetCellBackgroundColour(oldCounter, col, "white")
+                                self.summaryTable.SetCellBackgroundColour(oldCounter, col, colour_white)
                         coloured = not coloured
                     else:
                         panelType = "Start P / ISL"
                         for col in range(14):
-                            self.summaryTable.SetCellBackgroundColour(counter, col, colour2)
+                            self.summaryTable.SetCellBackgroundColour(counter, col, self.colour2)
                         coloured = False
 
                 else:
@@ -1139,15 +1208,15 @@ class MidSectionSummaryTable(wx.Panel):
          
                         if coloured:
                             for col in range(14):
-                                self.summaryTable.SetCellBackgroundColour(oldCounter, col, colour1)
+                                self.summaryTable.SetCellBackgroundColour(oldCounter, col, self.colour1)
                         else:
                             for col in range(14):
-                                self.summaryTable.SetCellBackgroundColour(oldCounter, col, "white")
+                                self.summaryTable.SetCellBackgroundColour(oldCounter, col, colour_white)
                         coloured = not coloured
                     else:
                         panelType = "End P / ISL"
                         for col in range(14):
-                            self.summaryTable.SetCellBackgroundColour(counter, col, colour2)
+                            self.summaryTable.SetCellBackgroundColour(counter, col, self.colour2)
                         coloured = False
 
 
@@ -1197,17 +1266,17 @@ class MidSectionSummaryTable(wx.Panel):
                     counter += 1
                     if coloured:
                         for col in range(14):
-                            self.summaryTable.SetCellBackgroundColour(counter, col, colour1)
+                            self.summaryTable.SetCellBackgroundColour(counter, col, self.colour1)
                     else:
                         for col in range(14):
-                            self.summaryTable.SetCellBackgroundColour(counter, col, "white")
+                            self.summaryTable.SetCellBackgroundColour(counter, col, colour_white)
 
                 if coloured:
                     for col in range(14):
-                        self.summaryTable.SetCellBackgroundColour(oldCounter, col, colour1)
+                        self.summaryTable.SetCellBackgroundColour(oldCounter, col, self.colour1)
                 else:
                     for col in range(14):
-                        self.summaryTable.SetCellBackgroundColour(oldCounter, col, "white")
+                        self.summaryTable.SetCellBackgroundColour(oldCounter, col, colour_white)
                 coloured = not coloured
 
 
@@ -1508,11 +1577,6 @@ class MidSectionSummaryTable(wx.Panel):
 
             if (modify != 2 and float(tagmark) == float(obj.distance)) or \
             (modify == 2 and float(tagmark) == float(obj.distance) and arrayIndex != index and not endPier):
-                # print "====----------------------"
-                # print "modify", modify
-                # print "arrayIndex", arrayIndex
-                # print "index", index
-                # print "endPier", endPier 
                 dlg = wx.MessageDialog(None, "Panel tagmark cannot be duplicated", "Invalid Tagmark value!", wx.OK | wx.ICON_EXCLAMATION)
                 dlg.ShowModal()
                 return 2
