@@ -125,9 +125,9 @@ class StageMeasurementsPanel(wx.Panel):
         self.stageLbl = "Stage Activity\nSummary Remarks"
         self.checkDischargeTime = True
         self.readingTypeLbl = 'Reading\nType'
-        self.readingTypes = ['', 'Routine', 'Routine Before', 'Routine After', 'Reset-Before', 'Reset-After',
-                            'Cleaning-Before', 'Cleaning-After', 'After Calibration', 'Reference-Primary', 'Reference',
-                            'Extreme-Min', 'Extreme-Max']
+        self.readingTypes = ['', 'Routine', 'Routine Before', 'Routine After', 'Reset Before', 'Reset After',
+                            'Cleaning Before', 'Cleaning After', 'After Calibration', 'Reference Primary', 'Reference',
+                            'Extreme Min', 'Extreme Max']
 
         self.frame = self.GetParent()
         self.size = self.frame.GetSize()

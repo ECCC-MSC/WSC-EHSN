@@ -48,7 +48,7 @@ class AQUARIUSDataExtractionToolFrame(wx.Frame):
         self.canButtonLbl = "Close"
 
         self.server = 'http://hws-aipoll.mb.ec.gc.ca'
-        self.ngserver = "http://wsc.aquaticinformatics.net/AQUARIUS/Publish/v2/"
+        self.ngserver = "https://wsc.aquaticinformatics.net/AQUARIUS/Publish/v2/"
         # self.server = 'http://hwp-app-stage2.to.on.ec.gc.ca'
         self.iconName = "icon_transparent.ico"
 

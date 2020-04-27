@@ -1,17 +1,17 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="WSC_EHSN.xsml"?>
-<EHSN version="v2.0.0">
+<EHSN version="v2.1.0">
 	<TitleHeader>
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
-		<station number="02KF015">GRAHAM CREEK AT NEPEAN</station>
-		<date timezone="EST">2020/03/12</date>
+		<station number="01DC007">ANNAPOLIS RIVER AT LAWRENCETOWN</station>
+		<date timezone="AST">2020/04/27</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
 		<Hg2Ckbox>False</Hg2Ckbox>
-		<Wlr1Ckbox>False</Wlr1Ckbox>
+		<Wlr1Ckbox>True</Wlr1Ckbox>
 		<Wlr2Ckbox>False</Wlr2Ckbox>
 		<HG1Header/>
 		<HG2Header/>
@@ -19,54 +19,55 @@
 		<WL2Header/>
 		<StageMeasTable>
 			<StageMeasRow row="0">
-				<time>:</time>
-				<HG1/>
-				<HG2/>
-				<WL1/>
-				<WL2/>
-				<SRC/>
-				<SRCApp/>
-				<MghCkbox>False</MghCkbox>
+				<time>14:14</time>
+				<HG1>4.000</HG1>
+				<HG2>4.100</HG2>
+				<WL1>4.200</WL1>
+				<WL2>4.300</WL2>
+				<SRC>0.200</SRC>
+				<SRCApp>DWL</SRCApp>
+				<MghCkbox>True</MghCkbox>
+				<ReadingType>Extreme Min</ReadingType>
 			</StageMeasRow>
 		</StageMeasTable>
 		<hgCkbox>False</hgCkbox>
 		<hg2Ckbox>False</hg2Ckbox>
-		<wlr1Ckbox>False</wlr1Ckbox>
+		<wlr1Ckbox>True</wlr1Ckbox>
 		<wlr2Ckbox>False</wlr2Ckbox>
 		<MGHHG1/>
 		<MGHHG2/>
-		<MGHWL1/>
+		<MGHWL1>4.200</MGHWL1>
 		<MGHWL2/>
 		<SRCHG1/>
 		<SRCHG2/>
 		<GCHG1/>
 		<GCHG2/>
-		<GCWL1/>
+		<GCWL1>0.200</GCWL1>
 		<GCWL2/>
 		<CMGHHG1/>
 		<CMGHHG2/>
-		<CMGHWL1/>
+		<CMGHWL1>4.400</CMGHWL1>
 		<CMGHWL2/>
-		<MghMethod/>
+		<MghMethod>Average</MghMethod>
 		<Factors/>
 		<stageRemark/>
 	</StageMeas>
 	<DisMeas>
-		<startTime>13:55</startTime>
-		<endTime>14:30</endTime>
+		<startTime>14:14</startTime>
+		<endTime>14:14</endTime>
 		<airTemp/>
 		<waterTemp/>
-		<width imported="1">11.0</width>
-		<area imported="1">3.91</area>
-		<meanVel imported="1">0.631</meanVel>
-		<mgh/>
-		<mghCmbo/>
-		<discharge imported="1">2.47</discharge>
-		<dischCombo/>
-		<mmtTimeVal>14:12</mmtTimeVal>
-		<shift/>
-		<diff/>
-		<curve/>
+		<width/>
+		<area/>
+		<meanVel/>
+		<mgh>4.400</mgh>
+		<mghCmbo>4.400  (WLR1)</mghCmbo>
+		<discharge>100</discharge>
+		<uncertainty/>
+		<mmtTimeVal>14:14</mmtTimeVal>
+		<shift>-2.88</shift>
+		<diff>-62.9</diff>
+		<curve>13.00</curve>
 		<condition/>
 		<dischargeRemark/>
 		<controlConditionRemark/>
@@ -98,8 +99,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2020/03/12</dataPeriodStart>
-		<dataPeriodEnd>2020/03/12</dataPeriodEnd>
+		<dataPeriodStart>2020/04/27</dataPeriodStart>
+		<dataPeriodEnd>2020/04/27</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -129,29 +130,25 @@
 	</MeasResults>
 	<InstrumentDeployment>
 		<GeneralInfo>
-			<methodType>Other Methods</methodType>
-			<deployment imported="1">Wading</deployment>
+			<methodType>None</methodType>
+			<deployment/>
 			<position/>
-			<instrument imported="1">ADV</instrument>
-			<serialNum imported="1">FT2H1640009</serialNum>
+			<instrument/>
+			<serialNum/>
 			<gauge1/>
 			<length>0</length>
 			<gaugePos>0</gaugePos>
 			<selectedGauge>gauge</selectedGauge>
 			<frequency/>
-			<firmware imported="1">1.17</firmware>
-			<software imported="1">1.2</software>
-			<manufacturer imported="1">SonTek</manufacturer>
-			<model imported="1">FlowTracker</model>
-			<otherMethods>
-				<structureType/>
-			</otherMethods>
-			<engineeredStructures>
-				<monitoringMethod>Salt Dilution</monitoringMethod>
-			</engineeredStructures>
+			<firmware/>
+			<software/>
+			<manufacturer/>
+			<model/>
+			<monitoringMethod/>
+			<structureType/>
 		</GeneralInfo>
-		<MidsectionInfo empty="False">
-			<panelsNum imported="1">23</panelsNum>
+		<MidsectionInfo empty="True">
+			<panelsNum/>
 			<flowAngle/>
 			<coeff/>
 			<method/>
@@ -180,63 +177,15 @@
 		<party/>
 		<completed/>
 		<checked/>
-		<reviewed>False</reviewed>
+		<reviewed>True</reviewed>
 	</PartyInfo>
 	<LevelNotes>
 		<LevelChecks>
 			<conventionalLevellingRb>True</conventionalLevellingRb>
 			<totalStationRb>False</totalStationRb>
 			<LevelChecksTable run="0">
-				<LevelChecksRow row="0">
-					<station>RP1</station>
-					<hour>16</hour>
-					<minute>46</minute>
-					<time>16:46</time>
-					<backsight>12.000</backsight>
-					<htInst>15.000</htInst>
-					<foresight/>
-					<elevation>3.000</elevation>
-					<establish>adf</establish>
-					<comments>sdf</comments>
-				</LevelChecksRow>
-				<LevelChecksRow row="1">
-					<station>TP1</station>
-					<hour>16</hour>
-					<minute>46</minute>
-					<time>16:46</time>
-					<backsight>33.000</backsight>
-					<htInst>36.000</htInst>
-					<foresight>12.000</foresight>
-					<elevation>3.000</elevation>
-					<establish>ff</establish>
-					<comments>dsfff</comments>
-				</LevelChecksRow>
-				<LevelChecksRow row="2">
-					<station>RP2</station>
-					<hour>16</hour>
-					<minute>46</minute>
-					<time>16:46</time>
-					<backsight>44.000</backsight>
-					<htInst>77.000</htInst>
-					<foresight>3.000</foresight>
-					<elevation>33.000</elevation>
-					<establish>ff</establish>
-					<comments>ff</comments>
-				</LevelChecksRow>
-				<LevelChecksRow row="3">
-					<station>RP1</station>
-					<hour/>
-					<minute/>
-					<time/>
-					<backsight>55.000</backsight>
-					<htInst>128.000</htInst>
-					<foresight>4.000</foresight>
-					<elevation>73.000</elevation>
-					<establish>ff</establish>
-					<comments>fff</comments>
-				</LevelChecksRow>
 				<closure/>
-				<upload>False</upload>
+				<upload/>
 			</LevelChecksTable>
 			<LevelChecksSummaryTable/>
 			<comments/>
@@ -247,8 +196,8 @@
 	</LevelNotes>
 	<FieldReview>
 		<pass>False</pass>
-		<dependencyType>Other Methods</dependencyType>
-		<midsectionType>Flow Tracker</midsectionType>
+		<dependencyType/>
+		<midsectionType/>
 		<FieldReviewTable>
 			<FieldReviewTableRow row="0">
 				<label>Passed All Initial QA/QC?</label>

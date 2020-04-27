@@ -465,7 +465,7 @@ class ElectronicHydrometricSurveyNotes:
         s = requests.Session()
         data = '{"Username": "' + username + '", "EncryptedPassword": "' + password + '", "Locale": ""}'
         headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = "http://" + server + "/AQUARIUS/Provisioning/v1/session"
+        url = "https://" + server + "/AQUARIUS/Provisioning/v1/session"
         try:
             s.get(url)
             req = s.post(url, data = data, headers = headers)
@@ -488,7 +488,7 @@ class ElectronicHydrometricSurveyNotes:
         if exists:
 
             try:
-                req = requests.get("http://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
+                req = requests.get("https://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
                 try:
                     locid = req.json()['LocationDescriptions'][0]['UniqueId']
                     exists = True
@@ -515,7 +515,7 @@ class ElectronicHydrometricSurveyNotes:
                     # get the field visit data from NG check if the fv already exist
                     # self.gui.updateProgressDialog(self.exportAQFVMessage)
                 try:
-                    req = requests.get("http://" + server + "/AQUARIUS/Publish/v2/GetFieldVisitDescriptionList?LocationIdentifier=" + self.genInfoManager.stnNumCmbo + "&QueryFrom=" + fvDate + "&QueryTo=" + fvDate1 + "&Token=" + token)
+                    req = requests.get("https://" + server + "/AQUARIUS/Publish/v2/GetFieldVisitDescriptionList?LocationIdentifier=" + self.genInfoManager.stnNumCmbo + "&QueryFrom=" + fvDate + "&QueryTo=" + fvDate1 + "&Token=" + token)
                     fvexData = req.json()['FieldVisitDescriptions'][0]['Identifier']
                     # print fvexData
                     exists = True
@@ -565,7 +565,7 @@ class ElectronicHydrometricSurveyNotes:
                     files = {'file': open(uploadZipDir, 'rb')}
 
                     print "Uploading"
-                    req = requests.post("http://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=files)
+                    req = requests.post("https://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=files)
                     visitUris = req.json()
                     try:
                         visitUris = req.json()['ResponseStatus']['Message']
