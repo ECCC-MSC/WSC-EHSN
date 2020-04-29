@@ -1454,6 +1454,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     def FileOpen(self, evt):
         self.DestroySubWindows()
+        self.disMeas.SetCurveCombo("")
 
         fileOpenDialog = wx.FileDialog(self, self.fileOpenTitle, self.path, '',
                             'Hydrometric Survey Notes (*.xml)|*.xml',
@@ -1470,7 +1471,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 print path
 
             if path != "":
-
 
                 self.path = path
                 self.LoadDefaultConfig()
