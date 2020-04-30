@@ -4,6 +4,8 @@
 from WaterLevelRunPanel import *
 from WaterLevelNoteTransferDialog import *
 
+from pdb import set_trace
+
 
 class WaterLevelRunManager(object):
     def __init__(self, mode, gui, manager=None):
@@ -506,6 +508,7 @@ class WaterLevelRunManager(object):
         
     #transfer selected WL and logger value to stage measurement on front page
     def TransferToStageMeasurement(self, time=None, logger1=None, logger2=None, wl1=None, wl2=None):
+        # set_trace()
         self.manager.stageMeasManager.InsertEmptyEntry(0, time, logger1, logger2, wl1, wl2)
 
 

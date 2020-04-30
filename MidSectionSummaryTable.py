@@ -783,9 +783,10 @@ class MidSectionSummaryTable(ScrolledPanel):
             if len(self.panelObjs) > 1:
                 if isinstance(self.panelObjs[addedIndexInArray-1], EdgeObj):
                     if ("start edge" in self.panelObjs[addedIndexInArray-1].panelNum.lower() or "end p" in self.panelObjs[addedIndexInArray-1].panelNum.lower()) and self.panelObjs[addedIndexInArray-1].depthAdjacent:
-                        self.summaryTable.SetCellValue(addedIndexInArray-1, 3, self.summaryTable.GetCellValue(addedIndexInArray, 3))
+                        self.summaryTable.SetCellValue(addedIndexInArray-1, 3, self.summaryTable.GetCellValue(addedIndexInArray, 5))
                         self.summaryTable.SetCellValue(addedIndexInArray-1, 5, self.summaryTable.GetCellValue(addedIndexInArray, 5))
-                        self.panelObjs[addedIndexInArray-1].depth = self.panelObjs[addedIndexInArray].depth
+                        self.panelObjs[addedIndexInArray-1].depth = self.summaryTable.GetCellValue(addedIndexInTable, 5)
+                        # self.panelObjs[addedIndexInArray-1].depth = self.panelObjs[addedIndexInArray].depth
                         self.UpdateObjInfoByRow(addedIndexInArray-1)
                         self.TransferFromObjToTable()
                     if ("start edge" in self.panelObjs[addedIndexInArray-1].panelNum.lower() or "end p" in self.panelObjs[addedIndexInArray-1].panelNum.lower()) and self.panelObjs[addedIndexInArray-1].velocityAdjacent:
@@ -799,27 +800,31 @@ class MidSectionSummaryTable(ScrolledPanel):
                         if ("end edge" in self.panelObjs[addedIndexInArray+1].panelNum.lower() or "start p" in self.panelObjs[addedIndexInArray+1].panelNum.lower()) and self.panelObjs[addedIndexInArray+1].depthAdjacent:
                             if isinstance(self.panelObjs[addedIndexInArray], PanelObj):
                                 if len(self.panelObjs[addedIndexInArray].depths) == 1:
-                                    self.summaryTable.SetCellValue(addedIndexInTable+1, 3, self.summaryTable.GetCellValue(addedIndexInTable, 3))
+                                    self.summaryTable.SetCellValue(addedIndexInTable+1, 3, self.summaryTable.GetCellValue(addedIndexInTable, 5))
                                     self.summaryTable.SetCellValue(addedIndexInTable+1, 5, self.summaryTable.GetCellValue(addedIndexInTable, 5))
-                                    self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
+                                    self.panelObjs[addedIndexInArray+1].depth = self.summaryTable.GetCellValue(addedIndexInTable, 5)
+                                    # self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
                                     self.UpdateObjInfoByRow(addedIndexInArray+1)
                                     self.TransferFromObjToTable()
                                 if len(self.panelObjs[addedIndexInArray].depths) == 2:
-                                    self.summaryTable.SetCellValue(addedIndexInTable+2, 3, self.summaryTable.GetCellValue(addedIndexInTable, 3))
+                                    self.summaryTable.SetCellValue(addedIndexInTable+2, 3, self.summaryTable.GetCellValue(addedIndexInTable, 5))
                                     self.summaryTable.SetCellValue(addedIndexInTable+2, 5, self.summaryTable.GetCellValue(addedIndexInTable, 5))
-                                    self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
+                                    self.panelObjs[addedIndexInArray+2].depth = self.summaryTable.GetCellValue(addedIndexInTable, 5)
+                                    # self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
                                     self.UpdateObjInfoByRow(addedIndexInArray+1)
                                     self.TransferFromObjToTable()
                                 if len(self.panelObjs[addedIndexInArray].depths) == 3:
-                                    self.summaryTable.SetCellValue(addedIndexInTable+3, 3, self.summaryTable.GetCellValue(addedIndexInTable, 3))
+                                    self.summaryTable.SetCellValue(addedIndexInTable+3, 3, self.summaryTable.GetCellValue(addedIndexInTable, 5))
                                     self.summaryTable.SetCellValue(addedIndexInTable+3, 5, self.summaryTable.GetCellValue(addedIndexInTable, 5))
-                                    self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
+                                    self.panelObjs[addedIndexInArray+3].depth = self.summaryTable.GetCellValue(addedIndexInTable, 5)
+                                    # self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
                                     self.UpdateObjInfoByRow(addedIndexInArray+1)
                                     self.TransferFromObjToTable()
                             if isinstance(self.panelObjs[addedIndexInArray], EdgeObj):
-                                    self.summaryTable.SetCellValue(addedIndexInTable+1, 3, self.summaryTable.GetCellValue(addedIndexInTable, 3))
+                                    self.summaryTable.SetCellValue(addedIndexInTable+1, 3, self.summaryTable.GetCellValue(addedIndexInTable, 5))
                                     self.summaryTable.SetCellValue(addedIndexInTable+1, 5, self.summaryTable.GetCellValue(addedIndexInTable, 5))
-                                    self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
+                                    self.panelObjs[addedIndexInArray+1].depth = self.summaryTable.GetCellValue(addedIndexInTable, 5)
+                                    # self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
                                     self.UpdateObjInfoByRow(addedIndexInArray+1)
                                     self.TransferFromObjToTable()
                         if ("end edge" in self.panelObjs[addedIndexInArray+1].panelNum.lower() or "start p" in self.panelObjs[addedIndexInArray+1].panelNum.lower()) and self.panelObjs[addedIndexInArray+1].velocityAdjacent:
@@ -848,18 +853,24 @@ class MidSectionSummaryTable(ScrolledPanel):
                     if ("end edge" in self.panelObjs[addedIndexInArray].panelNum.lower() or "start p" in self.panelObjs[addedIndexInArray].panelNum.lower()) and self.panelObjs[addedIndexInArray].depthAdjacent:
                         if isinstance(self.panelObjs[addedIndexInArray-1], PanelObj):
                             if len(self.panelObjs[addedIndexInArray-1].depths) == 1:
-                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-1, 3))
+                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-1, 5))
                                 self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable-1, 5))
-                            if len(self.panelObjs[addedIndexInArray-1].depths) == 2:
-                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-2, 3))
+                                self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable-1, 5)
+                            elif len(self.panelObjs[addedIndexInArray-1].depths) == 2:
+                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-2, 5))
                                 self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable-2, 5))
-                            if len(self.panelObjs[addedIndexInArray-1].depths) == 3:
-                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-3, 3))
+                                self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable-2, 5)
+                                # print(self.summaryTable.GetCellValue(addedIndexInTable-2, 5))
+                                # set_trace()
+                            elif len(self.panelObjs[addedIndexInArray-1].depths) == 3:
+                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-3, 5))
                                 self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable-3, 5))
+                                self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable-3, 5)
                         if isinstance(self.panelObjs[addedIndexInArray-1], EdgeObj):
-                            self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-1, 3))
+                            self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-1, 5))
                             self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable-1, 5))
-                        self.panelObjs[addedIndexInArray].depth = self.panelObjs[addedIndexInArray-1].depth
+                            self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable-1, 3)
+                        # self.panelObjs[addedIndexInArray].depth = self.panelObjs[addedIndexInArray-1].depth
                         self.UpdateObjInfoByRow(addedIndexInArray)
                         self.TransferFromObjToTable()
 
@@ -879,18 +890,22 @@ class MidSectionSummaryTable(ScrolledPanel):
                     if ("start edge" in self.panelObjs[addedIndexInArray].panelNum.lower() or "end p" in self.panelObjs[addedIndexInArray].panelNum.lower()) and self.panelObjs[addedIndexInArray].depthAdjacent:
                         if isinstance(self.panelObjs[addedIndexInArray+1], PanelObj):
                             if len(self.panelObjs[addedIndexInArray+1].depths) == 1:
-                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable+1, 3))
+                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable+1, 5))
                                 self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable+1, 5))
+                                self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable+1, 5)
                             if len(self.panelObjs[addedIndexInArray+1].depths) == 2:
-                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable+2, 3))
+                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable+2, 5))
                                 self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable+2, 5))
+                                self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable+2, 5)
                             if len(self.panelObjs[addedIndexInArray+1].depths) == 3:
-                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable+3, 3))
+                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable+3, 5))
                                 self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable+3, 5))
+                                self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable+3, 5)
                         if isinstance(self.panelObjs[addedIndexInArray+1], EdgeObj):
-                            self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable+1, 3))
+                            self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable+1, 5))
                             self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable+1, 5))
-                        self.panelObjs[addedIndexInArray].depth = self.panelObjs[addedIndexInArray+1].depth
+                            self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable+1, 5)
+                        # self.panelObjs[addedIndexInArray].depth = self.panelObjs[addedIndexInArray+1].depth
                         self.UpdateObjInfoByRow(addedIndexInArray)
                         self.TransferFromObjToTable()
                     if ("start edge" in self.panelObjs[addedIndexInArray].panelNum.lower() or "end p" in self.panelObjs[addedIndexInArray].panelNum.lower()) and self.panelObjs[addedIndexInArray].velocityAdjacent:
@@ -1348,9 +1363,10 @@ class MidSectionSummaryTable(ScrolledPanel):
             if len(self.panelObjs) > 1:
                 if isinstance(self.panelObjs[addedIndexInArray-1], EdgeObj):
                     if ("start edge" in self.panelObjs[addedIndexInArray-1].panelNum.lower() or "end p" in self.panelObjs[addedIndexInArray-1].panelNum.lower()) and self.panelObjs[addedIndexInArray-1].depthAdjacent:
-                        self.summaryTable.SetCellValue(addedIndexInArray-1, 3, self.summaryTable.GetCellValue(addedIndexInArray, 3))
+                        self.summaryTable.SetCellValue(addedIndexInArray-1, 3, self.summaryTable.GetCellValue(addedIndexInArray, 5))
                         self.summaryTable.SetCellValue(addedIndexInArray-1, 5, self.summaryTable.GetCellValue(addedIndexInArray, 5))
-                        self.panelObjs[addedIndexInArray-1].depth = self.panelObjs[addedIndexInArray].depth
+                        self.panelObjs[addedIndexInArray-1].depth = self.summaryTable.GetCellValue(addedIndexInTable, 5)
+                        # self.panelObjs[addedIndexInArray-1].depth = self.panelObjs[addedIndexInArray].depth
                         self.UpdateObjInfoByRow(addedIndexInArray-1)
                         self.TransferFromObjToTable()
                     if ("start edge" in self.panelObjs[addedIndexInArray-1].panelNum.lower() or "end p" in self.panelObjs[addedIndexInArray-1].panelNum.lower()) and self.panelObjs[addedIndexInArray-1].velocityAdjacent:
@@ -1364,27 +1380,31 @@ class MidSectionSummaryTable(ScrolledPanel):
                         if ("end edge" in self.panelObjs[addedIndexInArray+1].panelNum.lower() or "start p" in self.panelObjs[addedIndexInArray+1].panelNum.lower()) and self.panelObjs[addedIndexInArray+1].depthAdjacent:
                             if isinstance(self.panelObjs[addedIndexInArray], PanelObj):
                                 if len(self.panelObjs[addedIndexInArray].depths) == 1:
-                                    self.summaryTable.SetCellValue(addedIndexInTable+1, 3, self.summaryTable.GetCellValue(addedIndexInTable, 3))
+                                    self.summaryTable.SetCellValue(addedIndexInTable+1, 3, self.summaryTable.GetCellValue(addedIndexInTable, 5))
                                     self.summaryTable.SetCellValue(addedIndexInTable+1, 5, self.summaryTable.GetCellValue(addedIndexInTable, 5))
-                                    self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
+                                    self.panelObjs[addedIndexInArray+1].depth = self.summaryTable.GetCellValue(addedIndexInTable, 5)
+                                    # self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
                                     self.UpdateObjInfoByRow(addedIndexInArray+1)
                                     self.TransferFromObjToTable()
                                 if len(self.panelObjs[addedIndexInArray].depths) == 2:
-                                    self.summaryTable.SetCellValue(addedIndexInTable+2, 3, self.summaryTable.GetCellValue(addedIndexInTable, 3))
+                                    self.summaryTable.SetCellValue(addedIndexInTable+2, 3, self.summaryTable.GetCellValue(addedIndexInTable, 5))
                                     self.summaryTable.SetCellValue(addedIndexInTable+2, 5, self.summaryTable.GetCellValue(addedIndexInTable, 5))
-                                    self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
+                                    self.panelObjs[addedIndexInArray+2].depth = self.summaryTable.GetCellValue(addedIndexInTable, 5)
+                                    # self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
                                     self.UpdateObjInfoByRow(addedIndexInArray+1)
                                     self.TransferFromObjToTable()
                                 if len(self.panelObjs[addedIndexInArray].depths) == 3:
-                                    self.summaryTable.SetCellValue(addedIndexInTable+3, 3, self.summaryTable.GetCellValue(addedIndexInTable, 3))
+                                    self.summaryTable.SetCellValue(addedIndexInTable+3, 3, self.summaryTable.GetCellValue(addedIndexInTable, 5))
                                     self.summaryTable.SetCellValue(addedIndexInTable+3, 5, self.summaryTable.GetCellValue(addedIndexInTable, 5))
-                                    self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
+                                    self.panelObjs[addedIndexInArray+3].depth = self.summaryTable.GetCellValue(addedIndexInTable, 5)
+                                    # self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
                                     self.UpdateObjInfoByRow(addedIndexInArray+1)
                                     self.TransferFromObjToTable()
                             if isinstance(self.panelObjs[addedIndexInArray], EdgeObj):
-                                    self.summaryTable.SetCellValue(addedIndexInTable+1, 3, self.summaryTable.GetCellValue(addedIndexInTable, 3))
+                                    self.summaryTable.SetCellValue(addedIndexInTable+1, 3, self.summaryTable.GetCellValue(addedIndexInTable, 5))
                                     self.summaryTable.SetCellValue(addedIndexInTable+1, 5, self.summaryTable.GetCellValue(addedIndexInTable, 5))
-                                    self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
+                                    self.panelObjs[addedIndexInArray+1].depth = self.summaryTable.GetCellValue(addedIndexInTable, 5)
+                                    # self.panelObjs[addedIndexInArray+1].depth = self.panelObjs[addedIndexInArray].depth
                                     self.UpdateObjInfoByRow(addedIndexInArray+1)
                                     self.TransferFromObjToTable()
                         if ("end edge" in self.panelObjs[addedIndexInArray+1].panelNum.lower() or "start p" in self.panelObjs[addedIndexInArray+1].panelNum.lower()) and self.panelObjs[addedIndexInArray+1].velocityAdjacent:
@@ -1413,18 +1433,22 @@ class MidSectionSummaryTable(ScrolledPanel):
                     if ("end edge" in str(obj.panelNum).lower() or "start p" in str(obj.panelNum).lower()) and obj.depthAdjacent:
                         if isinstance(self.panelObjs[addedIndexInArray-1], PanelObj):
                             if len(self.panelObjs[addedIndexInArray-1].depths) == 1:
-                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-1, 3))
+                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-1, 5))
                                 self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable-1, 5))
+                                self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable-1, 5)
                             if len(self.panelObjs[addedIndexInArray-1].depths) == 2:
-                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-2, 3))
+                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-2, 5))
                                 self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable-2, 5))
+                                self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable-2, 5)
                             if len(self.panelObjs[addedIndexInArray-1].depths) == 3:
-                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-3, 3))
+                                self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-3, 5))
                                 self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable-3, 5))
+                                self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable-3, 5)
                         if isinstance(self.panelObjs[addedIndexInArray-1], EdgeObj):
-                            self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-1, 3))
+                            self.summaryTable.SetCellValue(addedIndexInTable, 3, self.summaryTable.GetCellValue(addedIndexInTable-1, 5))
                             self.summaryTable.SetCellValue(addedIndexInTable, 5, self.summaryTable.GetCellValue(addedIndexInTable-1, 5))
-                        self.panelObjs[addedIndexInArray].depth = self.panelObjs[addedIndexInArray-1].depth
+                            self.panelObjs[addedIndexInArray].depth = self.summaryTable.GetCellValue(addedIndexInTable-1, 5)
+                        # self.panelObjs[addedIndexInArray].depth = self.panelObjs[addedIndexInArray-1].depth
                         self.UpdateObjInfoByRow(addedIndexInArray)
                         self.TransferFromObjToTable()
 

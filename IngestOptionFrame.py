@@ -1,18 +1,21 @@
 import wx
 import shutil
 
-ID_HFC = 115
-ID_FT = 116
-ID_FT2 = 117
-ID_QREV = 118
-ID_MMT = 119
-ID_RSSL = 120
+from pdb import set_trace
+
 
 class IngestOptionFrame(wx.Frame):
     def __init__(self, mode, inType, *args, **kwargs):
         super(IngestOptionFrame, self).__init__(*args, **kwargs)
         self.mode = mode
         self.inType = inType
+
+        self.ID_HFC = self.GetParent().ID_IMPORT_HFC
+        self.ID_FT = self.GetParent().ID_IMPORT_FTDIS
+        self.ID_FT2 = self.GetParent().ID_IMPORT_FT2
+        self.ID_QREV = self.GetParent().ID_IMPORT_QRXML
+        self.ID_MMT = self.GetParent().ID_IMPORT_SXSMMT
+        self.ID_RSSL = self.GetParent().ID_IMPORT_RSSDIS
 
         self.importQRevMsg = "Select one or more of the following checkmarks to import data from the external Qmmt files to eHSN. "
         self.importQRevOption1 = "Channel Results Summary [e.g. Total Q, Mean Vel., etc.]"
@@ -87,7 +90,7 @@ class IngestOptionFrame(wx.Frame):
         self.layoutSizer.Add(sizerH3, 0, wx.EXPAND|wx.TOP, 15)
         self.layoutSizer.Add(self.buttonSizer, 0, wx.EXPAND|wx.ALL, 10)
 
-        if self.inType == ID_FT or self.inType == ID_HFC or self.inType == ID_FT2 or self.inType == ID_MMT or self.inType == ID_RSSL:
+        if self.inType == self.ID_FT or self.inType == self.ID_HFC or self.inType == self.ID_FT2 or self.inType == self.ID_MMT or self.inType == self.ID_RSSL:
             self.movingBoatCkbox.Enable(False)
             self.movingBoatCkbox.Hide()
             self.movingBoatCkbox.SetValue(False)
@@ -105,56 +108,56 @@ class IngestOptionFrame(wx.Frame):
         #         return
 
         if self.summaryCkbox.IsChecked():
-            if self.inType == ID_QREV:
+            if self.inType == self.ID_QREV:
                 self.GetParent().manager.AddDischargeSummaryFromQRev()
-            elif self.inType == ID_FT:
+            elif self.inType == self.ID_FT:
                 self.GetParent().manager.AddDischargeSummaryFromFT()
-            elif self.inType == ID_HFC:
+            elif self.inType == self.ID_HFC:
                 self.GetParent().manager.AddDischargeSummaryFromHfc()
-            elif self.inType == ID_FT2:
+            elif self.inType == self.ID_FT2:
                 self.GetParent().manager.AddDischargeSummaryFromFt2()
-            elif self.inType == ID_MMT:
+            elif self.inType == self.ID_MMT:
                 self.GetParent().manager.AddDischargeSummaryFromSxs()
-            elif self.inType == ID_RSSL:
+            elif self.inType == self.ID_RSSL:
                 self.GetParent().manager.AddDischargeSummaryFromRssl()
 
             self.GetParent().disMeas.OnTimeChange(evt)
         
         overwrite = False
         if self.dischargeDetailCkbox.IsChecked():
-            if self.inType == ID_QREV:
+            if self.inType == self.ID_QREV:
                 # self.GetParent().manager.instrDepManager.GetMethodCBListBox().Check(0)
                 overwrite = self.GetParent().instrDep.DeploymentCheckListCBCkecking4MovingBoat()
 
                     
-            # elif self.inType == ID_FT or self.inType == ID_HFC or self.inType == ID_FT2 or self.inType == ID_MMT or self.inType == ID_RSSL:
+            # elif self.inType == self.ID_FT or self.inType == self.ID_HFC or self.inType == self.ID_FT2 or self.inType == self.ID_MMT or self.inType == self.ID_RSSL:
             else:
                 # self.GetParent().manager.instrDepManager.GetMethodCBListBox().Check(1)
                 overwrite = self.GetParent().instrDep.DeploymentCheckListCBCkecking4MidSection()
             if overwrite:
-                if self.inType == ID_QREV:
+                if self.inType == self.ID_QREV:
                     self.GetParent().manager.AddDischargeDetailFromQRev()
-                if self.inType == ID_FT:
+                if self.inType == self.ID_FT:
                     self.GetParent().manager.AddDischargeDetailFromFT()
 
-                elif self.inType == ID_HFC:
+                elif self.inType == self.ID_HFC:
 
                     self.GetParent().manager.AddDischargeDetailFromHfc()
-                elif self.inType == ID_FT2:
+                elif self.inType == self.ID_FT2:
 
                     self.GetParent().manager.AddDischargeDetailFromFt2()
 
-                elif self.inType == ID_MMT:
+                elif self.inType == self.ID_MMT:
 
                     self.GetParent().manager.AddDischargeDetailFromSxs()
 
-                elif self.inType == ID_RSSL:
+                elif self.inType == self.ID_RSSL:
 
                     self.GetParent().manager.AddDischargeDetailFromRssl()
 		# self.GetParent().instrDep.RefreshDeploymentMethod()
 
         if self.movingBoatCkbox.IsChecked():
-            if self.inType == ID_QREV:
+            if self.inType == self.ID_QREV:
                 self.GetParent().manager.AddMovingBoatFromQRev(evt)
 
 
@@ -168,7 +171,7 @@ class IngestOptionFrame(wx.Frame):
                                      wx.OK | wx.ICON_INFORMATION)
             info.ShowModal()
 
-        if self.inType == ID_FT2 and self.GetParent().ft2FtDir is not None and self.GetParent().ft2FtDir != "":
+        if self.inType == self.ID_FT2 and self.GetParent().ft2FtDir is not None and self.GetParent().ft2FtDir != "":
 
             shutil.rmtree(self.GetParent().ft2FtDir.split('.')[0])
 
@@ -178,7 +181,7 @@ class IngestOptionFrame(wx.Frame):
 
 
     def OnCancel(self, evt):
-        if self.inType == ID_FT2 and self.GetParent().ft2FtDir is not None and self.GetParent().ft2FtDir != "":
+        if self.inType == self.ID_FT2 and self.GetParent().ft2FtDir is not None and self.GetParent().ft2FtDir != "":
             shutil.rmtree(self.GetParent().ft2FtDir.split('.')[0])
         self.Destroy()
 

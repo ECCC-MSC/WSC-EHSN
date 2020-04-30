@@ -13,6 +13,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import wx.lib.mixins.listctrl as listmix
 
+from pdb import set_trace
+
 class AutoWidthListCtrl(wx.ListCtrl, listmix.ListCtrlAutoWidthMixin):
     """"""
 
@@ -733,7 +735,28 @@ class RatingCurveViewerToolFrame(wx.Frame):
         ax.get_xaxis().get_major_formatter().set_useOffset(False)
         ax.get_yaxis().get_major_formatter().set_useOffset(False)
         # plt.savefig('saved_plot.png')
+
+
+        # if self.GetParent().midsecMeasurements.plot != None and self.GetParent().midsecMeasurements.plot.fig != None:
+            # summaryTableSizer = self.GetParent().midsecMeasurements.GetSizer()
+            # plot = self.GetParent().midsecMeasurements.plot
+            # fig = self.GetParent().midsecMeasurements.plot.fig
+            # ax2 = self.GetParent().midsecMeasurements.plot.ax2
+            # set_trace()
+
+        # print("number of figures: {}".format(plt.gcf().number))
+        # for i in range(plt.gcf().number-1):
+            # plt.close(i+1)
+
+
+            # plot.Hide()
+            # summaryTableSizer.Remove(2)
+            # self.GetParent().midsecMeasurements.plot = None
+            # plt.close(fig_midsec)
+            # plt.clf()
+        # print(plt.gcf())
         plt.show()
+        # self.fig.show(block=False)
 
 
     def AddRowToAppRange(self, curveNum, fromDate, toDate):

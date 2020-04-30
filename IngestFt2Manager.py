@@ -25,6 +25,7 @@ def GetLocalTimeUtcOffset(filePath):
 
 
 def AddDischargeSummary(filePath, disMeasManager):
+    print("importing discharge summary from ft2")
     color = disMeasManager.manager.gui.importedBGColor
     properties = GetData(filePath)['Properties']
 

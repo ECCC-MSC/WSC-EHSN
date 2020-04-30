@@ -126,8 +126,7 @@ class StageMeasurementsPanel(wx.Panel):
         self.checkDischargeTime = True
         self.readingTypeLbl = 'Reading\nType'
         self.readingTypes = ['', 'Routine', 'Routine Before', 'Routine After', 'Reset Before', 'Reset After',
-                            'Cleaning Before', 'Cleaning After', 'After Calibration', 'Reference Primary', 'Reference',
-                            'Extreme Min', 'Extreme Max']
+                            'Cleaning Before', 'Cleaning After', 'After Calibration', 'Reference Primary', 'Reference']
 
         self.frame = self.GetParent()
         self.size = self.frame.GetSize()
@@ -974,7 +973,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         readingTypeComboPanel = wx.Panel(self.readingTypeValPanel, style=wx.SIMPLE_BORDER, name=otherName, size=(-1, self.rowHeight))
         readingTypeComboSizer = wx.BoxSizer(wx.HORIZONTAL)
         readingTypeComboPanel.SetSizer(readingTypeComboSizer)
-        readingTypeCmbo = wx.ComboBox(readingTypeComboPanel, choices=self.readingTypes, style=wx.CB_READONLY, size=(110, self.colHeaderHeight/2))
+        readingTypeCmbo = wx.ComboBox(readingTypeComboPanel, choices=self.readingTypes, style=wx.CB_READONLY, size=(110, self.colHeaderHeight/2), name=otherName)
         readingTypeComboSizer.Add(readingTypeCmbo, 1 , wx.EXPAND)
 
         self.readingTypeValSizer.Add(readingTypeComboPanel, 1, wx.EXPAND)
@@ -1192,7 +1191,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         wlL.Bind(wx.EVT_TEXT, self.NumberControl)
         wlL.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         wlL.Bind(wx.EVT_KILL_FOCUS, self.OnWlr1CalculateMGH)
-        self.wlValRightSizer.Insert(index, wlL, 0, wx.EXPAND)
+        self.wlValLeftSizer.Insert(index, wlL, 0, wx.EXPAND)
 
 
 
@@ -1226,10 +1225,11 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
 
         #Reading Type combobox
-        readingTypeComboPanel = wx.Panel(self.readingTypeValPanel, style=wx.SIMPLE_BORDER, name=otherName, size=(-1, self.rowHeight))
+        # readingTypeComboPanel = wx.Panel(self.readingTypeValPanel, style=wx.SIMPLE_BORDER, name=otherName, size=(-1, self.rowHeight))
+        readingTypeComboPanel = wx.Panel(self.readingTypeValPanel, style=wx.SIMPLE_BORDER, name=str(index), size=(-1, self.rowHeight))
         readingTypeComboSizer = wx.BoxSizer(wx.HORIZONTAL)
         readingTypeComboPanel.SetSizer(readingTypeComboSizer)
-        readingTypeCmbo = wx.ComboBox(readingTypeComboPanel, choices=self.readingTypes, style=wx.CB_READONLY, size=(110, self.colHeaderHeight/2))
+        readingTypeCmbo = wx.ComboBox(readingTypeComboPanel, choices=self.readingTypes, style=wx.CB_READONLY, size=(110, self.colHeaderHeight/2), name=str(index))
 
         self.readingTypeValSizer.Insert(index, readingTypeCmbo, 1, wx.EXPAND)
 
@@ -1363,6 +1363,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             # print len(self.stageSizer.GetChildren())
             hg = self.stageSizer.GetItem(index).GetWindow().GetValue()
             hg2 = self.stageSizer2.GetItem(index).GetWindow().GetValue()
+            # set_trace()
             wlL = self.wlValLeftSizer.GetItem(index).GetWindow().GetValue()
             wlR = self.wlValRightSizer.GetItem(index).GetWindow().GetValue()
             if hg == '' and hg2 == '' and wlL == '' and wlR == '':
@@ -1515,8 +1516,12 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
     #WL Col L Getter
     def GetWLSubSizerLVal(self, row):
         maxrow = len(self.GetWlSubSizerL().GetChildren())
+        # set_trace()
         if row >= maxrow:
             row = maxrow - 1
+
+        # if row <= 0:
+            # row = 0
 
         sizerItem = self.GetWlSubSizerL().GetItem(row).GetWindow()
         return sizerItem.GetValue()
@@ -1526,6 +1531,9 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         maxrow = len(self.GetWlSubSizerL().GetChildren())
         if row >= maxrow:
             row = maxrow - 1
+
+        # if row <= 0:
+            # row = 0
 
         sizerItem = self.GetWlSubSizerL().GetItem(row).GetWindow()
         sizerItem.SetValue(val)
