@@ -230,17 +230,28 @@ class AQUARIUSDataExtractionToolManager(object):
                 "Station ID list field cannot be left blank.  Please enter the station ID that you are uploading.")
             return
 
+        # Login
         s = requests.Session()
-        data = '{"Username": "'+Login+'", "EncryptedPassword": "'+Password+'", "Locale": ""}'
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
         headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
         url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
             s.get(url)
-            aq = s.post(url, data = data, headers = headers)
-            authcode = aq.text
+            aq = s.post(url, data=data, headers=headers)
+            print aq.status_code
+            token = aq.text
+            if aq.status_code != 200:
+                result = "The username or the password is incorrect."
+                error = wx.MessageDialog(None, result, 'Error', wx.OK | wx.ICON_ERROR)
+                error.ShowModal()
+                return "The username or the password is incorrect."
         except:
-            self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
-            return -1
+            # print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
+            exists = False
+            self.gui.deleteProgressDialog()
+            return "Failed to login."
+            # print exists
+        print "login"
 
         if not os.path.exists(path):
             os.makedirs(path)
