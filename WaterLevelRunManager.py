@@ -170,15 +170,18 @@ class WaterLevelRunManager(object):
 
     def OnTransferToSummary(self):
         find = False
+        times = []
         stations = []
         elevations = []
         establishedEles = []
         closures = []
         for circuitIndex, circuit in enumerate(self.runSizer.GetChildren()):
+            timeList = []
             stationList = []
             elevationList = []
             establishedEleList = []
 
+            times.append(timeList)
             stations.append(stationList)
             elevations.append(elevationList)
             establishedEles.append(establishedEleList)
@@ -193,15 +196,18 @@ class WaterLevelRunManager(object):
                     
                     if bool(ckbox1.GetValue()) or bool(ckbox2.GetValue()):
                         find = True
+                        time = self.GetLevelNotesTime(circuitIndex, rowIndex).GetValue()
                         station = self.GetLevelNotesStation(circuitIndex, rowIndex).GetValue()
                         elevation = self.GetLevelNotesElevation(circuitIndex, rowIndex).GetValue()
                         establishedEle = self.GetLevelNotesEstablishedElevation(circuitIndex, rowIndex).GetValue()
+                        timeList.append(time)
                         stationList.append(station)
                         elevationList.append(elevation)
                         establishedEleList.append(establishedEle)
                         # if station != '' and elevation != '':
                         self.AddSummaryEntry()
                         index = len(self.wleValSizer.GetChildren()) - 1
+                        self.SetTimeVal(index, time)
                         self.SetWLRefVal(index, station)
                         if bool(ckbox1.GetValue()):
                             self.SetElevationVal(index, establishedEle)
@@ -209,7 +215,7 @@ class WaterLevelRunManager(object):
                             self.SetElevationVal(index, elevation)
         if len(stations) > 0 and find:
 
-            td = TransferDialog(stations, elevations, establishedEles, closures, self.gui, size=(-1, 400), style=wx.RESIZE_BORDER|wx.CLOSE_BOX|wx.CAPTION)
+            td = TransferDialog(times, stations, elevations, establishedEles, closures, self.gui, size=(-1, 400), style=wx.RESIZE_BORDER|wx.CLOSE_BOX|wx.CAPTION)
             td.ShowModal()
             
         if not find:
@@ -508,7 +514,6 @@ class WaterLevelRunManager(object):
         
     #transfer selected WL and logger value to stage measurement on front page
     def TransferToStageMeasurement(self, time=None, logger1=None, logger2=None, wl1=None, wl2=None):
-        # set_trace()
         self.manager.stageMeasManager.InsertEmptyEntry(0, time, logger1, logger2, wl1, wl2)
 
 

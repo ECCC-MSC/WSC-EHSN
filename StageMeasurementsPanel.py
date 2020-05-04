@@ -253,8 +253,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         stageLabelSizerV = wx.BoxSizer(wx.VERTICAL)
         stageLabelPanel.SetSizer(stageLabelSizerV)
 
-        stageLabelTxt = wx.StaticText(stageLabelPanel, label=self.stageTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth, self.colHeaderHeight / 2))
-        stageLabelTxt.SetMinSize((self.colHeaderWidth, self.colHeaderHeight / 2))
+        stageLabelTxt = wx.StaticText(stageLabelPanel, label=self.stageTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth*2, self.colHeaderHeight / 2))
+        stageLabelTxt.SetMinSize((self.colHeaderWidth*2, self.colHeaderHeight / 2))
         stageLabelTxt.Wrap(self.wrapLength)
 
         # self.hgCkbox = wx.CheckBox(stageLabelPanel)
@@ -264,8 +264,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         # self.stageLabelBtn = wx.Button(stageLabelPanel, label=self.stageTxtLbl, style=wx.BU_TOP, size=(self.colHeaderWidth, self.colHeaderHeight / 2))
         # self.stageLabelBtn.Bind(wx.EVT_BUTTON, self.OnHGButton)
         # self.stageLabelBtn.SetBackgroundColour('yellow')
-        self.stageLabelCtrl1 = wx.TextCtrl(stageLabelPanel, style=wx.TE_PROCESS_ENTER, size=(self.colHeaderWidth, self.colHeaderHeight / 2))
-        self.stageLabelCtrl1.SetMinSize((self.colHeaderWidth, self.colHeaderHeight / 2))
+        self.stageLabelCtrl1 = wx.TextCtrl(stageLabelPanel, style=wx.TE_PROCESS_ENTER, size=(self.colHeaderWidth*2, self.colHeaderHeight / 2))
+        self.stageLabelCtrl1.SetMinSize((self.colHeaderWidth*2, self.colHeaderHeight / 2))
         self.stageLabelCtrl1.Bind(wx.EVT_TEXT, self.OnTextType)
         self.stageLabelCtrl1.Bind(wx.EVT_KEY_DOWN, self.OnTab)
 
@@ -296,15 +296,15 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         stageLabelSizer2V = wx.BoxSizer(wx.VERTICAL)
         stageLabelPanel2.SetSizer(stageLabelSizer2)
 
-        stageLabelTxt2 = wx.StaticText(stageLabelPanel2, label=self.stageTxtLbl2, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth, self.colHeaderHeight / 2))
-        stageLabelTxt2.SetMinSize((self.colHeaderWidth, self.colHeaderHeight / 2))
+        stageLabelTxt2 = wx.StaticText(stageLabelPanel2, label=self.stageTxtLbl2, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth*2, self.colHeaderHeight / 2))
+        stageLabelTxt2.SetMinSize((self.colHeaderWidth*2, self.colHeaderHeight / 2))
         stageLabelTxt2.Wrap(self.wrapLength)
         # self.hg2Ckbox = wx.CheckBox(stageLabelPanel2)
         # self.hg2Ckbox.Bind(wx.EVT_CHECKBOX, self.OnHG2CalculateMGH)
         # self.stageLabelBtn2 = wx.Button(stageLabelPanel2, label=self.stageTxtLbl2, style=wx.BU_TOP, size=(self.colHeaderWidth, self.colHeaderHeight / 2))
         # self.stageLabelBtn2.Bind(wx.EVT_BUTTON, self.OnHGButton)
-        self.stageLabelCtrl2 = wx.TextCtrl(stageLabelPanel2, style=wx.TE_PROCESS_ENTER, size=(self.colHeaderWidth, self.colHeaderHeight / 2))
-        self.stageLabelCtrl2.SetMinSize((self.colHeaderWidth, self.colHeaderHeight / 2))
+        self.stageLabelCtrl2 = wx.TextCtrl(stageLabelPanel2, style=wx.TE_PROCESS_ENTER, size=(self.colHeaderWidth*2, self.colHeaderHeight / 2))
+        self.stageLabelCtrl2.SetMinSize((self.colHeaderWidth*2, self.colHeaderHeight / 2))
         self.stageLabelCtrl2.Bind(wx.EVT_TEXT, self.OnTextType)
 
         self.stageLabelCtrl2.Bind(wx.EVT_KEY_DOWN, self.OnTab)
@@ -377,13 +377,13 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         # wlHeaderCRSizer = wx.BoxSizer(wx.HORIZONTAL)
         # wlHeaderCRPanel.SetSizer(wlHeaderCRSizer)
 
-        wlLabelTxt = wx.StaticText(wlHeaderPanel, label=self.levelTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth * 2, self.colHeaderHeight/2))
+        wlLabelTxt = wx.StaticText(wlHeaderPanel, label=self.levelTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.colHeaderWidth * 4, self.colHeaderHeight/2))
         # wlLabelTxt.SetMinSize((self.colHeaderWidth*2, self.colHeaderHeight / 2))
         wlLabelTxt.Wrap(self.wrapLength * 2)
 
         wlHeaderSizer.Add(wlLabelTxt, 0, wx.EXPAND)
 
-        self.bmLeft = wx.ComboBox(wlHeaderPanel, choices=self.BMs, style=wx.CB_DROPDOWN, size=(self.colHeaderWidth, self.colHeaderHeight/2-1))
+        self.bmLeft = wx.ComboBox(wlHeaderPanel, choices=self.BMs, style=wx.CB_DROPDOWN, size=(self.colHeaderWidth*2, self.colHeaderHeight/2-1))
         # self.bmLeft.SetMinSize((self.colHeaderWidth, self.colHeaderHeight / 2))
         self.bmLeft.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
         
@@ -394,7 +394,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.bmLeft.Bind(wx.EVT_TEXT, self.OnTextType)
         self.bmLeft.Bind(wx.EVT_KEY_DOWN, self.OnTab)
 
-        self.bmRight = wx.ComboBox(wlHeaderPanel, choices=self.BMs, style=wx.CB_DROPDOWN, size=(self.colHeaderWidth, self.colHeaderHeight/2-1))
+        self.bmRight = wx.ComboBox(wlHeaderPanel, choices=self.BMs, style=wx.CB_DROPDOWN, size=(self.colHeaderWidth*2, self.colHeaderHeight/2-1))
         # self.bmRight.SetMinSize((self.colHeaderWidth, self.colHeaderHeight / 2))
         self.bmRight.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
 
@@ -537,16 +537,17 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
         #Pre-Summary Stuff
         preSummaryPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
-        preSummarySizer = wx.GridBagSizer(0, 0)
+        # preSummarySizer = wx.GridBagSizer(0, 0)
+        preSummarySizer = wx.BoxSizer(wx.VERTICAL)
         preSummaryPanel.SetSizer(preSummarySizer)
 
-        self.PreSummRowHeight = self.rowHeight + 3
+        self.PreSummRowHeight = self.rowHeight / 2
         self.PreSummColWidth = self.colHeaderWidth
-        self.SummColWidth = self.colHeaderWidth * 1.9
+        self.SummColWidth = self.colHeaderWidth * 1.9 + 33
 
         weightMGHPanel = wx.Panel(preSummaryPanel, style=wx.SIMPLE_BORDER)
         weightMGHSizer = wx.BoxSizer(wx.HORIZONTAL)
-        weightMGHTxt = wx.StaticText(weightMGHPanel, label=self.weightedMghTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.SummColWidth + 30, self.PreSummRowHeight + 5))
+        weightMGHTxt = wx.StaticText(weightMGHPanel, label=self.weightedMghTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.SummColWidth-15, self.PreSummRowHeight))
         self.weightMGHButton = wx.Button(weightMGHPanel, size=(15, self.PreSummRowHeight), label="!")
         self.weightMGHButton.Bind(wx.EVT_BUTTON, self.OnWMGHBtn)
         weightMGHSizer.Add(weightMGHTxt, 0, wx.EXPAND)
@@ -556,13 +557,13 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         srcSummPanel = wx.Panel(preSummaryPanel, style=wx.SIMPLE_BORDER)
         srcSummSizer = wx.BoxSizer(wx.HORIZONTAL)
         srcSummPanelTxt = wx.StaticText(srcSummPanel, label=self.srcTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.SummColWidth, self.PreSummRowHeight))
-        srcSummSizer.Add(srcSummPanelTxt, 1, wx.EXPAND)
+        srcSummSizer.Add(srcSummPanelTxt, 0, wx.EXPAND)
         srcSummPanel.SetSizer(srcSummSizer)
 
         gcSummPanel = wx.Panel(preSummaryPanel, style=wx.SIMPLE_BORDER)
         gcSummSizer = wx.BoxSizer(wx.HORIZONTAL)
         gcSummPanelTxt = wx.StaticText(gcSummPanel, label=self.gcTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.SummColWidth, self.PreSummRowHeight))
-        gcSummSizer.Add(gcSummPanelTxt, 1, wx.EXPAND)
+        gcSummSizer.Add(gcSummPanelTxt, 0, wx.EXPAND)
         gcSummPanel.SetSizer(gcSummSizer)
 
         corrMghPanel = wx.Panel(preSummaryPanel, style=wx.SIMPLE_BORDER)
@@ -570,19 +571,23 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         corrMghPanelTxt = wx.StaticText(corrMghPanel, label=self.correctedMghTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(self.SummColWidth, self.PreSummRowHeight))
         # self.correctMGHButton = wx.Button(corrMghPanel, size=(15, self.PreSummRowHeight), label="!")
         # self.correctMGHButton.Bind(wx.EVT_BUTTON, self.OnCMGHBtn)
-        corrMghSizer.Add(corrMghPanelTxt, 1, wx.EXPAND)
+        corrMghSizer.Add(corrMghPanelTxt, 0, wx.EXPAND)
         # corrMghSizer.Add(self.correctMGHButton, 0, wx.EXPAND)
         corrMghPanel.SetSizer(corrMghSizer)
 
         #On row by row basis
         #Weighted MGH x
-        self.MGHHG = MyTextCtrl(preSummaryPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight))
-        self.MGHHG2 = MyTextCtrl(preSummaryPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight))
+        self.MGHHG = MyTextCtrl(weightMGHPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight))
+        self.MGHHG2 = MyTextCtrl(weightMGHPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight))
 
-        self.MGHWLRefL = MyTextCtrl(preSummaryPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight))
-        self.MGHWLRefR = MyTextCtrl(preSummaryPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight))
+        self.MGHWLRefL = MyTextCtrl(weightMGHPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight))
+        self.MGHWLRefR = MyTextCtrl(weightMGHPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight))
 
 
+        weightMGHSizer.Add(self.MGHHG, 0, wx.EXPAND)
+        weightMGHSizer.Add(self.MGHHG2, 0, wx.EXPAND)
+        weightMGHSizer.Add(self.MGHWLRefL, 0, wx.EXPAND)
+        weightMGHSizer.Add(self.MGHWLRefR, 0, wx.EXPAND)
 
 
         self.MGHHG.SetBackgroundColour((204,204,204))
@@ -595,14 +600,32 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.MGHWLRefR.SetForegroundColour((0,0,204))
 
 
-        mghMethodTxt = wx.StaticText(preSummaryPanel, label=self.mghMethodLbl, size=(self.PreSummColWidth * 2, self.PreSummRowHeight + 7))
-        self.mghMethod = wx.ComboBox(preSummaryPanel, choices=self.mghMethods, style=wx.CB_READONLY, size=(self.PreSummColWidth, self.PreSummRowHeight))
+        mghMethodTxt = wx.StaticText(weightMGHPanel, label=self.mghMethodLbl, size=(self.PreSummColWidth * 2, self.PreSummRowHeight + 7))
+        self.mghMethod = wx.ComboBox(weightMGHPanel, choices=self.mghMethods, style=wx.CB_READONLY, size=(self.PreSummColWidth, self.PreSummRowHeight))
         self.mghMethod.Bind(wx.EVT_COMBOBOX, self.CalculateAllMGH)
 
-        self.hgCkbox = wx.CheckBox(preSummaryPanel)
-        self.hg2Ckbox = wx.CheckBox(preSummaryPanel)
-        self.wlr1Ckbox = wx.CheckBox(preSummaryPanel)
-        self.wlr2Ckbox = wx.CheckBox(preSummaryPanel)
+        weightMGHSizer.Add(mghMethodTxt, 1, wx.EXPAND)
+        weightMGHSizer.Add(self.mghMethod, 2, wx.EXPAND)
+
+
+        checkBoxPanel = wx.Panel(preSummaryPanel, style=wx.NO_BORDER)
+        checkBoxSizer = wx.BoxSizer(wx.HORIZONTAL)
+        checkBoxPanel.SetSizer(checkBoxSizer)
+        self.hgCkbox = wx.CheckBox(checkBoxPanel)
+        self.hg2Ckbox = wx.CheckBox(checkBoxPanel)
+        self.wlr1Ckbox = wx.CheckBox(checkBoxPanel)
+        self.wlr2Ckbox = wx.CheckBox(checkBoxPanel)
+
+        checkBoxSizer.Add((self.SummColWidth, -1), 0, wx.EXPAND)
+        checkBoxSizer.Add(self.hgCkbox, 0, wx.EXPAND)
+        checkBoxSizer.Add((105, -1), 0, wx.EXPAND)
+        checkBoxSizer.Add(self.hg2Ckbox, 0, wx.EXPAND)
+        checkBoxSizer.Add((105, -1), 0, wx.EXPAND)
+        checkBoxSizer.Add(self.wlr1Ckbox, 0, wx.EXPAND)
+        checkBoxSizer.Add((105, -1), 0, wx.EXPAND)
+        checkBoxSizer.Add(self.wlr2Ckbox, 0, wx.EXPAND)
+
+
 
         self.hgCkbox.Bind(wx.EVT_CHECKBOX, self.OnHGCalculateMGH)
         self.hg2Ckbox.Bind(wx.EVT_CHECKBOX, self.OnHG2CalculateMGH)
@@ -624,25 +647,38 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
 
         #SRC x
-        self.SRCHG = MyTextCtrl(preSummaryPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight))
-        self.SRCHG2 = MyTextCtrl(preSummaryPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight))
+        self.SRCHG = MyTextCtrl(srcSummPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight))
+        self.SRCHG2 = MyTextCtrl(srcSummPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight))
 
+        srcSummSizer.Add(self.SRCHG, 0, wx.EXPAND)
+        srcSummSizer.Add(self.SRCHG2, 0, wx.EXPAND)
 
 
         #GC x
-        self.GCHG = MyTextCtrl(preSummaryPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight))
-        self.GCHG2 = MyTextCtrl(preSummaryPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight))
-        self.GCWLRefL = MyTextCtrl(preSummaryPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight))
-        self.GCWLRefR = MyTextCtrl(preSummaryPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight))
+        self.GCHG = MyTextCtrl(gcSummPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight))
+        self.GCHG2 = MyTextCtrl(gcSummPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight))
+        self.GCWLRefL = MyTextCtrl(gcSummPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight))
+        self.GCWLRefR = MyTextCtrl(gcSummPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight))
 
+        gcSummSizer.Add(self.GCHG, 0, wx.EXPAND)
+        gcSummSizer.Add(self.GCHG2, 0, wx.EXPAND)
+        gcSummSizer.Add(self.GCWLRefL, 0, wx.EXPAND)
+        gcSummSizer.Add(self.GCWLRefR, 0, wx.EXPAND)
 
         #Corrected Mean gauge Height x
-        self.CMGHHG = MyTextCtrl(preSummaryPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight), name="HG1")
+        self.CMGHHG = MyTextCtrl(corrMghPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight), name="HG1")
         # self.CMGHHG = wx.StaticText(preSummaryPanel, size=(self.PreSummColWidth, self.PreSummRowHeight))
 
-        self.CMGHHG2 = MyTextCtrl(preSummaryPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight), name="HG2")
-        self.CMGHWLRefL = MyTextCtrl(preSummaryPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight), name="WLR1")
-        self.CMGHWLRefR = MyTextCtrl(preSummaryPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth, self.PreSummRowHeight), name="WLR2")
+        self.CMGHHG2 = MyTextCtrl(corrMghPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight), name="HG2")
+        self.CMGHWLRefL = MyTextCtrl(corrMghPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight), name="WLR1")
+        self.CMGHWLRefR = MyTextCtrl(corrMghPanel, style=wx.TE_READONLY|wx.TE_CENTRE, size=(self.PreSummColWidth*2, self.PreSummRowHeight), name="WLR2")
+
+        corrMghSizer.Add(self.CMGHHG, 0, wx.EXPAND)
+        corrMghSizer.Add(self.CMGHHG2, 0, wx.EXPAND)
+        corrMghSizer.Add(self.CMGHWLRefL, 0, wx.EXPAND)
+        corrMghSizer.Add(self.CMGHWLRefR, 0, wx.EXPAND)
+
+
 
         self.CMGHHG.SetBackgroundColour((204,204,204))
         self.CMGHHG.SetForegroundColour((0,0,204))
@@ -744,47 +780,54 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         # preSummarySizer.Add(self.colHeaderWidth * 1.4 + 8, self.PreSummRowHeight, pos=(0, 5), span=(1, 1))
         # preSummarySizer.Add(self.colHeaderWidth, self.PreSummRowHeight, pos=(0, 6), span=(1, 1))
 
-        preSummarySizer.Add(self.hgCkbox, pos=(0, 1), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.hg2Ckbox, pos=(0, 2), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.wlr1Ckbox, pos=(0, 3), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.wlr2Ckbox, pos=(0, 4), span=(1, 1), flag=wx.EXPAND)
+        # preSummarySizer.Add(checkBoxPanel, pos=(0, 0), span=(1,1))
+        # preSummarySizer.Add(self.hgCkbox, pos=(0, 1))
+        # preSummarySizer.Add(self.hg2Ckbox, pos=(0, 2))
+        # preSummarySizer.Add(self.wlr1Ckbox, pos=(0, 3))
+        # preSummarySizer.Add(self.wlr2Ckbox, pos=(0, 4))
 
-        preSummarySizer.Add(weightMGHPanel, pos=(1, 0), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.MGHHG, pos=(1, 1), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.MGHHG2, pos=(1, 2), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.MGHWLRefL, pos=(1, 3), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.MGHWLRefR, pos=(1, 4), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(mghMethodTxt, pos=(1, 5), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.mghMethod, pos=(1, 6), span=(1, 3), flag=wx.EXPAND)
+        # preSummarySizer.Add(weightMGHPanel, pos=(1, 0), span=(1, 1), flag=wx.EXPAND)
+        # preSummarySizer.Add(self.MGHHG, pos=(1, 1))
+        # preSummarySizer.Add(self.MGHHG2, pos=(1, 2), span=(1, 1))
+        # preSummarySizer.Add(self.MGHWLRefL, pos=(1, 3), span=(1, 1))
+        # preSummarySizer.Add(self.MGHWLRefR, pos=(1, 4), span=(1, 1))
+        # preSummarySizer.Add(mghMethodTxt, pos=(1, 5), span=(1, 1))
+        # preSummarySizer.Add(self.mghMethod, pos=(1, 6), span=(1, 3), flag=wx.EXPAND)
 
-        preSummarySizer.Add(srcSummPanel, pos=(2, 0), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.SRCHG, pos=(2, 1), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.SRCHG2, pos=(2, 2), span=(1, 1), flag=wx.EXPAND)
+        # preSummarySizer.Add(srcSummPanel, pos=(2, 0), span=(1, 1), flag=wx.EXPAND)
+        # preSummarySizer.Add(self.SRCHG, pos=(2, 1))
+        # preSummarySizer.Add(self.SRCHG2, pos=(2, 2), span=(1, 1))
         # preSummarySizer.Add(mghCalBtn, pos=(1, 7), span=(1, 2), flag=wx.EXPAND)
 
-        preSummarySizer.Add(gcSummPanel, pos=(3, 0), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.GCHG, pos=(3, 1), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.GCHG2, pos=(3, 2), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.GCWLRefL, pos=(3, 3), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.GCWLRefR, pos=(3, 4), span=(1, 1), flag=wx.EXPAND)
+        # preSummarySizer.Add(gcSummPanel, pos=(3, 0), span=(1, 1), flag=wx.EXPAND)
+        # preSummarySizer.Add(self.GCHG, pos=(3, 1))
+        # preSummarySizer.Add(self.GCHG2, pos=(3, 2), span=(1, 1))
+        # preSummarySizer.Add(self.GCWLRefL, pos=(3, 3), span=(1, 1))
+        # preSummarySizer.Add(self.GCWLRefR, pos=(3, 4), span=(1, 1))
 
-        preSummarySizer.Add(corrMghPanel, pos=(4, 0), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.CMGHHG, pos=(4, 1), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.CMGHHG2, pos=(4, 2), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.CMGHWLRefL, pos=(4, 3), span=(1, 1), flag=wx.EXPAND)
-        preSummarySizer.Add(self.CMGHWLRefR, pos=(4, 4), span=(1, 1), flag=wx.EXPAND)
-
-
-        preSummarySizer.Add(stageRemarkPanel, pos=(5, 0), span=(1, 9), flag=wx.EXPAND)
+        # preSummarySizer.Add(corrMghPanel, pos=(4, 0), span=(1, 1), flag=wx.EXPAND)
+        # preSummarySizer.Add(self.CMGHHG, pos=(4, 1))
+        # preSummarySizer.Add(self.CMGHHG2, pos=(4, 2), span=(1, 1))
+        # preSummarySizer.Add(self.CMGHWLRefL, pos=(4, 3), span=(1, 1))
+        # preSummarySizer.Add(self.CMGHWLRefR, pos=(4, 4), span=(1, 1))
 
 
+        # preSummarySizer.Add(stageRemarkPanel, pos=(5, 0), span=(1, 1), flag=wx.EXPAND)
 
 
-        for i in range(1, 9):
-            preSummarySizer.AddGrowableCol(i)
+        preSummarySizer.Add(checkBoxPanel, 0, wx.EXPAND)
+        preSummarySizer.Add(weightMGHPanel, 1, wx.EXPAND)
+        preSummarySizer.Add(srcSummPanel, 1, wx.EXPAND)
+        preSummarySizer.Add(gcSummPanel, 1, wx.EXPAND)
+        preSummarySizer.Add(corrMghPanel, 1, wx.EXPAND)
+        preSummarySizer.Add(stageRemarkPanel, 1, wx.EXPAND)
 
-        for i in range(4):
-            preSummarySizer.AddGrowableRow(i)
+
+        # for i in range(1, 1):
+            # preSummarySizer.AddGrowableCol(i)
+
+        # for i in range(4):
+            # preSummarySizer.AddGrowableRow(i)
 
 
         self.layoutSizerV.Add(self.measurementsScrollPanel, 1, wx.EXPAND)
@@ -927,8 +970,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             hg.SetValue(logger2)
 
         #wl col L
-        wlL = MyTextCtrl(self.wlValLeftPanel, id = 500+self.entryNum, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
-        wlL.SetMinSize((self.colHeaderWidth, self.rowHeight))
+        wlL = MyTextCtrl(self.wlValLeftPanel, id = 500+self.entryNum, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth*2, self.rowHeight), name=otherName)
+        wlL.SetMinSize((self.colHeaderWidth*2, self.rowHeight))
         wlL.Bind(wx.EVT_TEXT, self.NumberControl)
         wlL.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         wlL.Bind(wx.EVT_KILL_FOCUS, self.OnWlr1CalculateMGH)
@@ -939,8 +982,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             wlL.SetValue(wl1)
 
         #wl col R
-        wlR = MyTextCtrl(self.wlValRightPanel, id = 600+self.entryNum, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
-        wlR.SetMinSize((self.colHeaderWidth, self.rowHeight))
+        wlR = MyTextCtrl(self.wlValRightPanel, id = 600+self.entryNum, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth*2, self.rowHeight), name=otherName)
+        wlR.SetMinSize((self.colHeaderWidth*2, self.rowHeight))
         wlR.Bind(wx.EVT_TEXT, self.NumberControl)
         wlR.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         wlR.Bind(wx.EVT_KILL_FOCUS, self.OnWlr2CalculateMGH)
@@ -1187,7 +1230,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
 
         #wl col L
-        wlL = MyTextCtrl(self.wlValRightPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=str(index))
+        wlL = MyTextCtrl(self.wlValLeftPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth*2, self.rowHeight), name=str(index))
         wlL.Bind(wx.EVT_TEXT, self.NumberControl)
         wlL.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         wlL.Bind(wx.EVT_KILL_FOCUS, self.OnWlr1CalculateMGH)
@@ -1196,7 +1239,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
 
         #wl col R
-        wlR = MyTextCtrl(self.wlValRightPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=str(index))
+        wlR = MyTextCtrl(self.wlValRightPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth*2, self.rowHeight), name=str(index))
         wlR.Bind(wx.EVT_TEXT, self.NumberControl)
         wlR.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         wlR.Bind(wx.EVT_KILL_FOCUS, self.OnWlr2CalculateMGH)
@@ -1225,13 +1268,13 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
 
         #Reading Type combobox
-        # readingTypeComboPanel = wx.Panel(self.readingTypeValPanel, style=wx.SIMPLE_BORDER, name=otherName, size=(-1, self.rowHeight))
         readingTypeComboPanel = wx.Panel(self.readingTypeValPanel, style=wx.SIMPLE_BORDER, name=str(index), size=(-1, self.rowHeight))
         readingTypeComboSizer = wx.BoxSizer(wx.HORIZONTAL)
         readingTypeComboPanel.SetSizer(readingTypeComboSizer)
         readingTypeCmbo = wx.ComboBox(readingTypeComboPanel, choices=self.readingTypes, style=wx.CB_READONLY, size=(110, self.colHeaderHeight/2), name=str(index))
+        readingTypeComboSizer.Add(readingTypeCmbo, 1 , wx.EXPAND)
 
-        self.readingTypeValSizer.Insert(index, readingTypeCmbo, 1, wx.EXPAND)
+        self.readingTypeValSizer.Insert(index, readingTypeComboPanel, 1, wx.EXPAND)
 
 
         #checkbox

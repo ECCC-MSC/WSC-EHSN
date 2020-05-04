@@ -1272,7 +1272,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if self.manager is not None:
                 date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
                 date = date.strftime("%Y%m%d")
-                defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV"
+                defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_BookletType"
         else:
             defaultName = self.name.rsplit(".",1)[0]
         fileSaveDialog = wx.FileDialog(self, self.fileSavePDFSaveTitle, self.rootPath, defaultName,
@@ -1408,7 +1408,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
             date = date.strftime("%Y%m%d")
-            defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV_VIEW"
+            defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV"
 
         fileSaveDialog = wx.FileDialog(self, self.fileSavePDFSaveTitle, self.rootPath, defaultName,
                                        'eHSN (*.pdf)|*.pdf',
