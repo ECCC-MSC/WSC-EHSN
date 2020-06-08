@@ -486,7 +486,6 @@ class ElectronicHydrometricSurveyNotes:
             # print exists
         print "login"
         if exists:
-
             try:
                 req = requests.get("https://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
                 try:

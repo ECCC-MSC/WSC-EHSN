@@ -687,7 +687,7 @@ class RatingCurveViewerToolManager(object):
         for i in range(len(points['BaseRatingTable'])):
             hgpas = float(points['BaseRatingTable'][i]['InputValue'])
 
-            if hg < hgpas:
+            if hg <= hgpas:
                 lowPoint = points['BaseRatingTable'][i-1]
                 highPoint = points['BaseRatingTable'][i]
                 for nn in range(len(breakPointList)):
@@ -707,19 +707,19 @@ class RatingCurveViewerToolManager(object):
         for i in range(len(points['BaseRatingTable'])):
             qpas = float(points['BaseRatingTable'][i]['OutputValue'])
 
-            if q < qpas:
+            if q <= qpas:
                 lowPoint = points['BaseRatingTable'][i-1]
                 highPoint = points['BaseRatingTable'][i]
                 for nn in range(len(breakPointList)):
                     if highPoint['InputValue']<=breakPointList[nn]:
                         qoffset = offsetList[nn]
                         qbeta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-qoffset)/(lowPoint['InputValue']-qoffset))
-                        qc = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-qoffset, beta)
+                        qc = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-qoffset, qbeta)
                         break
                 if qoffset is None:
                     qoffset = offsetList[-1]
                     qbeta = math.log10(highPoint['OutputValue']/lowPoint['OutputValue'])/math.log10((highPoint['InputValue']-qoffset)/(lowPoint['InputValue']-qoffset))
-                    qc = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-qoffset, beta)
+                    qc = lowPoint['OutputValue']/math.pow(lowPoint['InputValue']-qoffset, qbeta)
                 break
 
         # Do the calculations
@@ -1114,7 +1114,7 @@ class RatingCurveViewerToolManager(object):
             hgpas = float(points['BaseRatingTable'][i]['InputValue'])
             # print hgpas, hg
 
-            if hg < hgpas:
+            if hg <= hgpas:
                 lowPoint = points['BaseRatingTable'][i - 1]
                 highPoint = points['BaseRatingTable'][i]
                 a = (highPoint['OutputValue'] - lowPoint['OutputValue']) / (
@@ -1127,7 +1127,7 @@ class RatingCurveViewerToolManager(object):
         for i in range(len(points['BaseRatingTable'])):
             qpas = float(points['BaseRatingTable'][i]['OutputValue'])
 
-            if q < qpas:
+            if q <= qpas:
                 lowPoint = points['BaseRatingTable'][i - 1]
                 highPoint = points['BaseRatingTable'][i]
                 a2 = (highPoint['OutputValue'] - lowPoint['OutputValue']) / (

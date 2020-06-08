@@ -1258,7 +1258,7 @@ class WaterLevelNotesPanel(wx.Panel):
     #Reset water level reference bench mark
     def updateBMs(self, items, indexList):
 
-        preList = ["RP1", "RP2", "TP1", "TP2"]
+        preList = ["RP1", "RP2", "RP3", "RP4", "RP5", "TP1", "TP2", "TP3", "TP4", "TP5"]
         if len(indexList) > 0:
             updatedItems = []
             for i in range(len(items)):

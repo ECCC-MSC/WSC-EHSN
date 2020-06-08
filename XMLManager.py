@@ -561,7 +561,7 @@ def DischMeasFromXML(DisMeas, disMeasManager):
             disMeasManager.GetDischCtrl().SetBackgroundColour(white)
 
     uncertainty = DisMeas.find('uncertainty')
-    if uncertainty is None:
+    if uncertainty.text is None:
         disMeasManager.uncertaintyCtrl = ""
     else:
         disMeasManager.uncertaintyCtrl = uncertainty.text

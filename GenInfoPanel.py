@@ -54,7 +54,7 @@ class GenInfoPanel(wx.Panel):
         
         # Station Number, and Date
         stnNumTxt = wx.StaticText(self, label=self.stnNumTxtLbl)
-        self.stnNumCmbo = wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.TE_PROCESS_ENTER, choices=self.numbers)
+        self.stnNumCmbo = wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.TE_PROCESS_ENTER, choices=self.numbers, size=(300, 25))
 
         self.stnNumCmbo.Bind(wx.EVT_TEXT, self.OnTextTypeNum)
         self.stnNumCmbo.Bind(wx.EVT_MOUSEWHEEL, self.do_nothing)
@@ -69,7 +69,7 @@ class GenInfoPanel(wx.Panel):
         # self.datePicker.SetHolidayColours('White','Blue')
         # Add them to sizer
         row1.Add(stnNumTxt, 0, wx.RIGHT, 5)
-        row1.Add(self.stnNumCmbo, 1, wx.LEFT|wx.RIGHT|wx.EXPAND, 5)
+        row1.Add(self.stnNumCmbo, 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 5)
         row1.Add(dateTxt, 0, wx.LEFT|wx.RIGHT, 5)
         row1.Add(self.datePicker, 0, wx.LEFT|wx.EXPAND, 5)
         
