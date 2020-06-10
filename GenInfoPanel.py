@@ -77,7 +77,7 @@ class GenInfoPanel(wx.Panel):
         # Station Name and Timezone
         stnNameTxt = wx.StaticText(self, label=self.stnNameTxtLbl)
         # self.stnNameCtrl = wx.TextCtrl(self)
-        self.stnNameCtrl = wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.TE_PROCESS_ENTER, choices=self.names)
+        self.stnNameCtrl = wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.TE_PROCESS_ENTER, choices=self.names, size=(600, 25))
         self.stnNameCtrl.Bind(wx.EVT_TEXT, self.OnTextTypeName)
         tzTxt = wx.StaticText(self, label=self.tzTxtLbl)
         self.tzCmbo = wx.ComboBox(self, choices=self.timeZones, value="", style=wx.CB_READONLY)
@@ -86,7 +86,7 @@ class GenInfoPanel(wx.Panel):
 
         # Add them to sizer
         row2.Add(stnNameTxt, 0, wx.RIGHT, 5)
-        row2.Add(self.stnNameCtrl, 1, wx.LEFT|wx.RIGHT|wx.EXPAND, 5)
+        row2.Add(self.stnNameCtrl, 0, wx.LEFT|wx.RIGHT|wx.EXPAND, 5)
         row2.Add(tzTxt, 0, wx.LEFT|wx.RIGHT, 5)
         row2.Add(self.tzCmbo, 0, wx.LEFT, 5)
 

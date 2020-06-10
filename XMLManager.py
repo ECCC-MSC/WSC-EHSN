@@ -115,7 +115,24 @@ def StageMeasAsXMLTree(StageMeas, stageMeasManager):
         StageMeasRow = SubElement(StageMeasTable, 'StageMeasRow', row=str(row))
 
         time = SubElement(StageMeasRow, 'time')
-        time.text = str(stageMeasManager.GetTimeVal(row))
+        timeList = str(stageMeasManager.GetTimeVal(row)).split(":")
+        print(str(timeList[0]) + " length: " + str(len(timeList[0])))
+        print(str(timeList[1]) + " length: " + str(len(timeList[1])))
+
+        if len(timeList[0]) < 2 and len(timeList[1]) == 2 :
+            time.text = "0" + str(stageMeasManager.GetTimeVal(row))
+        elif len(timeList[0]) == 2 and len(timeList[1]) < 2:
+            time.text = str(timeList[0]) + ":0" + str(timeList[1])
+        elif len(timeList[0]) < 2 and len(timeList[1]) < 2:
+            time.text = "0" + str(timeList[0]) + ":0" + str(timeList[1])
+        else:
+            time.text = str(stageMeasManager.GetTimeVal(row))
+        '''
+        if len(str(stageMeasManager.GetTimeVal(row))) == 4:
+            time.text = "0" + str(stageMeasManager.GetTimeVal(row))
+        else:
+            time.text = str(stageMeasManager.GetTimeVal(row))
+        '''
 
         HG1 = SubElement(StageMeasRow, 'HG1')
         HG1.text = str(stageMeasManager.GetHGVal(row))
@@ -1872,9 +1889,13 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
     totalStationRb.text = str(waterLevelRunManager.GetTotalStationRb().GetValue())
 
     runSizer = waterLevelRunManager.runSizer
+    if len(runSizer.GetChildren()) == 0:
+        LevelChecksTable = SubElement(LevelChecks, 'LevelChecksTable', run=str("0"))
+        closure = SubElement(LevelChecksTable, "closure")
+        upload = SubElement(LevelChecksTable, "upload")
+
     for i in range(len(runSizer.GetChildren())):
         notEmptyTable = False
-
 
         LevelChecksTable = SubElement(LevelChecks, 'LevelChecksTable', run=str(i))
 

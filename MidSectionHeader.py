@@ -21,7 +21,7 @@ from MidsectionImportPanel import MidsectionImportPanel
 from pdb import set_trace
 
 mode = "PRODUCTION"
-EHSN_VERSION = "v2.1.0"
+EHSN_VERSION = "v2.2.0"
 eHSN_WINDOW_SIZE = (965, 730)
 
 class MidSectionHeader(wx.Panel):
