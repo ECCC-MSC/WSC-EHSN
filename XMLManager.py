@@ -116,8 +116,6 @@ def StageMeasAsXMLTree(StageMeas, stageMeasManager):
 
         time = SubElement(StageMeasRow, 'time')
         timeList = str(stageMeasManager.GetTimeVal(row)).split(":")
-        print(str(timeList[0]) + " length: " + str(len(timeList[0])))
-        print(str(timeList[1]) + " length: " + str(len(timeList[1])))
 
         if len(timeList[0]) < 2 and len(timeList[1]) == 2 :
             time.text = "0" + str(stageMeasManager.GetTimeVal(row))
@@ -578,14 +576,17 @@ def DischMeasFromXML(DisMeas, disMeasManager):
             disMeasManager.GetDischCtrl().SetBackgroundColour(white)
 
     uncertainty = DisMeas.find('uncertainty')
-    if uncertainty.text is None:
+    if uncertainty is None:
         disMeasManager.uncertaintyCtrl = ""
     else:
-        disMeasManager.uncertaintyCtrl = uncertainty.text
-        if "imported" in uncertainty.attrib and uncertainty.attrib['imported'] == "1":
-            disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(bkColor)
+        if uncertainty.text is None:
+            disMeasManager.uncertaintyCtrl = ""
         else:
-            disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(white)
+            disMeasManager.uncertaintyCtrl = uncertainty.text
+            if "imported" in uncertainty.attrib and uncertainty.attrib['imported'] == "1":
+                disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(bkColor)
+            else:
+                disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(white)
 
     # dischCombo = DisMeas.find('dischCombo')
     # if dischCombo is None or dischCombo.text is None:
@@ -3528,7 +3529,7 @@ def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
 
             meterIndex += 1
 
-      
+
         channels = Channels.findall('Channel')
 
         for channel in channels:
@@ -3691,7 +3692,7 @@ def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
                     SlushThickness = IceCovered.find("SlushThickness").text if IceCovered.find("SlushThickness").text is not None else ""
                     IceAdjusted = IceCovered.find("IceAdjusted").text if IceCovered.find("IceAdjusted").text is not None else ""
                     WSToBottomOfIceAdjusted = IceCovered.find("WSToBottomOfIceAdjusted").text if IceCovered.find("WSToBottomOfIceAdjusted").text is not None else ""
-                    
+
 
                     obj = PanelObj(panelNum=panelNum, distance=distance,# depth=depth, \
                     depths=SamplingDepthCoefficients, depthObs=MeasurementDepths, revs=Revolutions, revTimes=ElapsedTimes, pointVels=Velocities,\
@@ -3709,7 +3710,7 @@ def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
                     reverseFlow=True if reverseFlow == "True" else False, pid=panelId,# index=index, \
                     iceThickness=IceThickness, iceThicknessAdjusted=IceAdjusted)
 
-            
+
 
 
                 if obj is not None:

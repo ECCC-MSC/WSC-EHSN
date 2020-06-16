@@ -1,5 +1,6 @@
 # All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
 # Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+from xml import etree
 
 from TitleHeaderPanel import *
 from GenInfoPanel import *
@@ -48,6 +49,11 @@ import qrcode
 import zipfile
 import shutil
 from win32api import GetSystemMetrics
+from xml.etree import ElementTree
+from xml.etree.ElementTree import Element
+from xml.etree.ElementTree import SubElement
+from xml.dom import minidom
+from xhtml2pdf import pisa
 import subprocess
 # import pyHook
 # import pythoncom, win32api
@@ -460,9 +466,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         cConfig = configMenu.Append(ID_CONF_CONF, self.cConfLabel, self.cConfDesc)
 
         scalingSubMenu = wx.Menu()
-        configMenu.AppendSubMenu(scalingSubMenu,self.tScalLabel, self.tScalDesc)
-        tScal1 = scalingSubMenu.Append(ID_TOOLS_SCALING_SUB1, self.tScalSub1Label, self.tScalSub1Desc)
-        tScal2 = scalingSubMenu.Append(ID_TOOLS_SCALING_SUB2, self.tScalSub2Label, self.tScalSub2Desc)
+        # configMenu.AppendSubMenu(scalingSubMenu,self.tScalLabel, self.tScalDesc)
+        # tScal1 = scalingSubMenu.Append(ID_TOOLS_SCALING_SUB1, self.tScalSub1Label, self.tScalSub1Desc)
+        # tScal2 = scalingSubMenu.Append(ID_TOOLS_SCALING_SUB2, self.tScalSub2Label, self.tScalSub2Desc)
 
         toolMenu = wx.Menu()
         cAdet = toolMenu.Append(ID_CONF_ADET, self.cAdetLabel, self.cAdetDesc)
@@ -537,8 +543,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.Bind(wx.EVT_MENU, self.OnCalc, tCalc)
         # self.Bind(wx.EVT_MENU, self.OnMagn, tMagn)
 
-        self.Bind(wx.EVT_MENU, self.OnScal1, tScal1)
-        self.Bind(wx.EVT_MENU, self.OnScal2, tScal2)
+        # self.Bind(wx.EVT_MENU, self.OnScal1, tScal1)
+        # self.Bind(wx.EVT_MENU, self.OnScal2, tScal2)
         # self.Bind(wx.EVT_MENU, self.OnScal3, tScal3)
         
 
@@ -1092,6 +1098,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if path != "":
             newpath = path + '\\' + defaultName
             xml = self.manager.ExportAsXML(newpath, None)
+
             self.SaveAsPDFAtUpload(path, success, xml)
             self.SetTitle(self.noteHeaderTxt + "   " + newpath)
             self.name = defaultName
@@ -1148,7 +1155,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         else:
             defaultName = self.name.rsplit(".",1)[0] + ".pdf"
 
-
         if path != "":
             path = path + '\\' + defaultName
             if self.uploadOpenPdf:
@@ -1158,9 +1164,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 # self.manager.ExportAsPDFFromXML(path, self.fullStyleSheetFilePath, xml)
                 self.manager.ExportAsPDFFromXML(path, self.viewStyleSheetFilePath, xml)
         self.uploadOpenPdf = False
-
-
-
 
 
     def UploadingChecking(self):

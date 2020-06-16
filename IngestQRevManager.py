@@ -148,7 +148,11 @@ def GetAllTransects(filePath):
     results = []
     for i, row in enumerate(GetRoot(filePath).findall('Transect')):
         line = []
-        fileName = row.find('Filename').text[17:]
+        tempName = row.find('Filename').text
+        if len(tempName) >= 22:
+            fileName = row.find('Filename').text[17:]
+        else:
+            fileName = tempName
         startEdge = row.find('Edge').find('StartEdge').text
         startDateTime = row.find('StartDateTime').text[11:]
         # endDateTime = row.find('EndDateTime').text[11:]

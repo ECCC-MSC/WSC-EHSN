@@ -1514,21 +1514,26 @@ class ElectronicHydrometricSurveyNotes:
 
 
     def Increament(self):
+        pass
+        '''
         self.resizingLock.acquire()
         self.gui.ApplyFontToChildren(self.gui, 1)
         self.gui.ChangeFontToMidsectionGrid(1)
         self.resizingLock.release()
+        '''
 
         
 
 
 
     def Decreament(self):
+        pass
+        '''
         self.resizingLock.acquire()
         self.gui.ApplyFontToChildren(self.gui, -1)
         self.gui.ChangeFontToMidsectionGrid(-1)
         self.resizingLock.release()
-
+        '''
 
 
     def OnKeyDownEvent(self, event):
