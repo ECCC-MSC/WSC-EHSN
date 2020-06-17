@@ -148,21 +148,39 @@ class DropdownTime(wx.Panel):
     def GetHourVal(self):
         return self.hourCmbox.GetValue()
 
+    def GetHour(self):
+        return self.hourCmbox
+
     def SetHourVal(self, val):
         self.hourCmbox.SetValue(val)
 
+    def ChangeHourVal(self, val):
+        self.hourCmbox.ChangeValue(val)
 
     def GetMinuteVal(self):
         return self.minuteCmbox.GetValue()
 
+    def GetMinute(self):
+        return self.minuteCmbox
+
     def SetMinuteVal(self, val):
         self.minuteCmbox.SetValue(val)
+
+    def ChangeMinuteVal(self, val):
+        self.minuteCmbox.ChangeValue(val)
+
 
     def GetSecondVal(self):
         return self.secondCmbox.GetValue()
 
+    def GetSecond(self):
+        return self.secondCmbox
+
     def SetSecondVal(self, val):
         self.secondCmbox.SetValue(val)
+
+    def ChangeSecondVal(self, val):
+        self.secondCmbox.ChangeValue(val)
 
     def GetHourCtrl(self):
         return self.hourCmbox

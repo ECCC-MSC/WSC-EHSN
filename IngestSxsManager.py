@@ -127,6 +127,7 @@ def AddDischargeSummary(filePath, disMeasManager):
     averageVel = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Mean_Avg_V').text
     qtotal = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Total_Q').text
     widthTotal = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Total_Width').text
+    uncertainty = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Quality_Control').text
 
 
 
@@ -217,6 +218,12 @@ def AddDischargeSummary(filePath, disMeasManager):
         wx.PostEvent(disMeasManager.GetAirTempCtrl(), myEvent)
         disMeasManager.GetAirTempCtrl().SetBackgroundColour(color)
 
+    if uncertainty is not None and uncertainty != "":
+        disMeasManager.uncertaintyCtrl = str(round(float(uncertainty), 2))
+        myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
+        myEvent.SetEventObject(disMeasManager.GetUncertaintyCtrl())
+        wx.PostEvent(disMeasManager.GetUncertaintyCtrl(), myEvent)
+        disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
 
 
         

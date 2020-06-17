@@ -25,6 +25,7 @@ def GetLocalTimeUtcOffset(filePath):
 
 
 def AddDischargeSummary(filePath, disMeasManager):
+    print("importing discharge summary from ft2")
     color = disMeasManager.manager.gui.importedBGColor
     properties = GetData(filePath)['Properties']
 
@@ -36,6 +37,8 @@ def AddDischargeSummary(filePath, disMeasManager):
     startTime = allTimes[0][11:16]
     endTime = allTimes[-1][11:16]
     offset = properties['LocalTimeUtcOffset'][:3]
+    if offset[0] != '+' and offset[0] != '-':
+        offset = offset[:2]
 
     
     sHour = int(startTime[:2])
@@ -55,6 +58,7 @@ def AddDischargeSummary(filePath, disMeasManager):
         eHour = eHour - 4 if eMinute < 0 else eHour - 3
         eMinute = eMinute + 60 if eMinute < 0 else eMinute
     else:
+        # print('offset:{}'.format(offset))
         sHour += int(offset)
         eHour += int(offset)
 
@@ -103,6 +107,7 @@ def AddDischargeSummary(filePath, disMeasManager):
     discharge = calculations['Discharge (m3/s)']
     width = calculations['Width (m)']
     meanVelocity = calculations['Velocity (m/s)']['X']
+    uncertainty = calculations['UncertaintyIve']['Overall']
 
     if finalStartTime is not None and finalStartTime != "":
         disMeasManager.startTimeCtrl = finalStartTime
@@ -138,6 +143,12 @@ def AddDischargeSummary(filePath, disMeasManager):
         myEvent.SetEventObject(disMeasManager.GetDischCtrl())
         wx.PostEvent(disMeasManager.GetDischCtrl(), myEvent)
         disMeasManager.GetDischCtrl().SetBackgroundColour(color)
+    if uncertainty is not None and uncertainty != "":
+        disMeasManager.uncertaintyCtrl = str(round(float(uncertainty)*200, 2))
+        myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
+        myEvent.SetEventObject(disMeasManager.GetUncertaintyCtrl())
+        wx.PostEvent(disMeasManager.GetUncertaintyCtrl(), myEvent)
+        disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
 
 
 
@@ -191,3 +202,8 @@ def AddDischargeDetail(filePath, instrDepManager):
 
 
 
+if __name__ == '__main__':
+    from pdb import set_trace
+    calculations = (GetData('imports\\DataFile.json')['Calculations'])
+    uncert = calculations['UncertaintyIve']['Overall']
+    set_trace()

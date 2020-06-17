@@ -85,8 +85,8 @@ if 0:
 
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v2.0.0"
-eHSN_WINDOW_SIZE = (965, 730)
+EHSN_VERSION = "v2.2.0"
+eHSN_WINDOW_SIZE = (1100, 730)
 
 # import wx.lib.inspection
 # wx.lib.inspection.InspectionTool().Show()
@@ -465,7 +465,7 @@ class ElectronicHydrometricSurveyNotes:
         s = requests.Session()
         data = '{"Username": "' + username + '", "EncryptedPassword": "' + password + '", "Locale": ""}'
         headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = "http://" + server + "/AQUARIUS/Provisioning/v1/session"
+        url = "https://" + server + "/AQUARIUS/Provisioning/v1/session"
         try:
             s.get(url)
             req = s.post(url, data = data, headers = headers)
@@ -486,9 +486,8 @@ class ElectronicHydrometricSurveyNotes:
             # print exists
         print "login"
         if exists:
-
             try:
-                req = requests.get("http://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
+                req = requests.get("https://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
                 try:
                     locid = req.json()['LocationDescriptions'][0]['UniqueId']
                     exists = True
@@ -515,7 +514,7 @@ class ElectronicHydrometricSurveyNotes:
                     # get the field visit data from NG check if the fv already exist
                     # self.gui.updateProgressDialog(self.exportAQFVMessage)
                 try:
-                    req = requests.get("http://" + server + "/AQUARIUS/Publish/v2/GetFieldVisitDescriptionList?LocationIdentifier=" + self.genInfoManager.stnNumCmbo + "&QueryFrom=" + fvDate + "&QueryTo=" + fvDate1 + "&Token=" + token)
+                    req = requests.get("https://" + server + "/AQUARIUS/Publish/v2/GetFieldVisitDescriptionList?LocationIdentifier=" + self.genInfoManager.stnNumCmbo + "&QueryFrom=" + fvDate + "&QueryTo=" + fvDate1 + "&Token=" + token)
                     fvexData = req.json()['FieldVisitDescriptions'][0]['Identifier']
                     # print fvexData
                     exists = True
@@ -532,6 +531,7 @@ class ElectronicHydrometricSurveyNotes:
                     print fvPath
                     dirName = fvPath[-19:]
                     fvPath = fvPath.replace("\\", "\\\\")
+                    dirPath = fvPath.replace("\\", "/")
                     fvPathPdf = fvPath.replace("\\", "\\\\")
                     fvPath = fvPath + ".xml"
                     fvPathPdf = fvPathPdf + ".pdf"
@@ -564,7 +564,7 @@ class ElectronicHydrometricSurveyNotes:
                     files = {'file': open(uploadZipDir, 'rb')}
 
                     print "Uploading"
-                    req = requests.post("http://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=files)
+                    req = requests.post("https://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=files)
                     visitUris = req.json()
                     try:
                         visitUris = req.json()['ResponseStatus']['Message']
@@ -1514,21 +1514,26 @@ class ElectronicHydrometricSurveyNotes:
 
 
     def Increament(self):
+        pass
+        '''
         self.resizingLock.acquire()
         self.gui.ApplyFontToChildren(self.gui, 1)
         self.gui.ChangeFontToMidsectionGrid(1)
         self.resizingLock.release()
+        '''
 
         
 
 
 
     def Decreament(self):
+        pass
+        '''
         self.resizingLock.acquire()
         self.gui.ApplyFontToChildren(self.gui, -1)
         self.gui.ChangeFontToMidsectionGrid(-1)
         self.resizingLock.release()
-
+        '''
 
 
     def OnKeyDownEvent(self, event):
@@ -1567,7 +1572,8 @@ elif '_MEIPASS2' in environ:
     chdir(environ['_MEIPASS2'])
     filename = join(environ['_MEIPASS2'], filename)
 else:
-    chdir(dirname(sys.argv[0]))
+    # chdir(dirname(sys.argv[0]))
+    chdir(dirname(os.path.realpath(__file__)))
     filename = join(dirname(sys.argv[0]), filename)
 
 

@@ -9,6 +9,7 @@ from DropdownTime import *
 
 from wx import ComboPopup
 
+from pdb import set_trace
 #----------------------------------------------------------------------
 # This class is used to provide an interface between a ComboCtrl and the
 # ListCtrl that is used as the popoup for the combo widget.
@@ -134,12 +135,13 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.meanVelLbl = "Mean Velocity (m/s)"
         self.mghLbl = "M.G.H. (m)"
         self.dischLbl = u"Discharge (m\N{SUPERSCRIPT THREE}/s)"
+        self.uncertaintyLbl = u"Uncertainty (%)"
         self.mmtLbl = "Mmt Mean Time"
         self.shiftLbl = "Calc. Shift Base Curve (m)"
         self.diffLbl = "Difference Base Curve (%)"
         self.curveLbl = "Curve #"
         self.mghChoices = ["", "  (HG)", "  (HG2)", "  (WLR1)", "  (WLR2)"]
-        self.dischChoices = ["","E","B"]
+        # self.dischChoices = ["","E","B"]
         self.curveList = [""]
 
         self.controlConditionRemLbl = "Control Condition Remarks"
@@ -152,6 +154,15 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.correctMGHBtnHint = "This field is not directly uploaded to AQUARIUS. To ensure the correct gauge correction is uploaded, the Weighted M.G.H, SRC \
  and Gauge Correction must be entered in the EHSN stage summary table below."
 
+        self.uncertaintyInfoMsg = """
+All uncertainty values reported here are 2-sigma value
+- FlowTracker (2 x Uncertainty Value reported in *.dis File)
+- FlowTracker2 (2 x Uncertainty Value reported in *.ft File)
+- SxS Pro (1 x Uncertainty Value reported in *.xml File)
+- RSSL(2 x Uncertainty Value reported in *.dis File)
+- QRev (1 x Uncertainty Value reported in *.xml File)
+- eHSN Mid-section (IVE Value)
+"""
 
         self.timeFormat = "%H:%M"
         if lang == wx.LANGUAGE_ENGLISH:
@@ -334,6 +345,7 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.correctMGHButton.Bind(wx.EVT_BUTTON, self.OnCMGHBtn)
 
         self.mghCmbo = wx.ComboBox(mghPanel, choices=self.mghChoices, style=wx.CB_READONLY, size=(-1, self.height/2))
+        # set_trace()
         self.mghCmbo.Bind(wx.EVT_COMBOBOX, self.UpdateMGHCtrl)
 
 
@@ -367,15 +379,51 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.dischCtrl.Bind(wx.EVT_TEXT, self.OnChangeUpdateMovingBoat)
         self.dischCtrl.Bind(wx.EVT_KILL_FOCUS, self.OnDischarge)
         self.dischCtrl.Bind(wx.EVT_KILL_FOCUS, self.OnUpdateHGQValues)
-        self.dischCombo = wx.ComboBox(dischPanel, choices=self.dischChoices, style=wx.CB_READONLY, size=(32, self.ctrlHeight))
+        # self.dischCombo = wx.ComboBox(dischPanel, choices=self.dischChoices, style=wx.CB_READONLY, size=(32, self.ctrlHeight))
 
         dischSizer.Add(dischTxt, 1, wx.EXPAND)
         dischSizer1.Add(self.dischCtrl, 1, wx.EXPAND)
-        dischSizer1.Add(self.dischCombo, 0, wx.EXPAND)
+        # dischSizer1.Add(self.dischCombo, 0, wx.EXPAND)
         dischSizer.Add(dischSizer1, 1, wx.EXPAND)
         dischSizerH.Add(dischSizer, 1, wx.EXPAND)
 
         dischPanel.SetSizer(dischSizerH)
+
+
+        #Uncertainty Info
+        uncertaintyPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
+        uncertaintyPanel.SetBackgroundColour(self.BGColour)
+        uncertaintySizer = wx.BoxSizer(wx.VERTICAL)
+        uncertaintySizer1 = wx.BoxSizer(wx.HORIZONTAL)
+        uncertaintySizerH = wx.BoxSizer(wx.HORIZONTAL)
+
+        uncertaintyLabelSizerH = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.uncertaintyInfoBtn = wx.Button(uncertaintyPanel, size=(15, self.height/2), label="!")
+        self.uncertaintyInfoBtn.SetForegroundColour('red')
+        self.uncertaintyInfoBtn.Bind(wx.EVT_BUTTON, self.OnUncertaintyInfoBtn)
+
+        uncertaintyTxt = wx.StaticText(uncertaintyPanel, 17, label=self.uncertaintyLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(-1, self.height))
+        uncertaintyTxt.Wrap(self.wrapLength)
+        self.uncertaintyCtrl = MyTextCtrl(uncertaintyPanel, 18, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(70, self.ctrlHeight))
+        self.uncertaintyCtrl.Bind(wx.EVT_TEXT, self.FloatNumberControl)
+        # self.uncertaintyCtrl.Bind(wx.EVT_TEXT, self.OnChangeUpdateMovingBoat)
+        self.uncertaintyCtrl.Bind(wx.EVT_KILL_FOCUS, self.OnDischarge)
+        self.uncertaintyCtrl.Bind(wx.EVT_KILL_FOCUS, self.OnUpdateHGQValues)
+
+        uncertaintyLabelSizerH.Add(uncertaintyTxt, 1, wx.EXPAND)
+        uncertaintyLabelSizerH.Add(self.uncertaintyInfoBtn, 0, wx.EXPAND)
+
+        uncertaintySizer.Add(uncertaintyLabelSizerH, 1, wx.EXPAND)
+        uncertaintySizer1.Add(self.uncertaintyCtrl, 1, wx.EXPAND)
+        uncertaintySizer.Add(uncertaintySizer1, 1, wx.EXPAND)
+
+        uncertaintySizerH.Add(uncertaintySizer, 1, wx.EXPAND)
+
+        uncertaintyPanel.SetSizer(uncertaintySizerH)
+
+
+
         #Mmt Mean Time Info
         mmtPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
         mmtPanel.SetBackgroundColour(self.BGColour)
@@ -511,15 +559,16 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.layoutSizer.Add(meanVelPanel, pos=(0, 6), span=(2, 1), flag=wx.EXPAND)
         self.layoutSizer.Add(mghPanel, pos=(0, 7), span=(2, 1), flag=wx.EXPAND)
         self.layoutSizer.Add(dischPanel, pos=(0, 8), span=(2, 1), flag=wx.EXPAND)
+        self.layoutSizer.Add(uncertaintyPanel, pos=(0, 9), span=(2, 1), flag=wx.EXPAND)
         self.layoutSizer.Add(mmtPanel, pos=(2, 0), span=(1, 2), flag=wx.EXPAND)
         self.layoutSizer.Add(shiftPanel, pos=(2, 2), span=(1, 2), flag=wx.EXPAND)
         self.layoutSizer.Add(diffPanel, pos=(2, 4), span=(1, 2), flag=wx.EXPAND)
-        self.layoutSizer.Add(curvePanel, pos=(2, 6), span=(1, 3), flag=wx.EXPAND)
+        self.layoutSizer.Add(curvePanel, pos=(2, 6), span=(1, 4), flag=wx.EXPAND)
 
 
         self.layoutSizer.Add(controlConditionPanel, pos=(3, 0), span=(1, 2), flag=wx.EXPAND)
-        self.layoutSizer.Add(controlConditionRemarkPanel, pos=(3, 2), span=(1, 7), flag=wx.EXPAND)
-        self.layoutSizer.Add(dischargeRemarkPanel, pos=(4, 0), span=(1, 9), flag=wx.EXPAND)
+        self.layoutSizer.Add(controlConditionRemarkPanel, pos=(3, 2), span=(1, 8), flag=wx.EXPAND)
+        self.layoutSizer.Add(dischargeRemarkPanel, pos=(4, 0), span=(1, 10), flag=wx.EXPAND)
         
 
         self.startTimeCtrl.GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.OnTimeChange)
@@ -567,7 +616,10 @@ class DischargeMeasurementsPanel(wx.Panel):
                 event.GetEventObject().GetParent().UpdateTime(keycode)      
         except:
             pass
+        self.UpdateMeanTime()
 
+    #update mean time
+    def UpdateMeanTime(self):
         startHour = self.startTimeCtrl.GetHourVal()
         startMinute = self.startTimeCtrl.GetMinuteVal()
 
@@ -610,7 +662,7 @@ class DischargeMeasurementsPanel(wx.Panel):
     # Any update will affect data on moving boat
     def OnChangeUpdateMovingBoat(self, event):
         if self.manager is not None:
-            if self.manager.manager.instrDepManager.methodCBListBox.IsChecked(0):
+            if self.manager.manager.instrDepManager.GetMethodCBListBox().GetCurrentSelection()==2:
                 self.manager.manager.movingBoatMeasurementsManager.recalculate()
         event.Skip()
         
@@ -731,11 +783,20 @@ class DischargeMeasurementsPanel(wx.Panel):
         self.dischCtrl.SetValue(dischCtrl)
 
     #Discharge Combo
-    def GetDischCombo(self):
-        return self.dischCombo.GetValue()
+    # def GetDischCombo(self):
+        # return self.dischCombo.GetValue()
 
-    def SetDischCombo(self,dischCombo):
-        self.dischCombo.SetValue(dischCombo)
+    # def SetDischCombo(self,dischCombo):
+        # self.dischCombo.SetValue(dischCombo)
+
+
+    #Uncertainty Ctrl
+    def GetUncertaintyCtrl(self):
+        return self.uncertaintyCtrl.GetValue()
+
+    def SetUncertaintyCtrl(self, val):
+        self.uncertaintyCtrl.SetValue(val)
+
 
 
     #Mmt Mean Time Ctrl
@@ -868,6 +929,18 @@ class DischargeMeasurementsPanel(wx.Panel):
         else:
             dlg.Destroy()
         return
+
+    #hint button on uncertainty infomation
+    def OnUncertaintyInfoBtn(self, event):
+        dlg = wx.MessageDialog(self, self.uncertaintyInfoMsg, 'Uncertainty Value Description', wx.OK)
+
+        res = dlg.ShowModal()
+        if res == wx.ID_OK:
+            dlg.Destroy()
+        else:
+            dlg.Destroy()
+        return
+
 
     # 3 sig if v < 0.1 m/s else 3 dec
     def OnMeanVel(self, event):

@@ -220,6 +220,7 @@
 		<tbody>
 		<tr>
 			<th>Station</th>
+            <th>Time</th>
 			<th>Backsight</th>
 			<th>Height of Instrument</th>
 			<th>Foresight</th>
@@ -234,6 +235,7 @@
 			<xsl:for-each select="$TABLE/LevelChecksRow">
 				<tr>
 					<td><xsl:value-of select="station"/></td>
+					<td><xsl:value-of select="time"/></td>
 					<td><xsl:value-of select="backsight"/></td>
 					<td><font color="blue"><xsl:value-of select="htInst"/></font></td>
 					<td><xsl:value-of select="foresight"/></td>
@@ -342,37 +344,6 @@
 		<p align="left">
 		<br/><b>SKETCHES</b><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>
  		</p>
- <!--
- <h3>Annual Levelling</h3>
-
- 		<table style="height: 92px;" width="750">
-		<tbody>
-		<tr>
-			<th>Station</th>
-			<th>Backsight</th>
-			<th>Height of Instrument</th>
-			<th>Foresight</th>
-			<th>Elevation</th>
-			<th>Physical Description</th>
-			<th>Comments</th>
-
-		</tr>
-		<xsl:for-each select="AnnualLevels/AnnualLevelsTable/LevelChecksRow">
-			<tr>
-				<td><xsl:value-of select="station"/></td>
-				<td><xsl:value-of select="backsight"/></td>
-				<td><xsl:value-of select="htInst"/></td>
-				<td><xsl:value-of select="foresight"/></td>
-				<td><xsl:value-of select="elevation"/></td>
-				<td><xsl:value-of select="physDesc"/></td>
-				<td><xsl:value-of select="comments"/></td>
-			</tr>
-		</xsl:for-each>
-		<tr>
-			<td colspan="7"><b>Closure: </b><xsl:value-of select="AnnualLevels/AnnualLevelsTable/closure"/></td>
-		</tr>
-		</tbody>
-		</table> -->
 </xsl:template>
 
 
@@ -476,6 +447,7 @@
 				<th>Mean Velocity (m/s)</th>
 				<th>Corrected MGH (m)</th>
 				<th>Discharge (m<sup>3</sup>/s)</th>
+				<th>Uncertainty  (%)</th>
 			</tr>
 			<tr>
 				<td align="center"><xsl:value-of select="startTime"/></td>
@@ -529,6 +501,14 @@
 					</xsl:otherwise>
 				</xsl:choose>
 
+				<xsl:choose>
+					<xsl:when test="uncertainty/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="uncertainty"/><xsl:value-of select="uncertaintyCtrl"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><xsl:value-of select="uncertainty"/><xsl:value-of select="uncertaintyCtrl"/></td>
+					</xsl:otherwise>
+				</xsl:choose>
 
 
 
@@ -569,7 +549,7 @@
 
 				<!-- <td align="center"><font color="blue"><xsl:value-of select="diff"/></font></td> -->
 				<th>Curve #</th>
-				<td align="center" colspan = "1"><font color="blue"><xsl:value-of select="curve"/></font></td>
+				<td align="center" colspan = "2"><font color="blue"><xsl:value-of select="curve"/></font></td>
 			</tr>
 			<tr>
 				<th align="center" colspan = "1">Control Condition</th>
@@ -584,7 +564,7 @@
 			</tr>
 			<tr>
 				<th align="center" colspan = "2">Discharge Activity Remarks</th>
-				<td colspan = "7" style="text-align:left;vertical-align:top;word-wrap:break-word">
+				<td colspan = "8" style="text-align:left;vertical-align:top;word-wrap:break-word">
 					<xsl:call-template name="LFsToBRs">
 						<xsl:with-param name="input" select="dischargeRemark"/>
 					</xsl:call-template>
@@ -614,6 +594,7 @@
 
 						<th rowspan="2">Sensor Reset Corr.</th>
 						<th rowspan="2"><font>Action Taken</font></th>
+						<th rowspan="2">Reading Type</th>
 						<th rowspan="2">M.G.H. Aggr.</th>
 					</tr>
 						
@@ -645,6 +626,23 @@
 									<xsl:when test="contains(SRCApp, 'CC')">CC</xsl:when>
 									<xsl:when test="contains(SRCApp, 'DWL')">DWL</xsl:when>
 									<xsl:when test="contains(SRCApp, 'CT')">CT</xsl:when>
+									<xsl:otherwise></xsl:otherwise>
+								</xsl:choose>
+							</td>
+							<td align="center">
+								<xsl:choose>
+									<xsl:when test="contains(ReadingType, 'Routine B')">Routine B</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Routine A')">Routine A</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Routine')">Routine</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Reset B')">Reset B</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Reset A')">Reset A</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Cleaning B')">Cleaning B</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Cleaning A')">Cleaning A</xsl:when>
+									<xsl:when test="contains(ReadingType, 'After C')">After Cal.</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Reference P')">Primary Ref</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Reference')">Ref</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Extreme Min')">Ext. Min</xsl:when>
+									<xsl:when test="contains(ReadingType, 'Extreme Max')">Ext. Max</xsl:when>
 									<xsl:otherwise></xsl:otherwise>
 								</xsl:choose>
 							</td>
@@ -1871,6 +1869,18 @@
 			<!-- <xsl:value-of select="methodType"/> -->
 
 			</td>
+            <td class="noborder" align="left">
+                <xsl:choose>
+                    <xsl:when test="methodType='Other Methods'">
+                        <b>Structure Type: </b><xsl:value-of select="otherMethods/structureType"/>
+                    </xsl:when>
+                    <xsl:when test="methodType='Engineered Structures'">
+                        <b>Engineered Structure: </b><xsl:value-of select="engineeredStructures/monitoringMethod"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </td>
 			<td class="noborder" align="left"><b>Deployment Method:  </b>
 
 			<xsl:choose>
@@ -1885,6 +1895,9 @@
 			<!-- <xsl:value-of select="deployment"/> -->
 
 			</td>
+
+		</tr>
+		<tr class="noborder">
 			<td class="noborder" align="left"><b>Position Method: </b>
 			<xsl:choose>
 				<xsl:when test="position/@imported='1'">
@@ -1898,9 +1911,6 @@
 			<!-- <xsl:value-of select="position"/> -->
 
 			</td>
-
-		</tr>
-		<tr class="noborder">
 			<td class="noborder" align="left"> <b>Instrument Type: </b>
 			<xsl:choose>
 				<xsl:when test="instrument/@imported='1'">
@@ -1927,6 +1937,8 @@
 
 
 			</td>
+		</tr>
+		<tr class="noborder">
 			<td class="noborder" align="left">
 				<xsl:value-of select="gauge1"/>
 
@@ -1950,8 +1962,6 @@
 
 				<xsl:value-of select="selectedGauge"/>
 			</td>
-		</tr>
-		<tr class="noborder">
 			<td class="noborder" align="left"><b>Manufacturer: </b>
 			<xsl:choose>
 				<xsl:when test="manufacturer/@imported='1'">

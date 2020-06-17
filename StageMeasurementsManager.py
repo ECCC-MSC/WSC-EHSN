@@ -2,6 +2,7 @@
 # Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 
 from StageMeasurementsPanel import *
+from pdb import set_trace
 
 
 class StageMeasurementsManager(object):
@@ -202,6 +203,12 @@ class StageMeasurementsManager(object):
     @factors.setter
     def factors(self, factor):
         self.gui.factors = factor
+
+    def GetReadingTypeVal(self, row):
+        return self.gui.GetReadingTypeVal(row)
+
+    def SetReadingTypeVal(self, row, val):
+        self.gui.SetReadingTypeVal(row, val)
 
 
     #Mgh Aggregation Checkbox

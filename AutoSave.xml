@@ -1,12 +1,12 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="WSC_EHSN.xsml"?>
-<EHSN version="v1.3.2">
+<EHSN version="v2.1.0">
 	<TitleHeader>
 		<enteredInHWS>False</enteredInHWS>
 	</TitleHeader>
 	<GenInfo>
-		<station number="01DC005">ANNAPOLIS RIVER AT WILMOT</station>
-		<date timezone="AST">2019/12/19</date>
+		<station number="01DC007">ANNAPOLIS RIVER AT LAWRENCETOWN</station>
+		<date timezone="AST">2020/04/27</date>
 	</GenInfo>
 	<StageMeas>
 		<HgCkbox>False</HgCkbox>
@@ -15,18 +15,19 @@
 		<Wlr2Ckbox>False</Wlr2Ckbox>
 		<HG1Header/>
 		<HG2Header/>
-		<WL1Header>NS86-038</WL1Header>
+		<WL1Header/>
 		<WL2Header/>
 		<StageMeasTable>
 			<StageMeasRow row="0">
-				<time>14:42</time>
-				<HG1/>
-				<HG2/>
-				<WL1>3.990</WL1>
-				<WL2/>
-				<SRC/>
-				<SRCApp/>
+				<time>14:14</time>
+				<HG1>4.000</HG1>
+				<HG2>4.100</HG2>
+				<WL1>4.200</WL1>
+				<WL2>4.300</WL2>
+				<SRC>0.200</SRC>
+				<SRCApp>DWL</SRCApp>
 				<MghCkbox>True</MghCkbox>
+				<ReadingType>Extreme Min</ReadingType>
 			</StageMeasRow>
 		</StageMeasTable>
 		<hgCkbox>False</hgCkbox>
@@ -35,37 +36,37 @@
 		<wlr2Ckbox>False</wlr2Ckbox>
 		<MGHHG1/>
 		<MGHHG2/>
-		<MGHWL1>3.990</MGHWL1>
+		<MGHWL1>4.200</MGHWL1>
 		<MGHWL2/>
 		<SRCHG1/>
 		<SRCHG2/>
 		<GCHG1/>
 		<GCHG2/>
-		<GCWL1>0.000</GCWL1>
+		<GCWL1>0.200</GCWL1>
 		<GCWL2/>
 		<CMGHHG1/>
 		<CMGHHG2/>
-		<CMGHWL1>3.990</CMGHWL1>
+		<CMGHWL1>4.400</CMGHWL1>
 		<CMGHWL2/>
 		<MghMethod>Average</MghMethod>
 		<Factors/>
 		<stageRemark/>
 	</StageMeas>
 	<DisMeas>
-		<startTime>14:42</startTime>
-		<endTime>14:42</endTime>
+		<startTime>14:14</startTime>
+		<endTime>14:14</endTime>
 		<airTemp/>
 		<waterTemp/>
 		<width/>
 		<area/>
 		<meanVel/>
-		<mgh>3.990</mgh>
-		<mghCmbo>3.990  (WLR1)</mghCmbo>
-		<discharge>99.0</discharge>
-		<dischCombo/>
-		<mmtTimeVal>14:42</mmtTimeVal>
-		<shift>0.14</shift>
-		<diff>7.69</diff>
+		<mgh>4.400</mgh>
+		<mghCmbo>4.400  (WLR1)</mghCmbo>
+		<discharge>100</discharge>
+		<uncertainty/>
+		<mmtTimeVal>14:14</mmtTimeVal>
+		<shift>-2.88</shift>
+		<diff>-62.9</diff>
 		<curve>13.00</curve>
 		<condition/>
 		<dischargeRemark/>
@@ -98,8 +99,8 @@
 		<orificePurged>False</orificePurged>
 		<downloadedProgram>False</downloadedProgram>
 		<downloadedData>False</downloadedData>
-		<dataPeriodStart>2019/12/19</dataPeriodStart>
-		<dataPeriodEnd>2019/12/19</dataPeriodEnd>
+		<dataPeriodStart>2020/04/27</dataPeriodStart>
+		<dataPeriodEnd>2020/04/27</dataPeriodEnd>
 		<stationHealthRemark/>
 	</EnvCond>
 	<MeasResults empty="True">
@@ -143,6 +144,8 @@
 			<software/>
 			<manufacturer/>
 			<model/>
+			<monitoringMethod/>
+			<structureType/>
 		</GeneralInfo>
 		<MidsectionInfo empty="True">
 			<panelsNum/>

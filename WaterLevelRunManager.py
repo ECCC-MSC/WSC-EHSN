@@ -4,6 +4,8 @@
 from WaterLevelRunPanel import *
 from WaterLevelNoteTransferDialog import *
 
+from pdb import set_trace
+
 
 class WaterLevelRunManager(object):
     def __init__(self, mode, gui, manager=None):
@@ -99,6 +101,18 @@ class WaterLevelRunManager(object):
         return self.levelNotes.GetStation(run, row)
 
 
+    #Return the Hour for specific circuit and row number:
+    def GetLevelNotesTime(self, run, row):
+        return self.levelNotes.GetTime(run, row)
+
+    #Return the Hour for specific circuit and row number:
+    def GetLevelNotesHour(self, run, row):
+        return self.levelNotes.GetHour(run, row)
+
+    #Return the Minute for specific circuit and row number:
+    def GetLevelNotesMinute(self, run, row):
+        return self.levelNotes.GetMinute(run, row)
+
 
     #Return the backsight for specific circuit and row number:
     def GetLevelNotesBacksight(self, run, row):
@@ -156,15 +170,18 @@ class WaterLevelRunManager(object):
 
     def OnTransferToSummary(self):
         find = False
+        times = []
         stations = []
         elevations = []
         establishedEles = []
         closures = []
         for circuitIndex, circuit in enumerate(self.runSizer.GetChildren()):
+            timeList = []
             stationList = []
             elevationList = []
             establishedEleList = []
 
+            times.append(timeList)
             stations.append(stationList)
             elevations.append(elevationList)
             establishedEles.append(establishedEleList)
@@ -179,15 +196,18 @@ class WaterLevelRunManager(object):
                     
                     if bool(ckbox1.GetValue()) or bool(ckbox2.GetValue()):
                         find = True
+                        time = self.GetLevelNotesTime(circuitIndex, rowIndex).GetValue()
                         station = self.GetLevelNotesStation(circuitIndex, rowIndex).GetValue()
                         elevation = self.GetLevelNotesElevation(circuitIndex, rowIndex).GetValue()
                         establishedEle = self.GetLevelNotesEstablishedElevation(circuitIndex, rowIndex).GetValue()
+                        timeList.append(time)
                         stationList.append(station)
                         elevationList.append(elevation)
                         establishedEleList.append(establishedEle)
                         # if station != '' and elevation != '':
                         self.AddSummaryEntry()
                         index = len(self.wleValSizer.GetChildren()) - 1
+                        self.SetTimeVal(index, time)
                         self.SetWLRefVal(index, station)
                         if bool(ckbox1.GetValue()):
                             self.SetElevationVal(index, establishedEle)
@@ -195,7 +215,7 @@ class WaterLevelRunManager(object):
                             self.SetElevationVal(index, elevation)
         if len(stations) > 0 and find:
 
-            td = TransferDialog(stations, elevations, establishedEles, closures, self.gui, size=(-1, 400), style=wx.RESIZE_BORDER|wx.CLOSE_BOX|wx.CAPTION)
+            td = TransferDialog(times, stations, elevations, establishedEles, closures, self.gui, size=(-1, 400), style=wx.RESIZE_BORDER|wx.CLOSE_BOX|wx.CAPTION)
             td.ShowModal()
             
         if not find:
