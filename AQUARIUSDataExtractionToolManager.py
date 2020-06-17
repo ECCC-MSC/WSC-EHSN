@@ -47,7 +47,7 @@ class AQUARIUSDataExtractionToolManager(object):
                           '-6' : 'CST',
                           '-5' : 'EST',
                           '-4' : 'AST',
-                          '-3' : 'NST',
+                          '-3.5' : 'NST',
                           '-0' : 'UTC'}
 
         self.scriptLoc = scriptLoc
@@ -230,17 +230,28 @@ class AQUARIUSDataExtractionToolManager(object):
                 "Station ID list field cannot be left blank.  Please enter the station ID that you are uploading.")
             return
 
+        # Login
         s = requests.Session()
-        data = '{"Username": "'+Login+'", "EncryptedPassword": "'+Password+'", "Locale": ""}'
+        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
         headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
         url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
             s.get(url)
-            aq = s.post(url, data = data, headers = headers)
-            authcode = aq.text
+            aq = s.post(url, data=data, headers=headers)
+            print aq.status_code
+            token = aq.text
+            if aq.status_code != 200:
+                result = "The username or the password is incorrect."
+                error = wx.MessageDialog(None, result, 'Error', wx.OK | wx.ICON_ERROR)
+                error.ShowModal()
+                return "The username or the password is incorrect."
         except:
-            self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
-            return -1
+            # print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
+            exists = False
+            self.gui.deleteProgressDialog()
+            return "Failed to login."
+            # print exists
+        print "login"
 
         if not os.path.exists(path):
             os.makedirs(path)
@@ -926,7 +937,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
                         try:
                             pmyRef = benchMark['PrimarySinceDate']
-                            staRef = staRef + "*"
+                            staRef = "**" + staRef
                         except:
                             pmyRef = ''
 
@@ -979,6 +990,7 @@ class AQUARIUSDataExtractionToolManager(object):
                     return
 
         if exportFile is not None:
+            '''
             if fileExists:
 
                 # if file exists, read the file
@@ -1017,12 +1029,9 @@ class AQUARIUSDataExtractionToolManager(object):
                         fileBMList.append(ebm)
 
                 # totalBenchmarkList = sorted(fileBMList, key=itemgetter(0, 1))
-
+            '''
             # Write to file
-            exportFile.close()
-            exportFile = open(path + '\\levels.txt', "wb")
-            exportFile.close()
-            exportFile = open(path + '\\levels.txt', "a+")
+            exportFile = open(path + '\\levels.txt', "w+")
             exportFile.write("STATION,REFERENCE,ELEVATION,DESCRIPTION")
             for line in totalBenchmarkList:
                 # print line
@@ -1063,8 +1072,6 @@ class AQUARIUSDataExtractionToolManager(object):
             re = subprocess.call(arg, creationflags=CREATE_NO_WINDOW)
 
             # re = subprocess.call(arg, stdout=FNULL, stderr=FNULL, shell=False)
-
-
 
             if re != 0:
                 failedStations.append(station)
@@ -1396,7 +1403,11 @@ class AQUARIUSDataExtractionToolManager(object):
                 locids.append(fieldId)
                 fieldStartTime = str(fieldVisitData['StartTime'])
                 #fieldStartTime = str(fieldVisitData['DischargeActivities'][0]['DischargeSummary']['MeasurementTime'])
-                fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[' + self.timeZones['-' + fieldStartTime[len(fieldStartTime) - 4:len(fieldStartTime) - 3]] + ']'
+                # print fieldStartTime[-5:]
+                if fieldStartTime[-5:] == "03:30":
+                    fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[NST]'
+                else:
+                    fieldStartTime = fieldStartTime[0:10] + ' ' + fieldStartTime[11:19] + '[' + self.timeZones['-' + fieldStartTime[len(fieldStartTime) - 4:len(fieldStartTime) - 3]] + ']'
                 startTimeList.append(fieldStartTime)
 
             #for locid in locids:

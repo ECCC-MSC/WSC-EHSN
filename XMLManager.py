@@ -11,6 +11,7 @@ import time
 import ast
 import sys, os
 import traceback
+from pdb import set_trace
 
 
 #Calculate the mean time
@@ -114,7 +115,22 @@ def StageMeasAsXMLTree(StageMeas, stageMeasManager):
         StageMeasRow = SubElement(StageMeasTable, 'StageMeasRow', row=str(row))
 
         time = SubElement(StageMeasRow, 'time')
-        time.text = str(stageMeasManager.GetTimeVal(row))
+        timeList = str(stageMeasManager.GetTimeVal(row)).split(":")
+
+        if len(timeList[0]) < 2 and len(timeList[1]) == 2 :
+            time.text = "0" + str(stageMeasManager.GetTimeVal(row))
+        elif len(timeList[0]) == 2 and len(timeList[1]) < 2:
+            time.text = str(timeList[0]) + ":0" + str(timeList[1])
+        elif len(timeList[0]) < 2 and len(timeList[1]) < 2:
+            time.text = "0" + str(timeList[0]) + ":0" + str(timeList[1])
+        else:
+            time.text = str(stageMeasManager.GetTimeVal(row))
+        '''
+        if len(str(stageMeasManager.GetTimeVal(row))) == 4:
+            time.text = "0" + str(stageMeasManager.GetTimeVal(row))
+        else:
+            time.text = str(stageMeasManager.GetTimeVal(row))
+        '''
 
         HG1 = SubElement(StageMeasRow, 'HG1')
         HG1.text = str(stageMeasManager.GetHGVal(row))
@@ -136,6 +152,9 @@ def StageMeasAsXMLTree(StageMeas, stageMeasManager):
 
         MghCkbox = SubElement(StageMeasRow, 'MghCkbox')
         MghCkbox.text = str(stageMeasManager.GetMghAggCheckboxVal(row))
+
+        ReadingType = SubElement(StageMeasRow, 'ReadingType')
+        ReadingType.text = str(stageMeasManager.GetReadingTypeVal(row))
 
     hgCkbox = SubElement(StageMeas, 'hgCkbox')
     hgCkbox.text = str(stageMeasManager.GetHgCkbox().GetValue())
@@ -250,12 +269,15 @@ def StageMeasFromXML(StageMeas, stageMeasManager):
         SRC = StageMeasRow.find('SRC').text
         SRCApp = StageMeasRow.find('SRCApp')
         MghCkbox = StageMeasRow.find('MghCkbox')
+        ReadingType = StageMeasRow.find('ReadingType')
 
 
         if SRCApp is not None:
             SRCApp = SRCApp.text
         if MghCkbox is not None:
             MghCkbox = MghCkbox.text
+        if ReadingType is not None:
+            ReadingType = ReadingType.text
 
         stageMeasManager.SetTimeVal(row, "" if time is None else time)
         stageMeasManager.SetHGVal(row, "" if HG1 is None else HG1)
@@ -265,6 +287,7 @@ def StageMeasFromXML(StageMeas, stageMeasManager):
         stageMeasManager.SetSrcSizerVal(row, "" if SRC is None else SRC)
         stageMeasManager.SetSrcAppSizerVal(row, "" if SRCApp is None else SRCApp)
         stageMeasManager.SetMghAggCheckbox(row, "" if MghCkbox is None else MghCkbox)
+        stageMeasManager.SetReadingTypeVal(row, "" if ReadingType is None else ReadingType)
         stageMeasManager.GetMghAggCheckbox(row).Enable(time.split(":")[0] != "" and time.split(":")[1] != "")
 
 
@@ -419,10 +442,12 @@ def DischMeasAsXMLTree(DisMeas, disMeasManager):
     discharge = SubElement(DisMeas, 'discharge')
     discharge.text = str(disMeasManager.dischCtrl)
 
-    dischCombo = SubElement(DisMeas, 'dischCombo')
-    dischCombo.text = str(disMeasManager.dischCombo)
+    # dischCombo = SubElement(DisMeas, 'dischCombo')
+    # dischCombo.text = str(disMeasManager.dischCombo)
 
 
+    uncertainty = SubElement(DisMeas, 'uncertainty')
+    uncertainty.text = str(disMeasManager.uncertaintyCtrl)
 
     mmtTimeVal = SubElement(DisMeas, 'mmtTimeVal')
     mmtTimeVal.text = str(disMeasManager.mmtValTxt)
@@ -459,6 +484,8 @@ def DischMeasAsXMLTree(DisMeas, disMeasManager):
         mgh.attrib['imported'] = "1"
     if disMeasManager.GetDischCtrl().GetBackgroundColour() == bkColor:
         discharge.attrib['imported'] = "1"
+    if disMeasManager.GetUncertaintyCtrl().GetBackgroundColour() == bkColor:
+        uncertainty.attrib['imported'] = "1"
     if disMeasManager.GetShiftCtrl().GetBackgroundColour() == bkColor:
         shift.attrib['imported'] = "1"
     if disMeasManager.GetDiffCtrl().GetBackgroundColour() == bkColor:
@@ -548,11 +575,24 @@ def DischMeasFromXML(DisMeas, disMeasManager):
         else:
             disMeasManager.GetDischCtrl().SetBackgroundColour(white)
 
-    dischCombo = DisMeas.find('dischCombo')
-    if dischCombo is None or dischCombo.text is None:
-        disMeasManager.dischCombo = ""
+    uncertainty = DisMeas.find('uncertainty')
+    if uncertainty is None:
+        disMeasManager.uncertaintyCtrl = ""
     else:
-        disMeasManager.dischCombo = dischCombo.text
+        if uncertainty.text is None:
+            disMeasManager.uncertaintyCtrl = ""
+        else:
+            disMeasManager.uncertaintyCtrl = uncertainty.text
+            if "imported" in uncertainty.attrib and uncertainty.attrib['imported'] == "1":
+                disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(bkColor)
+            else:
+                disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(white)
+
+    # dischCombo = DisMeas.find('dischCombo')
+    # if dischCombo is None or dischCombo.text is None:
+        # disMeasManager.dischCombo = ""
+    # else:
+        # disMeasManager.dischCombo = dischCombo.text
 
     mmtTimeVal = DisMeas.find('mmtTimeVal').text
     disMeasManager.mmtValTxt = "" if mmtTimeVal is None else mmtTimeVal
@@ -1270,11 +1310,12 @@ def MeasResultsFromXML(MeasResults, measResultsManager):
 # Create XML structure for Instrument and Deployment information
 def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     bkColor = instrDepManager.manager.gui.importedBGColor
-    checkList = instrDepManager.methodCBListBox.GetCheckedStrings()
+    # checkList = instrDepManager.methodCBListBox.GetCheckedStrings()
+    checkList = instrDepManager.methodCBListBox
 
     check = None
     if len(checkList) > 0:
-        check = checkList[0]
+        check = checkList
 
     GeneralInfo = SubElement(InstrumentDeployment, 'GeneralInfo')
     method = SubElement(GeneralInfo, 'methodType')
@@ -1407,6 +1448,15 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
         not instrDepManager.passedFieldRevCB:
         ADCPInfo.attrib['empty'] = 'True'
 
+    # Other methods
+    # otherMethods = SubElement(GeneralInfo, 'otherMethods')
+    monitoringMethod = SubElement(GeneralInfo, 'monitoringMethod')
+    monitoringMethod.text = str(instrDepManager.monitoringMethod)
+
+    # Engineered Structures
+    # engineeredStructures = SubElement(GeneralInfo, 'engineeredStructures')
+    structureType = SubElement(GeneralInfo, 'structureType')
+    structureType.text = str(instrDepManager.structureTypeCombo)
 
     #SiteConditions Panel
     SiteConditions = SubElement(InstrumentDeployment, 'SiteConditions')
@@ -1476,8 +1526,39 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
     instrDepManager.gui.CheckListReset()
     GeneralInfo = InstrumentDeployment.find('GeneralInfo')
     method = GeneralInfo.find('methodType').text
-    instrDepManager.methodCBListBox = "" if method is None else method
+    if method in instrDepManager.gui.measurementMethods:
+        instrDepManager.gui.savedMeasurementMethodIndex = instrDepManager.gui.measurementMethods.index(method)
+        instrDepManager.methodCBListBox = method
+    else:
+        instrDepManager.gui.savedMeasurementMethodIndex = 0
+        instrDepManager.methodCBListBox = ""
+    # instrDepManager.methodCBListBox = "" if method is None else method
     instrDepManager.OnDeploymentUpdate()
+
+    try:
+        # otherMethods = GeneralInfo.find('otherMethods')
+        structureType = GeneralInfo.find('structureType')
+    except:
+        structureType = None
+
+    if structureType is None:
+        instrDepManager.structureTypeCombo = ''
+    else:
+        instrDepManager.structureTypeCombo = structureType.text
+        
+
+    try:
+        # engineeredStructures = GeneralInfo.find('engineeredStructures')
+        monitoringMethod = GeneralInfo.find('monitoringMethod')
+    except:
+        monitoringMethod = None
+
+    if monitoringMethod is None:
+        instrDepManager.monitoringMethod = ''
+    else:
+        instrDepManager.monitoringMethod = monitoringMethod.text
+
+
 
     deployment = GeneralInfo.find('deployment')
     if deployment.text is None:
@@ -1809,9 +1890,13 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
     totalStationRb.text = str(waterLevelRunManager.GetTotalStationRb().GetValue())
 
     runSizer = waterLevelRunManager.runSizer
+    if len(runSizer.GetChildren()) == 0:
+        LevelChecksTable = SubElement(LevelChecks, 'LevelChecksTable', run=str("0"))
+        closure = SubElement(LevelChecksTable, "closure")
+        upload = SubElement(LevelChecksTable, "upload")
+
     for i in range(len(runSizer.GetChildren())):
         notEmptyTable = False
-
 
         LevelChecksTable = SubElement(LevelChecks, 'LevelChecksTable', run=str(i))
 
@@ -1819,6 +1904,8 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
 
 
             stationText = waterLevelRunManager.GetLevelNotesStation(i, j).GetValue() if waterLevelRunManager.GetLevelNotesStation(i, j).GetValue() is not None else ''
+            hourText = waterLevelRunManager.GetLevelNotesHour(i, j).GetValue() if waterLevelRunManager.GetLevelNotesHour(i, j).GetValue() is not None else ''
+            minuteText = waterLevelRunManager.GetLevelNotesMinute(i, j).GetValue() if waterLevelRunManager.GetLevelNotesMinute(i, j).GetValue() is not None else ''
             backsightText = waterLevelRunManager.GetLevelNotesBacksight(i, j).GetValue() if waterLevelRunManager.GetLevelNotesBacksight(i, j).GetValue() is not None else ''
             heightOfInstrumentText = waterLevelRunManager.GetLevelNotesHI(i, j).GetValue() if waterLevelRunManager.GetLevelNotesHI(i, j).GetValue() is not None else ''
             foresightText = waterLevelRunManager.GetLevelNotesForesight(i, j).GetValue() if waterLevelRunManager.GetLevelNotesForesight(i, j).GetValue() is not None else ''
@@ -1844,12 +1931,28 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
             if commentsText != "" and commentsText is not None:
                 notEmptyRow = True
 
+            if hourText != "" and hourText is not None and minuteText != "" and minuteText is not None:
+                notEmptyRow = True
+
             if notEmptyRow:
                 # Add row to the LevelChecksTable
 
                 LevelChecksRow = SubElement(LevelChecksTable, 'LevelChecksRow', row=str(j))
                 station = SubElement(LevelChecksRow, 'station')
                 station.text = stationText
+
+                hour = SubElement(LevelChecksRow, 'hour')
+                hour.text = hourText
+
+                minute = SubElement(LevelChecksRow, 'minute')
+                minute.text = minuteText
+
+                time = SubElement(LevelChecksRow, 'time')
+                if hourText != "" or minuteText != "":
+                    time.text = hourText + ":" + minuteText
+                else:
+                    time.text = ""
+
 
                 backsight = SubElement(LevelChecksRow, 'backsight')
                 backsight.text = backsightText
@@ -2016,6 +2119,14 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
                     waterLevelRunManager.AddEntry(run)
                     rowIndex = row
                 station = LevelChecksRow.find('station').text
+                hour = ""
+                minute = ""
+                if LevelChecksRow.find('hour') is not None:
+                    hour = LevelChecksRow.find('hour').text
+                if LevelChecksRow.find('minute') is not None:
+                    minute = LevelChecksRow.find('minute').text
+                # hour = LevelChecksRow.find('hour').text
+                # minute = LevelChecksRow.find('minute').text
                 backsight = LevelChecksRow.find('backsight').text
                 htInst = LevelChecksRow.find('htInst').text
                 foresight = LevelChecksRow.find('foresight').text
@@ -2027,6 +2138,8 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
                 comments = LevelChecksRow.find('comments').text
 
                 waterLevelRunManager.GetLevelNotesStation(run, row).ChangeValue("" if station is None else station)
+                waterLevelRunManager.GetLevelNotesTime(run, row).ChangeHourVal("" if hour is None else hour)
+                waterLevelRunManager.GetLevelNotesTime(run, row).ChangeMinuteVal("" if minute is None else minute)
                 waterLevelRunManager.GetLevelNotesBacksight(run, row).ChangeValue("" if backsight is None else backsight)
                 waterLevelRunManager.GetLevelNotesHI(run, row).ChangeValue("" if htInst is None else htInst)
                 waterLevelRunManager.GetLevelNotesForesight(run, row).ChangeValue("" if foresight is None else foresight)
@@ -3328,7 +3441,7 @@ def MidsecMeasAsXMLTree(MidsecMeas, midsecMeasurementsManager):
 # Set Midsection Measurements Information variables from existing XML structure
 def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
 
-    try:
+    # try:
 
         midsecMeasurementsManager.GetSummaryTable().DeleteRows(0, midsecMeasurementsManager.GetNumberRows())
         midsecMeasurementsManager.GetSummaryTable().AppendRows()
@@ -3416,7 +3529,7 @@ def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
 
             meterIndex += 1
 
-      
+
         channels = Channels.findall('Channel')
 
         for channel in channels:
@@ -3579,7 +3692,7 @@ def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
                     SlushThickness = IceCovered.find("SlushThickness").text if IceCovered.find("SlushThickness").text is not None else ""
                     IceAdjusted = IceCovered.find("IceAdjusted").text if IceCovered.find("IceAdjusted").text is not None else ""
                     WSToBottomOfIceAdjusted = IceCovered.find("WSToBottomOfIceAdjusted").text if IceCovered.find("WSToBottomOfIceAdjusted").text is not None else ""
-                    
+
 
                     obj = PanelObj(panelNum=panelNum, distance=distance,# depth=depth, \
                     depths=SamplingDepthCoefficients, depthObs=MeasurementDepths, revs=Revolutions, revTimes=ElapsedTimes, pointVels=Velocities,\
@@ -3597,7 +3710,7 @@ def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
                     reverseFlow=True if reverseFlow == "True" else False, pid=panelId,# index=index, \
                     iceThickness=IceThickness, iceThicknessAdjusted=IceAdjusted)
 
-            
+
 
 
                 if obj is not None:
@@ -3639,14 +3752,14 @@ def MidsecMeasFromXML(MidsecMeas, midsecMeasurementsManager):
 
                 if obj is not None:
                     midsecMeasurementsManager.AddRow(obj)
-    except Exception as e:
+    # except Exception as e:
 
-        print str(e)
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
-        print "Reading XML from version lower than 1_2_5"
-        MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager)
+        # print str(e)
+        # exc_type, exc_obj, exc_tb = sys.exc_info()
+        # fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        # print(exc_type, fname, exc_tb.tb_lineno)
+        # print "Reading XML from version lower than 1_2_5"
+        # MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager)
 
 
 # Set Midsection Measurements Information variables from version less than 1_2_5
@@ -3669,69 +3782,132 @@ def MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager):
     except:
         pass
 
-    measureSectionCtrl = MidsectionInfo.find('measureSectionCtrl').text
+    try:
+        measureSectionCtrl = MidsectionInfo.find('measureSectionCtrl').text
+    except:
+        measureSectionCtrl = None
     midsecMeasurementsManager.measureSectionCtrl = "" if measureSectionCtrl is None else measureSectionCtrl
 
-    deployMethodCtrl = MidsectionInfo.find('deployMethodCtrl').text
+    try:
+        deployMethodCtrl = MidsectionInfo.find('deployMethodCtrl').text
+    except:
+        deployMethodCtrl = None
     midsecMeasurementsManager.deployMethodCtrl = "" if deployMethodCtrl is None else deployMethodCtrl
 
-    meter1MeterNoCtrl = MidsectionInfo.find('meter1MeterNoCtrl').text
+    try:
+        meter1MeterNoCtrl = MidsectionInfo.find('meter1MeterNoCtrl').text
+    except:
+        meter1MeterNoCtrl = None
     midsecMeasurementsManager.meter1MeterNoCtrl = "" if meter1MeterNoCtrl is None else meter1MeterNoCtrl
 
-    meter1SlopeCtrl1 = MidsectionInfo.find('meter1SlopeCtrl1').text
+    try:
+        meter1SlopeCtrl1 = MidsectionInfo.find('meter1SlopeCtrl1').text
+    except:
+        meter1SlopeCtrl1 = None
     midsecMeasurementsManager.meter1SlopeCtrl1 = "" if meter1SlopeCtrl1 is None else meter1SlopeCtrl1
 
-    meter1InterceptCtrl1 = MidsectionInfo.find('meter1InterceptCtrl1').text
+    try:
+        meter1InterceptCtrl1 = MidsectionInfo.find('meter1InterceptCtrl1').text
+    except:
+        meter1InterceptCtrl1 = None
     midsecMeasurementsManager.meter1InterceptCtrl1 = "" if meter1InterceptCtrl1 is None else meter1InterceptCtrl1
 
-    meter1SlopeCtrl2 = MidsectionInfo.find('meter1SlopeCtrl2').text
+    try:
+        meter1SlopeCtrl2 = MidsectionInfo.find('meter1SlopeCtrl2').text
+    except:
+        meter1SlopeCtrl2 = None
     midsecMeasurementsManager.meter1SlopeCtrl2 = "" if meter1SlopeCtrl2 is None else meter1SlopeCtrl2
 
-    meter1InterceptCtrl2 = MidsectionInfo.find('meter1InterceptCtrl2').text
+    try:
+        meter1InterceptCtrl2 = MidsectionInfo.find('meter1InterceptCtrl2').text
+    except:
+        meter1InterceptCtrl2 = None
     midsecMeasurementsManager.meter1InterceptCtrl2 = "" if meter1InterceptCtrl2 is None else meter1InterceptCtrl2
 
-    meter1CalibDateCtrl = MidsectionInfo.find('meter1CalibDateCtrl').text
+    try:
+        meter1CalibDateCtrl = MidsectionInfo.find('meter1CalibDateCtrl').text
+    except:
+        meter1CalibDateCtrl = None
     midsecMeasurementsManager.meter1CalibDateCtrl = "" if meter1CalibDateCtrl is None else meter1CalibDateCtrl
 
-    meter2MeterNoCtrl = MidsectionInfo.find('meter2MeterNoCtrl').text
+    try:
+        meter2MeterNoCtrl = MidsectionInfo.find('meter2MeterNoCtrl').text
+    except:
+        meter2MeterNoCtrl = None
     midsecMeasurementsManager.meter2MeterNoCtrl = "" if meter2MeterNoCtrl is None else meter2MeterNoCtrl
 
-    meter2SlopeCtrl1 = MidsectionInfo.find('meter2SlopeCtrl1').text
+    try:
+        meter2SlopeCtrl1 = MidsectionInfo.find('meter2SlopeCtrl1').text
+    except:
+        meter2SlopeCtrl1 = None
     midsecMeasurementsManager.meter2SlopeCtrl1 = "" if meter2SlopeCtrl1 is None else meter2SlopeCtrl1
 
-    meter2InterceptCtrl1 = MidsectionInfo.find('meter2InterceptCtrl1').text
+    try:
+        meter2InterceptCtrl1 = MidsectionInfo.find('meter2InterceptCtrl1').text
+    except:
+        meter2InterceptCtrl1 = None
     midsecMeasurementsManager.meter2InterceptCtrl1 = "" if meter2InterceptCtrl1 is None else meter2InterceptCtrl1
 
-    meter2SlopeCtrl2 = MidsectionInfo.find('meter2SlopeCtrl2').text
+    try:
+        meter2SlopeCtrl2 = MidsectionInfo.find('meter2SlopeCtrl2').text
+    except:
+        meter2SlopeCtrl2 = None
     midsecMeasurementsManager.meter2SlopeCtrl2 = "" if meter2SlopeCtrl2 is None else meter2SlopeCtrl2
 
-    meter2InterceptCtrl2 = MidsectionInfo.find('meter2InterceptCtrl2').text
+    try:
+        meter2InterceptCtrl2 = MidsectionInfo.find('meter2InterceptCtrl2').text
+    except:
+        meter2InterceptCtrl2 = None
     midsecMeasurementsManager.meter2InterceptCtrl2 = "" if meter2InterceptCtrl2 is None else meter2InterceptCtrl2
 
-    meter2CalibDateCtrl = MidsectionInfo.find('meter2CalibDateCtrl').text
+    try:
+        meter2CalibDateCtrl = MidsectionInfo.find('meter2CalibDateCtrl').text
+    except:
+        meter2CalibDateCtrl = None
     midsecMeasurementsManager.meter2CalibDateCtrl = "" if meter2CalibDateCtrl is None else meter2CalibDateCtrl
 
-    numOfPanelCtrl = MidsectionInfo.find('numOfPanelCtrl').text
+    try:
+        numOfPanelCtrl = MidsectionInfo.find('numOfPanelCtrl').text
+    except:
+        numOfPanelCtrl = None
     midsecMeasurementsManager.numOfPanelCtrl = "" if numOfPanelCtrl is None else numOfPanelCtrl
 
-    widthCtrl = MidsectionInfo.find('widthCtrl').text
+    try:
+        widthCtrl = MidsectionInfo.find('widthCtrl').text
+    except:
+        widthCtrl = None
     midsecMeasurementsManager.widthCtrl = "" if widthCtrl is None else widthCtrl
 
-    areaCtrl = MidsectionInfo.find('areaCtrl').text
+    try:
+        areaCtrl = MidsectionInfo.find('areaCtrl').text
+    except:
+        areaCtrl = None
     midsecMeasurementsManager.areaCtrl = "" if areaCtrl is None else areaCtrl
 
 
 
-    avgDepthCtrl = MidsectionInfo.find('avgDepthCtrl').text
+    try:
+        avgDepthCtrl = MidsectionInfo.find('avgDepthCtrl').text
+    except:
+        avgDepthCtrl = None
     midsecMeasurementsManager.avgDepthCtrl = "" if avgDepthCtrl is None else avgDepthCtrl
 
-    avgVelCtrl = MidsectionInfo.find('avgVelCtrl').text
+    try:
+        avgVelCtrl = MidsectionInfo.find('avgVelCtrl').text
+    except:
+        avgVelCtrl = None
     midsecMeasurementsManager.avgVelCtrl = "" if avgVelCtrl is None else avgVelCtrl
 
-    totalDisCtrl = MidsectionInfo.find('totalDisCtrl').text
+    try:
+        totalDisCtrl = MidsectionInfo.find('totalDisCtrl').text
+    except:
+        totalDisCtrl = None
     midsecMeasurementsManager.totalDisCtrl = "" if totalDisCtrl is None else totalDisCtrl
 
-    uncertaintyCtrl = MidsectionInfo.find('uncertaintyCtrl').text
+    try:
+        uncertaintyCtrl = MidsectionInfo.find('uncertaintyCtrl').text
+    except:
+        uncertaintyCtrl = None
     midsecMeasurementsManager.uncertaintyCtrl = "" if uncertaintyCtrl is None else uncertaintyCtrl
 
 

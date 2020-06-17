@@ -1,5 +1,6 @@
 # All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
 # Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
+from xml import etree
 
 from TitleHeaderPanel import *
 from GenInfoPanel import *
@@ -27,7 +28,7 @@ from ConfigParser import SafeConfigParser
 from ZoomPanel import *
 # from RemarksPanel import *
 
-
+from MidsectionImportPanel import MidsectionImportPanel
 
 
 
@@ -48,6 +49,11 @@ import qrcode
 import zipfile
 import shutil
 from win32api import GetSystemMetrics
+from xml.etree import ElementTree
+from xml.etree.ElementTree import Element
+from xml.etree.ElementTree import SubElement
+from xml.dom import minidom
+from xhtml2pdf import pisa
 import subprocess
 # import pyHook
 # import pythoncom, win32api
@@ -139,6 +145,13 @@ class EHSNGui(wx.Frame):
     def __init__(self, mode, ver, *args, **kwargs):
         super(EHSNGui, self).__init__(*args, **kwargs)
 
+        self.ID_IMPORT_HFC = ID_IMPORT_HFC
+        self.ID_IMPORT_FTDIS = ID_IMPORT_FTDIS
+        self.ID_IMPORT_FT2 = ID_IMPORT_FT2
+        self.ID_IMPORT_QRXML = ID_IMPORT_QRXML
+        self.ID_IMPORT_SXSMMT = ID_IMPORT_SXSMMT
+        self.ID_IMPORT_RSSDIS = ID_IMPORT_RSSDIS
+
         self.version = ver
         self.noteHeaderTxt = "Hydrometric Survey Notes" + " " + self.version
         self.timezone = ""
@@ -147,7 +160,7 @@ class EHSNGui(wx.Frame):
         self.name = ""
         self.fullname = ""
 
-        self.attdir = os.getcwd()
+        # self.dir = os.getcwd()
         self.dir = os.path.dirname(os.path.realpath(sys.argv[0]))
 
         self.uploadDir = self.dir
@@ -178,7 +191,7 @@ class EHSNGui(wx.Frame):
         self.fXmlDesc = 'Save the current eHSN field note as an XML file.'
         self.fSaveLabel = 'Save\tCtrl+S'
         self.fSaveDesc = 'Save the current eHSN field note as an XML file.'
-        self.fPdfLabel = 'Generate PDF - Complete Note\tCtrl+P'
+        self.fPdfLabel = 'Generate PDF - Booklet Type\tCtrl+P'
         self.fPdfDesc = 'Generate a PDF of the current field note in the same size format as previous paper field notes.'
         self.fPdfsLabel = "Generate PDF - Front Page Only"
         self.fPdfsDesc = "Generate a PDF of the front page of the current field note(good for providing to partners and clients)."
@@ -400,7 +413,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.tempPath = "c:\\temp\\eHSN\\"
         #self.uploadSaveDir = os.getcwd()
         self.uploadSaveDir = self.dir
-        self.uploadAttachDir = self.attdir
 
         self.importedBGColor = "#48C9B0"
 
@@ -454,9 +466,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         cConfig = configMenu.Append(ID_CONF_CONF, self.cConfLabel, self.cConfDesc)
 
         scalingSubMenu = wx.Menu()
-        configMenu.AppendSubMenu(scalingSubMenu,self.tScalLabel, self.tScalDesc)
-        tScal1 = scalingSubMenu.Append(ID_TOOLS_SCALING_SUB1, self.tScalSub1Label, self.tScalSub1Desc)
-        tScal2 = scalingSubMenu.Append(ID_TOOLS_SCALING_SUB2, self.tScalSub2Label, self.tScalSub2Desc)
+        # configMenu.AppendSubMenu(scalingSubMenu,self.tScalLabel, self.tScalDesc)
+        # tScal1 = scalingSubMenu.Append(ID_TOOLS_SCALING_SUB1, self.tScalSub1Label, self.tScalSub1Desc)
+        # tScal2 = scalingSubMenu.Append(ID_TOOLS_SCALING_SUB2, self.tScalSub2Label, self.tScalSub2Desc)
 
         toolMenu = wx.Menu()
         cAdet = toolMenu.Append(ID_CONF_ADET, self.cAdetLabel, self.cAdetDesc)
@@ -531,8 +543,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.Bind(wx.EVT_MENU, self.OnCalc, tCalc)
         # self.Bind(wx.EVT_MENU, self.OnMagn, tMagn)
 
-        self.Bind(wx.EVT_MENU, self.OnScal1, tScal1)
-        self.Bind(wx.EVT_MENU, self.OnScal2, tScal2)
+        # self.Bind(wx.EVT_MENU, self.OnScal1, tScal1)
+        # self.Bind(wx.EVT_MENU, self.OnScal2, tScal2)
         # self.Bind(wx.EVT_MENU, self.OnScal3, tScal3)
         
 
@@ -613,8 +625,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         self.envCond = EnvironmentConditionsPanel(self.mode, self.form, style=wx.SIMPLE_BORDER, size=(-1, -1))
 
-        midSizer.Add(self.stageMeas, 29, wx.EXPAND)
-        midSizer.Add(self.envCond, 20, wx.EXPAND)
+        midSizer.Add(self.stageMeas, 23, wx.EXPAND)
+        midSizer.Add(self.envCond, 10, wx.EXPAND)
 
         self.measResults = MeasurementResultsPanel(self.mode, self.lang, self.form, style=wx.SIMPLE_BORDER, size=(1, -1))
 
@@ -682,11 +694,28 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.form5.SetSizerAndFit(form5Sizer)
 
 
+
+        #Imported Midsection page
+        # self.form6Sizer = wx.BoxSizer(wx.VERTICAL)
+        # self.form6 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER)
+        # self.form6.SetupScrolling()
+        # self.midsecImportPanel = None
+        # self.showBtn = wx.Button(self.form6, label="Show / Refresh", size=(200, -1))
+        # self.showBtn.Bind(wx.EVT_BUTTON, self.OnMidShowBtn)
+
+        # self.removeBtn = wx.Button(self.form6, label="Remove")
+        # self.removeBtn.Bind(wx.EVT_BUTTON, self.OnMidRemoveBtn)
+
+        # self.form6Sizer.Add(self.showBtn, 0, wx.EXPAND)
+        # self.form6.SetSizerAndFit(self.form6Sizer)
+
+
         self.layout.AddPage(self.form, "Front Page")
         self.layout.AddPage(self.form2_1, "Level Notes")
         self.layout.AddPage(self.form3, "Moving Boat")
         self.layout.AddPage(self.form4, "Mid-Section")
         self.layout.AddPage(self.form5, "Field Review")
+        # self.layout.AddPage(self.form6, "Imported Mid-Section")
         # self.layout.AddPage(form6, "User Config")
         self.layout.Show(True)
         self.Show(True)
@@ -1069,6 +1098,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if path != "":
             newpath = path + '\\' + defaultName
             xml = self.manager.ExportAsXML(newpath, None)
+
             self.SaveAsPDFAtUpload(path, success, xml)
             self.SetTitle(self.noteHeaderTxt + "   " + newpath)
             self.name = defaultName
@@ -1080,7 +1110,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     #Save as PDF before uploading to AQ
     def SaveAsPDFAtUpload(self, path, success, xml):
         # Locate stylesheet based on stylesheet_path
-        found_stylesheet = os.path.exists(self.fullStyleSheetFilePath)
+        # found_stylesheet = os.path.exists(self.fullStyleSheetFilePath)
+        found_stylesheet = os.path.exists(self.viewStyleSheetFilePath)
 
         # If it exists, run fileSaveDialog
         # Else, run fileOpenDialog, then fileSaveDialog
@@ -1104,7 +1135,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                     print "styleSheetPath exp"
                     print styleSheetPath
                 if styleSheetPath != "":
-                    self.fullStyleSheetFilePath = styleSheetPath
+                    # self.fullStyleSheetFilePath = styleSheetPath
+                    self.viewStyleSheetFilePath = styleSheetPath
 
             fileOpenDialog.Destroy()
 
@@ -1123,17 +1155,15 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         else:
             defaultName = self.name.rsplit(".",1)[0] + ".pdf"
 
-
         if path != "":
             path = path + '\\' + defaultName
             if self.uploadOpenPdf:
-                self.manager.ExportAsPDFFromXMLOpen(path, self.fullStyleSheetFilePath, xml)
+                # self.manager.ExportAsPDFFromXMLOpen(path, self.fullStyleSheetFilePath, xml)
+                self.manager.ExportAsPDFFromXMLOpen(path, self.viewStyleSheetFilePath, xml)
             else:
-                self.manager.ExportAsPDFFromXML(path, self.fullStyleSheetFilePath, xml)
+                # self.manager.ExportAsPDFFromXML(path, self.fullStyleSheetFilePath, xml)
+                self.manager.ExportAsPDFFromXML(path, self.viewStyleSheetFilePath, xml)
         self.uploadOpenPdf = False
-
-
-
 
 
     def UploadingChecking(self):
@@ -1245,7 +1275,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if self.manager is not None:
                 date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
                 date = date.strftime("%Y%m%d")
-                defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV"
+                defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_BookletType"
         else:
             defaultName = self.name.rsplit(".",1)[0]
         fileSaveDialog = wx.FileDialog(self, self.fileSavePDFSaveTitle, self.rootPath, defaultName,
@@ -1381,7 +1411,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
             date = date.strftime("%Y%m%d")
-            defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV_VIEW"
+            defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV"
 
         fileSaveDialog = wx.FileDialog(self, self.fileSavePDFSaveTitle, self.rootPath, defaultName,
                                        'eHSN (*.pdf)|*.pdf',
@@ -1434,6 +1464,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     def FileOpen(self, evt):
         self.DestroySubWindows()
+        self.disMeas.SetCurveCombo("")
 
         fileOpenDialog = wx.FileDialog(self, self.fileOpenTitle, self.path, '',
                             'Hydrometric Survey Notes (*.xml)|*.xml',
@@ -1451,10 +1482,10 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
             if path != "":
 
-
                 self.path = path
                 self.LoadDefaultConfig()
                 self.manager.OpenFile(path)
+		self.instrDep.RefreshDeploymentMethod()
 
                 # After loading XML, If lock was checked, lock everything
                 #if self.titleHeader.enteredInHWSCB.GetValue():
@@ -2401,12 +2432,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                         return
 
 
-                self.manager.instrDepManager.GetMethodCBListBox().Check(1)
+                # self.manager.instrDepManager.GetMethodCBListBox().Check(1)
                 if self.instrDep.DeploymentCheckListCBCkecking4MidSection():
 
 
                     self.manager.OpenEHSNMidsection(self.ehsnMidDir)
-
+		    self.instrDep.RefreshDeploymentMethod()
                     info = wx.MessageDialog(self, self.importSucessMsg, self.importSucessTitle,
                                          wx.OK | wx.ICON_INFORMATION)
                     info.ShowModal()
@@ -2439,11 +2470,11 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 return
 
             #Timezone if invalid (eHSN or external file or not matching)
-            if evt.GetId() == ID_IMPORT_FT2:
-                if not self.TimeZoneValidationImportFt2():
-                    if self.ft2FtDir != '':
-                        shutil.rmtree(self.ft2FtDir.rsplit('.',1)[0])
-                    return
+            # if evt.GetId() == ID_IMPORT_FT2:
+                # if not self.TimeZoneValidationImportFt2():
+                    # if self.ft2FtDir != '':
+                        # shutil.rmtree(self.ft2FtDir.rsplit('.',1)[0])
+                    # return
 
             if evt.GetId() == ID_IMPORT_SXSMMT:
                 info = wx.MessageDialog(None, self.sxsImportAttentionMsg, self.sxsImportAttentionTitle,
@@ -2778,13 +2809,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         # print self.manager.GetLocalTimeUtcOffsetFromFt2()
         # print tzCmbo
         print "self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]", self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]
-        if tz != self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]:
-            info = wx.MessageDialog(self, self.tzMatchErrMsg, self.tzMatchErrTitle,
-                                     wx.OK | wx.ICON_ERROR)
+        # if tz != self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]:
+            # info = wx.MessageDialog(self, self.tzMatchErrMsg, self.tzMatchErrTitle,
+                                     # wx.OK | wx.ICON_ERROR)
 
-            # info.GetMessage().SetFont(wx.Font(13, wx.DEFAULT, wx.NORMAL, wx.BOLD, 0, "")) 
-            info.ShowModal()
-            return False
+            # info.ShowModal()
+            # return False
 
         return True
 
@@ -3110,10 +3140,25 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             config.write(cfgfile)
             cfgfile.close()
 
+    # def OnMidShowBtn(self, event):
+        # if self.midsecImportPanel != None:
+            # self.midsecImportPanel.Hide()
+            # self.form6Sizer.Remove(1)
+            # self.midsecImportPanel = None
+        # self.midsecImportPanel = MidsectionImportPanel(self.midsecMeasurements.header, self.form6, style=wx.SIMPLE_BORDER, size=(920, -1))
+        # self.form6Sizer.Add(self.midsecImportPanel, 1, wx.EXPAND)
+        # self.Layout()
+        # self.Refresh()
 
 
-
-
+    # def OnMidRemoveBtn(self, event):
+        # print("on remove")
+        # if self.midsecImportPanel != None:
+            # self.midsecImportPanel.Hide()
+            # self.form6Sizer.Remove(2)
+            # self.midsecImportPanel = None
+        # self.Layout()
+        # self.Refresh()
 
 
 

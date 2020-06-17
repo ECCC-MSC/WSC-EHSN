@@ -25,8 +25,10 @@ class AquariusUploadDialog(wx.Dialog):
 
         self.mode = mode
 
-        self.servers = {'1: Staging Server 1' : self.stage1, '2: Production2 Server': self.product2,
-                        '3: Production Server' : self.product, '4: AQUARIUS NG': self.aqNg, '5. Aquarius NG Dev [for Testing Only]': self.aqNgDev}
+        self.servers = {'1. AQUARIUS NG': self.aqNg, '2. Aquarius NG Dev [for Testing Only]': self.aqNgDev}
+        # self.servers = {'1: Staging Server 1': self.stage1, '2: Production2 Server': self.product2,
+        #                 '3: Production Server': self.product, '4: AQUARIUS NG': self.aqNg,
+        #                 '5. Aquarius NG Dev [for Testing Only]': self.aqNgDev}
 
         self.serverLbl = "Server:"
         self.usernameLbl = "Username:"
@@ -39,10 +41,8 @@ class AquariusUploadDialog(wx.Dialog):
 
         self.dir = dir if dir is not None else str(os.getcwd())
         self.header = "The survey note will be saved as xml and a pdf will be created at the time of upload"
-        self.attachment = "Add extra attachment to upload"
         self.desc = "All eHSN files must be saved at the time of upload. Where would you like this file to be saved?"
         self.changeButtonDesc = "Change"
-        self.attButtonDesc = "Browse"
         self.changeTitleLbl = "Choose directory & change name for xml and pdf file"
         self.uploadConfirm = "Are you sure you want to upload this file?"
         self.autoOpenLbl = "Auto Open PDF?"
@@ -66,7 +66,7 @@ class AquariusUploadDialog(wx.Dialog):
         serverSubSizer = wx.BoxSizer(wx.HORIZONTAL)
         serverTxt = wx.StaticText(self, label=self.serverLbl)
         self.serverCmbo = wx.ComboBox(self, choices=sorted(self.servers.keys(), reverse=False),
-                                      value=sorted(self.servers.keys(), reverse=False)[3], style=wx.CB_READONLY)
+                                      value=sorted(self.servers.keys(), reverse=False)[0], style=wx.CB_READONLY)
         # serverSubSizer.Add((-1, -1), 1, wx.EXPAND)
         serverSubSizer.Add(serverTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 6)
         serverSizer.Add(serverSubSizer, 1, wx.EXPAND)
@@ -145,14 +145,7 @@ class AquariusUploadDialog(wx.Dialog):
         changeSizer.Add(self.changeCtrl, 2, wx.EXPAND)
         changeSizer.Add(changeBtn, 1, wx.EXPAND)
 
-        attachmentPanel = wx.Panel(self, style=wx.BORDER_NONE)
-        attachmentSizer = wx.BoxSizer(wx.HORIZONTAL)
-        attachmentPanel.SetSizer(attachmentSizer)
-        self.attCtrl = wx.TextCtrl(attachmentPanel, style = wx.TE_READONLY)
-        attButton = wx.Button(attachmentPanel, label=self.attButtonDesc)
-        attButton.Bind(wx.EVT_BUTTON, self.OnChangeAtt)
-        attachmentSizer.Add(self.attCtrl, 2, wx.EXPAND)
-        attachmentSizer.Add(attButton, 1, wx.EXPAND)
+
 
 
 
@@ -165,7 +158,6 @@ class AquariusUploadDialog(wx.Dialog):
         self.layoutSizer.Add((-1, 10), 0, wx.EXPAND)
         self.layoutSizer.Add(headerTxt, 0, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add(changePanel, 0, wx.EXPAND|wx.ALL, 5)
-        self.layoutSizer.Add(attachmentPanel, 0, wx.EXPAND|wx.ALL, 5)
 
         # self.layoutSizer.Add((-1, 10), 0, wx.EXPAND)
         # self.layoutSizer.Add(self.errorMessage, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 5)
@@ -214,25 +206,6 @@ class AquariusUploadDialog(wx.Dialog):
         self.Update()
         self.Refresh()
 
-    def OnChangeAtt(self, e):
-        fileOpenDialog = wx.DirDialog(self, self.GetParent().uploadAttachDir,style=wx.FD_SAVE | wx.FD_CHANGE_DIR)
-
-        if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
-            fileOpenDialog.Destroy()
-            return
-
-        self.dir = fileOpenDialog.GetPath()
-        #self.GetParent().attname = fileOpenDialog.GetFilename()
-        #self.GetParent().uploadAttachDir = self.dir + "\\" + self.GetParent().attname
-        self.GetParent().uploadAttachDir = self.dir
-
-        #self.attCtrl.SetValue(self.dir + "\\" + self.GetParent().attname)
-        self.attCtrl.SetValue(self.dir)
-        self.layoutSizer.Layout()
-        self.Update()
-        self.Refresh()
-
-
     def OnDischargeCheckbox(self, event):
         self.includeDischarge = self.dischargeCkbox.IsChecked()
 
@@ -246,7 +219,7 @@ class AquariusUploadDialog(wx.Dialog):
         self.cancelButton.Enable(en)
 
     def UploadToAquarius(self, evt):
-        if self.serverCmbo.GetValue() != '4: AQUARIUS NG' and self.serverCmbo.GetValue() != '5. Aquarius NG Dev [for Testing Only]':
+        if self.serverCmbo.GetValue() != '1. AQUARIUS NG' and self.serverCmbo.GetValue() != '2. Aquarius NG Dev [for Testing Only]':
             try:
                 self.EnableButtons(False)
                 dlg = wx.MessageDialog(self, self.uploadConfirm, 'None', wx.YES_NO)
@@ -358,12 +331,8 @@ class AquariusUploadDialog(wx.Dialog):
                         self.GetParent().SaveAsPDFAndXML4UploadJson(self.GetParent().uploadSaveDir, True)
                         # print self.GetParent().uploadSaveDir, name
                         fvPath = self.GetParent().uploadSaveDir+"\\"+name
-                        attPath = self.GetParent().uploadAttachDir
                         print fvPath
-                        print "+++++++++++++++++"
-                        print attPath
-                        print "+++++++++++++++++"
-                        result = self.GetParent().manager.ExportToAquariusNg(server, username, password, fvPath, attPath, fvDate)
+                        result = self.GetParent().manager.ExportToAquariusNg(server, username, password, fvPath, fvDate)
                         if result != None:
                             error = wx.MessageDialog(None,  result, 'Error',
                                                     wx.OK | wx.ICON_ERROR)

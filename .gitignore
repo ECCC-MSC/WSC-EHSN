@@ -24,3 +24,8 @@ Saved Field Visits
 
 # ignore test results
 HFC_Files_Testing/Test Results
+
+
+.gitignore
+AutoSave.xml
+**/*.json

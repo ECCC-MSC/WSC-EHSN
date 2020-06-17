@@ -4,7 +4,7 @@
 import wx
 
 class TransferDialog(wx.Dialog):
-    def __init__(self, stations, elevations, estEles, closures, *args, **kwargs):
+    def __init__(self, times, stations, elevations, estEles, closures, *args, **kwargs):
         super(TransferDialog, self).__init__(*args, **kwargs)
         self.headerCol1Lbl = "Station"
         self.headerCol2Lbl = "Difference between observed and established elevations (m)" 
@@ -13,6 +13,8 @@ class TransferDialog(wx.Dialog):
         self.height = 22
         self.circuitHeaderLbl = "Circuit #: "
         self.buttonLbl = "OK"
+
+        self.times = times
         self.stations = stations
         self.elevations = elevations
         self.estEles = estEles
