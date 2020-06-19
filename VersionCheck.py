@@ -21,14 +21,13 @@ def Check(version, parent, alwaysShow):
     else:
         location = os.getcwd()
 
-
-
     try:
-        message_url = "https://raw.githubusercontent.com/ECCC-MSC/WSC-EHSN/master/message"
+        message_url = "https://raw.githubusercontent.com/ECCC-MSC/WSC-EHSN/master/msg.txt"
         response = requests.get(message_url)
+        print (response.status_code)
         response.raise_for_status()
-        msg = response.content.decode('Windows-1252')  # TODO: Consider encoding the message file as UTF-8
-
+        #msg = response.content.decode('Windows-1252')  # TODO: Consider encoding the message file as UTF-8
+        msg = response.content.decode('UTF-8')
         print msg
         print ""
 
