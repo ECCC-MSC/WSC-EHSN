@@ -22,7 +22,7 @@ def Check(version, parent, alwaysShow):
         location = os.getcwd()
 
     try:
-        message_url = "https://raw.githubusercontent.com/ECCC-MSC/WSC-EHSN/master/msg.txt"
+        message_url = "https://raw.githubusercontent.com/ECCC-MSC/WSC-EHSN/master/message.txt"
         response = requests.get(message_url)
         print (response.status_code)
         response.raise_for_status()
