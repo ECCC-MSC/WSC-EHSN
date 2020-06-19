@@ -1,0 +1,17 @@
+V2.2.0
+2
+							
+*********************************ALERT - WARNING****************************************
+
+eHSN V2.1.0 has few known bugs that we would like you to be aware of:
+1. Shift calculated in eHSN is incorrect. 
+2. When a FV xml is reloaded into the eHSN interface, some of the level information in the levelling page is not displayed in the GUI. Please note that all data is still there, just not able to be displayed. 
+
+We are planning to release V2.2 within the next few days and we hope to resolve these issues as much as possible.
+Thank you for your patience!
+
+****************************************************************************************
+
+Report Issues:
+
+https://watersurveyofcanada.atlassian.net/servicedesk/customer/portal/2
