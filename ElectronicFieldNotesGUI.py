@@ -1449,9 +1449,11 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             dlg.Destroy()
             re = self.OnFileSaveAs(evt)
             if re:
+                self.ResetGUI()
                 self.FileOpen(evt)
         elif res == wx.ID_NO:
             dlg.Destroy()
+            self.ResetGUI()
             self.FileOpen(evt)
         elif res == wx.ID_CANCEL:
             dlg.Destroy()
