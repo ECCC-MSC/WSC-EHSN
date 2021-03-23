@@ -1308,7 +1308,7 @@ def MeasResultsFromXML(MeasResults, measResultsManager):
 
 
 # Create XML structure for Instrument and Deployment information
-def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
+def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager, attachmentManager):
     bkColor = instrDepManager.manager.gui.importedBGColor
     # checkList = instrDepManager.methodCBListBox.GetCheckedStrings()
     checkList = instrDepManager.methodCBListBox
@@ -1464,6 +1464,9 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     pictured = SubElement(SiteConditions, "pictured")
     pictured.text = str(instrDepManager.GetPicturedCkboxVal())
 
+    attached = SubElement(SiteConditions, "attached")
+    attached.text = str(attachmentManager.returnAttachment())
+
     preUseCable = SubElement(SiteConditions, "preUseCable")
     preUseCable.text = instrDepManager.preUseCableCmbo
 
@@ -1520,7 +1523,7 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
 
 
 # Set Instrument and Deployment Information variables from existing XML structure
-def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
+def InstrumentDepFromXML(InstrumentDeployment, instrDepManager, attachmentManager):
     bkColor = instrDepManager.manager.gui.importedBGColor
     white = "white"
     instrDepManager.gui.CheckListReset()
@@ -1802,6 +1805,7 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
             instrDepManager.SetPicturedCkboxVal(False)
     except:
         print "no pictured ckeckbox for field review in xml"
+
 
     try:
         preUseCable = SiteConditions.find('preUseCable')
@@ -4150,7 +4154,45 @@ def MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager):
 
             # midsecMeasurementsManager.GetNextPid()
 
+def AttachmentAsXMLTree(Attachment, attachmentManager):
+    loggerData = SubElement(Attachment, "loggerData")
+    loggerData.text = str(attachmentManager.returnLoggerData())
 
+    loggerDiagnostic = SubElement(Attachment, "loggerDiagnostic")
+    loggerDiagnostic.text = str(attachmentManager.returnLoggerDiagnostic())
+
+    loggerProgram= SubElement(Attachment, "loggerProgram")
+    loggerProgram.text = str(attachmentManager.returnLoggerProgram())
+
+    multipleLogger = SubElement(Attachment, "multipleLogger")
+    multipleLogger.text = str(attachmentManager.returnMultipleLogger())
+
+    mmtFiles = SubElement(Attachment, "mmtFiles")
+    mmtFiles.text = str(attachmentManager.returnMmtFiles())
+
+    mmtSummary = SubElement(Attachment, "mmtSummary")
+    mmtSummary.text = str(attachmentManager.returnMmtSummary())
+
+    SIT = SubElement(Attachment, "SIT")
+    SIT.text = str(attachmentManager.returnSIT())
+
+    STR = SubElement(Attachment, "STR")
+    STR.text = str(attachmentManager.returnSTR())
+
+    COL = SubElement(Attachment, "COL")
+    COL.text = str(attachmentManager.returnCOL())
+
+    CBL = SubElement(Attachment, "CBL")
+    CBL.text = str(attachmentManager.returnCBL())
+
+    EQP = SubElement(Attachment, "EQP")
+    EQP.text = str(attachmentManager.returnEQP())
+
+    CDT = SubElement(Attachment, "CDT")
+    CDT.text = str(attachmentManager.returnCDT())
+
+    HSN = SubElement(Attachment, "HSN")
+    HSN.text = str(attachmentManager.returnHSN())
 
 
 #return the standard deviation of a list of numbers

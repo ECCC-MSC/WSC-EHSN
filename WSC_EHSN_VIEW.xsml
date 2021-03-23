@@ -149,6 +149,7 @@
 						<xsl:apply-templates select="EHSN/AQ_Upload_Record"/>
 					</xsl:if>
 					</xsl:if>
+				    <xsl:apply-templates select="EHSN/Attachments"/>
 
 
 
@@ -887,6 +888,18 @@
 				<font size="4">&#x2751;</font></td>
 			</xsl:otherwise>
 		</xsl:choose>
+		<xsl:choose>
+			<xsl:when test="attached='True'">
+				<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+					<b>Attachments included.   </b>
+				<font size="4">&#x2714;</font></td>
+			</xsl:when>
+			<xsl:otherwise>
+				<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+					<b>Attachments included.   </b>
+				<font size="4">&#x2751;</font></td>
+			</xsl:otherwise>
+		</xsl:choose>
 	</tr>
 
 	<tr class="noborder">
@@ -1617,7 +1630,154 @@
 
 </xsl:template>
 
+<xsl:template match="EHSN/Attachments">
+    <h2>Attachments</h2>
+	<table style="height: 92px;" width="750">
+	    <td style="width:68%; height=125%">
+	        <b style="font-size:13px">Folders and Files</b>
+	        <ul style="list-style-type:none;">
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="loggerData='True'">
+					        <font size="4">&#x2714;</font><c>Logger Data files    </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Logger Data files    </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="loggerDiagnostic='True'">
+					        <font size="4">&#x2714;</font><c>Logger Diagnostic files    </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Logger Diagnostic files    </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="loggerProgram='True'">
+					        <font size="4">&#x2714;</font><c>Logger Program files     </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Logger Program files     </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="multipleLogger='True'">
+					        <font size="4">&#x2714;</font><c>Logger files or folder    </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Logger files or folder   </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="mmtFiles='True'">
+					        <font size="4">&#x2714;</font><c>Discharge Measurement files or folder    </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Discharge Measurement files or folder    </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="mmtSummary='True'">
+					        <font size="4">&#x2714;</font><c>Discharge Measurement Summary files    </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Discharge Measurement Summary files    </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <br></br><br></br>
+            </ul>
+        </td>
+        <td>
+            <b style="font-size:13px">Photos and Drawings (.jpg, .DWG, etc.)</b>
+	        <ul style="list-style-type:none;">
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="SIT='True'">
+					        <font size="4">&#x2714;</font><c>Site (general view of the monitoring area)     </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Site (general view of the monitoring area)     </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="STR='True'">
+					        <font size="4">&#x2714;</font><c>Structures, Site Facilities (includes construction)     </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Structures, Site Facilities (includes construction)     </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="COL='True'">
+					        <font size="4">&#x2714;</font><c>Control Conditions (view of channel)     </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Control Conditions (view of channel)     </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="CBL='True'">
+					        <font size="4">&#x2714;</font><c>Cableway    </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Cableway    </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="EQP='True'">
+					        <font size="4">&#x2714;</font><c>Device (general view of monitoring equipment deployed)   </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Device (general view of monitoring equipment deployed)   </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="CDT='True'">
+					        <font size="4">&#x2714;</font><c>Device Conditions (includes details for vandalism)     </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Device Conditions (includes details for vandalism)     </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="HSN='True'">
+					        <font size="4">&#x2714;</font><c>Hydrometric Survey Note   </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Hydrometric Survey Note   </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <br></br>
+            </ul>
+        </td>
+	</table>
 
+</xsl:template>
 
 <xsl:template match="EHSN/AQ_Upload_Record">
 	<h2>AQUARIUS Upload Record</h2>
