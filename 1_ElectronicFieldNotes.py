@@ -16,7 +16,7 @@ from FRChecklistManager import *
 from MovingBoatMeasurementsManager import *
 from MidSectionMeasurementsManager import *
 # from RemarksManager import *
-
+from AttachmentManager import *
 from RatingCurveViewerToolManager import *
 
 # from UserConfigManager import *
@@ -211,6 +211,7 @@ class ElectronicHydrometricSurveyNotes:
         self.envCondManager = EnvironmentConditionsManager(mode, self.gui.envCond, self)
         self.measResultsManager = MeasurementResultsManager(mode, self.gui.measResults, self)
         self.instrDepManager = InstrumentDeploymentInfoManager(mode, self.gui.instrDep, self)
+        self.attachmentManager = AttachmentManager(mode, self.gui.attachment, self)
         # self.remarksManager = RemarksManager(mode, self.gui.remarks, self)
         self.partyInfoManager = PartyInfoManager(mode, self.gui.partyInfo, self)
         self.waterLevelRunManager = WaterLevelRunManager(mode, self.gui.waterLevelRun, self)
@@ -529,36 +530,42 @@ class ElectronicHydrometricSurveyNotes:
                 else:
                     self.gui.updateProgressDialog("Uploading...")
                     print fvPath
-                    dirName = fvPath[-19:]
-                    fvPath = fvPath.replace("\\", "\\\\")
-                    dirPath = fvPath.replace("\\", "/")
-                    fvPathPdf = fvPath.replace("\\", "\\\\")
-                    fvPath = fvPath + ".xml"
-                    fvPathPdf = fvPathPdf + ".pdf"
-                    xmlPath = fvPath[-23:]
-                    uploadDir = dirName + "_a"
-                    # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
+                    #test1
+                    if fvPath.endswith(".zip"):
+                        uploadZipDir = fvPath
+                    else:
+                        dirName = fvPath[-19:]
+                        fvPath = fvPath.replace("\\", "\\\\")
+                        dirPath = fvPath.replace("\\", "/")
+                        fvPathPdf = fvPath.replace("\\", "\\\\")
+                        fvPath = fvPath + ".xml"
+                        fvPathPdf = fvPathPdf + ".pdf"
+                        xmlPath = fvPath[-23:]
+                        uploadDir = dirName + "_a"
+                        # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
 
-                    if os.path.exists(dirName):
-                        shutil.rmtree(dirName)
-                    if os.path.exists(uploadDir):
-                        shutil.rmtree(uploadDir)
-                    if os.path.exists(uploadDir + ".zip"):
-                        os.remove(uploadDir + ".zip")
+                        if os.path.exists(dirName):
+                            shutil.rmtree(dirName)
+                        if os.path.exists(uploadDir):
+                            shutil.rmtree(uploadDir)
+                        if os.path.exists(uploadDir + ".zip"):
+                            os.remove(uploadDir + ".zip")
 
-                    try:
-                        os.mkdir(dirName)
-                        shutil.move(fvPathPdf, dirName)
-                        os.mkdir(uploadDir)
-                        shutil.move(dirName, uploadDir)
-                        shutil.move(fvPath, uploadDir)
-                        shutil.make_archive(uploadDir, 'zip', uploadDir)
-                    except:
-                        print 'Error occured while creating zip file for upload'
-                        self.gui.deleteProgressDialog()
-                        return None
-                    # create the zip file
-                    uploadZipDir = dirName + "_a.zip"
+                        try:
+                            os.mkdir(dirName)
+                            shutil.move(fvPathPdf, dirName)
+                            os.mkdir(uploadDir)
+                            shutil.move(dirName, uploadDir)
+                            shutil.move(fvPath, uploadDir)
+                            shutil.make_archive(uploadDir, 'zip', uploadDir)
+                        except:
+                            print 'Error occured while creating zip file for upload'
+                            self.gui.deleteProgressDialog()
+                            return None
+                        # create the zip file
+                        uploadZipDir = dirName + "_a.zip"
+
+
 
                     # files = {'file': open(fvPath, 'rb')}
                     files = {'file': open(uploadZipDir, 'rb')}
@@ -716,6 +723,10 @@ class ElectronicHydrometricSurveyNotes:
         #Midsection Measurements
         MidsecMeas = SubElement(EHSN, "MidsecMeas", empty="False")
         self.MidsecMeasAsXMLTree(MidsecMeas)
+
+        # Sixth Page
+        Attachments = SubElement(EHSN, "Attachments")
+        self.AttachmentAsXMLTree(Attachments)
 
         #Imported
         #Midsection
@@ -901,10 +912,10 @@ class ElectronicHydrometricSurveyNotes:
 
 
     def InstrumentDepAsXMLTree(self, InstrumentDeployment):
-        XMLManager.InstrumentDepAsXMLTree(InstrumentDeployment, self.instrDepManager)
+        XMLManager.InstrumentDepAsXMLTree(InstrumentDeployment, self.instrDepManager, self.attachmentManager)
 
     def InstrumentDepFromXML(self, InstrumentDeployment):
-        XMLManager.InstrumentDepFromXML(InstrumentDeployment, self.instrDepManager)
+        XMLManager.InstrumentDepFromXML(InstrumentDeployment, self.instrDepManager, self.attachmentManager)
 
 
     def PartyInfoAsXMLTree(self, PartyInfo):
@@ -948,6 +959,11 @@ class ElectronicHydrometricSurveyNotes:
 
     def MidsecMeasFromXML(self, MidsecMeas):
         XMLManager.MidsecMeasFromXML(MidsecMeas, self.midsecMeasurementsManager)
+
+    # Attachment
+    def AttachmentAsXMLTree(self, Attachment):
+        XMLManager.AttachmentAsXMLTree(Attachment, self.attachmentManager)
+    # Attachment
 
     def UploadInfoAsXMLTree(self, UploadInfo, uploadInfo):
         XMLManager.UploadInfoAsXMLTree(UploadInfo, uploadInfo)
