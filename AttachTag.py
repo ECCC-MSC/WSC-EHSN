@@ -18,6 +18,7 @@ class AttachTag(wx.Panel):
         self.subTag = wx.StaticText(self, label=self.sub)
         layoutSizer.Add(self.noteHeader)
         layoutSizer.Add(self.subTag)
+        
         self.SetSizer(layoutSizer)
 
 
