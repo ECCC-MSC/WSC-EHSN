@@ -3,6 +3,7 @@
 
 import wx
 
+
 class AttachmentTitle(wx.Panel):
     def __init__(self, mode, *args, **kwargs):
         super(AttachmentTitle, self).__init__(*args, **kwargs)
