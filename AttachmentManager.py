@@ -67,8 +67,6 @@ class AttachmentManager(object):
         return self.gui.attachBox7.returnHSN() != []
 
 
-
-
 def main():
     app = wx.App()
 
