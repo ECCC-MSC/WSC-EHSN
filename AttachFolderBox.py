@@ -75,6 +75,7 @@ class AttachFolderBox(scrolled.ScrolledPanel):
             self.layoutSizer.Add(self.columnList[-1])
             self.check()
             self.layoutSizer.Layout()
+
             self.Update()
 
         elif evt.GetEventObject().GetLabel() == "-":
