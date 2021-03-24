@@ -44,8 +44,8 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.columnList[-1].Add(self.typeList[-1])
         self.columnList[-1].Add(self.addrList[-1])
         self.columnList[-1].Add(self.browseList[-1])
-
         self.layoutSizer.Add(self.columnList[-1])
+
         self.SetupScrolling()
         self.ShowScrollbars(wx.SHOW_SB_NEVER, wx.SHOW_SB_ALWAYS)
 
