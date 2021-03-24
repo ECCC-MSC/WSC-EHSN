@@ -151,6 +151,7 @@ class AttachmentPanel(wx.Panel):
 
         sizerList[10].Add(self.indent2)
         sizerList[10].Add(legendHeader)
+
         sizerList[11].Add(self.indent2)
         sizerList[11].Add(self.indent3)
         sizerList[11].Add(legend)
