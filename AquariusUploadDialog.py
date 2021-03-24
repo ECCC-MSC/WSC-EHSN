@@ -157,9 +157,8 @@ class AquariusUploadDialog(wx.Dialog):
         self.layoutSizer.Add(self.levelNoteCkbox, 0, wx.EXPAND | wx.ALL, 5)
         self.layoutSizer.Add((-1, 10), 0, wx.EXPAND)
         self.layoutSizer.Add(headerTxt, 0, wx.EXPAND | wx.ALL, 5)
-        # self.layoutSizer.Add(changePanel, 0, wx.EXPAND | wx.ALL, 5)
+        #self.layoutSizer.Add(changePanel, 0, wx.EXPAND | wx.ALL, 5)
         self.layoutSizer.Add(zipPanel, 0, wx.EXPAND | wx.ALL, 5)
-
         # self.layoutSizer.Add((-1, 10), 0, wx.EXPAND)
         # self.layoutSizer.Add(self.errorMessage, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 5)
 
