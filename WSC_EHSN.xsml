@@ -1849,6 +1849,7 @@
 	</table>
 </xsl:template>
 
+
 <xsl:template match="EHSN/Attachments">
     <h2>Attachments</h2>
 	<table style="height: 92px;" width="750">
