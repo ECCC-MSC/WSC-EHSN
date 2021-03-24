@@ -4195,6 +4195,7 @@ def AttachmentAsXMLTree(Attachment, attachmentManager):
     HSN.text = str(attachmentManager.returnHSN())
 
 
+
 #return the standard deviation of a list of numbers
 def standardDeviation(nums):
     if len(nums) == 1:
