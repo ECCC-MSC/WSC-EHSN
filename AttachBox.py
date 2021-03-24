@@ -20,7 +20,6 @@ class AttachBox(scrolled.ScrolledPanel):
         self.columnList = []
         self.pathList = []
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
-
         self.InitUI()
 
     def InitUI(self):
