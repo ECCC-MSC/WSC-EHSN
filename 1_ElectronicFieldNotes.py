@@ -724,7 +724,7 @@ class ElectronicHydrometricSurveyNotes:
         MidsecMeas = SubElement(EHSN, "MidsecMeas", empty="False")
         self.MidsecMeasAsXMLTree(MidsecMeas)
 
-        # Sixth Page
+        #Page 6
         Attachments = SubElement(EHSN, "Attachments")
         self.AttachmentAsXMLTree(Attachments)
 
