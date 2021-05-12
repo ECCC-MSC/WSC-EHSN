@@ -1308,7 +1308,7 @@ def MeasResultsFromXML(MeasResults, measResultsManager):
 
 
 # Create XML structure for Instrument and Deployment information
-def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
+def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager, attachmentManager):
     bkColor = instrDepManager.manager.gui.importedBGColor
     # checkList = instrDepManager.methodCBListBox.GetCheckedStrings()
     checkList = instrDepManager.methodCBListBox
@@ -1464,6 +1464,9 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
     pictured = SubElement(SiteConditions, "pictured")
     pictured.text = str(instrDepManager.GetPicturedCkboxVal())
 
+    attached = SubElement(SiteConditions, "attached")
+    attached.text = str(attachmentManager.returnAttachment())
+
     preUseCable = SubElement(SiteConditions, "preUseCable")
     preUseCable.text = instrDepManager.preUseCableCmbo
 
@@ -1520,7 +1523,7 @@ def InstrumentDepAsXMLTree(InstrumentDeployment, instrDepManager):
 
 
 # Set Instrument and Deployment Information variables from existing XML structure
-def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
+def InstrumentDepFromXML(InstrumentDeployment, instrDepManager, attachmentManager):
     bkColor = instrDepManager.manager.gui.importedBGColor
     white = "white"
     instrDepManager.gui.CheckListReset()
@@ -1802,6 +1805,7 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager):
             instrDepManager.SetPicturedCkboxVal(False)
     except:
         print "no pictured ckeckbox for field review in xml"
+
 
     try:
         preUseCable = SiteConditions.find('preUseCable')
@@ -4150,7 +4154,142 @@ def MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager):
 
             # midsecMeasurementsManager.GetNextPid()
 
+def AttachmentAsXMLTree(Attachment, attachmentManager):
+    loggerFiles = SubElement(Attachment, "loggerFiles")
+    loggerFiles.text = str(attachmentManager.returnLoggerFiles())
 
+    loggerDiagnostic = SubElement(Attachment, "loggerDiagnostic")
+    loggerDiagnostic.text = str(attachmentManager.returnLoggerDiagnostic())
+
+    loggerProgram= SubElement(Attachment, "loggerProgram")
+    loggerProgram.text = str(attachmentManager.returnLoggerProgram())
+
+    mmtFiles = SubElement(Attachment, "mmtFiles")
+    mmtFiles.text = str(attachmentManager.returnMmtFiles())
+
+    mmtSummary = SubElement(Attachment, "mmtSummary")
+    mmtSummary.text = str(attachmentManager.returnMmtSummary())
+
+    SIT = SubElement(Attachment, "SIT")
+    SIT.text = str(attachmentManager.returnSIT())
+
+    STR = SubElement(Attachment, "STR")
+    STR.text = str(attachmentManager.returnSTR())
+
+    COL = SubElement(Attachment, "COL")
+    COL.text = str(attachmentManager.returnCOL())
+
+    CBL = SubElement(Attachment, "CBL")
+    CBL.text = str(attachmentManager.returnCBL())
+
+    EQP = SubElement(Attachment, "EQP")
+    EQP.text = str(attachmentManager.returnEQP())
+
+    CDT = SubElement(Attachment, "CDT")
+    CDT.text = str(attachmentManager.returnCDT())
+
+    HSN = SubElement(Attachment, "HSN")
+    HSN.text = str(attachmentManager.returnHSN())
+
+    Zip = SubElement(Attachment, "Zip")
+    Zip.text = str(attachmentManager.returnZip())
+
+# convert text into list of address
+def convertList(text):
+    if not text:
+        return []
+    lst = list(text.split(", "))
+    for i in range(len(lst)):
+        lst[i] = lst[i][2:-1]
+    return lst
+
+
+def AttachmentFromXML(Attachment, attachmentManager):
+    loggerFiles = convertList(Attachment.find('loggerFiles').text)
+    if loggerFiles:
+        for addr in loggerFiles:
+            attachmentManager.gui.attachBox1.addrList[-1].ChangeValue(addr)
+            if os.path.isdir(addr):
+                attachmentManager.gui.attachBox1.typeList[-1].SetValue("Folder")
+            attachmentManager.gui.attachBox1.add()
+
+    loggerDiagnostic = convertList(Attachment.find('loggerDiagnostic').text)
+    if loggerDiagnostic:
+        for addr in loggerDiagnostic:
+            attachmentManager.gui.attachBox2.addrList[-1].ChangeValue(addr)
+            attachmentManager.gui.attachBox2.add()
+
+    loggerProgram = convertList(Attachment.find('loggerProgram').text)
+    if loggerProgram:
+        for addr in loggerProgram:
+            attachmentManager.gui.attachBox3.addrList[-1].ChangeValue(addr)
+            attachmentManager.gui.attachBox3.add()
+
+    mmtFiles = convertList(Attachment.find('mmtFiles').text)
+    if mmtFiles:
+        for addr in mmtFiles:
+            attachmentManager.gui.attachBox4.addrList[-1].ChangeValue(addr)
+            if os.path.isdir(addr):
+                attachmentManager.gui.attachBox4.typeList[-1].SetValue("Folder")
+            attachmentManager.gui.attachBox4.add()
+
+    mmtSummary = convertList(Attachment.find('mmtSummary').text)
+    if mmtSummary:
+        for addr in mmtSummary:
+            attachmentManager.gui.attachBox5.addrList[-1].ChangeValue(addr)
+            attachmentManager.gui.attachBox5.add()
+
+    SIT = convertList(Attachment.find('SIT').text)
+    if SIT:
+        for addr in SIT:
+            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+            attachmentManager.gui.attachBox6.typeList[-1].SetValue("SIT")
+            attachmentManager.gui.attachBox6.add()
+
+    STR = convertList(Attachment.find('STR').text)
+    if STR:
+        for addr in STR:
+            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+            attachmentManager.gui.attachBox6.typeList[-1].SetValue("STR")
+            attachmentManager.gui.attachBox6.add()
+
+    COL = convertList(Attachment.find('COL').text)
+    if COL:
+        for addr in COL:
+            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+            attachmentManager.gui.attachBox6.typeList[-1].SetValue("COL")
+            attachmentManager.gui.attachBox6.add()
+
+    CBL = convertList(Attachment.find('CBL').text)
+    if CBL:
+        for addr in CBL:
+            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+            attachmentManager.gui.attachBox6.typeList[-1].SetValue("CBL")
+            attachmentManager.gui.attachBox6.add()
+
+    EQP = convertList(Attachment.find('EQP').text)
+    if EQP:
+        for addr in EQP:
+            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+            attachmentManager.gui.attachBox6.typeList[-1].SetValue("EQP")
+            attachmentManager.gui.attachBox6.add()
+
+    CDT = convertList(Attachment.find('CDT').text)
+    if CDT:
+        for addr in CDT:
+            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+            attachmentManager.gui.attachBox6.typeList[-1].SetValue("CDT")
+            attachmentManager.gui.attachBox6.add()
+
+    HSN = convertList(Attachment.find('HSN').text)
+    if HSN:
+        for addr in HSN:
+            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+            attachmentManager.gui.attachBox6.typeList[-1].SetValue("HSN")
+            attachmentManager.gui.attachBox6.add()
+
+    zipPath = Attachment.find('Zip').text
+    attachmentManager.gui.zipAddr.ChangeValue(zipPath)
 
 
 #return the standard deviation of a list of numbers
@@ -4197,5 +4336,4 @@ def convertEpochSecond(num):
 
 
 	return str(h) + ":" + str(m) + ":" + str(s)
-
 
