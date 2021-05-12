@@ -4205,92 +4205,130 @@ def convertList(text):
 
 
 def AttachmentFromXML(Attachment, attachmentManager):
-    loggerFiles = convertList(Attachment.find('loggerFiles').text)
-    if loggerFiles:
-        for addr in loggerFiles:
-            attachmentManager.gui.attachBox1.addrList[-1].ChangeValue(addr)
-            if os.path.isdir(addr):
-                attachmentManager.gui.attachBox1.typeList[-1].SetValue("Folder")
-            attachmentManager.gui.attachBox1.add()
+    try:
+        loggerFiles = convertList(Attachment.find('loggerFiles').text)
+        if loggerFiles:
+            for addr in loggerFiles:
+                attachmentManager.gui.attachBox1.addrList[-1].ChangeValue(addr)
+                if os.path.isdir(addr):
+                    attachmentManager.gui.attachBox1.typeList[-1].SetValue("Folder")
+                attachmentManager.gui.attachBox1.add()
+    except:
+        pass
 
-    loggerDiagnostic = convertList(Attachment.find('loggerDiagnostic').text)
-    if loggerDiagnostic:
-        for addr in loggerDiagnostic:
-            attachmentManager.gui.attachBox2.addrList[-1].ChangeValue(addr)
-            attachmentManager.gui.attachBox2.add()
+    try: 
+        loggerDiagnostic = convertList(Attachment.find('loggerDiagnostic').text)
+        if loggerDiagnostic:
+            for addr in loggerDiagnostic:
+                attachmentManager.gui.attachBox2.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox2.add()
+    except:
+        pass
 
-    loggerProgram = convertList(Attachment.find('loggerProgram').text)
-    if loggerProgram:
-        for addr in loggerProgram:
-            attachmentManager.gui.attachBox3.addrList[-1].ChangeValue(addr)
-            attachmentManager.gui.attachBox3.add()
+    try: 
+        loggerProgram = convertList(Attachment.find('loggerProgram').text)
+        if loggerProgram:
+            for addr in loggerProgram:
+                attachmentManager.gui.attachBox3.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox3.add()
+    except:
+        pass
 
-    mmtFiles = convertList(Attachment.find('mmtFiles').text)
-    if mmtFiles:
-        for addr in mmtFiles:
-            attachmentManager.gui.attachBox4.addrList[-1].ChangeValue(addr)
-            if os.path.isdir(addr):
-                attachmentManager.gui.attachBox4.typeList[-1].SetValue("Folder")
-            attachmentManager.gui.attachBox4.add()
+    try:
+        mmtFiles = convertList(Attachment.find('mmtFiles').text)
+        if mmtFiles:
+            for addr in mmtFiles:
+                attachmentManager.gui.attachBox4.addrList[-1].ChangeValue(addr)
+                if os.path.isdir(addr):
+                    attachmentManager.gui.attachBox4.typeList[-1].SetValue("Folder")
+                attachmentManager.gui.attachBox4.add()
+    except:
+        pass
 
-    mmtSummary = convertList(Attachment.find('mmtSummary').text)
-    if mmtSummary:
-        for addr in mmtSummary:
-            attachmentManager.gui.attachBox5.addrList[-1].ChangeValue(addr)
-            attachmentManager.gui.attachBox5.add()
+    try:
+        mmtSummary = convertList(Attachment.find('mmtSummary').text)
+        if mmtSummary:
+            for addr in mmtSummary:
+                attachmentManager.gui.attachBox5.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox5.add()
+    except:
+        pass
 
-    SIT = convertList(Attachment.find('SIT').text)
-    if SIT:
-        for addr in SIT:
-            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-            attachmentManager.gui.attachBox6.typeList[-1].SetValue("SIT")
-            attachmentManager.gui.attachBox6.add()
+    try:
+        SIT = convertList(Attachment.find('SIT').text)
+        if SIT:
+            for addr in SIT:
+                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox6.typeList[-1].SetValue("SIT")
+                attachmentManager.gui.attachBox6.add()
+    except:
+        pass
 
-    STR = convertList(Attachment.find('STR').text)
-    if STR:
-        for addr in STR:
-            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-            attachmentManager.gui.attachBox6.typeList[-1].SetValue("STR")
-            attachmentManager.gui.attachBox6.add()
+    try: 
+        STR = convertList(Attachment.find('STR').text)
+        if STR:
+            for addr in STR:
+                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox6.typeList[-1].SetValue("STR")
+                attachmentManager.gui.attachBox6.add()
+    except:
+        pass
 
-    COL = convertList(Attachment.find('COL').text)
-    if COL:
-        for addr in COL:
-            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-            attachmentManager.gui.attachBox6.typeList[-1].SetValue("COL")
-            attachmentManager.gui.attachBox6.add()
+    try:
+        COL = convertList(Attachment.find('COL').text)
+        if COL:
+            for addr in COL:
+                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox6.typeList[-1].SetValue("COL")
+                attachmentManager.gui.attachBox6.add()
+    except:
+        pass
 
-    CBL = convertList(Attachment.find('CBL').text)
-    if CBL:
-        for addr in CBL:
-            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-            attachmentManager.gui.attachBox6.typeList[-1].SetValue("CBL")
-            attachmentManager.gui.attachBox6.add()
+    try:
+        CBL = convertList(Attachment.find('CBL').text)
+        if CBL:
+            for addr in CBL:
+                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox6.typeList[-1].SetValue("CBL")
+                attachmentManager.gui.attachBox6.add()
+    except:
+        pass
 
-    EQP = convertList(Attachment.find('EQP').text)
-    if EQP:
-        for addr in EQP:
-            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-            attachmentManager.gui.attachBox6.typeList[-1].SetValue("EQP")
-            attachmentManager.gui.attachBox6.add()
+    try:
+        EQP = convertList(Attachment.find('EQP').text)
+        if EQP:
+            for addr in EQP:
+                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox6.typeList[-1].SetValue("EQP")
+                attachmentManager.gui.attachBox6.add()
+    except:
+        pass
 
-    CDT = convertList(Attachment.find('CDT').text)
-    if CDT:
-        for addr in CDT:
-            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-            attachmentManager.gui.attachBox6.typeList[-1].SetValue("CDT")
-            attachmentManager.gui.attachBox6.add()
+    try:
+        CDT = convertList(Attachment.find('CDT').text)
+        if CDT:
+            for addr in CDT:
+                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox6.typeList[-1].SetValue("CDT")
+                attachmentManager.gui.attachBox6.add()
+    except:
+        pass
 
-    HSN = convertList(Attachment.find('HSN').text)
-    if HSN:
-        for addr in HSN:
-            attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-            attachmentManager.gui.attachBox6.typeList[-1].SetValue("HSN")
-            attachmentManager.gui.attachBox6.add()
-
-    zipPath = Attachment.find('Zip').text
-    attachmentManager.gui.zipAddr.ChangeValue(zipPath)
-
+    try:
+        HSN = convertList(Attachment.find('HSN').text)
+        if HSN:
+            for addr in HSN:
+                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox6.typeList[-1].SetValue("HSN")
+                attachmentManager.gui.attachBox6.add()
+    except:
+        pass
+    
+    try:
+        zipPath = Attachment.find('Zip').text
+        attachmentManager.gui.zipAddr.ChangeValue(zipPath)
+    except:
+        pass
 
 #return the standard deviation of a list of numbers
 def standardDeviation(nums):
