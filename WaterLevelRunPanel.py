@@ -258,7 +258,7 @@ class WaterLevelRunPanel(wx.Panel):
 
 
         #Level Notes Table
-        self.levelNotes = WaterLevelNotesPanel(self.mode, True, 20, self, self.runTablePanel, style=wx.BORDER_NONE, size=(-1,1))
+        self.levelNotes = WaterLevelNotesPanel(self.mode, None, self, self.runTablePanel, style=wx.BORDER_NONE, size=(-1,1))
 
         self.secondSplitPanel = wx.Panel(self.splitter)
         secondSplitSizer = wx.BoxSizer(wx.VERTICAL)
@@ -273,7 +273,7 @@ class WaterLevelRunPanel(wx.Panel):
         secondSplitSizer.Add(addRunSizer, 0, wx.EXPAND)
 
         self.addRunButton = wx.Button(self.secondSplitPanel, label=self.addRunButLbl, size=(-1, 50))
-        self.addRunButton.Bind(wx.EVT_BUTTON, self.levelNotes.OnAddRun)
+        self.addRunButton.Bind(wx.EVT_BUTTON, self.levelNotes.add)
 
         self.transferSizer = wx.BoxSizer(wx.HORIZONTAL)
         addRunSizer.Add(self.transferSizer, 5, wx.EXPAND|wx.ALL, 5)
