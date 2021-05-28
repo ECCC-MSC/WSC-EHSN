@@ -1893,29 +1893,29 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
     totalStationRb = SubElement(LevelChecks, 'totalStationRb')
     totalStationRb.text = str(waterLevelRunManager.GetTotalStationRb().GetValue())
 
-    runSizer = waterLevelRunManager.runSizer
-    if len(runSizer.GetChildren()) == 0:
+    circuits = waterLevelRunManager.GetCircuitList()
+    if len(circuits) == 0:
         LevelChecksTable = SubElement(LevelChecks, 'LevelChecksTable', run=str("0"))
         closure = SubElement(LevelChecksTable, "closure")
         upload = SubElement(LevelChecksTable, "upload")
 
-    for i in range(len(runSizer.GetChildren())):
+    for i in range(len(circuits)):
         notEmptyTable = False
 
         LevelChecksTable = SubElement(LevelChecks, 'LevelChecksTable', run=str(i))
 
-        for j in range(len(waterLevelRunManager.GetLevelNotesSizerV(i).GetChildren()) - 1):
+        for j in range(len(circuits[i])):
 
 
-            stationText = waterLevelRunManager.GetLevelNotesStation(i, j).GetValue() if waterLevelRunManager.GetLevelNotesStation(i, j).GetValue() is not None else ''
-            hourText = waterLevelRunManager.GetLevelNotesHour(i, j).GetValue() if waterLevelRunManager.GetLevelNotesHour(i, j).GetValue() is not None else ''
-            minuteText = waterLevelRunManager.GetLevelNotesMinute(i, j).GetValue() if waterLevelRunManager.GetLevelNotesMinute(i, j).GetValue() is not None else ''
-            backsightText = waterLevelRunManager.GetLevelNotesBacksight(i, j).GetValue() if waterLevelRunManager.GetLevelNotesBacksight(i, j).GetValue() is not None else ''
-            heightOfInstrumentText = waterLevelRunManager.GetLevelNotesHI(i, j).GetValue() if waterLevelRunManager.GetLevelNotesHI(i, j).GetValue() is not None else ''
-            foresightText = waterLevelRunManager.GetLevelNotesForesight(i, j).GetValue() if waterLevelRunManager.GetLevelNotesForesight(i, j).GetValue() is not None else ''
-            elevationText = waterLevelRunManager.GetLevelNotesElevation(i, j).GetValue() if waterLevelRunManager.GetLevelNotesElevation(i, j).GetValue() is not None else ''
-            establishText = waterLevelRunManager.GetLevelNotesEstablishedElevation(i, j).GetValue() if waterLevelRunManager.GetLevelNotesEstablishedElevation(i, j).GetValue() is not None else ''
-            commentsText = waterLevelRunManager.GetLevelNotesComments(i, j).GetValue() if waterLevelRunManager.GetLevelNotesComments(i, j).GetValue() is not None else ''
+            stationText = waterLevelRunManager.GetLevelNotesStation(i, j) if waterLevelRunManager.GetLevelNotesStation(i, j) is not None else ''
+            hourText = waterLevelRunManager.GetLevelNotesHour(i, j) if waterLevelRunManager.GetLevelNotesHour(i, j) is not None else ''
+            minuteText = waterLevelRunManager.GetLevelNotesMinute(i, j) if waterLevelRunManager.GetLevelNotesMinute(i, j) is not None else ''
+            backsightText = waterLevelRunManager.GetLevelNotesBacksight(i, j) if waterLevelRunManager.GetLevelNotesBacksight(i, j) is not None else ''
+            heightOfInstrumentText = waterLevelRunManager.GetLevelNotesHI(i, j) if waterLevelRunManager.GetLevelNotesHI(i, j) is not None else ''
+            foresightText = waterLevelRunManager.GetLevelNotesForesight(i, j) if waterLevelRunManager.GetLevelNotesForesight(i, j) is not None else ''
+            elevationText = waterLevelRunManager.GetLevelNotesElevation(i, j) if waterLevelRunManager.GetLevelNotesElevation(i, j) is not None else ''
+            establishText = waterLevelRunManager.GetLevelNotesEstablishedElevation(i, j) if waterLevelRunManager.GetLevelNotesEstablishedElevation(i, j) is not None else ''
+            commentsText = waterLevelRunManager.GetLevelNotesComments(i, j) if waterLevelRunManager.GetLevelNotesComments(i, j) is not None else ''
 
 
             notEmptyRow = False
@@ -1981,10 +1981,10 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
         #Summary Info
         if notEmptyTable:
             closure = SubElement(LevelChecksTable, "closure")
-            closure.text = str(waterLevelRunManager.GetClosureText(i).GetValue())
+            closure.text = str(waterLevelRunManager.GetClosureText(i))
 
             upload = SubElement(LevelChecksTable, "upload")
-            upload.text = str(waterLevelRunManager.GetUploadCheckBox(i).GetValue())
+            upload.text = str(waterLevelRunManager.GetUploadCheckBox(i))
 
         else:
             closure = SubElement(LevelChecksTable, "closure")
@@ -2060,42 +2060,31 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
         pass
     
     runSizer = waterLevelRunManager.runSizer
-    #Reset Table
-
-    for i in range(len(runSizer.GetChildren())):
-        waterLevelRunManager.RemoveRun(0)
-
-    #Remove all previous summaries
-    for i in range(len(waterLevelRunManager.timeValSizer.GetChildren())):
-        waterLevelRunManager.gui.RemoveEntry(0)
+    levelNotes = waterLevelRunManager.levelNotes
+    panel = waterLevelRunManager.levelNotes.panel
 
     waterLevelRunManager.commentsCtrl = ""
-    index = 0
+    newCircuitList = []
+    newClosureList = []
+    newUploadList = []
     for LevelChecksTable in LevelChecks.findall('LevelChecksTable'):
 
-        waterLevelRunManager.AddRun()
-
-        for LevelChecksRow in LevelChecksTable.findall('LevelChecksRow'):
-
-            row = int(LevelChecksRow.get('row'))
-            if row > 5:
-                waterLevelRunManager.AddEntry(index)
 
         if LevelChecksTable is not None:
             #Level Checks Summary + closure
             try:
                 if LevelChecksTable.find('closure') is not None:
                     closure = LevelChecksTable.find('closure').text if LevelChecksTable.find('closure').text is not None else ""
-                    waterLevelRunManager.GetClosureText(index).SetValue(closure)
+                    newClosureList.append(closure)    
 
                 if LevelChecksTable.find('upload') is not None:
                     upload = LevelChecksTable.find('upload').text if LevelChecksTable.find('upload').text is not None else ""
          
                     if upload == "True":
 
-                        waterLevelRunManager.GetUploadCheckBox(index).SetValue(True)
+                        newUploadList.append(True)
                     else:
-                        waterLevelRunManager.GetUploadCheckBox(index).SetValue(False)
+                        newUploadList.append(False)
 
 
             # except:
@@ -2103,25 +2092,22 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
             #     waterLevelRunManager.GetClosureText(index).SetValue("")
             except Exception as e:
                 print str(e)
-                waterLevelRunManager.GetClosureText(index).SetValue("")
+                newClosureList.append("")
+                newUploadList.append(False) 
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 print(exc_type, fname, exc_tb.tb_lineno)
-            index += 1
 
+    levelNotes.uploadList = newUploadList
+    levelNotes.closureList = newClosureList
     # waterLevelRunManager.manager.gui.LoadDefaultConfig()
 
     for LevelChecksTable in LevelChecks.findall('LevelChecksTable'):
         if LevelChecksTable.get('run') is not None:
             run = int(LevelChecksTable.get('run'))
 
-            rowIndex = -1
+            circuit = []
             for LevelChecksRow in LevelChecksTable.findall('LevelChecksRow'):
-                rowIndex += 1
-                row = int(LevelChecksRow.get('row'))
-                if rowIndex != row:
-                    waterLevelRunManager.AddEntry(run)
-                    rowIndex = row
                 station = LevelChecksRow.find('station').text
                 hour = ""
                 minute = ""
@@ -2141,22 +2127,20 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
                     establish = None
                 comments = LevelChecksRow.find('comments').text
 
-                waterLevelRunManager.GetLevelNotesStation(run, row).ChangeValue("" if station is None else station)
-                waterLevelRunManager.GetLevelNotesTime(run, row).ChangeHourVal("" if hour is None else hour)
-                waterLevelRunManager.GetLevelNotesTime(run, row).ChangeMinuteVal("" if minute is None else minute)
-                waterLevelRunManager.GetLevelNotesBacksight(run, row).ChangeValue("" if backsight is None else backsight)
-                waterLevelRunManager.GetLevelNotesHI(run, row).ChangeValue("" if htInst is None else htInst)
-                waterLevelRunManager.GetLevelNotesForesight(run, row).ChangeValue("" if foresight is None else foresight)
-                waterLevelRunManager.GetLevelNotesElevation(run, row).SetValue("" if elevation is None else elevation)
-                waterLevelRunManager.GetLevelNotesEstablishedElevation(run, row).SetValue("" if establish is None else establish)
-                waterLevelRunManager.GetLevelNotesComments(run, row).ChangeValue("" if comments is None else comments)
+                circuit.append(["" if station is None else station, "" if hour is None else hour, "" if minute is None else minute,
+                                "" if backsight is None else backsight, "" if htInst is None else htInst, "" if foresight is None else foresight,
+                                "" if elevation is None else elevation, False, "" if comments is None else comments, False, "" if establish is None else establish])
+        if len(circuit) <= 6:
+            for x in range(6 - len(circuit)):
+                circuit.append(["", "", "", "", "", "", "", False, "", False, ""])
+                
+        newCircuitList.append(circuit)
 
 
 
-
-                waterLevelRunManager.EnableEntry(run, row, True)
-
-            waterLevelRunManager.FindMatchBM(run)
+    levelNotes.circuitList = newCircuitList
+    levelNotes.jumpToPage(0)
+    
 
 
 
