@@ -137,7 +137,7 @@ class ElectronicHydrometricSurveyNotes:
         self.gui = EHSNGui(mode, EHSN_VERSION, None, title=self.headerTitle, size=eHSN_WINDOW_SIZE)
         self.SetupManagers()
         self.stageMeasManager.AddEntry()
-        self.waterLevelRunManager.AddRun()
+        self.stationBmUpdate()        
         # 6 Entries
         for i in range(9):
             self.movingBoatMeasurementsManager.AddEntry()
@@ -194,6 +194,11 @@ class ElectronicHydrometricSurveyNotes:
     def GetLayout(self):
         return self.gui.layout
 
+    def stationBmUpdate(self):
+        for station in self.waterLevelRunManager.gui.levelNotes.panel.stationList:
+            station.Bind(wx.EVT_TEXT, self.gui.OnLevelNoteStationSelect)
+        for descButton in self.waterLevelRunManager.gui.levelNotes.panel.descList:
+            descButton.Bind(wx.EVT_BUTTON, self.gui.OnLevelNoteEstablishedBtn)
 
     # def OnExit(self):
     #     # if self.gui.fullname == '':
