@@ -1,17 +1,7 @@
 # All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
 # Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 
-import wx
-import os
-import sys
-import shutil
-from zipfile import ZipFile
 from ElectronicFieldNotesGUI import *
-from AttachmentTitle import *
-from AttachTag import *
-from AttachBox import *
-from AttachFolderBox import *
-from AttachPhotoBox import *
 from WaterLevelTablePanel import *
 
 
