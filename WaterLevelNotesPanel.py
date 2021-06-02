@@ -339,7 +339,23 @@ class WaterLevelNotesPanel(wx.Panel):
 
         #        levelNotesSizerV.Layout()
         #        self.Update()
-
+    
+    def IsUploaded(self):
+        for circuitIndex in range(len(self.circuitList)):
+            if self.uploadList[circuitIndex]:
+                return True
+        return False
+    
+    # If any upload checkbox selected including any value in the circuit, will return False. Otherwise, return True
+    def IsEmpty(self):
+        if not self.IsUploaded():
+            return True
+        for circuitIndex in range(len(self.circuitList)):
+            if self.uploadList[circuitIndex]:
+                for rowIndex in range(len(self.circuitList[circuitIndex])):
+                    if self.circuitList[circuitIndex][rowIndex][0] != "":
+                        return False
+        return True
 
 def main():
     app = wx.App()
