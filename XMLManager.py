@@ -4139,6 +4139,9 @@ def MidsecMeasFromXML124(MidsecMeas, midsecMeasurementsManager):
             # midsecMeasurementsManager.GetNextPid()
 
 def AttachmentAsXMLTree(Attachment, attachmentManager):
+    loggerFolder = SubElement(Attachment, "loggerFolder")
+    loggerFolder.text = str(attachmentManager.returnLoggerFolder())
+    
     loggerFiles = SubElement(Attachment, "loggerFiles")
     loggerFiles.text = str(attachmentManager.returnLoggerFiles())
 
@@ -4177,6 +4180,15 @@ def AttachmentAsXMLTree(Attachment, attachmentManager):
 
     Zip = SubElement(Attachment, "Zip")
     Zip.text = str(attachmentManager.returnZip())
+    
+    logData = SubElement(Attachment, "logData")
+    logData.text = str(attachmentManager.returnData())
+    
+    logDiagnostic = SubElement(Attachment, "logDiagnostic")
+    logDiagnostic.text = str(attachmentManager.returnDiagnostic())
+    
+    logProgram = SubElement(Attachment, "logProgram")
+    logProgram.text = str(attachmentManager.returnProgram())
 
 # convert text into list of address
 def convertList(text):
@@ -4190,13 +4202,20 @@ def convertList(text):
 
 def AttachmentFromXML(Attachment, attachmentManager):
     try:
+        loggerFolder = convertList(Attachment.find('loggerFolder').text)
+        if loggerFolder:
+            for addr in loggerFolder:
+                attachmentManager.gui.attachBox1.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox1.add()
+    except:
+        pass
+
+    try:
         loggerFiles = convertList(Attachment.find('loggerFiles').text)
         if loggerFiles:
             for addr in loggerFiles:
-                attachmentManager.gui.attachBox1.addrList[-1].ChangeValue(addr)
-                if os.path.isdir(addr):
-                    attachmentManager.gui.attachBox1.typeList[-1].SetValue("Folder")
-                attachmentManager.gui.attachBox1.add()
+                attachmentManager.gui.attachBox2.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox2.add()
     except:
         pass
 
@@ -4204,8 +4223,8 @@ def AttachmentFromXML(Attachment, attachmentManager):
         loggerDiagnostic = convertList(Attachment.find('loggerDiagnostic').text)
         if loggerDiagnostic:
             for addr in loggerDiagnostic:
-                attachmentManager.gui.attachBox2.addrList[-1].ChangeValue(addr)
-                attachmentManager.gui.attachBox2.add()
+                attachmentManager.gui.attachBox3.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox3.add()
     except:
         pass
 
@@ -4213,8 +4232,8 @@ def AttachmentFromXML(Attachment, attachmentManager):
         loggerProgram = convertList(Attachment.find('loggerProgram').text)
         if loggerProgram:
             for addr in loggerProgram:
-                attachmentManager.gui.attachBox3.addrList[-1].ChangeValue(addr)
-                attachmentManager.gui.attachBox3.add()
+                attachmentManager.gui.attachBox4.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox4.add()
     except:
         pass
 
@@ -4222,10 +4241,10 @@ def AttachmentFromXML(Attachment, attachmentManager):
         mmtFiles = convertList(Attachment.find('mmtFiles').text)
         if mmtFiles:
             for addr in mmtFiles:
-                attachmentManager.gui.attachBox4.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox5.addrList[-1].ChangeValue(addr)
                 if os.path.isdir(addr):
-                    attachmentManager.gui.attachBox4.typeList[-1].SetValue("Folder")
-                attachmentManager.gui.attachBox4.add()
+                    attachmentManager.gui.attachBox5.typeList[-1].SetValue("Folder")
+                attachmentManager.gui.attachBox5.add()
     except:
         pass
 
@@ -4233,8 +4252,8 @@ def AttachmentFromXML(Attachment, attachmentManager):
         mmtSummary = convertList(Attachment.find('mmtSummary').text)
         if mmtSummary:
             for addr in mmtSummary:
-                attachmentManager.gui.attachBox5.addrList[-1].ChangeValue(addr)
-                attachmentManager.gui.attachBox5.add()
+                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox6.add()
     except:
         pass
 
@@ -4242,9 +4261,9 @@ def AttachmentFromXML(Attachment, attachmentManager):
         SIT = convertList(Attachment.find('SIT').text)
         if SIT:
             for addr in SIT:
-                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-                attachmentManager.gui.attachBox6.typeList[-1].SetValue("SIT")
-                attachmentManager.gui.attachBox6.add()
+                attachmentManager.gui.attachBox7.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox7.typeList[-1].SetValue("SIT")
+                attachmentManager.gui.attachBox7.add()
     except:
         pass
 
@@ -4252,9 +4271,9 @@ def AttachmentFromXML(Attachment, attachmentManager):
         STR = convertList(Attachment.find('STR').text)
         if STR:
             for addr in STR:
-                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-                attachmentManager.gui.attachBox6.typeList[-1].SetValue("STR")
-                attachmentManager.gui.attachBox6.add()
+                attachmentManager.gui.attachBox7.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox7.typeList[-1].SetValue("STR")
+                attachmentManager.gui.attachBox7.add()
     except:
         pass
 
@@ -4262,9 +4281,9 @@ def AttachmentFromXML(Attachment, attachmentManager):
         COL = convertList(Attachment.find('COL').text)
         if COL:
             for addr in COL:
-                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-                attachmentManager.gui.attachBox6.typeList[-1].SetValue("COL")
-                attachmentManager.gui.attachBox6.add()
+                attachmentManager.gui.attachBox7.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox7.typeList[-1].SetValue("COL")
+                attachmentManager.gui.attachBox7.add()
     except:
         pass
 
@@ -4272,9 +4291,9 @@ def AttachmentFromXML(Attachment, attachmentManager):
         CBL = convertList(Attachment.find('CBL').text)
         if CBL:
             for addr in CBL:
-                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-                attachmentManager.gui.attachBox6.typeList[-1].SetValue("CBL")
-                attachmentManager.gui.attachBox6.add()
+                attachmentManager.gui.attachBox7.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox7.typeList[-1].SetValue("CBL")
+                attachmentManager.gui.attachBox7.add()
     except:
         pass
 
@@ -4282,9 +4301,9 @@ def AttachmentFromXML(Attachment, attachmentManager):
         EQP = convertList(Attachment.find('EQP').text)
         if EQP:
             for addr in EQP:
-                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-                attachmentManager.gui.attachBox6.typeList[-1].SetValue("EQP")
-                attachmentManager.gui.attachBox6.add()
+                attachmentManager.gui.attachBox7.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox7.typeList[-1].SetValue("EQP")
+                attachmentManager.gui.attachBox7.add()
     except:
         pass
 
@@ -4292,9 +4311,9 @@ def AttachmentFromXML(Attachment, attachmentManager):
         CDT = convertList(Attachment.find('CDT').text)
         if CDT:
             for addr in CDT:
-                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-                attachmentManager.gui.attachBox6.typeList[-1].SetValue("CDT")
-                attachmentManager.gui.attachBox6.add()
+                attachmentManager.gui.attachBox7.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox7.typeList[-1].SetValue("CDT")
+                attachmentManager.gui.attachBox7.add()
     except:
         pass
 
@@ -4302,15 +4321,42 @@ def AttachmentFromXML(Attachment, attachmentManager):
         HSN = convertList(Attachment.find('HSN').text)
         if HSN:
             for addr in HSN:
-                attachmentManager.gui.attachBox6.addrList[-1].ChangeValue(addr)
-                attachmentManager.gui.attachBox6.typeList[-1].SetValue("HSN")
-                attachmentManager.gui.attachBox6.add()
+                attachmentManager.gui.attachBox7.addrList[-1].ChangeValue(addr)
+                attachmentManager.gui.attachBox7.typeList[-1].SetValue("HSN")
+                attachmentManager.gui.attachBox7.add()
     except:
         pass
     
     try:
         zipPath = Attachment.find('Zip').text
         attachmentManager.gui.zipAddr.ChangeValue(zipPath)
+    except:
+        pass
+    
+    try:
+        data = Attachment.find('logData').text
+        if data == "True":
+            attachmentManager.gui.attachBox1.dataCheck.SetValue(True)
+        else:
+            attachmentManager.gui.attachBox1.dataCheck.SetValue(False)
+    except:
+        pass
+    
+    try:
+        diagnostic = Attachment.find('logDiagnostic').text
+        if diagnostic == "True":
+            attachmentManager.gui.attachBox1.diagnosticCheck.SetValue(True)
+        else:
+            attachmentManager.gui.attachBox1.diagnosticCheck.SetValue(False)
+    except:
+        pass
+    
+    try:
+        program = Attachment.find('logProgram').text
+        if program == "True":
+            attachmentManager.gui.attachBox1.programCheck.SetValue(True)
+        else:
+            attachmentManager.gui.attachBox1.programCheck.SetValue(False)
     except:
         pass
 
