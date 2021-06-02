@@ -47,7 +47,7 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
 
         self.layoutSizer.Add(self.columnList[-1])
         self.SetupScrolling()
-        self.ShowScrollbars(wx.SHOW_SB_NEVER, wx.SHOW_SB_ALWAYS)
+        self.ShowScrollbars(wx.SHOW_SB_NEVER, wx.SHOW_SB_DEFAULT)
 
     def check(self):
         for x in self.buttonList:
@@ -167,7 +167,7 @@ def main():
     app = wx.App()
 
     frame = wx.Frame(None, size=(850, 600))
-    AttachFolderBox(wx.Frame, "DEBUG", frame)
+    AttachFileFolderBox(wx.Frame, "DEBUG", frame)
 
     frame.Show()
     app.MainLoop()
