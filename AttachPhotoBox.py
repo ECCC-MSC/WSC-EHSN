@@ -47,7 +47,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.layoutSizer.Add(self.columnList[-1])
 
         self.SetupScrolling()
-        self.ShowScrollbars(wx.SHOW_SB_NEVER, wx.SHOW_SB_ALWAYS)
+        self.ShowScrollbars(wx.SHOW_SB_NEVER, wx.SHOW_SB_DEFAULT)
 
     def check(self):
         for x in self.buttonList:
