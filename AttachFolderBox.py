@@ -13,7 +13,8 @@ class AttachFolderBox(wx.Panel):
         self.func = func
         self.manager = None
         self.barSize = (710, -1)
-        self.buttonSize = (30, -1)
+        self.buttonSize = (30, 24)
+        self.browseSize = (-1, 24)
         self.buttonList = []
         self.addrList = []
         self.browseList = []
@@ -27,6 +28,8 @@ class AttachFolderBox(wx.Panel):
 
         self.layoutSizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.layoutSizer)
+        self.tableSizer = wx.BoxSizer(wx.VERTICAL)
+        self.column = wx.BoxSizer(wx.HORIZONTAL)
         
         self.pathPanel = scrolled.ScrolledPanel(self, style = wx.NO_BORDER)
         self.pathSizer = wx.BoxSizer(wx.VERTICAL)
@@ -34,9 +37,9 @@ class AttachFolderBox(wx.Panel):
         
         self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
 
-        self.buttonList.append(wx.Button(self.pathPanel, label="+", size=self.buttonSize))
+        self.buttonList.append(wx.Button(self.pathPanel, label="-", size=self.buttonSize))
         self.addrList.append(wx.TextCtrl(self.pathPanel, size=self.barSize))
-        self.browseList.append(wx.Button(self.pathPanel, label="Browse"))
+        self.browseList.append(wx.Button(self.pathPanel, label="Browse", size=self.browseSize))
         self.pathList.append("")
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
@@ -46,7 +49,15 @@ class AttachFolderBox(wx.Panel):
         self.columnList[-1].Add(self.addrList[-1])
         self.columnList[-1].Add(self.browseList[-1])
 
-        self.pathSizer.Add(self.columnList[-1])
+        self.tableSizer.Add(self.columnList[-1])
+        
+        self.addButton = wx.Button(self.pathPanel, label="+", size=self.buttonSize)
+        self.addButton.Bind(wx.EVT_BUTTON, self.add_remove)
+        self.column.Add(self.addButton)
+
+        self.pathSizer.Add(self.tableSizer)
+        self.pathSizer.Add(self.column)
+        
         self.layoutSizer.Add(self.pathPanel, 1, wx.EXPAND)
         
         self.spit = wx.Panel(self, style = wx.SIMPLE_BORDER, size = (-1, 1))
@@ -91,18 +102,11 @@ class AttachFolderBox(wx.Panel):
             evt.GetEventObject().SetValue(False)
         evt.Skip()
 
-    def check(self):
-        for x in self.buttonList:
-            if x != self.buttonList[-1]:
-                x.SetLabel("-")
-            else:
-                x.SetLabel("+")
-
     def add(self):
         self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
-        self.buttonList.append(wx.Button(self.pathPanel, label="+", size=self.buttonSize))
+        self.buttonList.append(wx.Button(self.pathPanel, label="-", size=self.buttonSize))
         self.addrList.append(wx.TextCtrl(self.pathPanel, size=self.barSize))
-        self.browseList.append(wx.Button(self.pathPanel, label="Browse"))
+        self.browseList.append(wx.Button(self.pathPanel, label="Browse", size=self.browseSize))
         self.pathList.append("")
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
@@ -111,8 +115,7 @@ class AttachFolderBox(wx.Panel):
         self.columnList[-1].Add(self.addrList[-1])
         self.columnList[-1].Add(self.browseList[-1])
 
-        self.pathSizer.Add(self.columnList[-1])
-        self.check()
+        self.tableSizer.Add(self.columnList[-1])
         self.layoutSizer.Layout()
 
         self.Update()
@@ -120,9 +123,9 @@ class AttachFolderBox(wx.Panel):
     def add_remove(self, evt):
         if evt.GetEventObject().GetLabel() == "+":
             self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
-            self.buttonList.append(wx.Button(self.pathPanel, label="+", size=self.buttonSize))
+            self.buttonList.append(wx.Button(self.pathPanel, label="-", size=self.buttonSize))
             self.addrList.append(wx.TextCtrl(self.pathPanel, size=self.barSize))
-            self.browseList.append(wx.Button(self.pathPanel, label="Browse"))
+            self.browseList.append(wx.Button(self.pathPanel, label="Browse", size=self.browseSize))
             self.pathList.append("")
 
             self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
@@ -131,8 +134,7 @@ class AttachFolderBox(wx.Panel):
             self.columnList[-1].Add(self.addrList[-1])
             self.columnList[-1].Add(self.browseList[-1])
 
-            self.pathSizer.Add(self.columnList[-1])
-            self.check()
+            self.tableSizer.Add(self.columnList[-1])
             self.layoutSizer.Layout()
 
             self.Update()
@@ -153,7 +155,6 @@ class AttachFolderBox(wx.Panel):
                 self.diagnosticCheck.SetValue(False)
                 self.programCheck.SetValue(False)
 
-            self.check()
             self.layoutSizer.Layout()
             self.Update()
         self.parent.Layout()

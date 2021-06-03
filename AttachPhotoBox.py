@@ -13,7 +13,8 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.func = func
         self.manager = None
         self.barSize = (655, -1)
-        self.buttonSize = (30, -1)
+        self.buttonSize = (30, 24)
+        self.browseSize = (-1, 24)
         self.buttonList = []
         self.addrList = []
         self.browseList = []
@@ -28,14 +29,16 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
         self.layoutSizer = wx.BoxSizer(wx.VERTICAL)
         self.SetSizer(self.layoutSizer)
+        self.tableSizer = wx.BoxSizer(wx.VERTICAL)
+        self.column = wx.BoxSizer(wx.HORIZONTAL)
 
         self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
 
-        self.buttonList.append(wx.Button(self, label="+", size=self.buttonSize))
+        self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
         self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.TE_READONLY, choices=self.type))
         self.typeList[-1].SetValue("SIT")
         self.addrList.append(wx.TextCtrl(self, size=self.barSize))
-        self.browseList.append(wx.Button(self, label="Browse"))
+        self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
         self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
@@ -44,25 +47,24 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.columnList[-1].Add(self.typeList[-1])
         self.columnList[-1].Add(self.addrList[-1])
         self.columnList[-1].Add(self.browseList[-1])
-        self.layoutSizer.Add(self.columnList[-1])
-
+        self.tableSizer.Add(self.columnList[-1])
+        
+        self.addButton = wx.Button(self, label="+", size=self.buttonSize)
+        self.addButton.Bind(wx.EVT_BUTTON, self.add_remove)
+        self.column.Add(self.addButton)
+        
+        self.layoutSizer.Add(self.tableSizer)
+        self.layoutSizer.Add(self.column)
         self.SetupScrolling()
         self.ShowScrollbars(wx.SHOW_SB_NEVER, wx.SHOW_SB_DEFAULT)
 
-    def check(self):
-        for x in self.buttonList:
-            if x != self.buttonList[-1]:
-                x.SetLabel("-")
-            else:
-                x.SetLabel("+")
-
     def add(self):
         self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
-        self.buttonList.append(wx.Button(self, label="+", size=self.buttonSize))
+        self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
         self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN | wx.TE_READONLY, choices=self.type))
         self.typeList[-1].SetValue("SIT")
         self.addrList.append(wx.TextCtrl(self, size=self.barSize))
-        self.browseList.append(wx.Button(self, label="Browse"))
+        self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
         self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
@@ -71,19 +73,18 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.columnList[-1].Add(self.addrList[-1])
         self.columnList[-1].Add(self.browseList[-1])
 
-        self.layoutSizer.Add(self.columnList[-1])
-        self.check()
+        self.tableSizer.Add(self.columnList[-1])
         self.layoutSizer.Layout()
         self.Update()
 
     def add_remove(self, evt):
         if evt.GetEventObject().GetLabel() == "+":
             self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
-            self.buttonList.append(wx.Button(self, label="+", size=self.buttonSize))
+            self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
             self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN | wx.TE_READONLY, choices=self.type))
             self.typeList[-1].SetValue("SIT")
             self.addrList.append(wx.TextCtrl(self, size=self.barSize))
-            self.browseList.append(wx.Button(self, label="Browse"))
+            self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
             self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
             self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
@@ -92,8 +93,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
             self.columnList[-1].Add(self.addrList[-1])
             self.columnList[-1].Add(self.browseList[-1])
 
-            self.layoutSizer.Add(self.columnList[-1])
-            self.check()
+            self.tableSizer.Add(self.columnList[-1])
             self.layoutSizer.Layout()
             self.Update()
 
@@ -109,7 +109,6 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
             del self.addrList[id]
             del self.browseList[id]
 
-            self.check()
             self.layoutSizer.Layout()
             self.Update()
         self.parent.Layout()
