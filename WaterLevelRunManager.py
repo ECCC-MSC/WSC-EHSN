@@ -156,7 +156,8 @@ class WaterLevelRunManager(object):
                     if bool(ckbox1) or bool(ckbox2):
                         find = True
                         time = self.GetLevelNotesTime(circuitIndex, rowIndex)
-                        station = self.GetLevelNotesStation(circuitIndex, rowIndex)
+                        #station = self.GetLevelNotesStation(circuitIndex, rowIndex)
+                        station = self.GetLevelNotesStation(circuitIndex, 0)
                         elevation = self.GetLevelNotesElevation(circuitIndex, rowIndex)
                         establishedEle = self.GetLevelNotesEstablishedElevation(circuitIndex, rowIndex)
                         timeList.append(time)
