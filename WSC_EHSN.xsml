@@ -2013,10 +2013,10 @@
             <td class="noborder" align="left">
                 <xsl:choose>
                     <xsl:when test="methodType='Other Methods'">
-                        <b>Structure Type: </b><xsl:value-of select="otherMethods/structureType"/>
+                        <b>Structure Type: </b><xsl:value-of select="monitoringMethod"/>
                     </xsl:when>
                     <xsl:when test="methodType='Engineered Structures'">
-                        <b>Engineered Structure: </b><xsl:value-of select="engineeredStructures/monitoringMethod"/>
+                        <b>Engineered Structure: </b><xsl:value-of select="structureType"/>
                     </xsl:when>
                     <xsl:otherwise>
                     </xsl:otherwise>
