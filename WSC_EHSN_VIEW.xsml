@@ -310,6 +310,7 @@
 						<td align="center"><b>WL2 Reference (m):</b><xsl:value-of select="WL2Header"/>
 
 						</td>
+						<th>Surge (+/- m)</th>
 						<th>Sensor Reset Correction</th>
 						<th><font>Action Taken</font></th>
 						<th>Reading Type</th>
@@ -321,6 +322,7 @@
 							<td  align="center"><xsl:value-of select="HG1"/></td>
 							<td  align="center"><xsl:value-of select="HG2"/></td>
 							<td  align="center"><xsl:value-of select="WL1"/></td>
+							<td  align="center"><xsl:value-of select="WL2"/></td>
 							<td  align="center"><xsl:value-of select="WL2"/></td>
 							<td  align="center"><font color="blue"><xsl:value-of select="SRC"/></font></td>
 							<td align="center">
@@ -370,11 +372,13 @@
 							<td  align="center"></td>
 							<td  align="center"></td>
 							<td  align="center"></td>
+							<td  align="center"></td>
 							<td align="center"></td>
 							<td align="center"></td>
 					</tr>
 					<tr>
 							<td  align="center" colspan="2">&#160;</td>
+							<td  align="center"></td>
 							<td  align="center"></td>
 							<td  align="center"></td>
 							<td  align="center"></td>
@@ -390,7 +394,7 @@
 						<td  align="center"><font color="blue"><xsl:value-of select="MGHHG2"/></font></td>
 						<td  align="center" ><font color="blue"><xsl:value-of select="MGHWL1"/></font></td>
 						<td  align="center" ><font color="blue"><xsl:value-of select="MGHWL2"/></font></td>
-						<td  align="center" colspan="3"><b>MGH Aggr. Method:</b></td>
+						<td  align="center" colspan="4"><b>MGH Aggr. Method:</b></td>
 
 
 					</tr>
@@ -404,7 +408,7 @@
 							</xsl:attribute>
 						</td>
 
-						<td align="center" colspan="3"><xsl:value-of select="MghMethod"/></td>
+						<td align="center" colspan="4"><xsl:value-of select="MghMethod"/></td>
 
 					</tr>
 					<tr class="noborder"  style="padding-right:0em; padding-top:0em; ">
@@ -413,7 +417,7 @@
 						<td align="center"><xsl:value-of select="GCHG2"/></td>
 						<td align="center"><xsl:value-of select="GCWL1"/></td>
 						<td align="center"><xsl:value-of select="GCWL2"/></td>
-						<td class="noborder" bgcolor="#C8C8C8" colspan="3">
+						<td class="noborder" bgcolor="#C8C8C8" colspan="4">
 							<xsl:attribute name="style">
 								background-color: #C8C8C8;
 							</xsl:attribute>
@@ -426,7 +430,7 @@
 						<td align="center"><font color="blue"><xsl:value-of select="CMGHHG2"/></font></td>
 						<td align="center"><font color="blue"><xsl:value-of select="CMGHWL1"/></font></td>
 						<td align="center"><font color="blue"><xsl:value-of select="CMGHWL2"/></font></td>
-						<td class="noborder" bgcolor="#C8C8C8" colspan="3">
+						<td class="noborder" bgcolor="#C8C8C8" colspan="4">
 							<xsl:attribute name="style">
 								background-color: #C8C8C8;
 							</xsl:attribute>
@@ -435,7 +439,7 @@
 					</tr>
 					<tr>
 						<th colspan="2">Stage Activity<br/>Summary Remarks</th>
-						<td colspan="7" style="text-align:left;vertical-align:top;word-wrap:break-word">
+						<td colspan="8" style="text-align:left;vertical-align:top;word-wrap:break-word">
 							<xsl:call-template name="LFsToBRs">
 								<xsl:with-param name="input" select="stageRemark"/>
 							</xsl:call-template>
@@ -1024,7 +1028,8 @@
 			<th rowspan="2">Corrected Water Level</th>
 			<th>HG</th>
 			<th>HG2</th>
-			<th rowspan="2">Surge/Comment</th>
+			<th rowspan="2">Surge</th>
+			<th rowspan="2">Comment</th>
 		</tr>
 		<tr>
 			<th><xsl:value-of select="LevelChecks/loggerName"/></th>
@@ -1042,6 +1047,7 @@
 				<td><xsl:value-of select="loggerReading"/></td>
 				<td><xsl:value-of select="loggerReading2"/></td>
 				<td align="left"><xsl:value-of select="surge"/></td>
+				<td align="left"><xsl:value-of select="Comment"/></td>
 			</tr>
 		</xsl:for-each>
 		</tbody>
