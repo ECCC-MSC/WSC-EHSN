@@ -144,6 +144,9 @@ def StageMeasAsXMLTree(StageMeas, stageMeasManager):
         WL2 = SubElement(StageMeasRow, 'WL2')
         WL2.text = str(stageMeasManager.GetWLSubSizerRVal(row))
 
+        surge = SubElement(StageMeasRow, 'Surge')
+        surge.text = str(stageMeasManager.GetSurgeVal(row))
+
         SRC = SubElement(StageMeasRow, 'SRC')
         SRC.text = str(stageMeasManager.GetSrcSizerVal(row))
 
@@ -266,6 +269,7 @@ def StageMeasFromXML(StageMeas, stageMeasManager):
         HG2 = StageMeasRow.find('HG2').text
         WL1 = StageMeasRow.find('WL1').text
         WL2 = StageMeasRow.find('WL2').text
+        surge = StageMeasRow.find('Surge')
         SRC = StageMeasRow.find('SRC').text
         SRCApp = StageMeasRow.find('SRCApp')
         MghCkbox = StageMeasRow.find('MghCkbox')
@@ -278,12 +282,16 @@ def StageMeasFromXML(StageMeas, stageMeasManager):
             MghCkbox = MghCkbox.text
         if ReadingType is not None:
             ReadingType = ReadingType.text
+        if surge is not None:
+            surge = surge.text
+            
 
         stageMeasManager.SetTimeVal(row, "" if time is None else time)
         stageMeasManager.SetHGVal(row, "" if HG1 is None else HG1)
         stageMeasManager.SetHG2Val(row, "" if HG2 is None else HG2)
         stageMeasManager.SetWLSubSizerLVal(row, "" if WL1 is None else WL1)
         stageMeasManager.SetWLSubSizerRVal(row, "" if WL2 is None else WL2)
+        stageMeasManager.SetSurgeVal(row, "" if surge is None else surge)
         stageMeasManager.SetSrcSizerVal(row, "" if SRC is None else SRC)
         stageMeasManager.SetSrcAppSizerVal(row, "" if SRCApp is None else SRCApp)
         stageMeasManager.SetMghAggCheckbox(row, "" if MghCkbox is None else MghCkbox)
@@ -2016,6 +2024,9 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
         surge = SubElement(SummaryTableRow, 'surge')
         surge.text = waterLevelRunManager.GetSurgeVal(int(i))
 
+        comment = SubElement(SummaryTableRow, 'Comment')
+        comment.text = waterLevelRunManager.GetCommentVal(int(i))
+        
         wlElev = SubElement(SummaryTableRow, 'wlElev')
         wlElev.text = waterLevelRunManager.GetWLElevVal(int(i))
 
@@ -2174,6 +2185,10 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
         surge = SummaryTableRow.find('surge').text
         wlElev = SummaryTableRow.find('wlElev').text
         try:
+            comment = SummaryTableRow.find('Comment').text
+        except (RuntimeError, AttributeError):
+            comment = ""
+        try:
             datum = SummaryTableRow.find('datum').text
         except (RuntimeError, AttributeError):
             datum = ""
@@ -2198,6 +2213,7 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
         # waterLevelRunManager.SetUpDownVal(row, "" if updown is None else updown)
         waterLevelRunManager.SetSurgeVal(row, "" if surge is None else surge)
         waterLevelRunManager.SetWLElevVal(row, "" if wlElev is None else wlElev)
+        waterLevelRunManager.SetCommentVal(row, "" if comment is None else comment)
         waterLevelRunManager.SetDatumVal(row, "" if datum is None else datum)
         waterLevelRunManager.SetCwlVal(row, "" if cwl is None else cwl)
         waterLevelRunManager.SetLoggerReadingVal(row, "" if logger is None else logger)
