@@ -323,7 +323,7 @@
 							<td  align="center"><xsl:value-of select="HG2"/></td>
 							<td  align="center"><xsl:value-of select="WL1"/></td>
 							<td  align="center"><xsl:value-of select="WL2"/></td>
-							<td  align="center"><xsl:value-of select="WL2"/></td>
+							<td  align="center"><xsl:value-of select="Surge"/></td>
 							<td  align="center"><font color="blue"><xsl:value-of select="SRC"/></font></td>
 							<td align="center">
 								<xsl:choose>
