@@ -11,6 +11,7 @@ import sys
 import os
 import NumberControl
 from DropdownTime import *
+import wx.lib.agw.toasterbox as tb
 
 
 
@@ -135,7 +136,7 @@ class WaterLevelRunPanel(wx.Panel):
         self.elevationLbl = "Established Elevation (m)"
         self.DtWSLbl = "Distance to Water Surface (+/- m)"
         self.upDownLbl = "Up to/Down to Water Surface"
-        self.surgeLbl = "Surge (+/- m)/ Comment"
+        self.surgeLbl = "Surge (+/- m)"
         self.WLElevLbl = "Water Level Elevation"
         self.commentsLbl = "Comments"
         self.surveyedbyLbl = "Surveyed by"
@@ -609,7 +610,26 @@ class WaterLevelRunPanel(wx.Panel):
         self.surgeColumnSizer.Add(surgeLabelPanel, 0, wx.EXPAND)
         self.surgeColumnSizer.Add(self.surgeValPanel, 0, wx.EXPAND)
 
+        # Comments column
+        self.commentColumnSizer = wx.BoxSizer(wx.VERTICAL)
 
+        commentLabelPanel = wx.Panel(self.waterLevelPanel, style=wx.SIMPLE_BORDER)
+        commentLabelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        commentLabelPanel.SetSizer(commentLabelSizer)
+
+        commentLabelTxt = wx.StaticText(commentLabelPanel, label=self.commentsLbl, style=wx.ALIGN_CENTRE_HORIZONTAL,
+                                      size=(self.colHeaderWidth, self.colHeaderHeight))
+        commentLabelSizer.Add(commentLabelTxt, 1, wx.EXPAND)
+
+        # Create new panel and sizer for dynamic entries
+        self.commentValPanel = wx.Panel(self.waterLevelPanel, style=wx.SIMPLE_BORDER)
+        self.commentValSizer = wx.BoxSizer(wx.VERTICAL)
+        self.commentValPanel.SetSizer(self.commentValSizer)
+
+        # Add all to the Time
+        self.commentColumnSizer.Add(commentLabelPanel, 0, wx.EXPAND)
+        self.commentColumnSizer.Add(self.commentValPanel, 0, wx.EXPAND)
+        
         #Add columns to table
         self.waterLevelSizerH.Add(self.entryColumnSizer, 0, wx.EXPAND)
         self.waterLevelSizerH.Add(self.selectColumnSizer, 0, wx.EXPAND)
@@ -623,7 +643,8 @@ class WaterLevelRunPanel(wx.Panel):
         self.waterLevelSizerH.Add(self.CWLColumnSizer, 2, wx.EXPAND)
         self.waterLevelSizerH.Add(self.loggerColumnSizer, 1, wx.EXPAND)
         self.waterLevelSizerH.Add(self.loggerColumnSizer2, 1, wx.EXPAND)
-        self.waterLevelSizerH.Add(self.surgeColumnSizer, 3, wx.EXPAND)
+        self.waterLevelSizerH.Add(self.surgeColumnSizer, 1, wx.EXPAND)
+        self.waterLevelSizerH.Add(self.commentColumnSizer, 2, wx.EXPAND)
 
 
         self.waterLevelSizerV.Add(self.waterLevelSizerH, 1, wx.EXPAND)
@@ -813,6 +834,9 @@ class WaterLevelRunPanel(wx.Panel):
 
         #Surge col
         surge = MyTextCtrl(self.surgeValPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
+        surge.Bind(wx.EVT_TEXT, self.NumberControl)
+        surge.Bind(wx.EVT_KILL_FOCUS, self.OnKillFocus)
+        surge.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         self.surgeValSizer.Add(surge, 0, wx.EXPAND)
         # surge.MoveAfterInTabOrder(Logger2)
 
@@ -872,6 +896,12 @@ class WaterLevelRunPanel(wx.Panel):
 
         # newButton.MoveAfterInTabOrder(surge)
 
+        # comments col
+        comments = MyTextCtrl(self.commentValPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
+        # Wle.MoveAfterInTabOrder(dist)
+        self.commentValSizer.Add(comments, 0, wx.EXPAND)
+
+
         self.waterLevelSizerV.Layout()
         self.waterLevelPanel.Update()
 
@@ -889,6 +919,7 @@ class WaterLevelRunPanel(wx.Panel):
             Datum.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             Logger.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             Logger2.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
+            comments.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
 
 
 
@@ -1094,6 +1125,10 @@ class WaterLevelRunPanel(wx.Panel):
         #Wle col stuff
         self.wleValSizer.Hide(index)
         self.wleValSizer.Remove(index)
+
+        # Comments col stuff
+        self.commentValSizer.Hide(index)
+        self.commentValSizer.Remove(index)
         
         for index, col in enumerate(self.waterLevelSizerH.GetChildren()):
             for rowIndex, child in enumerate(col.GetSizer().GetItem(1).GetWindow().GetSizer().GetChildren()):
@@ -1327,6 +1362,7 @@ class WaterLevelRunPanel(wx.Panel):
         wlValue = self.GetCwlVal(row)
         loggerValue = self.GetLoggerReadingVal(row)
         loggerValue2 = self.GetLoggerReadingVal2(row)
+        surgeValue = self.GetSurgeVal(row)
 
         wlr1 = False
         wlr2 = False
@@ -1335,13 +1371,13 @@ class WaterLevelRunPanel(wx.Panel):
         if self.GetWLCombobox(row).GetValue() == "" and loggerValue == "" and loggerValue2 == "":
             return False, False, False, False
         if self.GetWLCombobox(row).GetValue() == "WLR1":
-            self.manager.TransferToStageMeasurement(time, loggerValue, loggerValue2, wlValue, None)
+            self.manager.TransferToStageMeasurement(time, loggerValue, loggerValue2, wlValue, None, surgeValue)
             wlr1 = True if wlValue != "" else False
         elif self.GetWLCombobox(row).GetValue() == "WLR2":
-            self.manager.TransferToStageMeasurement(time, loggerValue, loggerValue2, None, wlValue)
+            self.manager.TransferToStageMeasurement(time, loggerValue, loggerValue2, None, wlValue, surgeValue)
             wlr2 = True if wlValue != "" else False
         else:
-            self.manager.TransferToStageMeasurement(time, loggerValue, loggerValue2, None, None)
+            self.manager.TransferToStageMeasurement(time, loggerValue, loggerValue2, None, None, surgeValue)
         return hg, hg2, wlr1, wlr2
 
 
@@ -1501,6 +1537,22 @@ class WaterLevelRunPanel(wx.Panel):
     #Surge Val Setter
     def SetSurgeVal(self, row, val):
         self.GetSurge(row).SetValue(val)
+
+    # Comment window
+    def GetComment(self, row):
+        maxrow = len(self.commentValSizer.GetChildren())
+        if row >= maxrow:
+            row = maxrow - 1
+
+        return self.commentValSizer.GetItem(row).GetWindow()
+        
+    # Comment Val Getter
+    def GetCommentVal(self, row):
+        return self.GetComment(row).GetValue()
+
+    # Comment Val Setter
+    def SetCommentVal(self, row, val):
+        self.GetComment(row).SetValue(val)
 
     #WLElev window
     def GetWLElev(self, row):
