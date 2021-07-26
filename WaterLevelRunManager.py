@@ -309,6 +309,23 @@ class WaterLevelRunManager(object):
     #Surge Val Setter
     def SetSurgeVal(self, row, val):
         self.gui.SetSurgeVal(row, val)
+
+    # Comment Sizer
+    @property
+    def commentValSizer(self):
+        return self.gui.commentValSizer
+
+    @commentValSizer.setter
+    def commentValSizer(self, commentValSizer):
+        self.gui.commentValSizer = commentValSizer
+
+    # Comment Val Getter
+    def GetCommentVal(self, row):
+        return self.gui.GetCommentVal(row)
+
+    # Surge Val Setter
+    def SetCommentVal(self, row, val):
+        self.gui.SetCommentVal(row, val)
     
 
     #WLElev Sizer
@@ -459,8 +476,8 @@ class WaterLevelRunManager(object):
         return resultList
         
     #transfer selected WL and logger value to stage measurement on front page
-    def TransferToStageMeasurement(self, time=None, logger1=None, logger2=None, wl1=None, wl2=None):
-        self.manager.stageMeasManager.InsertEmptyEntry(0, time, logger1, logger2, wl1, wl2)
+    def TransferToStageMeasurement(self, time=None, logger1=None, logger2=None, wl1=None, wl2=None, surge=None):
+        self.manager.stageMeasManager.InsertEmptyEntry(0, time, logger1, logger2, wl1, wl2, surge)
 
 
     #Return the set of selected WL Reference name without duplicate, without empty string
