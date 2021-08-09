@@ -45,6 +45,7 @@ class AquariusUploadDialog(wx.Dialog):
         self.changeButtonDesc = "Change"
         self.changeTitleLbl = "Choose directory & change name for xml and pdf file"
         self.uploadConfirm = "Are you sure you want to upload this file?"
+        self.zipConfirm = "Before uploading, do you want to zip the attachments at"
         self.autoOpenLbl = "Auto Open PDF?"
         self.uploadLevelNotesLbl = 'Upload Level Notes'
 
@@ -244,10 +245,25 @@ class AquariusUploadDialog(wx.Dialog):
 
     # Implementing Zip
     def UploadAQ(self, evt):
-        self.GetParent().attachment.zipAddr.SetValue(self.zipCtrl.GetValue())
-        self.GetParent().attachment.Zip(None)
-        if not os.path.exists(self.GetParent().attachment.zipPath):
-            return
+        chosenFile = ""
+        zipDlg = wx.MessageDialog(self, self.zipConfirm + "\n\"" + self.zipCtrl.GetValue() + "\" ?",
+                                  'Zipping files', wx.YES_NO)
+        res = zipDlg.ShowModal()
+        if res == wx.ID_YES:
+            self.GetParent().attachment.zipAddr.SetValue(self.zipCtrl.GetValue())
+            self.GetParent().attachment.Zip(None)
+            if not os.path.exists(self.GetParent().attachment.zipPath):
+                return
+        else:
+            zipFolderOpenDialog = wx.FileDialog(self, "Select the Zip File", self.zipCtrl.GetValue(), '',
+                                                wildcard="zip files (*.zip)|*.zip",
+                                                style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+            if zipFolderOpenDialog.ShowModal() == wx.ID_CANCEL:
+                zipFolderOpenDialog.Destroy()
+                return
+            chosenFile = zipFolderOpenDialog.GetPath()
+            
+            
         if self.serverCmbo.GetValue() != '1. AQUARIUS NG' and self.serverCmbo.GetValue() != '2. Aquarius NG Dev [for Testing Only]':
             try:
                 self.EnableButtons(False)
@@ -357,7 +373,10 @@ class AquariusUploadDialog(wx.Dialog):
                         fvDate = self.GetParent().manager.genInfoManager.datePicker
                         name = self.GetParent().SaveAsXMLNg(self.GetParent().uploadSaveDir)
                         # print self.GetParent().uploadSaveDir, name
-                        fvPath = self.GetParent().attachment.zipPath
+                        if chosenFile != "":
+                            fvPath = chosenFile
+                        else:
+                            fvPath = self.GetParent().attachment.zipPath
                         print fvPath
                         result = self.GetParent().manager.ExportToAquariusNg(server, username, password, fvPath, fvDate)
                         if result != None:

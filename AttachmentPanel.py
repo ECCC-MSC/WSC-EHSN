@@ -10,6 +10,7 @@ from ElectronicFieldNotesGUI import *
 from AttachmentTitle import *
 from AttachTag import *
 from AttachBox import *
+from AttachFileFolderBox import *
 from AttachFolderBox import *
 from AttachPhotoBox import *
 import ntpath
@@ -68,32 +69,35 @@ class AttachmentPanel(wx.Panel):
         self.SetSizer(self.layout)
 
         sizerList = []
-        for i in range(11):
+        for i in range(12):
             sizerList.append(wx.BoxSizer(wx.HORIZONTAL))
 
         spaceList = []
-        for x in range(9):
+        for x in range(10):
             spaceList.append(wx.StaticText(self, label=""))
         note = wx.StaticText(self, label="The survey note will be saved as xml and a pdf will be created at the time of zipping. The xml and pdf will both be zipped into the zip file")
 
         TitlePanel = AttachmentTitle(self.mode, self)
-        Txt1 = AttachTag("Logger files or folder", "", self, size=self.tagSize)
-        self.attachBox1 = AttachFolderBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
+        Txt1 = AttachTag("Logger folders", "", self, size=self.tagSize)
+        self.attachBox1 = AttachFolderBox(self, "*", self, size=(860, 125), style=wx.SIMPLE_BORDER)
 
-        Txt2 = AttachTag("Logger Diagnostic files", "", self, size=self.tagSize)
+        Txt2 = AttachTag("Logger Data files", "", self, size=self.tagSize)
         self.attachBox2 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt3 = AttachTag("Logger Program files", "", self, size = self.tagSize)
+        Txt3 = AttachTag("Logger Diagnostic files", "", self, size=self.tagSize)
         self.attachBox3 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt4 = AttachTag("Discharge Measurement files or folder", "", self, size = self.tagSize)
-        self.attachBox4 = AttachFolderBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
+        Txt4 = AttachTag("Logger Program files", "", self, size = self.tagSize)
+        self.attachBox4 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt5 = AttachTag("Discharge Measurement Summary files", "", self, size = self.tagSize)
-        self.attachBox5 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
+        Txt5 = AttachTag("Discharge Measurement files or folder", "", self, size = self.tagSize)
+        self.attachBox5 = AttachFileFolderBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt6 = AttachTag("Photos and Drawings", "(.jpg, .DWG, etc.)", self, size=self.tagSize)
-        self.attachBox6 = AttachPhotoBox(self, "*", self, size=(860, 200), style=wx.SIMPLE_BORDER)
+        Txt6 = AttachTag("Discharge Measurement Summary files", "", self, size = self.tagSize)
+        self.attachBox6 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
+
+        Txt7 = AttachTag("Photos and Drawings", "(.jpg, .DWG, etc.)", self, size=self.tagSize)
+        self.attachBox7 = AttachPhotoBox(self, "*", self, size=(860, 200), style=wx.SIMPLE_BORDER)
 
         zipLoc = AttachTag("ZIP LOCATION", "", self, size=self.tagSize)
         self.zipAddr = wx.TextCtrl(self, size=self.barSize)
@@ -132,28 +136,32 @@ class AttachmentPanel(wx.Panel):
         sizerList[5].Add(self.attachBox6)
 
         sizerList[6].Add(self.indent)
-        sizerList[6].Add(zipLoc, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[6].Add(self.zipAddr)
-        sizerList[6].Add(self.zipChoose)
+        sizerList[6].Add(Txt7, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[6].Add(self.attachBox7)
+        
+        sizerList[7].Add(self.indent)
+        sizerList[7].Add(zipLoc, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[7].Add(self.zipAddr)
+        sizerList[7].Add(self.zipChoose)
 
-        sizerList[7].Add(self.noteIndent)
-        sizerList[7].Add(note)
+        sizerList[8].Add(self.noteIndent)
+        sizerList[8].Add(note)
 
-        sizerList[8].Add(self.zipSpace)
-        sizerList[8].Add(self.zipper)
-
-        sizerList[9].Add(self.indent2)
-        sizerList[9].Add(legendHeader)
+        sizerList[9].Add(self.zipSpace)
+        sizerList[9].Add(self.zipper)
 
         sizerList[10].Add(self.indent2)
-        sizerList[10].Add(self.indent3)
-        sizerList[10].Add(legend)
+        sizerList[10].Add(legendHeader)
+
+        sizerList[11].Add(self.indent2)
+        sizerList[11].Add(self.indent3)
+        sizerList[11].Add(legend)
         self.layout.Add(TitlePanel, 0, wx.EXPAND | wx.ALL, 3)
-        for i in range(9):
+        for i in range(10):
             self.layout.Add(spaceList[i])
             self.layout.Add(sizerList[i])
-        self.layout.Add(sizerList[9])
         self.layout.Add(sizerList[10])
+        self.layout.Add(sizerList[11])
 
     def BrowseZipLoc(self, evt):
         DirOpenDialog = wx.DirDialog(self, self.zipTitle, self.rootPath,
@@ -191,7 +199,7 @@ class AttachmentPanel(wx.Panel):
 
         Tag = stnNum + "_" + date + "_FV"
         filePath = self.parent.dir + "\\" + Tag
-        boxList = [self.attachBox1, self.attachBox2, self.attachBox3, self.attachBox4, self.attachBox5, self.attachBox6]
+        boxList = [self.attachBox1, self.attachBox2, self.attachBox3, self.attachBox4, self.attachBox5, self.attachBox6, self.attachBox7]
         pathList = []
         for box in boxList:
             pathList.append(box.returnPath())
@@ -207,20 +215,20 @@ class AttachmentPanel(wx.Panel):
                     info.ShowModal()
                     return
 
-        loggerDownload = self.attachBox1.returnFilePath()
-        loggerDiagnostic = self.attachBox2.returnPath()
-        loggerProgram = self.attachBox3.returnPath()
-        loggerFolder = self.attachBox1.returnFolderPath()
-        mmtPdf = self.attachBox5.returnPath() + self.attachBox4.returnFilePath()
-        mmtFolder = self.attachBox4.returnFolderPath()
+        loggerDownload = self.attachBox2.returnPath()
+        loggerDiagnostic = self.attachBox3.returnPath()
+        loggerProgram = self.attachBox4.returnPath()
+        loggerFolder = self.attachBox1.returnPath()
+        mmtPdf = self.attachBox6.returnPath() + self.attachBox5.returnFilePath()
+        mmtFolder = self.attachBox5.returnFolderPath()
 
-        SIT = self.attachBox6.returnSIT()
-        STR = self.attachBox6.returnSTR()
-        COL = self.attachBox6.returnCOL()
-        CBL = self.attachBox6.returnCBL()
-        EQP = self.attachBox6.returnEQP()
-        CDT = self.attachBox6.returnCDT()
-        HSN = self.attachBox6.returnHSN()
+        SIT = self.attachBox7.returnSIT()
+        STR = self.attachBox7.returnSTR()
+        COL = self.attachBox7.returnCOL()
+        CBL = self.attachBox7.returnCBL()
+        EQP = self.attachBox7.returnEQP()
+        CDT = self.attachBox7.returnCDT()
+        HSN = self.attachBox7.returnHSN()
 
         dir_temp = tempfile.mkdtemp()
         count = 0
@@ -260,7 +268,7 @@ class AttachmentPanel(wx.Panel):
             if valid(SIT[i]):
                 count += 1
                 name, extension = os.path.splitext(SIT[i])
-                rename = stnNum + "_" + date + "_SIT (" + str(count) + ")" + extension
+                rename = stnNum + "_" + date + "_SIT" + str(count) + extension
                 shutil.copy(SIT[i], dir_temp + "\\" + rename)
                 SIT[i] = dir_temp + "\\" + rename
         count = 0
@@ -268,7 +276,7 @@ class AttachmentPanel(wx.Panel):
             if valid(STR[i]):
                 count += 1
                 name, extension = os.path.splitext(STR[i])
-                rename = stnNum + "_" + date + "_STR (" + str(count) + ")" + extension
+                rename = stnNum + "_" + date + "_STR" + str(count)  + extension
                 shutil.copy(STR[i], dir_temp + "\\" + rename)
                 STR[i] = dir_temp + "\\" + rename
         count = 0
@@ -276,7 +284,7 @@ class AttachmentPanel(wx.Panel):
             if valid(COL[i]):
                 count += 1
                 name, extension = os.path.splitext(COL[i])
-                rename = stnNum + "_" + date + "_COL (" + str(count) + ")"  + extension
+                rename = stnNum + "_" + date + "_COL" + str(count) + extension
                 shutil.copy(COL[i], dir_temp + "\\" + rename)
                 COL[i] = dir_temp + "\\" + rename
         count = 0
@@ -284,7 +292,7 @@ class AttachmentPanel(wx.Panel):
             if valid(CBL[i]):
                 count += 1
                 name, extension = os.path.splitext(CBL[i])
-                rename = stnNum + "_" + date + "_CBL (" + str(count) + ")" + extension
+                rename = stnNum + "_" + date + "_CBL" + str(count) + extension
                 shutil.copy(CBL[i], dir_temp + "\\" + rename)
                 CBL[i] = dir_temp + "\\" + rename
         count = 0
@@ -292,7 +300,7 @@ class AttachmentPanel(wx.Panel):
             if valid(EQP[i]):
                 count += 1
                 name, extension = os.path.splitext(EQP[i])
-                rename = stnNum + "_" + date + "_EQP (" + str(count) + ")" + extension
+                rename = stnNum + "_" + date + "_EQP" + str(count) + extension
                 shutil.copy(EQP[i], dir_temp + "\\" + rename)
                 EQP[i] = dir_temp + "\\" + rename
         count = 0
@@ -300,7 +308,7 @@ class AttachmentPanel(wx.Panel):
             if valid(CDT[i]):
                 count += 1
                 name, extension = os.path.splitext(CDT[i])
-                rename = stnNum + "_" + date + "_CDT (" + str(count) + ")" + extension
+                rename = stnNum + "_" + date + "_CDT" + str(count) + extension
                 shutil.copy(CDT[i], dir_temp + "\\" + rename)
                 CDT[i] = dir_temp + "\\" + rename
         count = 0
@@ -308,7 +316,7 @@ class AttachmentPanel(wx.Panel):
             if valid(HSN[i]):
                 count += 1
                 name, extension = os.path.splitext(HSN[i])
-                rename = stnNum + "_" + date + "_HSN (" + str(count) + ")" + extension
+                rename = stnNum + "_" + date + "_HSN" + str(count) + extension
                 shutil.copy(HSN[i], dir_temp + "\\" + rename)
                 HSN[i] = dir_temp + "\\" + rename
 

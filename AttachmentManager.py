@@ -21,51 +21,63 @@ class AttachmentManager(object):
 
     def returnAttachment(self):
         boxList = [self.gui.attachBox1, self.gui.attachBox2, self.gui.attachBox3, self.gui.attachBox4, self.gui.attachBox5,
-                   self.gui.attachBox6]
+                   self.gui.attachBox6, self.gui.attachBox7]
         for box in boxList:
             if box.returnPath() != []:
                 return True
         return False
 
-    def returnLoggerFiles(self):
+    def returnLoggerFolder(self):
         return str(self.gui.attachBox1.returnPath())[1:-1]
 
-    def returnLoggerDiagnostic(self):
+    def returnLoggerFiles(self):
         return str(self.gui.attachBox2.returnPath())[1:-1]
 
-    def returnLoggerProgram(self):
+    def returnLoggerDiagnostic(self):
         return str(self.gui.attachBox3.returnPath())[1:-1]
 
-    def returnMmtFiles(self):
+    def returnLoggerProgram(self):
         return str(self.gui.attachBox4.returnPath())[1:-1]
-
-    def returnMmtSummary(self):
+    
+    def returnMmtFiles(self):
         return str(self.gui.attachBox5.returnPath())[1:-1]
 
+    def returnMmtSummary(self):
+        return str(self.gui.attachBox6.returnPath())[1:-1]
+
     def returnSIT(self):
-        return str(self.gui.attachBox6.returnSIT())[1:-1]
+        return str(self.gui.attachBox7.returnSIT())[1:-1]
 
     def returnSTR(self):
-        return str(self.gui.attachBox6.returnSTR())[1:-1]
+        return str(self.gui.attachBox7.returnSTR())[1:-1]
 
     def returnCOL(self):
-        return str(self.gui.attachBox6.returnCOL())[1:-1]
+        return str(self.gui.attachBox7.returnCOL())[1:-1]
 
     def returnCBL(self):
-        return str(self.gui.attachBox6.returnCBL())[1:-1]
+        return str(self.gui.attachBox7.returnCBL())[1:-1]
 
     def returnEQP(self):
-        return str(self.gui.attachBox6.returnEQP())[1:-1]
+        return str(self.gui.attachBox7.returnEQP())[1:-1]
 
     def returnCDT(self):
-        return str(self.gui.attachBox6.returnCDT())[1:-1]
+        return str(self.gui.attachBox7.returnCDT())[1:-1]
 
     def returnHSN(self):
-        return str(self.gui.attachBox6.returnHSN())[1:-1]
+        return str(self.gui.attachBox7.returnHSN())[1:-1]
 
     def returnZip(self):
         return self.gui.zipAddr.GetValue()
 
+    def returnData(self):
+        return self.gui.attachBox1.dataCheck.GetValue()
+    
+    def returnDiagnostic(self):
+        return self.gui.attachBox1.diagnosticCheck.GetValue()
+    
+    def returnProgram(self):
+        return self.gui.attachBox1.programCheck.GetValue()
+    
 def main():
     app = wx.App()
 

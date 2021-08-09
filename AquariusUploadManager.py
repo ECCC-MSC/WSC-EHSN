@@ -2526,14 +2526,14 @@ def CreateLevelSurveyMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateI
     bms = GetBM(EHSN.genInfoManager.stnNumCmbo, aq, server)
     if bms is not None:
 
-        for index, run in enumerate(EHSN.waterLevelRunManager.runSizer.GetChildren()):
+        for index in range(len((EHSN.waterLevelRunManager.GetCircuitList()))):
             if EHSN.waterLevelRunManager.UploadIsChecked(index):
 
-                for rowIndex, entry in enumerate(EHSN.waterLevelRunManager.GetLevelNotesSizerV(index).GetChildren()):
+                for rowIndex in range(len(EHSN.waterLevelRunManager.GetLevelNotesSizerV(index))):
 
-                    if rowIndex < len(EHSN.waterLevelRunManager.GetLevelNotesSizerV(index).GetChildren()) - 1:
-                        if EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex).GetValue() != '':
-                            bm = EHSN.waterLevelRunManager.GetLevelNotesStation(index, rowIndex).GetValue()
+                    if rowIndex < len(EHSN.waterLevelRunManager.GetLevelNotesSizerV(index)) - 1:
+                        if EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex) != '':
+                            bm = EHSN.waterLevelRunManager.GetLevelNotesStation(index, rowIndex)
                             if "**" in bm:
                                 bm = bm[2:]
                             
@@ -2546,11 +2546,11 @@ def CreateLevelSurveyMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateI
 
 
                                         levelSurveyResult = aq.factory.create("ns0:FieldVisitResult")
-                                        levelSurveyResult.CorrectedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex).GetValue())
+                                        levelSurveyResult.CorrectedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex))
                                         levelSurveyResult.Correction = 0.0
                                         levelSurveyResult.EndTime = None
                                         levelSurveyResult.MeasurementID = levelSurvey.MeasurementID
-                                        levelSurveyResult.ObservedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex).GetValue())
+                                        levelSurveyResult.ObservedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex))
                                         levelSurveyResult.ParameterID = "LevelSurveyResult"
                                         levelSurveyResult.BenchmarkOrRefPointName = i
                                         # levelSurveyResult.PercentUncertainty = None

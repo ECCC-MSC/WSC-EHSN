@@ -29,8 +29,10 @@ class DropdownTime(wx.Panel):
         self.SetSizer(mySizer)
 
         self.hourCmbox = MyComboBox(self, style=wx.CB_DROPDOWN, choices=self.hours)
+        self.hourCmbox.parent = self
 
         self.minuteCmbox = MyComboBox(self, style=wx.CB_DROPDOWN, choices=self.minutes)
+        self.minuteCmbox.parent = self
         if self.hasSecond:
             self.secondCmbox = MyComboBox(self, style=wx.CB_DROPDOWN, choices=self.minutes)
             timeText2 = wx.StaticText(self, label=':')
@@ -45,6 +47,7 @@ class DropdownTime(wx.Panel):
             mySizer.Add(self.secondCmbox, 1, wx.RIGHT|wx.TOP, 3)
 
         self.cBtn = wx.Button(self, label="C", size=(13, -1))
+        self.cBtn.parent = self
         self.cBtn.Bind(wx.EVT_BUTTON, self.OnCurrent)
         mySizer.Add(self.cBtn, 0)
 

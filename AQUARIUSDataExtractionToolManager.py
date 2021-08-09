@@ -1031,15 +1031,41 @@ class AQUARIUSDataExtractionToolManager(object):
                 # totalBenchmarkList = sorted(fileBMList, key=itemgetter(0, 1))
             '''
             # Write to file
+            original = ""
+            with open(path + '\\levels.txt') as file:
+                try:
+                    next(file)
+                    for lines in file:
+                        original += lines
+                except:
+                    original =""
+            originalList = original.split("\n")
+            stations = []
+            for lines in originalList:
+                stationId = lines[0:7]
+                if stationId not in stations:
+                    stations.append(stationId)
+            
+            newStations = []
             exportFile = open(path + '\\levels.txt', "w+")
             exportFile.write("STATION,REFERENCE,ELEVATION,DESCRIPTION")
             for line in totalBenchmarkList:
                 # print line
                 exportFile.write("\n")
                 lineData = line[0] + ',' + line[1] + ',' + line[2] + ',' + line[3]
+                newStations.append(line[0])
                 # print lineData
                 exportFile.write(lineData.encode('utf8'))
-
+            additional = []
+            for station in stations:
+                if station not in newStations:
+                    additional.append(station)
+            for line in originalList:
+                if line[0:7] in additional:
+                    exportFile.write("\n")
+                    newline = line
+                    exportFile.write(newline.encode('utf8'))
+                
             exportFile.close()
 
         return 0
@@ -1110,7 +1136,11 @@ class AQUARIUSDataExtractionToolManager(object):
             try:
                 req = requests.get(
                     Server + "GetRatingModelDescriptionList?LocationIdentifier=" + station + "&token=" + token)
-                ratingCurveId = req.json()['RatingModelDescriptions'][0]['Identifier']
+                for desc in req.json()['RatingModelDescriptions']:
+                    print desc['Identifier'][0:29]
+                    if desc['Identifier'][0:29] == "Stage-Discharge.Rating Curve@":
+                        ratingCurveId = desc['Identifier']
+                    break
             except:
                 failedStations.append(station)
                 continue
