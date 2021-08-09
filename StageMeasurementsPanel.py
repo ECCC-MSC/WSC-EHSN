@@ -1016,10 +1016,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         #Surge stuff
         surge = MyTextCtrl(self.surgeValPanel, style=wx.TE_PROCESS_ENTER | wx.TE_CENTRE,
                            size=(self.colHeaderWidth, self.rowHeight), name=otherName)
-        # surge.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        surge.Bind(wx.EVT_TEXT, NumberControl.Round3)
-        # src.Bind(wx.EVT_TEXT, self.NumberControl)
-        # src = wx.ComboBox(self.srcPanel, choices=self.srcChoices, value="", style=wx.CB_READONLY, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
+        surge.Bind(wx.EVT_TEXT, self.NumberControl)
+        surge.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         self.surgeValSizer.Add(surge, 0, wx.EXPAND | wx.BOTTOM | wx.TOP)
 
         #SRC stuff
@@ -1282,9 +1280,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         # Surge stuff
         surge = MyTextCtrl(self.surgeValPanel, style=wx.TE_PROCESS_ENTER | wx.TE_CENTRE,
                          size=(self.colHeaderWidth, self.rowHeight), name=str(index))
-        surge.Bind(wx.EVT_TEXT, NumberControl.Round3)
-        # src.Bind(wx.EVT_TEXT, self.NumberControl)
-        # src = wx.ComboBox(self.srcPanel, choices=self.srcChoices, value="", style=wx.CB_READONLY, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
+        surge.Bind(wx.EVT_TEXT, self.NumberControl)
+        surge.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
         self.surgeValSizer.Insert(index, surge, 0, wx.EXPAND | wx.BOTTOM | wx.TOP)
 
         #SRC stuff
