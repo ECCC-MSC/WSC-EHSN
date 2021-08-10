@@ -18,6 +18,8 @@ class WaterLevelNotesPanel(wx.Panel):
         self.circuitList = []
         self.closureList = []
         self.uploadList = []
+        
+        self.levelingMessage = "NOTE: Time entered only for the first Station will propagate to the others within the Circuit upon upload to AQUARIUS."
 
         self.current = 0
 
@@ -84,8 +86,9 @@ class WaterLevelNotesPanel(wx.Panel):
         closureSubPanel.SetSizer(closureSizer)
 
         closureUnitTxt = wx.StaticText(closurePanel, label="m")
-
-
+        
+        messageTxt = wx.StaticText(closurePanel, label=self.levelingMessage)
+        messageTxt.SetForegroundColour(wx.RED)
 
         removeRunButton = wx.Button(closurePanel, label="Remove Circuit", size=(120, -1))
         removeRunButton.SetForegroundColour('Red')
@@ -98,6 +101,7 @@ class WaterLevelNotesPanel(wx.Panel):
         closurePanelSizer.Add(self.closureBtn, 0, wx.EXPAND|wx.ALL, 5)
         closurePanelSizer.Add(closureSubPanel, 0, wx.EXPAND|wx.ALL, 5)
         closurePanelSizer.Add(closureUnitTxt, 0, wx.EXPAND|wx.TOP|wx.LEFT, 10)
+        closurePanelSizer.Add(messageTxt, 0, wx.EXPAND|wx.TOP|wx.LEFT, 10)
         closurePanelSizer.Add((-1, -1), 1, wx.EXPAND)
         closurePanelSizer.Add(self.uploadCkbox, 0, wx.EXPAND)
         closurePanelSizer.Add(removeRunButton, 0, wx.EXPAND|wx.ALL|wx.ALIGN_RIGHT, 5)
