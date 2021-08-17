@@ -786,7 +786,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         #Calc shift from base curve Val
         self.calcShiftBaseCurveCtrl = MyTextCtrl(self, size=(40, -1))
         self.calcShiftBaseCurveCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.calcShiftBaseCurveCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+        self.calcShiftBaseCurveCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
         #Row 2
         horizontalSizer5.Add(mmntEndTimePanel, 1, wx.EXPAND)
