@@ -32,22 +32,22 @@ class WaterLevelNotesPanel(wx.Panel):
 
         self.titleSizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        blank = WaterTag("", (32, self.headerRow), self, style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
-        station = WaterTag("Station", (self.headerCol + 6, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        blank = WaterTag("", "", (32, self.headerRow), self, style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
+        station = WaterTag("Station", "", (self.headerCol + 6, self.headerRow), self, style=wx.SIMPLE_BORDER,
                            size=(-1, self.headerRow))
-        time = WaterTag("Time", (self.headerCol + 6, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        time = WaterTag("   Time", self.levelingMessage, (self.headerCol + 6, self.headerRow), self, style=wx.SIMPLE_BORDER,
                         size=(-1, self.headerRow))
-        backsight = WaterTag("Backsight", (self.headerCol, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        backsight = WaterTag("Backsight", "", (self.headerCol, self.headerRow), self, style=wx.SIMPLE_BORDER,
                              size=(-1, self.headerRow))
-        heightOfInstrument = WaterTag("Height of Instrument", (self.headerCol + 6, self.headerRow), self,
+        heightOfInstrument = WaterTag("Height of Instrument", "", (self.headerCol + 6, self.headerRow), self,
                                       style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
-        foresight = WaterTag("Foresight", (self.headerCol - 2, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        foresight = WaterTag("Foresight", "", (self.headerCol - 2, self.headerRow), self, style=wx.SIMPLE_BORDER,
                              size=(-1, self.headerRow))
-        elevated = WaterTag("Elevated [Surveyed]", (self.headerCol, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        elevated = WaterTag("Elevated [Surveyed]", "", (self.headerCol, self.headerRow), self, style=wx.SIMPLE_BORDER,
                             size=(-1, self.headerRow))
-        comments = WaterTag("Comments", (self.headerCol * 2, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        comments = WaterTag("Comments", "", (self.headerCol * 2, self.headerRow), self, style=wx.SIMPLE_BORDER,
                             size=(-1, self.headerRow))
-        established = WaterTag("Established Elev.\n(m)[AQUARIUS]", (self.headerCol, self.headerRow), self,
+        established = WaterTag("Established Elev.\n(m)[AQUARIUS]", "", (self.headerCol, self.headerRow), self,
                                style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
         self.titleSizer.Add(blank)
         self.titleSizer.Add(station, 1, wx.EXPAND)
@@ -86,9 +86,6 @@ class WaterLevelNotesPanel(wx.Panel):
         closureSubPanel.SetSizer(closureSizer)
 
         closureUnitTxt = wx.StaticText(closurePanel, label="m")
-        
-        messageTxt = wx.StaticText(closurePanel, label=self.levelingMessage)
-        messageTxt.SetForegroundColour(wx.RED)
 
         removeRunButton = wx.Button(closurePanel, label="Remove Circuit", size=(120, -1))
         removeRunButton.SetForegroundColour('Red')
@@ -101,7 +98,6 @@ class WaterLevelNotesPanel(wx.Panel):
         closurePanelSizer.Add(self.closureBtn, 0, wx.EXPAND|wx.ALL, 5)
         closurePanelSizer.Add(closureSubPanel, 0, wx.EXPAND|wx.ALL, 5)
         closurePanelSizer.Add(closureUnitTxt, 0, wx.EXPAND|wx.TOP|wx.LEFT, 10)
-        closurePanelSizer.Add(messageTxt, 0, wx.EXPAND|wx.TOP|wx.LEFT, 10)
         closurePanelSizer.Add((-1, -1), 1, wx.EXPAND)
         closurePanelSizer.Add(self.uploadCkbox, 0, wx.EXPAND)
         closurePanelSizer.Add(removeRunButton, 0, wx.EXPAND|wx.ALL|wx.ALIGN_RIGHT, 5)
