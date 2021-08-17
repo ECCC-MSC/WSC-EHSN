@@ -1137,10 +1137,9 @@ class AQUARIUSDataExtractionToolManager(object):
                 req = requests.get(
                     Server + "GetRatingModelDescriptionList?LocationIdentifier=" + station + "&token=" + token)
                 for desc in req.json()['RatingModelDescriptions']:
-                    print desc['Identifier'][0:29]
                     if desc['Identifier'][0:29] == "Stage-Discharge.Rating Curve@":
                         ratingCurveId = desc['Identifier']
-                    break
+                        break
             except:
                 failedStations.append(station)
                 continue

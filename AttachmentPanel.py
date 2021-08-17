@@ -336,6 +336,9 @@ class AttachmentPanel(wx.Panel):
         for path in loggerDownload:
             if valid(path):
                 zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+        for path in loggerDiagnostic:
+            if valid(path):
+                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
         for path in loggerProgram:
             if valid(path):
                 zipfile.write(path, Tag + "\\" + ntpath.basename(path))

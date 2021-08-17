@@ -307,11 +307,18 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
 
         movingBoatManager.SetTableValue(row, 4, tran[2])
 
-        movingBoatManager.SetTableValue(row, 6, tran[3])
-        movingBoatManager.SetTableColor(row, 6, color)
+        if tran[1][0] == "L":
+            movingBoatManager.SetTableValue(row, 6, tran[3])
+            movingBoatManager.SetTableColor(row, 6, color)
 
-        movingBoatManager.SetTableValue(row, 7, tran[4])
-        movingBoatManager.SetTableColor(row, 7, color)
+            movingBoatManager.SetTableValue(row, 7, tran[4])
+            movingBoatManager.SetTableColor(row, 7, color)
+        else:
+            movingBoatManager.SetTableValue(row, 6, tran[4])
+            movingBoatManager.SetTableColor(row, 6, color)
+
+            movingBoatManager.SetTableValue(row, 7, tran[3])
+            movingBoatManager.SetTableColor(row, 7, color)
 
         movingBoatManager.SetTableValue(row, 8, tran[5])
         movingBoatManager.SetTableColor(row, 8, color)
