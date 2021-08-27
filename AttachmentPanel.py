@@ -42,8 +42,10 @@ class AttachmentPanel(wx.Panel):
         self.missingStnNumTitle = "Missing Station Number"
         self.nonexistentMessage = " does not exist"
         self.nonexistentTitle = "Target file does not exist"
-        self.successMessage = "File are successfully zipped: "
+        self.successMessage = "FV PACKAGE are successfully created: "
         self.successTitle = "File successfully zipped"
+        self.errorMessage = "FV PACKAGE creation has failed"
+        self.errorTitle = "Create Failure"
         self.missingZipTitle = "Missing Zip Folder"
         self.missingZipMessage = "Zip Folder not Found"
         self.reviewMessage = "The notes are not reviewed"
@@ -52,6 +54,7 @@ class AttachmentPanel(wx.Panel):
         self.mmtFilesTitle = "Select the MMT Files Folder"
         self.loggerFilesTitle = "Select the Logger Files Folder"
         self.zipTitle = "Choose zip file location"
+        self.createConfirm = "Are you sure you want to save the FV Package to the FV PACKAGE SAVE LOCATION?"
         self.fm = "%Y%m%d"
         self.zipPath = ""
         self.legendHeader = "Photos and Drawings: "
@@ -75,7 +78,7 @@ class AttachmentPanel(wx.Panel):
         spaceList = []
         for x in range(10):
             spaceList.append(wx.StaticText(self, label=""))
-        note = wx.StaticText(self, label="The survey note will be saved as xml and a pdf will be created at the time of zipping. The xml and pdf will both be zipped into the zip file")
+        note = wx.StaticText(self, label="The Field Visit Package (ZIP file) will include the eHSN xml and pdf, as well as the above attachments. \nThe created ZIP file will be saved to the FV PACKAGE SAVE LOCATION and should be dragged-dropped into AQUARIUS.")
 
         TitlePanel = AttachmentTitle(self.mode, self)
         Txt1 = AttachTag("Logger folders", "", self, size=self.tagSize)
@@ -99,13 +102,13 @@ class AttachmentPanel(wx.Panel):
         Txt7 = AttachTag("Photos and Drawings", "(.jpg, .DWG, etc.)", self, size=self.tagSize)
         self.attachBox7 = AttachPhotoBox(self, "*", self, size=(860, 200), style=wx.SIMPLE_BORDER)
 
-        zipLoc = AttachTag("ZIP LOCATION", "", self, size=self.tagSize)
+        zipLoc = AttachTag("FV PACKAGE SAVE LOCATION", "", self, size=self.tagSize)
         self.zipAddr = wx.TextCtrl(self, size=self.barSize)
         self.zipChoose = wx.Button(self, label="SELECT")
         self.zipChoose.Bind(wx.EVT_BUTTON, self.BrowseZipLoc)
         self.zipAddr.SetValue(self.rootPath)
 
-        self.zipper = wx.Button(self, label="ZIP")
+        self.zipper = wx.Button(self, label="CREATE FV PACKAGE")
         self.zipper.Bind(wx.EVT_BUTTON, self.Zip)
 
         legendHeader = wx.StaticText(self, label=self.legendHeader)
@@ -195,6 +198,12 @@ class AttachmentPanel(wx.Panel):
                                     wx.OK)
             info.ShowModal()
             return
+
+        dlg = wx.MessageDialog(None, self.createConfirm, 'Create Confirmation', wx.YES_NO)
+        res = dlg.ShowModal()
+        if res != wx.ID_YES:
+            return
+        
         date = self.parent.genInfo.datePicker.GetValue().Format(self.fm)
 
         Tag = stnNum + "_" + date + "_FV"
@@ -329,60 +338,64 @@ class AttachmentPanel(wx.Panel):
             info.ShowModal()
             return
 
-        zipfile = ZipFile(zipPath + "\\" + Tag + '.zip', 'w')
-        zipfile.write(ntpath.basename(pdfPath), Tag + "\\" + ntpath.basename(pdfPath))
-        zipfile.write(xmlPath, ntpath.basename(xmlPath))
+        try:
+            zipfile = ZipFile(zipPath + "\\" + Tag + '.zip', 'w')
+            zipfile.write(ntpath.basename(pdfPath), Tag + "\\" + ntpath.basename(pdfPath))
+            zipfile.write(xmlPath, ntpath.basename(xmlPath))
+    
+            for path in loggerDownload:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in loggerDiagnostic:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in loggerProgram:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in mmtPdf:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            count = 0
+            for folder in mmtFolder:
+                if valid(folder):
+                    count += 1
+                    for file in os.listdir(folder):
+                        zipfile.write(folder + "\\" + file, Tag + "\\" + Tag + "_M" + str(count) + "\\" + file)
+            count = 0
+            for folder in loggerFolder:
+                if valid(folder):
+                    count += 1
+                    for file in os.listdir(folder):
+                        zipfile.write(folder + "\\" + file, Tag + "\\" + Tag + "_LG" + str(count) + "\\" + file)
+            for path in SIT:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in STR:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in COL:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in CBL:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in EQP:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in CDT:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in HSN:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
 
-        for path in loggerDownload:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-        for path in loggerDiagnostic:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-        for path in loggerProgram:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-        for path in mmtPdf:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-        count = 0
-        for folder in mmtFolder:
-            if valid(folder):
-                count += 1
-                for file in os.listdir(folder):
-                    zipfile.write(folder + "\\" + file, Tag + "\\" + Tag + "_M" + str(count) + "\\" + file)
-        count = 0
-        for folder in loggerFolder:
-            if valid(folder):
-                count += 1
-                for file in os.listdir(folder):
-                    zipfile.write(folder + "\\" + file, Tag + "\\" + Tag + "_LG" + str(count) + "\\" + file)
-        for path in SIT:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-        for path in STR:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-        for path in COL:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-        for path in CBL:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-        for path in EQP:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-        for path in CDT:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-        for path in HSN:
-            if valid(path):
-                zipfile.write(path, Tag + "\\" + ntpath.basename(path))
-
-        zipfile.close()
-        info = wx.MessageDialog(None, self.successMessage + Tag + " at " + zipPath, self.successTitle, wx.OK)
-        self.zipPath = zipPath + "\\" + Tag + '.zip'
-        info.ShowModal()
+            zipfile.close()
+            info = wx.MessageDialog(None, self.successMessage + Tag + " at " + zipPath, self.successTitle, wx.OK)
+            self.zipPath = zipPath + "\\" + Tag + '.zip'
+            info.ShowModal()
+        except:
+            info = wx.MessageDialog(None, self.errorMessage, self.errorTitle, wx.OK)
+            info.ShowModal()
 
 def main():
     app = wx.App()
