@@ -8,7 +8,7 @@ class AttachmentTitle(wx.Panel):
     def __init__(self, mode, *args, **kwargs):
         super(AttachmentTitle, self).__init__(*args, **kwargs)
 
-        self.titleLbl = "Attachment Zipper"
+        self.titleLbl = "Field Visit Package (ZIP file)"
         self.titleSize = 12
         self.mode = mode
         self.manager = None
