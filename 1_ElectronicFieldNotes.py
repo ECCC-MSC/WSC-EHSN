@@ -16,6 +16,7 @@ from FRChecklistManager import *
 from MovingBoatMeasurementsManager import *
 from MidSectionMeasurementsManager import *
 # from RemarksManager import *
+from AttachmentManager import *
 
 from RatingCurveViewerToolManager import *
 
@@ -85,7 +86,7 @@ if 0:
 
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v2.2.0"
+EHSN_VERSION = "v2.3.0"
 eHSN_WINDOW_SIZE = (1100, 730)
 
 # import wx.lib.inspection
@@ -136,7 +137,7 @@ class ElectronicHydrometricSurveyNotes:
         self.gui = EHSNGui(mode, EHSN_VERSION, None, title=self.headerTitle, size=eHSN_WINDOW_SIZE)
         self.SetupManagers()
         self.stageMeasManager.AddEntry()
-        self.waterLevelRunManager.AddRun()
+        self.stationBmUpdate()        
         # 6 Entries
         for i in range(9):
             self.movingBoatMeasurementsManager.AddEntry()
@@ -193,6 +194,11 @@ class ElectronicHydrometricSurveyNotes:
     def GetLayout(self):
         return self.gui.layout
 
+    def stationBmUpdate(self):
+        for station in self.waterLevelRunManager.gui.levelNotes.panel.stationList:
+            station.Bind(wx.EVT_TEXT, self.gui.OnLevelNoteStationSelect)
+        for descButton in self.waterLevelRunManager.gui.levelNotes.panel.descList:
+            descButton.Bind(wx.EVT_BUTTON, self.gui.OnLevelNoteEstablishedBtn)
 
     # def OnExit(self):
     #     # if self.gui.fullname == '':
@@ -211,6 +217,7 @@ class ElectronicHydrometricSurveyNotes:
         self.envCondManager = EnvironmentConditionsManager(mode, self.gui.envCond, self)
         self.measResultsManager = MeasurementResultsManager(mode, self.gui.measResults, self)
         self.instrDepManager = InstrumentDeploymentInfoManager(mode, self.gui.instrDep, self)
+        self.attachmentManager = AttachmentManager(mode, self.gui.attachment, self)
         # self.remarksManager = RemarksManager(mode, self.gui.remarks, self)
         self.partyInfoManager = PartyInfoManager(mode, self.gui.partyInfo, self)
         self.waterLevelRunManager = WaterLevelRunManager(mode, self.gui.waterLevelRun, self)
@@ -529,36 +536,40 @@ class ElectronicHydrometricSurveyNotes:
                 else:
                     self.gui.updateProgressDialog("Uploading...")
                     print fvPath
-                    dirName = fvPath[-19:]
-                    fvPath = fvPath.replace("\\", "\\\\")
-                    dirPath = fvPath.replace("\\", "/")
-                    fvPathPdf = fvPath.replace("\\", "\\\\")
-                    fvPath = fvPath + ".xml"
-                    fvPathPdf = fvPathPdf + ".pdf"
-                    xmlPath = fvPath[-23:]
-                    uploadDir = dirName + "_a"
-                    # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
+                    # uploading the zip file
+                    if fvPath.endswith(".zip"):
+                        uploadZipDir = fvPath
+                    else:
+                        dirName = fvPath[-19:]
+                        fvPath = fvPath.replace("\\", "\\\\")
+                        dirPath = fvPath.replace("\\", "/")
+                        fvPathPdf = fvPath.replace("\\", "\\\\")
+                        fvPath = fvPath + ".xml"
+                        fvPathPdf = fvPathPdf + ".pdf"
+                        xmlPath = fvPath[-23:]
+                        uploadDir = dirName + "_a"
+                        # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
 
-                    if os.path.exists(dirName):
-                        shutil.rmtree(dirName)
-                    if os.path.exists(uploadDir):
-                        shutil.rmtree(uploadDir)
-                    if os.path.exists(uploadDir + ".zip"):
-                        os.remove(uploadDir + ".zip")
+                        if os.path.exists(dirName):
+                            shutil.rmtree(dirName)
+                        if os.path.exists(uploadDir):
+                            shutil.rmtree(uploadDir)
+                        if os.path.exists(uploadDir + ".zip"):
+                            os.remove(uploadDir + ".zip")
 
-                    try:
-                        os.mkdir(dirName)
-                        shutil.move(fvPathPdf, dirName)
-                        os.mkdir(uploadDir)
-                        shutil.move(dirName, uploadDir)
-                        shutil.move(fvPath, uploadDir)
-                        shutil.make_archive(uploadDir, 'zip', uploadDir)
-                    except:
-                        print 'Error occured while creating zip file for upload'
-                        self.gui.deleteProgressDialog()
-                        return None
-                    # create the zip file
-                    uploadZipDir = dirName + "_a.zip"
+                        try:
+                            os.mkdir(dirName)
+                            shutil.move(fvPathPdf, dirName)
+                            os.mkdir(uploadDir)
+                            shutil.move(dirName, uploadDir)
+                            shutil.move(fvPath, uploadDir)
+                            shutil.make_archive(uploadDir, 'zip', uploadDir)
+                        except:
+                            print 'Error occured while creating zip file for upload'
+                            self.gui.deleteProgressDialog()
+                            return None
+                        # create the zip file
+                        uploadZipDir = dirName + "_a.zip"
 
                     # files = {'file': open(fvPath, 'rb')}
                     files = {'file': open(uploadZipDir, 'rb')}
@@ -717,6 +728,10 @@ class ElectronicHydrometricSurveyNotes:
         MidsecMeas = SubElement(EHSN, "MidsecMeas", empty="False")
         self.MidsecMeasAsXMLTree(MidsecMeas)
 
+        # Page 6
+        Attachments = SubElement(EHSN, "Attachments")
+        self.AttachmentAsXMLTree(Attachments)
+
         #Imported
         #Midsection
         if len(self.midSectionDetailXml) != 0:
@@ -842,6 +857,10 @@ class ElectronicHydrometricSurveyNotes:
         # for i in self.midsecMeasurementsManager.gui.table.panelObjs:
         #     i.ToString()
 
+        # Sixth Page
+        Attachments = EHSN.find('Attachments')
+        self.AttachmentFromXML(Attachments)
+
         #Upload Record
 
         self.uploadRecord = EHSN.find('AQ_Upload_Record')
@@ -901,10 +920,10 @@ class ElectronicHydrometricSurveyNotes:
 
 
     def InstrumentDepAsXMLTree(self, InstrumentDeployment):
-        XMLManager.InstrumentDepAsXMLTree(InstrumentDeployment, self.instrDepManager)
+        XMLManager.InstrumentDepAsXMLTree(InstrumentDeployment, self.instrDepManager, self.attachmentManager)
 
     def InstrumentDepFromXML(self, InstrumentDeployment):
-        XMLManager.InstrumentDepFromXML(InstrumentDeployment, self.instrDepManager)
+        XMLManager.InstrumentDepFromXML(InstrumentDeployment, self.instrDepManager, self.attachmentManager)
 
 
     def PartyInfoAsXMLTree(self, PartyInfo):
@@ -948,6 +967,15 @@ class ElectronicHydrometricSurveyNotes:
 
     def MidsecMeasFromXML(self, MidsecMeas):
         XMLManager.MidsecMeasFromXML(MidsecMeas, self.midsecMeasurementsManager)
+
+    # Attachment
+    def AttachmentAsXMLTree(self, Attachment):
+        XMLManager.AttachmentAsXMLTree(Attachment, self.attachmentManager)
+
+    def AttachmentFromXML(self, Attachment):
+        XMLManager.AttachmentFromXML(Attachment, self.attachmentManager)
+
+    # Attachment
 
     def UploadInfoAsXMLTree(self, UploadInfo, uploadInfo):
         XMLManager.UploadInfoAsXMLTree(UploadInfo, uploadInfo)

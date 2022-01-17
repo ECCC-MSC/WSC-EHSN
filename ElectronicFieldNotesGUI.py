@@ -49,6 +49,7 @@ import qrcode
 import zipfile
 import shutil
 from win32api import GetSystemMetrics
+from AttachmentPanel import *
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
@@ -693,7 +694,15 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         form5Sizer.Add(self.frChecklist, 1, wx.EXPAND)
         self.form5.SetSizerAndFit(form5Sizer)
 
-
+        # Attachment Page Added
+        form6Sizer = wx.BoxSizer(wx.VERTICAL)
+        self.form6 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER)
+        self.form6.SetupScrolling()
+        self.attachment = AttachmentPanel(self, self.mode, self.lang, self.form6, size=(920, -1))
+        form6Sizer.Add(self.attachment, 1, wx.EXPAND)
+        self.form6.SetSizerAndFit(form6Sizer)
+        self.form6.SetSizerAndFit(form6Sizer)
+        # Attachment Page Added
 
         #Imported Midsection page
         # self.form6Sizer = wx.BoxSizer(wx.VERTICAL)
@@ -715,6 +724,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.layout.AddPage(self.form3, "Moving Boat")
         self.layout.AddPage(self.form4, "Mid-Section")
         self.layout.AddPage(self.form5, "Field Review")
+        # Attachment Page Added
+        self.layout.AddPage(self.form6, "FV Package")
+
         # self.layout.AddPage(self.form6, "Imported Mid-Section")
         # self.layout.AddPage(form6, "User Config")
         self.layout.Show(True)
@@ -1487,7 +1499,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.path = path
                 self.LoadDefaultConfig()
                 self.manager.OpenFile(path)
-		self.instrDep.RefreshDeploymentMethod()
+                self.instrDep.RefreshDeploymentMethod()
 
                 # After loading XML, If lock was checked, lock everything
                 #if self.titleHeader.enteredInHWSCB.GetValue():
@@ -1571,17 +1583,20 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.aquariusUploadDialog.passwordCtrl.SetValue(self.savedPassword)
             self.aquariusUploadDialog.serverCmbo.SetValue(self.savedServer)
 
-
+            # no longer need since already have zipping function
             # Set name of changeCtrl in upload dialog.
-            if self.name=='':
-                date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
-                date = date.strftime("%Y%m%d")
-                defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.pdf"
-                self.aquariusUploadDialog.changeCtrl.SetValue(self.uploadSaveDir +"\\" + defaultName)
-            else:
-                print "self.uploadsaveDir", self.uploadSaveDir
-                print "self.name", self.name
-                self.aquariusUploadDialog.changeCtrl.SetValue(self.uploadSaveDir + "\\" + self.name.replace("xml", "pdf"))
+            #if self.name == '':
+            #    date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
+            #    date = date.strftime("%Y%m%d")
+            #    defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.pdf"
+                #self.aquariusUploadDialog.changeCtrl.SetValue(self.uploadSaveDir + "\\" + defaultName)
+            #else:
+            #    print "self.uploadsaveDir", self.uploadSaveDir
+            #    print "self.name", self.name
+                #self.aquariusUploadDialog.changeCtrl.SetValue(
+                #    self.uploadSaveDir + "\\" + self.name.replace("xml", "pdf"))
+
+            self.aquariusUploadDialog.zipCtrl.SetValue(self.attachment.zipAddr.GetValue())
 
             show_dialog = True
             show_error = False
@@ -1731,29 +1746,21 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     #     self.genInfo.stnNumCmbo.Bind(wx.EVT_TEXT, self.OnStationSelect)
 
     def OnLevelNoteEstablishedBtn(self, event):
+        panel = self.waterLevelRun.levelNotes.panel
+        row = panel.descList.index(event.GetEventObject())
 
-        objBtn = event.GetEventObject()
-        wlManager = self.manager.waterLevelRunManager
+        for index in range(len(self.bm)):
 
-        for runIndex in range(len(wlManager.runSizer.GetChildren())):
-            for row in range(len(wlManager.GetLevelNotesSizerV(runIndex).GetChildren()) - 1):
-
-                button = wlManager.GetEstablishedElevationBtn(runIndex, row)
-
-                if button == objBtn:
-                    for index in range(len(self.bm)):
-
-                        if wlManager.GetLevelNotesStation(runIndex, row).GetValue() == self.bm[index] and self.stationLevel[index] == self.genInfo.stnNumCmbo.GetValue():
-                            # wlManager.CreateToasterBox(self, self.desc[index], len(self.desc[index])/30*1000, "#DFD996", (200,200))
-                            dlg = wx.MessageDialog(self, self.desc[index], 'BM Reference', wx.OK)
-
-                            res = dlg.ShowModal()
-                            if res == wx.ID_OK:
-                                dlg.Destroy()
-                            else:
-                                dlg.Destroy()
-                            event.Skip()
-                            return
+            if panel.stationList[row].GetValue() == self.bm[index] and self.stationLevel[index] == self.genInfo.stnNumCmbo.GetValue():
+                dlg = wx.MessageDialog(self, self.desc[index], 'BM Reference', wx.OK)
+                res = dlg.ShowModal()
+                if res == wx.ID_OK:
+                    dlg.Destroy()
+                else:
+                    dlg.Destroy()
+                event.Skip()
+                return
+        
         event.Skip()
 
 
@@ -1763,33 +1770,23 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def OnLevelNoteStationSelect(self, event):
 
         observedCmbo = event.GetEventObject()
-        wlManager = self.manager.waterLevelRunManager
-
+        panel = self.waterLevelRun.levelNotes.panel
+        row = panel.stationList.index(event.GetEventObject()) 
         if len(self.bm) > 0 and  len(self.ele) == len(self.bm) and len(self.desc) == len(self.bm):
-            for runIndex in range(len(wlManager.runSizer.GetChildren())):
-
-                for row in range(len(wlManager.GetLevelNotesSizerV(runIndex).GetChildren()) - 1):
-
-                    rowSizer = wlManager.GetLevelNotesRowSizer(runIndex, row)
-                    stationsCmbo = wlManager.GetLevelNotesStation(runIndex, row)
-                    if stationsCmbo == observedCmbo:
-                        if observedCmbo.GetValue() in self.bm:
-                            for index in range(len(self.bm)):
-
-                                if observedCmbo.GetValue() == self.bm[index] and self.stationLevel[index] == self.genInfo.stnNumCmbo.GetValue():
-
-                                    if self.ele[index] != '':
-
-                                        wlManager.GetLevelNotesEstablishedElevation(runIndex, row).SetValue(self.ele[index])
-                                        if row == 0:
-                                            wlManager.GetLevelNotesElevation(runIndex, row).SetValue(self.ele[index])
-                                    else:
-                                        wlManager.GetLevelNotesEstablishedElevation(runIndex, row).SetValue('')
-                                    break
-                        else:
-                            wlManager.GetLevelNotesEstablishedElevation(runIndex, row).SetValue('')
+            if observedCmbo.GetValue() in self.bm:
+                for index in range(len(self.bm)):
+                    if observedCmbo.GetValue() == self.bm[index] and self.stationLevel[index] == self.genInfo.stnNumCmbo.GetValue():
+                        if self.ele[index] != '':
+                            panel.establishList[row].SetValue(self.ele[index])
                             if row == 0:
-                                wlManager.GetLevelNotesElevation(runIndex, row).SetValue('')
+                                panel.elevatedList[row].SetValue(self.ele[index])
+                        else:
+                            panel.establishList[row].SetValue('')
+                        break
+            else:
+                panel.establishList[row].SetValue('')
+                if row == 0:
+                    panel.elevatedList[row].SetValue('')
 
         event.Skip()
 
@@ -2044,10 +2041,10 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.waterLevelRun.levelNotes.updateBMs(self.bm, self.bmIndex)
             self.waterLevelRun.updateBMs(self.bm, self.bmIndex)
             wlrManager = self.manager.waterLevelRunManager
-            for i in range(len(wlrManager.runSizer.GetChildren())):
-                for rowIndex in range(len(wlrManager.GetLevelNotesSizerV(i).GetChildren()) - 1):
-                    wlrManager.GetLevelNotesStation(i, rowIndex).Bind(wx.EVT_TEXT, self.OnLevelNoteStationSelect)
-                    # wlrManager.GetEstablishedElevationBtn(i, rowIndex).Bind(wx.EVT_BUTTON, self.OnLevelNoteEstablishedBtn)
+            panel = wlrManager.levelnotes.panel
+            for station in panel.stationList:
+                station.Bind(wx.EVT_TEXT, self.OnLevelNoteStationSelect)
+                # wlrManager.GetEstablishedElevationBtn(i, rowIndex).Bind(wx.EVT_BUTTON, self.OnLevelNoteEstablishedBtn)
 
 
             self.emptyLevel = False

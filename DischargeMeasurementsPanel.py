@@ -458,6 +458,7 @@ All uncertainty values reported here are 2-sigma value
         self.shiftCtrl = MyTextCtrl(shiftPanel, 22, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(70, self.ctrlHeight))
         self.shiftCtrl.Bind(wx.EVT_TEXT, self.FloatNumberControl)
         self.shiftCtrl.Bind(wx.EVT_TEXT, self.OnChangeUpdateMovingBoat)
+        self.shiftCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
         shiftSizerH.Add(shiftTxt, 1, wx.EXPAND)
         shiftSizerH.Add(self.shiftCtrl, 1, wx.EXPAND)

@@ -36,10 +36,6 @@ class WaterLevelRunManager(object):
     def levelNotes(self, levelNotes):
         self.gui.levelNotes = levelNotes
 
-    def GetSubRunPanel(self, index):
-        return self.levelNotes.runSizer.GetItem(index).GetWindow()
-
-
     @property
     def runSizer(self):
         return self.levelNotes.runSizer
@@ -48,118 +44,81 @@ class WaterLevelRunManager(object):
     def runSizer(self, runSizer):
         self.levelNotes.runSizer = runSizer
 
-
-    def GetClosurePanel(self, index):
-        return self.levelNotes.GetClosurePanel(index)
-
-    def GetClosureButton(self, index):
-        return self.levelNotes.GetClosureButton(index)
-
     def GetClosureText(self, index):
-        return self.levelNotes.GetClosureText(index)
-
+        return self.levelNotes.closureList[index]
 
     def GetUploadCheckBox(self, index):
-        return self.levelNotes.GetUploadCheckBox(index)
+        return self.levelNotes.uploadList[index]
 
-    def GetRemoveRunButton(self, index):
-        return self.levelNotes.GetRemoveRunButton(index)
-
-
-
-    def GetRunEntryNumber(self, run):
-        return self.levelNotes.GetRunEntryNumber(run)
-
-    def GetNumberOfRuns(self):
-        return self.levelNotes.GetNumberOfRuns()
-
-
-
-    def GetTransferSizer(self):
-        return self.levelNotes.GetTransferSizer()
+    # return number of circuit:
+    def GetCircuitList(self):
+        return self.levelNotes.circuitList
 
     def GetLevelNotesSizerV(self, run):
-        return self.levelNotes.GetLevelNotesSizerV(run)
-
-    def GetLevelNotesRowSizer(self, run, row):
-        return self.levelNotes.GetRowSizer(run, row)
-
-
-
-
-
-    #Return the button for specific circuit and row number:
-    def GetLevelNotesButton(self, run, row):
-        return self.levelNotes.GetButton(run, row)
-
-
-
+        return self.levelNotes.panel.circuitList[run]
 
     #Return the station for specific circuit and row number:
     def GetLevelNotesStation(self, run, row):
-
-        return self.levelNotes.GetStation(run, row)
+        
+        return self.levelNotes.circuitList[run][row][0]
 
 
     #Return the Hour for specific circuit and row number:
     def GetLevelNotesTime(self, run, row):
-        return self.levelNotes.GetTime(run, row)
+        return self.GetLevelNotesHour(run, row) + ":" + self.GetLevelNotesMinute(run, row)
 
     #Return the Hour for specific circuit and row number:
     def GetLevelNotesHour(self, run, row):
-        return self.levelNotes.GetHour(run, row)
+        return self.levelNotes.circuitList[run][row][1]
 
     #Return the Minute for specific circuit and row number:
     def GetLevelNotesMinute(self, run, row):
-        return self.levelNotes.GetMinute(run, row)
+        return self.levelNotes.circuitList[run][row][2]
 
 
     #Return the backsight for specific circuit and row number:
     def GetLevelNotesBacksight(self, run, row):
-        return self.levelNotes.GetBacksight(run, row)
+        return self.levelNotes.circuitList[run][row][3]
 
 
 
     #Return the HI for specific circuit and row number:
     def GetLevelNotesHI(self, run, row):
-        return self.levelNotes.GetHI(run, row)
+        return self.levelNotes.circuitList[run][row][4]
 
 
 
 
     #Return the foresight for specific circuit and row number:
     def GetLevelNotesForesight(self, run, row):
-        return self.levelNotes.GetForesight(run, row)
+        return self.levelNotes.circuitList[run][row][5]
 
 
 
     #Return the elevation for specific circuit and row number:
     def GetLevelNotesElevation(self, run, row):
-        return self.levelNotes.GetElevation(run, row)
+        return self.levelNotes.circuitList[run][row][6]
 
 
 
     #Return the checkbox for specific circuit and row number:
     def GetLevelNotesEstablishCheckbox(self, run, row):
-        return self.levelNotes.GetEstablishCheckbox(run, row)
+        return self.levelNotes.circuitList[run][row][9]
 
     #Return the checkbox for specific circuit and row number:
     def GetLevelNotesElevationCheckbox(self, run, row):
-        return self.levelNotes.GetElevationCheckbox(run, row)
+        return self.levelNotes.circuitList[run][row][7]
 
 
 
     #Return the Established Elevation for specific circuit and row number:
     def GetLevelNotesEstablishedElevation(self, run, row):
-        return self.levelNotes.GetEstablishedElevation(run, row)
+        return self.levelNotes.circuitList[run][row][10]
 
-    #Return the Established Elevation Button for specific circuit and row number:
-    def GetEstablishedElevationBtn(self, run, row):
-        return self.levelNotes.GetEstablishedElevationBtn(run, row)
 
     #Return the comments for specific circuit and row number:
     def GetLevelNotesComments(self, run, row):
-        return self.levelNotes.GetComments(run, row)
+        return self.levelNotes.circuitList[run][row][8]
 
 
 
@@ -175,7 +134,7 @@ class WaterLevelRunManager(object):
         elevations = []
         establishedEles = []
         closures = []
-        for circuitIndex, circuit in enumerate(self.runSizer.GetChildren()):
+        for circuitIndex in range(len(self.GetCircuitList())):
             timeList = []
             stationList = []
             elevationList = []
@@ -186,20 +145,21 @@ class WaterLevelRunManager(object):
             elevations.append(elevationList)
             establishedEles.append(establishedEleList)
 
-            closures.append(self.GetClosureText(circuitIndex).GetValue())
+            closures.append(self.GetClosureText(circuitIndex))
 
-            for rowIndex, row in enumerate(self.GetLevelNotesSizerV(circuitIndex).GetChildren()):
+            for rowIndex in range(len(self.GetCircuitList()[circuitIndex])):
 
-                if rowIndex < len(self.GetLevelNotesSizerV(circuitIndex).GetChildren()) - 1:
+                if rowIndex < len(self.GetCircuitList()[circuitIndex]) - 1:
                     ckbox1 = self.GetLevelNotesEstablishCheckbox(circuitIndex, rowIndex)
                     ckbox2 = self.GetLevelNotesElevationCheckbox(circuitIndex, rowIndex)
-                    
-                    if bool(ckbox1.GetValue()) or bool(ckbox2.GetValue()):
+
+                    if bool(ckbox1) or bool(ckbox2):
                         find = True
-                        time = self.GetLevelNotesTime(circuitIndex, rowIndex).GetValue()
-                        station = self.GetLevelNotesStation(circuitIndex, rowIndex).GetValue()
-                        elevation = self.GetLevelNotesElevation(circuitIndex, rowIndex).GetValue()
-                        establishedEle = self.GetLevelNotesEstablishedElevation(circuitIndex, rowIndex).GetValue()
+                        time = self.GetLevelNotesTime(circuitIndex, rowIndex)
+                        #station = self.GetLevelNotesStation(circuitIndex, rowIndex)
+                        station = self.GetLevelNotesStation(circuitIndex, 0)
+                        elevation = self.GetLevelNotesElevation(circuitIndex, rowIndex)
+                        establishedEle = self.GetLevelNotesEstablishedElevation(circuitIndex, rowIndex)
                         timeList.append(time)
                         stationList.append(station)
                         elevationList.append(elevation)
@@ -209,7 +169,7 @@ class WaterLevelRunManager(object):
                         index = len(self.wleValSizer.GetChildren()) - 1
                         self.SetTimeVal(index, time)
                         self.SetWLRefVal(index, station)
-                        if bool(ckbox1.GetValue()):
+                        if bool(ckbox1):
                             self.SetElevationVal(index, establishedEle)
                         else:
                             self.SetElevationVal(index, elevation)
@@ -228,29 +188,20 @@ class WaterLevelRunManager(object):
 
 
 
-    #Enable or disable the row by givin row and index
-    def EnableEntry(self, run, row, enable):
-        self.levelNotes.EnableEntry(run, row, enable)
 
     #Add a circuit to Level Notes panel
     def AddRun(self):
-        self.levelNotes.AddRun()
+        self.levelNotes.add(None)
 
-    #Remove a circuit from level notes panel by index number
-    def RemoveRun(self, index):
-        self.levelNotes.RemoveRun(index)
 
     #Add an entry to circuit by index number
     def AddEntry(self, index):
         self.levelNotes.AddEntry(index)
 
-    #remove an entry from a circuit by index numbers
-    def RemoveEntry(self, runIndex, entryIndex):
-        self.levelNotes.RemoveEntry(runIndex, entryIndex)
 
     #return true or false vale base on if the checkbox is checked or not
     def UploadIsChecked(self, index):
-        return self.GetUploadCheckBox(index).IsChecked()
+        return self.GetUploadCheckBox(index)
     
     #Add an entry for summary panel
     def AddSummaryEntry(self):
@@ -358,6 +309,23 @@ class WaterLevelRunManager(object):
     #Surge Val Setter
     def SetSurgeVal(self, row, val):
         self.gui.SetSurgeVal(row, val)
+
+    # Comment Sizer
+    @property
+    def commentValSizer(self):
+        return self.gui.commentValSizer
+
+    @commentValSizer.setter
+    def commentValSizer(self, commentValSizer):
+        self.gui.commentValSizer = commentValSizer
+
+    # Comment Val Getter
+    def GetCommentVal(self, row):
+        return self.gui.GetCommentVal(row)
+
+    # Surge Val Setter
+    def SetCommentVal(self, row, val):
+        self.gui.SetCommentVal(row, val)
     
 
     #WLElev Sizer
@@ -499,11 +467,6 @@ class WaterLevelRunManager(object):
     def LevelnoteType(self, val):
         self.gui.levelNotes.type = val
 
-
-    #Find the matching pairs by station name for level notes
-    def FindMatchBM(self, parent):
-        self.levelNotes.FindMatchBM(parent)
-
     #Return a list including all selected index number
     def GetSelectedList(self):
         resultList = []
@@ -513,8 +476,8 @@ class WaterLevelRunManager(object):
         return resultList
         
     #transfer selected WL and logger value to stage measurement on front page
-    def TransferToStageMeasurement(self, time=None, logger1=None, logger2=None, wl1=None, wl2=None):
-        self.manager.stageMeasManager.InsertEmptyEntry(0, time, logger1, logger2, wl1, wl2)
+    def TransferToStageMeasurement(self, time=None, logger1=None, logger2=None, wl1=None, wl2=None, surge=None):
+        self.manager.stageMeasManager.InsertEmptyEntry(0, time, logger1, logger2, wl1, wl2, surge)
 
 
     #Return the set of selected WL Reference name without duplicate, without empty string

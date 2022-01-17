@@ -104,6 +104,7 @@ class StageMeasurementsPanel(wx.Panel):
         self.stageTxtLbl = "HG"
         self.stageTxtLbl2 = "HG2"
         self.levelTxtLbl = "Water Level Reference"
+        self.surgeTxtLbl = "Surge\n(+/- m)"
         self.sensorResetTxtLbl = "Sensor Reset Correction"
         self.sensorResetAppTxtLbl = "Action Taken"
         self.weightedMghTxtLbl = "Weighted M.G.H."
@@ -415,7 +416,26 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.wlColumnSizer.Add(wlHeaderPanel, 0, wx.EXPAND)
         self.wlColumnSizer.Add(wlValPanel, 0, wx.EXPAND)
 
+        # Surge column
+        self.surgeColumnSizer = wx.BoxSizer(wx.VERTICAL)
 
+        surgeLabelPanel = wx.Panel(self.measurementsScrollPanel, style=wx.SIMPLE_BORDER)
+        surgeLabelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        surgeLabelPanel.SetSizer(surgeLabelSizer)
+
+        surgeLabelTxt = wx.StaticText(surgeLabelPanel, label=self.surgeTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL,
+                                     size=(self.colHeaderWidth, self.colHeaderHeight))
+        ##        timeLabelTxt.Wrap(self.wrapLength)
+        surgeLabelSizer.Add(surgeLabelTxt, 1, wx.EXPAND)
+
+        # Create new panel and sizer for dynamic entries
+        self.surgeValPanel = wx.Panel(self.measurementsScrollPanel, style=wx.SIMPLE_BORDER)
+        self.surgeValSizer = wx.BoxSizer(wx.VERTICAL)
+        self.surgeValPanel.SetSizer(self.surgeValSizer)
+
+        # Add all to the Time
+        self.surgeColumnSizer.Add(surgeLabelPanel, 0, wx.EXPAND)
+        self.surgeColumnSizer.Add(self.surgeValPanel, 0, wx.EXPAND)
 
         #SRC column
         self.srcColumnSizer = wx.BoxSizer(wx.VERTICAL)
@@ -526,6 +546,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.measurementsSizer.Add(self.stageColumnPanel, 0, wx.EXPAND)
         self.measurementsSizer.Add(self.stageColumnPanel2, 0, wx.EXPAND)
         self.measurementsSizer.Add(self.wlColumnPanel, 0, wx.EXPAND)
+        self.measurementsSizer.Add(self.surgeColumnSizer, 0, wx.EXPAND)
         self.measurementsSizer.Add(self.srcColumnPanel, 0, wx.EXPAND)
         self.measurementsSizer.Add(self.srcAppColumnPanel, 1, wx.EXPAND)
         self.measurementsSizer.Add(self.readingTypeColumnpanel, 1, wx.EXPAND)
@@ -992,6 +1013,13 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         if wl2 != None:
             wlR.SetValue(wl2)
 
+        #Surge stuff
+        surge = MyTextCtrl(self.surgeValPanel, style=wx.TE_PROCESS_ENTER | wx.TE_CENTRE,
+                           size=(self.colHeaderWidth, self.rowHeight), name=otherName)
+        surge.Bind(wx.EVT_TEXT, self.NumberControl)
+        surge.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        self.surgeValSizer.Add(surge, 0, wx.EXPAND | wx.BOTTOM | wx.TOP)
+
         #SRC stuff
         src = MyTextCtrl(self.srcPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=otherName)
         # src.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
@@ -1044,6 +1072,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             hg2.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             wlL.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             wlR.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
+            surge.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             src.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             srcApp.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             checkbox.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
@@ -1114,6 +1143,10 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.wlValRightSizer.Hide(index)
         self.wlValRightSizer.Remove(index)
 
+        #Surge stuff
+        self.surgeValSizer.Hide(index)
+        self.surgeValSizer.Remove(index)
+        
         #SRC stuff
         self.srcSizer.Hide(index)
         self.srcSizer.Remove(index)
@@ -1173,7 +1206,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         else:
             return False
     #insert a empty line at position index
-    def InsertEmptyEntry(self, index, time=None, logger1=None, logger2=None, wl1=None, wl2=None):
+    def InsertEmptyEntry(self, index, time=None, logger1=None, logger2=None, wl1=None, wl2=None, surgeVal=None):
         self.RemoveAllEmpties()
 
         if index < 0:
@@ -1244,6 +1277,12 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         wlR.Bind(wx.EVT_KILL_FOCUS, self.OnWlr2CalculateMGH)
         self.wlValRightSizer.Insert(index, wlR, 0, wx.EXPAND)
 
+        # Surge stuff
+        surge = MyTextCtrl(self.surgeValPanel, style=wx.TE_PROCESS_ENTER | wx.TE_CENTRE,
+                         size=(self.colHeaderWidth, self.rowHeight), name=str(index))
+        surge.Bind(wx.EVT_TEXT, self.NumberControl)
+        surge.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        self.surgeValSizer.Insert(index, surge, 0, wx.EXPAND | wx.BOTTOM | wx.TOP)
 
         #SRC stuff
         src = MyTextCtrl(self.srcPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=str(index))
@@ -1301,6 +1340,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             wlL.SetValue(wl1)
         if wl2 != None:
             wlR.SetValue(wl2)
+        if surgeVal != None:
+            surge.SetValue(surgeVal)
 
         #calculate the src for the new row
         self.RefreshSRC()
@@ -1315,6 +1356,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             hg2.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             wlL.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             wlR.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
+            surge.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             src.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             srcApp.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             checkbox.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
@@ -1607,7 +1649,31 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         sizerItem = self.GetWlSubSizerR().GetItem(row).GetWindow()
         sizerItem.SetValue(val)
 
+    #Surge
+    def GetSurgeSizer(self):
+        return self.surgeValSizer
 
+    def SetSurgeSizer(self, surgeSizer):
+        self.surgeValSizer = surgeSizer
+
+    #Surge Val Getter
+    def GetSurgeVal(self, row):
+        maxrow = len(self.GetSurgeSizer().GetChildren())
+        if row >= maxrow:
+            row = maxrow - 1
+
+        sizerItem = self.GetSurgeSizer().GetItem(row).GetWindow()
+        return sizerItem.GetValue()
+
+    #Surge Val Setter
+    def SetSurgeVal(self, row, val):
+        maxrow = len(self.GetSurgeSizer().GetChildren())
+        if row >= maxrow:
+            row = maxrow - 1
+
+        sizerItem = self.GetSurgeSizer().GetItem(row).GetWindow()
+        sizerItem.SetValue(val)
+        
     #SRC col
     def GetSrcSizer(self):
         return self.srcSizer
