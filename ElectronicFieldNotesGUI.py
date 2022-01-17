@@ -725,7 +725,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.layout.AddPage(self.form4, "Mid-Section")
         self.layout.AddPage(self.form5, "Field Review")
         # Attachment Page Added
-        self.layout.AddPage(self.form6, "Attachment")
+        self.layout.AddPage(self.form6, "FV Package")
 
         # self.layout.AddPage(self.form6, "Imported Mid-Section")
         # self.layout.AddPage(form6, "User Config")
