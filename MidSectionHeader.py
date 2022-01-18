@@ -46,10 +46,10 @@ class MidSectionHeader(wx.Panel):
         self.measSummLbl = "Measurement Summary"
         self.numPanelLbl = "Num. Panels"
         self.widthLbl = "Width (m)"
-        self.areaLbl = u"Area (m\N{SUPERSCRIPT TWO})"
+        self.areaLbl = "Area (m\N{SUPERSCRIPT TWO})"
         self.avgDepthLbl = "Avg Depth (m)"
         self.avgVelLbl = "Avg Velocity (m/s)"
-        self.totalDisLbl = u"Total Discharge (m\N{SUPERSCRIPT THREE}/s) "
+        self.totalDisLbl = "Total Discharge (m\N{SUPERSCRIPT THREE}/s) "
         self.uncertLbl = "Uncertainty (ISO)(%)"
         self.uncertLb2 = "Uncertainty (IVE)(%)"
         self.plotLbl = "Plot"
@@ -671,9 +671,9 @@ class MidSectionHeader(wx.Panel):
         else:
             aY = y
             aDepthList = depthList
-        aTuples = sorted(list(set(zip(aTagmarkLineList, aY) + zip(aDepthTagList, aDepthList))), \
+        aTuples = sorted(list(set(list(zip(aTagmarkLineList, aY)) + list(zip(aDepthTagList, aDepthList)))), \
                                                     key=lambda x: x[0])
-        unpackTuples = zip(*aTuples)
+        unpackTuples = list(zip(*aTuples))
         tags = unpackTuples[0]
         depths = unpackTuples[1]
 

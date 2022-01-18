@@ -91,7 +91,7 @@ class MidSectionTransferFrame(wx.Frame):
 
 
     def OnCancel(self, evt):
-        print "OnCancelBtn"
+        print("OnCancelBtn")
         self.Destroy()
 
     def OnTransfer(self, evt):

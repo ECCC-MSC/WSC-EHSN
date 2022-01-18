@@ -59,15 +59,15 @@ class AquariusUploadDialog(wx.Dialog):
 
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "Aquarius Upload Dialog"
+            print("Aquarius Upload Dialog")
 
         self.layoutSizer = wx.BoxSizer(wx.VERTICAL)
 
         serverSizer = wx.BoxSizer(wx.HORIZONTAL)
         serverSubSizer = wx.BoxSizer(wx.HORIZONTAL)
         serverTxt = wx.StaticText(self, label=self.serverLbl)
-        self.serverCmbo = wx.ComboBox(self, choices=sorted(self.servers.keys(), reverse=False),
-                                      value=sorted(self.servers.keys(), reverse=False)[0], style=wx.CB_READONLY)
+        self.serverCmbo = wx.ComboBox(self, choices=sorted(list(self.servers.keys()), reverse=False),
+                                      value=sorted(list(self.servers.keys()), reverse=False)[0], style=wx.CB_READONLY)
         # serverSubSizer.Add((-1, -1), 1, wx.EXPAND)
         serverSubSizer.Add(serverTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 6)
         serverSizer.Add(serverSubSizer, 1, wx.EXPAND)
@@ -299,7 +299,7 @@ class AquariusUploadDialog(wx.Dialog):
                                     return
 
                             else:
-                                print "Error: %s" % result
+                                print("Error: %s" % result)
                                 show_error = True
                                 uploadInfo.append("Failed")
                                 uploadInfo.append(str(datetime.datetime.now()))
@@ -353,10 +353,10 @@ class AquariusUploadDialog(wx.Dialog):
                     self.EnableButtons(True)
 
             except Exception as e:
-                print str(e)
+                print(str(e))
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
+                print((exc_type, fname, exc_tb.tb_lineno))
                 self.EnableButtons(True)
 
         # Upload for NG
@@ -377,7 +377,7 @@ class AquariusUploadDialog(wx.Dialog):
                             fvPath = chosenFile
                         else:
                             fvPath = self.GetParent().attachment.zipPath
-                        print fvPath
+                        print(fvPath)
                         result = self.GetParent().manager.ExportToAquariusNg(server, username, password, fvPath, fvDate)
                         if result != None:
                             error = wx.MessageDialog(None,  result, 'Error',
@@ -390,10 +390,10 @@ class AquariusUploadDialog(wx.Dialog):
                             succ.ShowModal()
                 self.EnableButtons(True)
             except Exception as e:
-                print str(e)
+                print(str(e))
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
+                print((exc_type, fname, exc_tb.tb_lineno))
                 self.EnableButtons(True)
 
 
@@ -423,9 +423,9 @@ def main():
     while val:
         re = AUD.ShowModal()
         if re == wx.ID_YES:
-            print "YES"
+            print("YES")
         else:
-            print "Cancel"
+            print("Cancel")
             val = False
             AUD.Destroy()
 

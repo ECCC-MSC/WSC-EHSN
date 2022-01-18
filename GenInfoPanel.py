@@ -34,17 +34,17 @@ class GenInfoPanel(wx.Panel):
         pass
     def OnTextTypeNum(self, event):
         insertPoint = self.stnNumCmbo.GetInsertionPoint()
-        self.stnNumCmbo.ChangeValue(unicode.upper(self.stnNumCmbo.GetValue()))
+        self.stnNumCmbo.ChangeValue(str.upper(self.stnNumCmbo.GetValue()))
         self.stnNumCmbo.SetInsertionPoint(insertPoint)
         
     def OnTextTypeName(self, event):
         insertPoint = self.stnNameCtrl.GetInsertionPoint()
-        self.stnNameCtrl.ChangeValue(unicode.upper(self.stnNameCtrl.GetValue()))
+        self.stnNameCtrl.ChangeValue(str.upper(self.stnNameCtrl.GetValue()))
         self.stnNameCtrl.SetInsertionPoint(insertPoint)
         
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "In GenInfoPanel"
+            print("In GenInfoPanel")
 
         self.locale = wx.Locale(self.lang)
 

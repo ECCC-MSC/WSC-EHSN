@@ -13,7 +13,7 @@ def GetStationID(filePath):
         stationID = channel.find('SiteInformation').find('SiteID').text
         return stationID
     except:
-        print "Unable to read the xml file"
+        print("Unable to read the xml file")
         return -1
 
 
@@ -431,7 +431,7 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
     # print movingBoatManager.GetCommentsCtrl().GetValue()
 
     if movingBoatManager.commentsCtrl != "":
-        print "not empty comments"
+        print("not empty comments")
         movingBoatManager.commentsCtrl += "\n"
     movingBoatManager.commentsCtrl += 'Moving Bed Test Message: ' +  message + '\n\n' if message is not None else ""
     movingBoatManager.commentsCtrl += 'QRev Message: ' +  qRevMessage + '\n\n' if qRevMessage is not None else ''

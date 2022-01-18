@@ -256,8 +256,8 @@ class WaterLevelNotesPanel(wx.Panel):
             if cont == wx.ID_OK:
                 return
 
-        except Exception,e:
-            print str(e)
+        except Exception as e:
+            print(str(e))
             warning = wx.MessageDialog(None,"The elevation values provided for thr 'REF' is not a valid number.",
                                             "Error", wx.OK | wx.ICON_EXCLAMATION)
             cont = warning.ShowModal()

@@ -19,7 +19,7 @@ class PartyInfoPanel(wx.Panel):
 
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "Party Info Panel"
+            print("Party Info Panel")
 
         layoutSizer = wx.BoxSizer(wx.HORIZONTAL)
 

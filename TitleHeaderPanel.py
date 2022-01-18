@@ -18,7 +18,7 @@ class TitleHeaderPanel(wx.Panel):
 
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "Setup Title Header Panel"
+            print("Setup Title Header Panel")
 
         layoutSizer = wx.BoxSizer(wx.VERTICAL)
 

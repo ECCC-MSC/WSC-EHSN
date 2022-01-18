@@ -17,7 +17,7 @@ class AttachmentManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "AttachmentManager"
+            print("AttachmentManager")
 
     def returnAttachment(self):
         boxList = [self.gui.attachBox1, self.gui.attachBox2, self.gui.attachBox3, self.gui.attachBox4, self.gui.attachBox5,

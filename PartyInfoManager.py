@@ -17,7 +17,7 @@ class PartyInfoManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "PartyInfoControl"
+            print("PartyInfoControl")
 
     #Party Control
     @property

@@ -77,7 +77,7 @@ class EnvironmentConditionsPanel(wx.Panel):
         
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "In EnvironmentConditionsPanel"
+            print("In EnvironmentConditionsPanel")
 
         self.locale = wx.Locale(self.lang)
 

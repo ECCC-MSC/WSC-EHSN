@@ -557,7 +557,7 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
     def ForesightUpdateEle(self, evt):
         id = self.fsList.index(evt.GetEventObject())
         if id <= len(self.stationList) - 1 and id != 0:
-            for i in reversed(range(id)):
+            for i in reversed(list(range(id))):
                 try:
                     hiVal = float(self.hoiList[i].GetValue())
                     break

@@ -11,7 +11,7 @@ def GetStationID(filePath):
         stationID = channel.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Station_No').text
         return stationID
     except:
-        print "Unable to read the xml file"
+        print("Unable to read the xml file")
         return -1
 
 

@@ -28,8 +28,8 @@ class MidSectionSummaryTable(ScrolledPanel):
         self.revolutionsLbl = "Revolutions"
         self.timeLbl = "Time\n(s)"
         self.velocityPointLbl = "Velocity\nat Point\n(m/s)"
-        self.areaLbl = U"Area\n(m\N{SUPERSCRIPT TWO})"
-        self.dischargeLbl = u"Discharge\n(m\N{SUPERSCRIPT THREE}/s)"
+        self.areaLbl = "Area\n(m\N{SUPERSCRIPT TWO})"
+        self.dischargeLbl = "Discharge\n(m\N{SUPERSCRIPT THREE}/s)"
         self.flowLbl = "% Flow"
         self.meanVelLbl = "Mean\nVelocity\n(m/s)"
         self.dlg = None
@@ -146,7 +146,7 @@ class MidSectionSummaryTable(ScrolledPanel):
 
             objIndex = ""
             if len(self.panelObjs) > 0:
-                for i in reversed(range(index + 1)):
+                for i in reversed(list(range(index + 1))):
     
                     if self.summaryTable.GetCellValue(i, 0) != "":
                         for j, obj in enumerate(self.panelObjs):
@@ -922,7 +922,7 @@ class MidSectionSummaryTable(ScrolledPanel):
                         self.UpdateObjInfoByRow(addedIndexInArray)
                         self.TransferFromObjToTable()
         except Exception as e:
-            print e
+            print(e)
 
         self.RefreshFlow()
         self.lastObj = obj
@@ -1466,7 +1466,7 @@ class MidSectionSummaryTable(ScrolledPanel):
                         self.UpdateObjInfoByRow(addedIndexInArray)
                         self.TransferFromObjToTable()
         except Exception as e:
-            print e
+            print(e)
 
         for i in self.panelObjs:
             if "end edge"==i.panelNum:
@@ -1491,7 +1491,7 @@ class MidSectionSummaryTable(ScrolledPanel):
 
 
         if total != 0:
-            for key in indexDischarge.keys():
+            for key in list(indexDischarge.keys()):
                 flow = indexDischarge.get(key) / total * 100
                 self.panelObjs[key].flow = round(flow, 1)
                 for row in range(self.summaryTable.GetNumberRows()):

@@ -24,7 +24,7 @@ from AQUARIUSDataExtractionToolFrame import *
 from RatingCurveViewerToolFrame import *
 # from AquariusUploadDialog2 import *
 from IngestOptionFrame import *
-from ConfigParser import SafeConfigParser
+from configparser import SafeConfigParser
 from ZoomPanel import *
 # from RemarksPanel import *
 
@@ -39,7 +39,7 @@ import os
 import sys
 import datetime
 from wx import adv
-import thread
+import _thread
 import os.path
 import multiprocessing
 import csv
@@ -429,7 +429,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "Setup the Frame"
+            print("Setup the Frame")
 
         self.locale = wx.Locale(self.lang)
         myFont = wx.Font(10, wx.DEFAULT, wx.FONTSTYLE_NORMAL, wx.NORMAL, False)
@@ -816,14 +816,14 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def OnCalc(self,e):
         if self.calc is None:
             self.calc = CalcPanel(self)
-            thread.start_new_thread(self.calc.mainloop, ())
+            _thread.start_new_thread(self.calc.mainloop, ())
         elif self.calc.quitFlag:
             self.calc = CalcPanel(self)
-            thread.start_new_thread(self.calc.mainloop, ())
+            _thread.start_new_thread(self.calc.mainloop, ())
         else:
             self.calc.exit()
             self.calc = CalcPanel(self)
-            thread.start_new_thread(self.calc.mainloop, ())
+            _thread.start_new_thread(self.calc.mainloop, ())
 
     def closeConfigWindow(self, event):
         self.config.Destroy() #This will close the app window.
@@ -969,7 +969,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if self.manager is not None:
 
                 self.manager.ExportAsXML(self.fullname, None)
-                print "File saved"
+                print("File saved")
                 return True
         return False
 
@@ -1003,15 +1003,15 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             path = fileSaveDialog.GetPath()
             fileName = fileSaveDialog.GetFilename()
             if self.mode == "DEBUG":
-                print "path exp"
-                print path
+                print("path exp")
+                print(path)
             if path != "":
                 self.manager.ExportAsXML(path, None)
                 self.SetTitle(self.noteHeaderTxt + "   " + path)
                 self.name = fileName
                 self.fullname = path
                 # self.ResetSaveAsIni(path)
-                print "XML file saved"
+                print("XML file saved")
                 return True
 
 
@@ -1144,8 +1144,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if self.manager is not None:
                 styleSheetPath = fileOpenDialog.GetPath()
                 if self.mode == "DEBUG":
-                    print "styleSheetPath exp"
-                    print styleSheetPath
+                    print("styleSheetPath exp")
+                    print(styleSheetPath)
                 if styleSheetPath != "":
                     # self.fullStyleSheetFilePath = styleSheetPath
                     self.viewStyleSheetFilePath = styleSheetPath
@@ -1154,8 +1154,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
         if self.mode == "DEBUG":
-            print "Path for export pdf before upload to AQ:"
-            print path
+            print("Path for export pdf before upload to AQ:")
+            print(path)
 
         if self.name == '':
             defaultName = ''
@@ -1219,7 +1219,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         result = None
         try:
             self.manager.CheckFVVals()
-        except ValueError, e:
+        except ValueError as e:
             # result = ValueError
             result = str(e)
 
@@ -1234,7 +1234,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         # Field note must be reviewed before being able to upload
         if not self.partyInfo.ReviewedIsChecked():
-            print "Reviewed is not checked"
+            print("Reviewed is not checked")
             warning = wx.MessageDialog(None,
                                         self.notReviewedUploadWarning,
                                         "Upload Warning!", wx.OK | wx.ICON_EXCLAMATION)
@@ -1274,8 +1274,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if self.manager is not None:
                 path = fileOpenDialog.GetPath()
                 if self.mode == "DEBUG":
-                    print "path exp"
-                    print path
+                    print("path exp")
+                    print(path)
                 if path != "":
                     self.fullStyleSheetFilePath = path
 
@@ -1302,8 +1302,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileSaveDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path exp"
-                print path
+                print("path exp")
+                print(path)
             if path != "":
                 try:
                     self.manager.ExportAsPDF(path, self.fullStyleSheetFilePath)
@@ -1345,8 +1345,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if self.manager is not None:
                 path = fileOpenDialog.GetPath()
                 if self.mode == "DEBUG":
-                    print "path exp"
-                    print path
+                    print("path exp")
+                    print(path)
                 if path != "":
                     self.summStyleSheetFilePath = path
 
@@ -1370,8 +1370,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileSaveDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path exp"
-                print path
+                print("path exp")
+                print(path)
             if path != "":
                 self.CreateQR()
                 try:
@@ -1411,8 +1411,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if self.manager is not None:
                 path = fileOpenDialog.GetPath()
                 if self.mode == "DEBUG":
-                    print "path exp"
-                    print path
+                    print("path exp")
+                    print(path)
                 if path != "":
                     self.viewStyleSheetFilePath = path
 
@@ -1436,8 +1436,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileSaveDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path exp"
-                print path
+                print("path exp")
+                print(path)
             if path != "":
                 try:
                     self.manager.ExportAsPDF(path, self.viewStyleSheetFilePath)
@@ -1491,8 +1491,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileOpenDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
 
@@ -1684,8 +1684,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = movingBoatOpenDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
 
@@ -1828,7 +1828,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
         insertPoint = self.genInfo.stnNumCmbo.GetInsertionPoint()
-        self.genInfo.stnNumCmbo.ChangeValue(unicode.upper(self.genInfo.stnNumCmbo.GetValue()))
+        self.genInfo.stnNumCmbo.ChangeValue(str.upper(self.genInfo.stnNumCmbo.GetValue()))
         self.genInfo.stnNumCmbo.SetInsertionPoint(insertPoint)
 
         if len(self.numsRead) > 0 and len(self.namesRead) > 0:
@@ -1872,7 +1872,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         
     def StationNameSelect(self):
         insertPoint = self.genInfo.stnNameCtrl.GetInsertionPoint()
-        self.genInfo.stnNameCtrl.ChangeValue(unicode.upper(self.genInfo.stnNameCtrl.GetValue()))
+        self.genInfo.stnNameCtrl.ChangeValue(str.upper(self.genInfo.stnNameCtrl.GetValue()))
         self.genInfo.stnNameCtrl.SetInsertionPoint(insertPoint)
 
         if len(self.numsRead) > 0 and len(self.namesRead) > 0:
@@ -1920,8 +1920,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             path = fileOpenDialog.GetPath()
 
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
 
@@ -1952,7 +1952,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         except:
             pass
         try:
-            print self.ratingFileDir
+            print(self.ratingFileDir)
             self.OpenMeterFile(self.ratingFileDir + '\\meters.csv')
             self.savedMetersPath = self.ratingFileDir + '\\meters.csv'
 
@@ -2064,8 +2064,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             path = fileOpenDialog.GetPath()
 
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
 
@@ -2100,8 +2100,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             path = fileOpenDialog.GetPath()
 
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
 
@@ -2317,14 +2317,14 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         elif 'Dec' in dateDis[1]:
             return year + '/12/' + day
         else:
-            print 'error date format from dis'
+            print('error date format from dis')
             return ''
 
 
 
 
     def OnUpdate(self, evt):
-        print "On Update"
+        print("On Update")
         VersionCheck.Check(self.version, self, True)
 
     def DestroySubWindows(self):
@@ -2507,8 +2507,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileOpenDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
                 fileName = fileOpenDialog.GetFilename()
@@ -2541,8 +2541,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileOpenDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
                 fileName = fileOpenDialog.GetFilename()
@@ -2574,8 +2574,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileOpenDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
                 fileName = fileOpenDialog.GetFilename()
@@ -2608,8 +2608,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileOpenDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
                 fileName = fileOpenDialog.GetFilename()
@@ -2641,8 +2641,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileOpenDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
                 fileName = fileOpenDialog.GetFilename()
@@ -2701,8 +2701,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileOpenDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
                 fileName = fileOpenDialog.GetFilename()
@@ -2735,8 +2735,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.manager is not None:
             path = fileOpenDialog.GetPath()
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
 
             if path != "":
                 fileName = fileOpenDialog.GetFilename()
@@ -2807,7 +2807,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             #     tz = "00"
         # print self.manager.GetLocalTimeUtcOffsetFromFt2()
         # print tzCmbo
-        print "self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]", self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]
+        print("self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]", self.manager.GetLocalTimeUtcOffsetFromFt2()[:3])
         # if tz != self.manager.GetLocalTimeUtcOffsetFromFt2()[:3]:
             # info = wx.MessageDialog(self, self.tzMatchErrMsg, self.tzMatchErrTitle,
                                      # wx.OK | wx.ICON_ERROR)
@@ -3017,7 +3017,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     #Reset the initial upload_save path
     def ResetUploadSaveIni(self, resetpath):
-        print "ResetUploadSaveIni"
+        print("ResetUploadSaveIni")
         num = 0
         for i in range(len(resetpath)):
             if resetpath[len(resetpath) - i - 1] == '\\':

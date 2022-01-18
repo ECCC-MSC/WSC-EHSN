@@ -177,7 +177,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "In StageMeasurementsPanel"
+            print("In StageMeasurementsPanel")
 
         self.layoutSizerV = wx.BoxSizer(wx.VERTICAL)
         self.locale = wx.Locale(self.lang)
@@ -870,7 +870,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             if evt.GetEventObject() == self.bmLeft:
                 self.bmRight.SetFocus()
             if evt.GetEventObject() == self.bmRight:
-                print self.entryNum
+                print(self.entryNum)
             if evt.GetId()/100 == 2:
                 for s in self.stageColumnPanel.GetChildren():
                     for t in s.GetChildren():
@@ -907,7 +907,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
     def OnAddPress(self, e):
         if self.mode=="DEBUG":
-            print "add"
+            print("add")
 
         self.AddEntry()
 
@@ -937,7 +937,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
 
         if self.mode=="DEBUG":
-            print name
+            print(name)
         #Time col
         # tc = masked.TimeCtrl(self.timeValPanel, size=(self.colHeaderWidth, self.rowHeight), displaySeconds=False, name=otherName, style=wx.TE_CENTRE, fmt24hr=True)
         # tc.SetValue(wx.DateTime_Now().FormatTime())
@@ -1092,7 +1092,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         button = e.GetEventObject()
         index = int(button.GetName())
         if self.mode=="DEBUG":
-            print "index %s" % index
+            print("index %s" % index)
 
         if not self.IsEmptyRow(index):
             dlg = wx.MessageDialog(self, "Are you sure you want to delete the row with data entered?", 'Remove',
@@ -1119,7 +1119,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
     # Reorder the list of entries
     def RemoveEntry(self, index):
         if self.mode=="DEBUG":
-            print "remove %s" % index
+            print("remove %s" % index)
 
         self.entryColButtonSizer.Hide(index)
         self.entryColButtonSizer.Remove(index)
@@ -1420,25 +1420,25 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
     def PrintNames(self):
         for child in self.entryColButtonSizer.GetChildren():
-            print "button col" + child.GetWindow().GetName()
+            print("button col" + child.GetWindow().GetName())
         for child in self.timeValSizer.GetChildren():
-            print "time col" + child.GetWindow().GetName()
+            print("time col" + child.GetWindow().GetName())
         for child in self.stageSizer.GetChildren():
-            print "stage1 col" + child.GetWindow().GetName()
+            print("stage1 col" + child.GetWindow().GetName())
         for child in self.stageSizer2.GetChildren():
-            print "stage2 col" + child.GetWindow().GetName()
+            print("stage2 col" + child.GetWindow().GetName())
         for child in self.wlValLeftSizer.GetChildren():
-            print "wll col" + child.GetWindow().GetName()
+            print("wll col" + child.GetWindow().GetName())
         for child in self.wlValRightSizer.GetChildren():
-            print "wlr col" + child.GetWindow().GetName()
+            print("wlr col" + child.GetWindow().GetName())
         for child in self.srcSizer.GetChildren():
-            print "src col" + child.GetWindow().GetName()
+            print("src col" + child.GetWindow().GetName())
         for child in self.srcAppSizer.GetChildren():
-            print "srcApp col" + child.GetWindow().GetName()
+            print("srcApp col" + child.GetWindow().GetName())
         for child in self.readingTypeValSizer.GetChildren():
-            print "readingType col" + child.GetWindow().GetName()
+            print("readingType col" + child.GetWindow().GetName())
         for child in self.mghAggValSizer.GetChildren():
-            print "MGH Agg col" + child.GetWindow().GetSizer().GetItem(1).GetWindow().GetName()
+            print("MGH Agg col" + child.GetWindow().GetSizer().GetItem(1).GetWindow().GetName())
 
     def RemoveAllEmpties(self):
 
@@ -2152,7 +2152,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         if length == 0:
             return
         elif length == 1:
-            return  timeValues[timeValues.keys()[0]]
+            return  timeValues[list(timeValues.keys())[0]]
         elif length == 2:
             startTime = self.manager.manager.disMeasManager.startTimeCtrl
             endTime = self.manager.manager.disMeasManager.endTimeCtrl
@@ -2189,11 +2189,11 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
                 # if startTime != "00:00" and endTime != "00:00":
                 if startTimeCtrl.IsCompleted() and endTimeCtrl.IsCompleted():
                     #find the mgh for start time
-                    print "Find 'start time': ", times
+                    print("Find 'start time': ", times)
                     firstClosest, secondClosest = self.FindClosestTime(times, startTime)
 
-                    print firstClosest
-                    print secondClosest
+                    print(firstClosest)
+                    print(secondClosest)
 
                     if firstClosest != secondClosest:
                         if self.GetIntervalMinute(firstClosest, secondClosest) < 0:
@@ -2202,19 +2202,19 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
                             secondClosest = temp
 
                         slop1 = (timeValues[secondClosest] - timeValues[firstClosest]) / self.GetIntervalMinute(firstClosest, secondClosest)
-                        print "slop1 ", slop1
+                        print("slop1 ", slop1)
                         start = slop1 * self.GetIntervalMinute(firstClosest, startTime) + timeValues[firstClosest]
                         timeValues[startTime] = start
 
 
                     #find the mgh for end time
                     times = sorted(timeValues.keys())
-                    print "Find 'end time': ", times
+                    print("Find 'end time': ", times)
 
                     firstClosest, secondClosest = self.FindClosestTime(times, endTime)
 
-                    print firstClosest
-                    print secondClosest
+                    print(firstClosest)
+                    print(secondClosest)
 
                     if firstClosest != secondClosest:
                         if self.GetIntervalMinute(firstClosest, secondClosest) < 0:
@@ -2222,13 +2222,13 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
                             firstClosest = secondClosest
                             secondClosest = temp
                         slop2 = (timeValues[secondClosest] - timeValues[firstClosest]) / self.GetIntervalMinute(firstClosest, secondClosest)
-                        print "slop2 ", slop2
+                        print("slop2 ", slop2)
                         end = slop2 * self.GetIntervalMinute(firstClosest, endTime) + timeValues[firstClosest]
                         timeValues[endTime] = end
 
                     times = sorted(timeValues.keys())
-                    print "Sorting all selected times including start and end"
-                    print times
+                    print("Sorting all selected times including start and end")
+                    print(times)
 
                     #remove the times out of the start and end boundary
                     startIndex = times.index(startTime)
@@ -2242,8 +2242,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
                         # print timeValues[i]
                         self.factors += (str(timeValues[i]) + "\n")
                     # print "****************"
-                    print "All factors involved"
-                    print self.factors
+                    print("All factors involved")
+                    print(self.factors)
                     if times[0] == times[-1]:
                         return
 

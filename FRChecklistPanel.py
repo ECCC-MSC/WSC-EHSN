@@ -19,10 +19,10 @@ class FRChecklistPanel(wx.Panel):
 
         self.adcpCheckList = ["Passed All Initial QA/QC?",
                               "Software Input Same as Notes*?",
-                              u"Difference in ADCP and Water T < 2\N{DEGREE SIGN}C?",
+                              "Difference in ADCP and Water T < 2\N{DEGREE SIGN}C?",
                               "Smooth Ship Track?",
                               "Boat Speed < Water Speed?",
-                              u"Pitch, Roll < 5\N{DEGREE SIGN}?",
+                              "Pitch, Roll < 5\N{DEGREE SIGN}?",
                               "No Ambiguity Velocity?",
                               "Good Differential GPS Quality?",
                               "Bed Contours as Expected for Site?",
@@ -44,7 +44,7 @@ class FRChecklistPanel(wx.Panel):
 
         self.midAllList = ["Passed All Instrument QA/QC?",
                                     "Software Input Same as Notes?",
-                                    u"Difference in ADCP and Water T < 2\N{DEGREE SIGN}C?",
+                                    "Difference in ADCP and Water T < 2\N{DEGREE SIGN}C?",
                                     "Signal to Noise Ratio > 4",
                                     "Flow Angles Accounted for?",
                                     "Exposure Time/Location > 40s?",
@@ -53,7 +53,7 @@ class FRChecklistPanel(wx.Panel):
                                     "Bed Contour as Expected for Site?",
                                     "Ice/Slush Depth as Expected?",
                                     "Velocity Profile Checked with extrap?",
-                                    u"# Panels ≥ 20?",
+                                    "# Panels ≥ 20?",
                                     "No Panel Q > 10%?"]
 
         self.midsectionCurrMeter = ["Passed All Instrument QA/QC?",
@@ -63,12 +63,12 @@ class FRChecklistPanel(wx.Panel):
                                     "Bed Contour as Expected for Site?",
                                     "Ice/Slush Depth as Expected?",
                                     "Velocity Profile Suitable?",
-                                    u"# Panels ≥ 20?",
+                                    "# Panels ≥ 20?",
                                     "No Panel Q > 10%?"]
 
         self.midsectionFlowTrack = ["Passed All Instrument QA/QC?",
                                     "Software Input Same as Notes?",
-                                    u"Difference in ADCP and Water T < 2\N{DEGREE SIGN}C?",
+                                    "Difference in ADCP and Water T < 2\N{DEGREE SIGN}C?",
                                     "Signal to Noise Ratio > 4",
                                     "Flow Angles Accounted for?",
                                     "Exposure Time/Location > 40s?",
@@ -76,26 +76,26 @@ class FRChecklistPanel(wx.Panel):
                                     "Bed Contour as Expected for Site?",
                                     "Ice/Slush Depth as Expected?",
                                     "Velocity Profile Suitable?",
-                                    u"# Panels ≥ 20?",
+                                    "# Panels ≥ 20?",
                                     "No Panel Q > 10%?"]
 
         self.midsectionADCP = ["Passed All Instrument QA/QC?",
                                "Software Input Same as Notes?",
-                               u"Difference in ADCP and Water T < 2\N{DEGREE SIGN}C?",
+                               "Difference in ADCP and Water T < 2\N{DEGREE SIGN}C?",
                                "Exposure Time/Location > 40s?",
                                "Valid Ensembles/Panel > 30?",
                                "Bed Contour as Expected for Site?",
                                "Ice/Slush Depth as Expected?",
                                "Velocity Profile Checked with extrap?",
-                               u"# Panels ≥ 20?",
+                               "# Panels ≥ 20?",
                                "No Panel Q > 10%?"]
 
         self.fullList = ["Passed All Initial QA/QC?",
                          "Software Input Same as Notes*?",
-                         u"Difference in ADCP and Water T < 2\N{DEGREE SIGN}C?",
+                         "Difference in ADCP and Water T < 2\N{DEGREE SIGN}C?",
                          "Smooth Ship Track?",
                          "Boat Speed < Water Speed?",
-                         u"Pitch, Roll < 5\N{DEGREE SIGN}?",
+                         "Pitch, Roll < 5\N{DEGREE SIGN}?",
                          "No Ambiguity Velocity?",
                          "Good Differential GPS Quality?",
                          "Bed Contours as Expected for Site?",
@@ -117,7 +117,7 @@ class FRChecklistPanel(wx.Panel):
                          "No Boundary or Spike Problem?",
                          "Bed Contour as Expected for Site?",
                          "Ice/Slush Depth as Expected?",
-                         u"# Panels ≥ 20?",
+                         "# Panels ≥ 20?",
                          "No Panel Q > 10%?"]
 
         self.notesOnSiteCondLbl = "Notes on Site Conditions Affecting Measurement Quality:"
@@ -141,7 +141,7 @@ class FRChecklistPanel(wx.Panel):
         
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "In ADCPChecklist"
+            print("In ADCPChecklist")
 
         self.layoutSizer = wx.BoxSizer(wx.VERTICAL)
         headerSizer = wx.BoxSizer(wx.HORIZONTAL)

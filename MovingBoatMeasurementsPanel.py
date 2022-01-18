@@ -117,19 +117,19 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.startTimeLbl = "Start\nTime*"
         self.startDistLbl = "Start\nDistance (m)*"
         self.endDistLbl = "End\nDistance (m)*"
-        self.rawDischLbl = u"Discharge\n(m\N{SUPERSCRIPT THREE}/s)"
-        self.finalDisLbl = u"Final Discharge\n(m\N{SUPERSCRIPT THREE}/s)"
+        self.rawDischLbl = "Discharge\n(m\N{SUPERSCRIPT THREE}/s)"
+        self.finalDisLbl = "Final Discharge\n(m\N{SUPERSCRIPT THREE}/s)"
         self.remarksLbl = "Remarks"
         self.commentsLbl = "Comments"
         self.mmntStartTimeLbl = "Mmnt Start Time:"
         self.mmntEndTimeLbl = "Mmnt End Time*:"
         self.mmntMeanTimeLbl = "Mmnt Mean Time:"
         # self.rawDischMeanLbl = u"Discharge\nMean (m\N{SUPERSCRIPT THREE}/s):"
-        self.mbCorrAppLbl = u"MB Correction (%):"
-        self.finalDischLbl = u"Final Discharge\nMean (m\N{SUPERSCRIPT THREE}/s):"
+        self.mbCorrAppLbl = "MB Correction (%):"
+        self.finalDischLbl = "Final Discharge\nMean (m\N{SUPERSCRIPT THREE}/s):"
         self.corrMeanGHLbl = "Corrected Mean\nGauge Height (m):"
         self.baseCurveGHLbl = "Base Curve\nGauge Height (m):"
-        self.baseCurveDischLbl = u"Base Curve\nDischarge (m\N{SUPERSCRIPT THREE}/s):"
+        self.baseCurveDischLbl = "Base Curve\nDischarge (m\N{SUPERSCRIPT THREE}/s):"
         self.standDevMeanDischLbl = "Standard Dev/Mean\n Discharge (%):"
         self.calcShiftBaseCurveLbl = "Calculate Shift from\nBase Curve (m):"
         self.dischDiffBaseCurveLbl = "Discharge Difference\nBase Curve (%):"
@@ -164,7 +164,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
           pass
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "In MovingBoatMeasurementsPanel"
+            print("In MovingBoatMeasurementsPanel")
 
         self.locale = wx.Locale(self.lang)
 
@@ -635,7 +635,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         mbCorrAppSizer = wx.BoxSizer(wx.HORIZONTAL)
         mbCorrAppTxt = wx.StaticText(mbCorrAppPanel, label=self.mbCorrAppLbl, style=wx.ALIGN_LEFT, size=(100, -1))
         # mbCorrAppBtn = wx.Button(mbCorrAppPanel, label=self.mbCorrAppLbl, style=wx.ALIGN_LEFT, size=(100, -1))
-        mbCorrAppTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
+        mbCorrAppTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, 'Consolas'))
         # mbCorrAppBtn.Bind(wx.EVT_BUTTON, self.OnMBCorrApp)
 
         mbCorrAppSizer.Add(mbCorrAppTxt, 1, wx.EXPAND)
@@ -681,7 +681,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         standDevMeanDischSizer = wx.BoxSizer(wx.HORIZONTAL)
         # standDevMeanDischTxt = wx.StaticText(standDevMeanDischPanel, label=self.standDevMeanDischLbl, style=wx.ALIGN_LEFT, size=(110, -1))
         standDevMeanDischBtn = wx.Button(standDevMeanDischPanel, label=self.standDevMeanDischLbl, style=wx.ALIGN_LEFT, size=(110, -1))
-        standDevMeanDischBtn.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
+        standDevMeanDischBtn.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, 'Consolas'))
         # standDevMeanDischBtn.Bind(wx.EVT_BUTTON, self.OnStandardDev)
         standDevMeanDischSizer.Add(standDevMeanDischBtn, 1, wx.EXPAND)
         standDevMeanDischPanel.SetSizer(standDevMeanDischSizer)
@@ -735,7 +735,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         finalDischSizer = wx.BoxSizer(wx.HORIZONTAL)
         finalDischTxt = wx.StaticText(finalDischPanel, label=self.finalDischLbl, style=wx.ALIGN_LEFT, size=(100, -1))
         # finalDischBtn = wx.Button(finalDischPanel, label=self.finalDischLbl, style=wx.ALIGN_LEFT, size=(100, -1))
-        finalDischTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, u'Consolas'))
+        finalDischTxt.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, 'Consolas'))
         # finalDischBtn.Bind(wx.EVT_BUTTON, self.OnFinalDischargeMean)
         finalDischSizer.Add(finalDischTxt, 1, wx.EXPAND)
         finalDischPanel.SetSizer(finalDischSizer)
@@ -1016,7 +1016,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         button = e.GetEventObject()
         index = int(button.GetName()) + 1
         if self.mode=="DEBUG":
-            print "index %s" % index
+            print("index %s" % index)
         
         if not self.IsEmptyRow(index - 1):
             dlg = wx.MessageDialog(self, "Are you sure you want to delete the row with data entered?", 'Remove',
@@ -1041,7 +1041,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
     # Reorder the list of entries
     def RemoveEntry(self, index):
         if self.mode=="DEBUG":
-            print "remove %s" % index
+            print("remove %s" % index)
 
         self.tableSizerV.Hide(index)
         self.tableSizerV.Remove(index)
@@ -1120,7 +1120,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         #     self.rawDischMeanCtrl.SetValue('')
 
     def OnFinalDischargeMean(self, event):
-        print "OnFinalDischargeMean"
+        print("OnFinalDischargeMean")
     	if self.mbCorrAppCtrl.GetValue() != '':
     		self.finalDischCtrl.SetValue(str(float(self.mbCorrAppCtrl.GetValue())))
     	# elif self.rawDischMeanCtrl.GetValue() != '' and self.mbCorrAppCtrl.GetValue() == '':

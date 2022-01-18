@@ -16,7 +16,7 @@ class EnvironmentConditionsManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "EnvironmentConditionsControl"
+            print("EnvironmentConditionsControl")
 
 
     #Levels ctrl
