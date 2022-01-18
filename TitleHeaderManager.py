@@ -13,7 +13,7 @@ class TitleHeaderManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "TitleHeaderManager"
+            print("TitleHeaderManager")
 
     @property
     def enteredInHWSCB(self):

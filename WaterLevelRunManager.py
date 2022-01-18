@@ -22,7 +22,7 @@ class WaterLevelRunManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "WaterLevelRunControl"
+            print("WaterLevelRunControl")
 
 
     def GetBMs(self):

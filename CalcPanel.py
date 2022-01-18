@@ -1,12 +1,12 @@
 # All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
 # Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 # avoid integer division by Python2
-from __future__ import division
+
 from math import *
 from functools import partial
 try:
     # Python2
-    import Tkinter as tk
+    import tkinter as tk
 except ImportError:
     # Python3
     import tkinter as tk

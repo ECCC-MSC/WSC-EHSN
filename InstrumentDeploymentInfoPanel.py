@@ -167,7 +167,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "Setup InstrumentDeploymentInfoPanel"
+            print("Setup InstrumentDeploymentInfoPanel")
 
         self.layoutSizer = wx.BoxSizer(wx.VERTICAL)
 

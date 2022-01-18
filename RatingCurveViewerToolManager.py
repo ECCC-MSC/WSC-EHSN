@@ -75,7 +75,7 @@ class RatingCurveViewerToolManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "RatingCurveViewerToolControl"
+            print("RatingCurveViewerToolControl")
 
         # self.locale = wx.Locale(self.lang)
 
@@ -198,7 +198,7 @@ class RatingCurveViewerToolManager(object):
             jsonfvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits.csv"
             csvfilepath = self.path + "\\" + self.stnNum + "_FieldVisitExport.csv"
 
-            print fvFilePath
+            print(fvFilePath)
             if os.path.isfile(fvFilePath):
                 self.OpenHistDataFile(os.path.abspath(fvFilePath))
             elif os.path.isfile(jsonfvFilePath):
@@ -219,11 +219,11 @@ class RatingCurveViewerToolManager(object):
 
     def DetFileType(self, filepath):
         if self.mode == "DEBUG":
-            print "Determining File Type"
+            print("Determining File Type")
 
         extension = filepath.strip().split('.')[-1]
         if self.mode == "DEBUG":
-            print "RC file is ", extension
+            print("RC file is ", extension)
 
         if extension.lower() == "txt" or extension.lower() == "xml" or extension.lower() == "json":
             self.extension = extension
@@ -239,7 +239,7 @@ class RatingCurveViewerToolManager(object):
     #called when browse button is clicked
     def ParseRatingXMLFile(self, filepath):
         if self.mode == "DEBUG":
-            print "Parsing XML File"
+            print("Parsing XML File")
 
         # Changing data stuff, reset self.data to None
         self.data = None
@@ -303,7 +303,7 @@ class RatingCurveViewerToolManager(object):
 
     def ParseRatingTXTFile(self, filepath):
         if self.mode == "DEBUG":
-            print "Parsing TXT File"
+            print("Parsing TXT File")
 
         # Changing data stuff, reset self.data to None
         self.data = None
@@ -335,7 +335,7 @@ class RatingCurveViewerToolManager(object):
 
     def ParseRatingJsonFile(self, filepath):
         if self.mode == "DEBUG":
-            print "Parsing Json File"
+            print("Parsing Json File")
         # print"under constraction!!"
         # Changing data stuff, reset self.data to None
         self.data = None
@@ -358,7 +358,7 @@ class RatingCurveViewerToolManager(object):
                 self.data = Curves
                 # print Curves
         except:
-            print "Json file can't read."
+            print("Json file can't read.")
 
         curves_data = Curves['RatingCurves']
         # print len(curves_data)
@@ -409,7 +409,7 @@ class RatingCurveViewerToolManager(object):
         if self.histData is None:
             return
 
-        print "Hist data is not None"
+        print("Hist data is not None")
 
         # iterate through each hist value
         # for each, calc appropriate Shift and
@@ -874,7 +874,7 @@ class RatingCurveViewerToolManager(object):
 
     def ParseHistCSVFile(self, filepath):
         if self.mode == "DEBUG":
-            print "Parsing CSV Historical Data File"
+            print("Parsing CSV Historical Data File")
 
         # Reset Historical Data
         self.histData = None
@@ -913,7 +913,7 @@ class RatingCurveViewerToolManager(object):
 
     def CalculateShiftDisch(self, Hobserved, Qobserved, selectedCurveIndex):
         if self.mode == "DEBUG":
-            print "Calculating Shift and Discharge"
+            print("Calculating Shift and Discharge")
 
         errorMessage = None
         if self.extension is None:
@@ -1013,25 +1013,25 @@ class RatingCurveViewerToolManager(object):
         errorMessage = None
         if self.obsStage < hg_low:
             if self.mode == "DEBUG":
-                print "Observed Stage is below the minimum rating point"
+                print("Observed Stage is below the minimum rating point")
 
             errorMessage = "Observed Stage is below the minimum rating point"
 
         elif self.obsStage > hg_high:
             if self.mode == "DEBUG":
-                print "Observed Stage is above the maximum rating point"
+                print("Observed Stage is above the maximum rating point")
 
             errorMessage = "Observed Stage is above the maximum rating point"
             
         if self.obsDisch < q_low:
             if self.mode == "DEBUG":
-                print "Observed Discharge is below the minimum rating point"
+                print("Observed Discharge is below the minimum rating point")
 
             errorMessage = "Observed Discharge is below the minimum rating point"
 
         elif self.obsDisch > q_high:
             if self.mode == "DEBUG":
-                print "Observed Discharge is above the maximum rating point"
+                print("Observed Discharge is above the maximum rating point")
 
             errorMessage = "Observed Discharge is above the maximum rating point"
 
@@ -1237,7 +1237,7 @@ class RatingCurveViewerToolManager(object):
 
     def PlotData(self):
         if self.mode == "DEBUG":
-            print "Plotting Data"
+            print("Plotting Data")
             return None
 
         # If historical data exists
@@ -1251,8 +1251,8 @@ class RatingCurveViewerToolManager(object):
             for i, hd in enumerate(histData):
                 hd[0] = hd[0].split()[0] # Only the YYYY-MM-DD part
                 hd[0] = datetime.strptime(hd[0], "%Y-%m-%d")
-                print hd
-                print self.histData[i]
+                print(hd)
+                print(self.histData[i])
 
             if self.period is not None:
                 self.validHistPoints = [x for x in histData if x[0] < self.period[1] and x[0] > self.period[0]]
@@ -1287,7 +1287,7 @@ class RatingCurveViewerToolManager(object):
 
     def FetchStageDischarge(self):
         if self.mode == "DEBUG":
-            print "Getting Stage and Discharge"
+            print("Getting Stage and Discharge")
 
         if self.disMeasManager is None:
             return

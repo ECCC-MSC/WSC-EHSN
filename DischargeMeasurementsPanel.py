@@ -128,14 +128,14 @@ class DischargeMeasurementsPanel(wx.Panel):
 
         self.startTimeLbl = "Start Time"
         self.endTimeLbl = "End Time"
-        self.airTempLbl = u"Air Temp. \n(\N{DEGREE SIGN}C)"
-        self.waterTempLbl = u"Water Temp. \n(\N{DEGREE SIGN}C)"
+        self.airTempLbl = "Air Temp. \n(\N{DEGREE SIGN}C)"
+        self.waterTempLbl = "Water Temp. \n(\N{DEGREE SIGN}C)"
         self.widthLbl = "Width\n(m)"
-        self.areaLbl = u"Area\n(m\N{SUPERSCRIPT TWO})"
+        self.areaLbl = "Area\n(m\N{SUPERSCRIPT TWO})"
         self.meanVelLbl = "Mean Velocity (m/s)"
         self.mghLbl = "M.G.H. (m)"
-        self.dischLbl = u"Discharge (m\N{SUPERSCRIPT THREE}/s)"
-        self.uncertaintyLbl = u"Uncertainty (%)"
+        self.dischLbl = "Discharge (m\N{SUPERSCRIPT THREE}/s)"
+        self.uncertaintyLbl = "Uncertainty (%)"
         self.mmtLbl = "Mmt Mean Time"
         self.shiftLbl = "Calc. Shift Base Curve (m)"
         self.diffLbl = "Difference Base Curve (%)"
@@ -204,7 +204,7 @@ All uncertainty values reported here are 2-sigma value
 
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "In DischargeMeasurementsPanel"
+            print("In DischargeMeasurementsPanel")
         self.layoutSizer = wx.GridBagSizer(0, 0)
         self.locale = wx.Locale(self.lang)
 

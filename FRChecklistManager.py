@@ -19,11 +19,11 @@ class FRChecklistManager(object):
         
     def Init(self):
         if self.mode == "DEBUG":
-            print "FRChecklistControl"
+            print("FRChecklistControl")
 
     def PrintProperties(self):
-        print self.depType
-        print self.midsecType
+        print(self.depType)
+        print(self.midsecType)
 
     def changeDepType(self, depType):
         self.gui.changeDepType(depType)

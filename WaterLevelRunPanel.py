@@ -201,7 +201,7 @@ class WaterLevelRunPanel(wx.Panel):
 
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "WaterLevelRunPanel"
+            print("WaterLevelRunPanel")
 
         self.layoutSizer = wx.BoxSizer(wx.VERTICAL)
         self.locale = wx.Locale(self.lang)
@@ -741,13 +741,13 @@ class WaterLevelRunPanel(wx.Panel):
     def OnTextType(self, event):
         textCtr=event.GetEventObject()
         point = textCtr.GetInsertionPoint()
-        textCtr.ChangeValue(unicode.upper(textCtr.GetValue()))
+        textCtr.ChangeValue(str.upper(textCtr.GetValue()))
         textCtr.SetInsertionPoint(point)
 
     # On '+' button click, add a new entry into the Level Notes Summary
     def OnAddPress(self, e):
         if self.mode == "DEBUG":
-            print "add"
+            print("add")
 
         self.AddEntry()
 
@@ -1049,7 +1049,7 @@ class WaterLevelRunPanel(wx.Panel):
         button = e.GetEventObject()
         index = int(button.GetName())
         if self.mode=="DEBUG":
-            print "index %s" % index
+            print("index %s" % index)
         dlg = wx.MessageDialog(self, "Do you want to remove the entry?", 'Remove',
                               wx.YES_NO | wx.ICON_QUESTION)
 
@@ -1071,7 +1071,7 @@ class WaterLevelRunPanel(wx.Panel):
     # Reorder the list of entries
     def RemoveEntry(self, index):
         if self.mode=="DEBUG":
-            print "remove %s" % index
+            print("remove %s" % index)
         self.entryColButtonSizer.Hide(index)
         self.entryColButtonSizer.Remove(index)
         self.entryNum -= 1
@@ -1679,7 +1679,7 @@ class WaterLevelRunPanel(wx.Panel):
     def PrintNames(self):
         for index, item in enumerate(self.entryColButtonSizer.GetChildren()):
             if index < len(self.entryColButtonSizer.GetChildren()) -1 :
-                print self.entryColButtonSizer.GetItem(index).GetWindow().GetName(), \
+                print(self.entryColButtonSizer.GetItem(index).GetWindow().GetName(), \
                         self.selectSizer.GetItem(index).GetWindow().GetName(),\
                         self.timeValSizer.GetItem(index).GetWindow().GetName(), \
                         self.surgeValSizer.GetItem(index).GetWindow().GetName(), \
@@ -1689,12 +1689,12 @@ class WaterLevelRunPanel(wx.Panel):
                         self.datumValSizer.GetItem(index).GetWindow().GetName(), \
                         self.loggerValSizer.GetItem(index).GetWindow().GetName(), \
                         self.loggerValSizer2.GetItem(index).GetWindow().GetName(), \
-                        self.wleValSizer.GetItem(index).GetWindow().GetName()
+                        self.wleValSizer.GetItem(index).GetWindow().GetName())
 
             else:
-                print self.entryColButtonSizer.GetItem(index).GetWindow().GetName()
+                print(self.entryColButtonSizer.GetItem(index).GetWindow().GetName())
 
-        print "================"
+        print("================")
 
     #Remove invalid char from cell other than a float number
     #possibilly rounding as well

@@ -17,7 +17,7 @@ class UserConfigManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "UserConfigControl"
+            print("UserConfigControl")
 
 
     #Station Number

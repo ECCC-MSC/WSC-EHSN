@@ -16,7 +16,7 @@ class MovingBoatMeasurementsManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "MovingBoatMeasurementsControl"
+            print("MovingBoatMeasurementsControl")
 
     #bedMatCmbo
     @property

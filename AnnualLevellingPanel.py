@@ -15,7 +15,7 @@ class AnnualLevellingPanel(wx.Panel):
     #Creates View
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "AnnualLevellingPanel"
+            print("AnnualLevellingPanel")
 
         layoutSizer = wx.BoxSizer(wx.VERTICAL)
         

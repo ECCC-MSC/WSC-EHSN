@@ -9,7 +9,7 @@ import requests
 
 def Check(version, parent, alwaysShow):
     # myVersion = "v1.1.4"
-    print "Version Checking"
+    print("Version Checking")
     myVersion = version
     needUpdate = False
     msg = ''
@@ -24,12 +24,12 @@ def Check(version, parent, alwaysShow):
     try:
         message_url = "https://raw.githubusercontent.com/ECCC-MSC/WSC-EHSN/master/message.txt"
         response = requests.get(message_url)
-        print (response.status_code)
+        print((response.status_code))
         response.raise_for_status()
         #msg = response.content.decode('Windows-1252')  # TODO: Consider encoding the message file as UTF-8
         msg = response.content.decode('UTF-8')
-        print msg
-        print ""
+        print(msg)
+        print("")
 
         lines = msg.splitlines()
         currentVersion = lines[0][1:]
@@ -73,7 +73,7 @@ def Check(version, parent, alwaysShow):
             msg = "No update available"
             rank = 0
     except:
-        print "Version checking failed"
+        print("Version checking failed")
         msg = "Check for updates failed"
 
 

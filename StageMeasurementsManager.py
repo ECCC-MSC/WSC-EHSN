@@ -18,7 +18,7 @@ class StageMeasurementsManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "StageMeasurementsControl"
+            print("StageMeasurementsControl")
 
     #HG
     @property

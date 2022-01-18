@@ -32,7 +32,7 @@ class AquariusMultDisUploadDialog(wx.Dialog):
 
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "Aquarius Multiple Discharge Upload Dialog"
+            print("Aquarius Multiple Discharge Upload Dialog")
 
         layoutSizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -142,7 +142,7 @@ class AquariusConflictUploadDialog(wx.Dialog):
 
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "Aquarius Multiple Discharge Upload Dialog"
+            print("Aquarius Multiple Discharge Upload Dialog")
 
         layoutSizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -256,7 +256,7 @@ class DuplicateMGHUpload(wx.Dialog):
 
     def InitUI(self, hg, hg2, wl1, wl2):
         if self.mode == "DEBUG":
-            print "Duplicate MGH Upload Dialog"
+            print("Duplicate MGH Upload Dialog")
 
 
         mySizer = wx.BoxSizer(wx.VERTICAL)
@@ -350,7 +350,7 @@ class AquariusConflictMGHDialog(wx.Dialog):
 
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "Aquarius Multiple Discharge Upload Dialog"
+            print("Aquarius Multiple Discharge Upload Dialog")
 
         layoutSizer = wx.BoxSizer(wx.VERTICAL)
 

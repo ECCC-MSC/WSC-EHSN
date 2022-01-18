@@ -175,7 +175,7 @@ class MeasurementResultsPanel(wx.Panel):
 
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "In MeasurementResultsPanel"
+            print("In MeasurementResultsPanel")
         mainSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         self.SetSizer(mainSizer)

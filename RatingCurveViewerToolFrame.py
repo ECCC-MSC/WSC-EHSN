@@ -6,7 +6,7 @@ import os
 import sys
 import math
 from RatingCurveViewerToolManager import *
-import FileDialog
+import tkinter.filedialog
 from wx.lib.agw import ultimatelistctrl as ULC
 
 import numpy as np
@@ -47,12 +47,12 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
         self.obsStageDischLbl = "Observed Stage and Discharge"
         self.obsStageLbl = "Observed Stage (m)"
-        self.obsDischLbl = u"Observed Discharge (m\N{SUPERSCRIPT THREE}/s)"
+        self.obsDischLbl = "Observed Discharge (m\N{SUPERSCRIPT THREE}/s)"
         self.refreshButtonLbl = "Refresh"
 
         self.calcShiftDischDiffLbl = "Calculated Shift and Discharge Difference"
         self.shiftLbl = "Shift (m)"
-        self.rdischLbl = u"Rated Discharge (m\N{SUPERSCRIPT THREE}/s)"
+        self.rdischLbl = "Rated Discharge (m\N{SUPERSCRIPT THREE}/s)"
         self.dischDiffLbl = "Discharge Difference (%)"
         self.calculateButtonLbl = "Calculate"
         self.plotButtonLbl = "Plot"
@@ -80,7 +80,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "Setup Rating Curve Viewer Tool Panel"
+            print("Setup Rating Curve Viewer Tool Panel")
 
         # self.locale = wx.Locale(self.lang)
 
@@ -245,10 +245,10 @@ class RatingCurveViewerToolFrame(wx.Frame):
         # self.histDataList.Bind(wx.EVT_LIST_COL_CLICK, self.OnColClick)
         self.histDataList.InsertColumn(0, 'Date/Time')
         self.histDataList.InsertColumn(1, 'Stage (m)')
-        self.histDataList.InsertColumn(2, u'Discharge (m\N{SUPERSCRIPT THREE}/s)')
+        self.histDataList.InsertColumn(2, 'Discharge (m\N{SUPERSCRIPT THREE}/s)')
         self.histDataList.InsertColumn(3, 'Width (m)')
-        self.histDataList.InsertColumn(4, u'Area (m\N{SUPERSCRIPT TWO})')
-        self.histDataList.InsertColumn(5, u'Velocity (m\N{SUPERSCRIPT TWO})/s')
+        self.histDataList.InsertColumn(4, 'Area (m\N{SUPERSCRIPT TWO})')
+        self.histDataList.InsertColumn(5, 'Velocity (m\N{SUPERSCRIPT TWO})/s')
         self.histDataList.InsertColumn(6, 'R Error (%)')
         self.histDataList.InsertColumn(7, 'Shift (m)')
         self.histDataList.InsertColumn(8, 'Remarks')
@@ -301,7 +301,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
 
     def OnColClick(self, event):
-        print "column clicked"
+        print("column clicked")
         self.histDataList.SortItems()
         event.Skip()
 
@@ -323,7 +323,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
         evt.Skip()
 
     def OnRCUpdate(self, e):
-        print "RC choice updated"
+        print("RC choice updated")
 
         self.RCUpdate()
 
@@ -409,7 +409,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
     #Calculate the shift and discharge difference (call manager)
     def OnCalculate(self, evt):
         if self.mode == "DEBUG":
-            print "CALCULATE BUTTON CLICKED"
+            print("CALCULATE BUTTON CLICKED")
 
         if self.manager is None:
             return
@@ -421,7 +421,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
     def OnPlot(self, evt):
 
         if self.mode == "DEBUG":
-            print "PLOT BUTTON CLICKED"
+            print("PLOT BUTTON CLICKED")
         if self.manager is None:
             return
         if self.GetObsStage() != "" and self.GetObsDisch() != "":
@@ -442,7 +442,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
     def OnExit(self, evt):
         if self.mode == "DEBUG":
-            print "EXIT BUTTON CLICKED"
+            print("EXIT BUTTON CLICKED")
         self.Destroy()
 
         evt.Skip()
@@ -467,7 +467,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
         self.plotControl = en
 
     def GeneratePlot(self):
-        print "generatePlot"
+        print("generatePlot")
         self.fig, ax = plt.subplots(1, 1)
         plt.grid(True)
         self.fig.set_facecolor('white')
@@ -707,7 +707,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
         plt.title(plotTitle)
 
         # Axis labels
-        plt.xlabel(u"Discharge [m\N{SUPERSCRIPT THREE}/s]", fontsize=14,color="k")
+        plt.xlabel("Discharge [m\N{SUPERSCRIPT THREE}/s]", fontsize=14,color="k")
         plt.ylabel("Stage [m]", fontsize=14, color="k")
 
         # Shift and R Error calculations
@@ -761,7 +761,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
     def AddRowToAppRange(self, curveNum, fromDate, toDate):
         if self.mode == "DEBUG":
-            print "Adding row to table"
+            print("Adding row to table")
 
         rowCount = self.periodOfAppList.GetItemCount()
         self.periodOfAppList.InsertItem(rowCount, curveNum)
@@ -770,7 +770,7 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
     def AddRowToHistData(self, date, stage, disch, width, area, waterVelo, error, shift, remarks):
         if self.mode == "DEBUG":
-            print "Adding row to table"
+            print("Adding row to table")
 
         rowCount = self.histDataList.GetItemCount()
         self.histDataList.InsertItem(rowCount, date)
@@ -786,12 +786,12 @@ class RatingCurveViewerToolFrame(wx.Frame):
 
     def ClearAllAppRows(self):
         if self.mode == "DEBUG":
-            print "Clearing all rows"
+            print("Clearing all rows")
         self.periodOfAppList.DeleteAllItems()
 
     def ClearAllHistRows(self):
         if self.mode == "DEBUG":
-            print "Clearing all rows"
+            print("Clearing all rows")
         self.histDataList.DeleteAllItems()
 
     def SetRatingInfo(self, riText):

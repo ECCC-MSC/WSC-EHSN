@@ -311,7 +311,7 @@ def StageMeasFromXML(StageMeas, stageMeasManager):
     try:
         Factors = StageMeas.find('Factors').text
     except:
-        print "xml doesn't include Factors"
+        print("xml doesn't include Factors")
 
     stageMeasManager.factors = "" if Factors is None else Factors
 
@@ -388,7 +388,7 @@ def StageMeasFromXML(StageMeas, stageMeasManager):
     try:
         MghMethod = StageMeas.find('MghMethod').text
     except:
-        print "xml doesn't include MghMethod"
+        print("xml doesn't include MghMethod")
     if MghMethod is not None:
         stageMeasManager.SetMghMethod(MghMethod)
     else:
@@ -1812,7 +1812,7 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager, attachmentManage
         else:
             instrDepManager.SetPicturedCkboxVal(False)
     except:
-        print "no pictured ckeckbox for field review in xml"
+        print("no pictured ckeckbox for field review in xml")
 
 
     try:
@@ -1822,7 +1822,7 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager, attachmentManage
         else:
             instrDepManager.preUseCableCmboFromXml = preUseCable.text
     except:
-        print "Failed to load preUseCable value"
+        print("Failed to load preUseCable value")
         
     # Control = InstrumentDeployment.find('Control')
     # condition = Control.find('condition').text
@@ -2059,7 +2059,7 @@ def LevelChecksAsXMLTree(LevelChecks, waterLevelRunManager):
 
 # Set Level Checks variables from existing XML structure
 def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
-    print "LevelChecksFromXML"
+    print("LevelChecksFromXML")
     
     try:
         conventionalLevellingRb = LevelChecks.find('conventionalLevellingRb').text
@@ -2104,12 +2104,12 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
             #     print "except"
             #     waterLevelRunManager.GetClosureText(index).SetValue("")
             except Exception as e:
-                print str(e)
+                print(str(e))
                 newClosureList.append("")
                 newUploadList.append(False) 
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
+                print((exc_type, fname, exc_tb.tb_lineno))
 
     levelNotes.uploadList = newUploadList
     levelNotes.closureList = newClosureList
@@ -2357,7 +2357,7 @@ def FieldReviewAsXMLTree(FieldReview, frChecklistManager):
         FieldReviewTableRow = SubElement(FieldReviewTable, "FieldReviewTableRow", row=str(i))
 
         label = SubElement(FieldReviewTableRow, "label")
-        label.text = unicode(frChecklistManager.GetLabelSizerVal(i))
+        label.text = str(frChecklistManager.GetLabelSizerVal(i))
 
         checked = SubElement(FieldReviewTableRow, "checked")
         checked.text = str(frChecklistManager.GetCBCheckSizerVal(i))
@@ -2408,7 +2408,7 @@ def FieldReviewFromXML(FieldReview, frChecklistManager):
         planNotes = FieldReview.find('planNotes').text
         frChecklistManager.planNotesCtrl = "" if planNotes is None else planNotes
     except:
-        print "no plan notes"
+        print("no plan notes")
 
     # try:
     #     pictured = FieldReview.find('pictured').text

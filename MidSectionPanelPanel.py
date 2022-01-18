@@ -1017,7 +1017,7 @@ class MidSectionPanelPanel(wx.Panel):
             timeTitle = wx.StaticText(self.dlg, label = 'Time(/s)',style=wx.ALIGN_LEFT, size=(-1, 20))
             self.timeTextCtrl = wx.TextCtrl(self.dlg, size=(-1, 60), style=wx.TE_CENTRE)
             self.timeTextCtrl.SetForegroundColour("Blue")
-            font1 = wx.Font(26, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
+            font1 = wx.Font(26, wx.MODERN, wx.NORMAL, wx.NORMAL, False, 'Consolas')
             self.timeTextCtrl.SetFont(font1)
             self.timeBtn = wx.Button(self.dlg, size = (-1, 20), label = 'Start')
             confirmBtn = wx.Button(self.dlg, size = (-1, 20), label = 'Transfer')

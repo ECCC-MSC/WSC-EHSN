@@ -27,7 +27,7 @@ class GenInfoManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "GenInfoControl"
+            print("GenInfoControl")
 
 
     def updateNumbers(self, items):

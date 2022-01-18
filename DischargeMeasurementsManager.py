@@ -26,7 +26,7 @@ class DischargeMeasurementsManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "DischargeMeasurementsControl"
+            print("DischargeMeasurementsControl")
 
 
     def IsEmpty(self):
@@ -263,19 +263,19 @@ class DischargeMeasurementsManager(object):
 
 
     def PrintEverything(self):
-        print self.startTimeCtrl
-        print self.endTimeCtrl
-        print self.airTempCtrl
-        print self.waterTempCtrl
-        print self.widthCtrl
-        print self.areaCtrl
-        print self.meanVelCtrl
-        print self.mghCtrl
-        print self.dischCtrl
-        print self.mmtValTxt
-        print self.shiftCtrl
-        print self.diffCtrl
-        print self.curveCtrl
+        print(self.startTimeCtrl)
+        print(self.endTimeCtrl)
+        print(self.airTempCtrl)
+        print(self.waterTempCtrl)
+        print(self.widthCtrl)
+        print(self.areaCtrl)
+        print(self.meanVelCtrl)
+        print(self.mghCtrl)
+        print(self.dischCtrl)
+        print(self.mmtValTxt)
+        print(self.shiftCtrl)
+        print(self.diffCtrl)
+        print(self.curveCtrl)
         
 
 
