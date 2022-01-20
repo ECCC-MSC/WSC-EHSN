@@ -11,7 +11,7 @@ from MidSectionSubPanelObj import *
 from win32api import GetSystemMetrics
 # import win32gui
 
-from time import clock
+#from time import clock
 
 import time
 import threading

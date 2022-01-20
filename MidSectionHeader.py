@@ -79,15 +79,15 @@ class MidSectionHeader(wx.Panel):
 
         self.color_cursor = "#33E6FF"
         self.color_body = "#91c7f7"
-	self.color_saved = "#32B4BF"
+        self.color_saved = "#32B4BF"
 
-	self.color_saved_ice = "#0F5D68"
-	self.color_highlighted_ice = "#9EABAD"
-	self.color_body_ice = "#5A6A6C"
+        self.color_saved_ice = "#0F5D68"
+        self.color_highlighted_ice = "#9EABAD"
+        self.color_body_ice = "#5A6A6C"
 
-	self.color_saved_slush = "#0F5D68"
-	self.color_highlighted_slush = "#0F5D68"
-	self.color_body_slush = "#e5e5e5"
+        self.color_saved_slush = "#0F5D68"
+        self.color_highlighted_slush = "#0F5D68"
+        self.color_body_slush = "#e5e5e5"
 
         if hasattr(sys, '_MEIPASS'):
             self.myBitmapFront = os.path.join(sys._MEIPASS, "backarrow.png")
@@ -296,11 +296,11 @@ class MidSectionHeader(wx.Panel):
 
         rightH10Sizer.Add(startTimeTxt, 0, wx.EXPAND)
         rightH10Sizer.Add((-1,-1), 1, wx.EXPAND)
-        rightH10Sizer.Add(self.startTimeCtrl, 0, wx.ALIGN_RIGHT)
+        rightH10Sizer.Add(self.startTimeCtrl, 0, wx.RIGHT)
 
         rightH11Sizer.Add(endTimeTxt, 0, wx.EXPAND)
         rightH11Sizer.Add((-1,-1), 1, wx.EXPAND)
-        rightH11Sizer.Add(self.endTimeCtrl, 0, wx.ALIGN_RIGHT)
+        rightH11Sizer.Add(self.endTimeCtrl, 0, wx.RIGHT)
 
         numOfPanelTxt = wx.StaticText(self, label=self.numPanelLbl)
         self.numOfPanelCtrl = wx.TextCtrl(self)

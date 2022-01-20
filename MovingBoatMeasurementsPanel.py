@@ -1056,7 +1056,7 @@ class MovingBoatMeasurementsPanel(wx.Panel):
 
 
     def OnTextEnter(self, evt):
-    	item = evt.GetEventObject()
+        item = evt.GetEventObject()
         item.SetBackgroundColour('White')
         self.UpdateSammury(evt)
 
@@ -1121,10 +1121,10 @@ class MovingBoatMeasurementsPanel(wx.Panel):
 
     def OnFinalDischargeMean(self, event):
         print("OnFinalDischargeMean")
-    	if self.mbCorrAppCtrl.GetValue() != '':
-    		self.finalDischCtrl.SetValue(str(float(self.mbCorrAppCtrl.GetValue())))
-    	# elif self.rawDischMeanCtrl.GetValue() != '' and self.mbCorrAppCtrl.GetValue() == '':
-    	# 	self.finalDischCtrl.SetValue(self.rawDischMeanCtrl.GetValue())
+        if self.mbCorrAppCtrl.GetValue() != '':
+                self.finalDischCtrl.SetValue(str(float(self.mbCorrAppCtrl.GetValue())))
+        # elif self.rawDischMeanCtrl.GetValue() != '' and self.mbCorrAppCtrl.GetValue() == '':
+        # 	    self.finalDischCtrl.SetValue(self.rawDischMeanCtrl.GetValue())
         event.Skip()
 
 
@@ -1132,11 +1132,11 @@ class MovingBoatMeasurementsPanel(wx.Panel):
 
 
     def UpdateSammury(self, event):
-    	self.OnBTDischargeMean(event)
-    	
-    	# self.OnMBCorrApp(event)
-    	# self.OnFinalDischargeMean(event)
-    	# self.OnStandardDev(event)
+        self.OnBTDischargeMean(event)
+        
+        # self.OnMBCorrApp(event)
+        # self.OnFinalDischargeMean(event)
+        # self.OnStandardDev(event)
 
 
 

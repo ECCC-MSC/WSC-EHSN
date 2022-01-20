@@ -1060,20 +1060,20 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     #Save as pdf and xml before uploading to AQ
     def SaveAsPDFAndXML4Upload(self, path, success):
         try:
-	        if success:
-	            self.createProgressDialog('In Progress', 'Upload Successful. Saving Field Visit to pdf & xml.........')
-	            name = self.SaveAsXMLAtUpload(path, success).rsplit('.',1)[0]
-	            self.deleteProgressDialog()
-	            info = wx.MessageDialog(self, "Upload: Successful\nThe xml and pdf files has also been saved.\n" \
+                if success:
+                    self.createProgressDialog('In Progress', 'Upload Successful. Saving Field Visit to pdf & xml.........')
+                    name = self.SaveAsXMLAtUpload(path, success).rsplit('.',1)[0]
+                    self.deleteProgressDialog()
+                    info = wx.MessageDialog(self, "Upload: Successful\nThe xml and pdf files has also been saved.\n" \
                     + name + ".xml\n" + name + ".pdf", "Done!",
-	                                wx.OK)
-	        else:
-	            self.createProgressDialog('In Progress', 'Upload failed. Saving Field Visit to pdf & xml.........')
-	            name = self.SaveAsXMLAtUpload(path, success).rsplit('.',1)[0]
-	            self.deleteProgressDialog()
-	            info = wx.MessageDialog(self, "Upload: Failed\nThe xml and pdf files have been have saved.\n" \
+                                        wx.OK)
+                else:
+                    self.createProgressDialog('In Progress', 'Upload failed. Saving Field Visit to pdf & xml.........')
+                    name = self.SaveAsXMLAtUpload(path, success).rsplit('.',1)[0]
+                    self.deleteProgressDialog()
+                    info = wx.MessageDialog(self, "Upload: Failed\nThe xml and pdf files have been have saved.\n" \
                     + name + ".xml\n" + name + ".pdf", "Done!",
-	                                wx.OK)
+                                        wx.OK)
 
         except:
 
@@ -1901,11 +1901,11 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
     def OnStationReset(self, event):
-    	file = self.config.stationsDefaultPath
-    	file = self.path + '\\' + file
-    	self.config.stationsPathText.SetLabel(file)
-    	self.config.stationsPathSizerV.Layout()
-    	self.OpenStationFile(file)
+        file = self.config.stationsDefaultPath
+        file = self.path + '\\' + file
+        self.config.stationsPathText.SetLabel(file)
+        self.config.stationsPathSizerV.Layout()
+        self.OpenStationFile(file)
 
     def OnStationBrowse(self, event):
         fileOpenDialog = wx.FileDialog(self.config, 'Open Config', self.rootPath, '',
@@ -2436,7 +2436,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
                     self.manager.OpenEHSNMidsection(self.ehsnMidDir)
-		    self.instrDep.RefreshDeploymentMethod()
+                    self.instrDep.RefreshDeploymentMethod()
                     info = wx.MessageDialog(self, self.importSucessMsg, self.importSucessTitle,
                                          wx.OK | wx.ICON_INFORMATION)
                     info.ShowModal()
