@@ -2930,9 +2930,9 @@ def MovingBoatMeasFromXML(MovingBoatMeas, movingBoatMeasurementsManager):
     ADCPMeasTable = MovingBoatMeas.find('ADCPMeasTable')
     counter = 0
     for ADCPMeasRow in ADCPMeasTable.findall('ADCPMeasRow'):
-    	if counter > len(movingBoatMeasurementsManager.tableSizer.GetChildren()) - 3:
-    		movingBoatMeasurementsManager.gui.AddEntry()
-    	counter += 1
+        if counter > len(movingBoatMeasurementsManager.tableSizer.GetChildren()) - 3:
+                movingBoatMeasurementsManager.gui.AddEntry()
+        counter += 1
         row = int(ADCPMeasRow.get('row'))
         checked =  ADCPMeasRow.find('checkbox').text
         transectID = ADCPMeasRow.find('transectID').text

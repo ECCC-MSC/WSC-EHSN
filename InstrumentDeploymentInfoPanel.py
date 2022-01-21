@@ -900,7 +900,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
         # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
         if self.savedMeasurementMethodIndex != 1 and self.savedMeasurementMethodIndex != 0:
-	    savedMeasurement = self.measurementMethods[self.savedMeasurementMethodIndex]
+            savedMeasurement = self.measurementMethods[self.savedMeasurementMethodIndex]
             dlg = wx.MessageDialog(self, self.deploymentWarning%savedMeasurement, 'Warning',
                               wx.YES_NO | wx.ICON_QUESTION)
             res = dlg.ShowModal()
@@ -931,7 +931,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
         # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
         if self.savedMeasurementMethodIndex != 0 and self.savedMeasurementMethodIndex != 2:
-	    savedMeasurement = self.measurementMethods[self.savedMeasurementMethodIndex]
+            savedMeasurement = self.measurementMethods[self.savedMeasurementMethodIndex]
             dlg = wx.MessageDialog(self, self.deploymentWarning%savedMeasurement, 'Warning',
                               wx.YES_NO | wx.ICON_QUESTION)
             res = dlg.ShowModal()
@@ -959,8 +959,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
     def RefreshDeploymentMethod(self):
-	if self.methodCBListBox.GetValue() in self.measurementMethods:
-	    self.savedMeasurementMethodIndex = self.measurementMethods.index(self.methodCBListBox.GetValue())
+        if self.methodCBListBox.GetValue() in self.measurementMethods:
+            self.savedMeasurementMethodIndex = self.measurementMethods.index(self.methodCBListBox.GetValue())
         if self.savedMeasurementMethodIndex != 4:
             self.horizontalSizer1.Hide(self.structureTypeSizer, True)
             # self.structureTypeCombo.SetValue('')
@@ -968,12 +968,12 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         else:
             self.horizontalSizer1.Show(self.structureTypeSizer, True)
 
-	if self.savedMeasurementMethodIndex != 3:
-	    self.horizontalSizer1.Hide(self.monitoringMethodSizer, True)
-	    # self.monitoringMethodCombo.SetValue('')
+        if self.savedMeasurementMethodIndex != 3:
+            self.horizontalSizer1.Hide(self.monitoringMethodSizer, True)
+            # self.monitoringMethodCombo.SetValue('')
             self.SetMonitoringMethodCombo('')
-	else:
-	    self.horizontalSizer1.Show(self.monitoringMethodSizer, True)
+        else:
+            self.horizontalSizer1.Show(self.monitoringMethodSizer, True)
 
         self.Refresh()
 
@@ -1386,10 +1386,10 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.structureTypeCombo.SetSelection(self.structureTypes.index(method))
 
     def GetMonitoringMethodCombo(self):
-	return self.monitoringMethodCombo
+        return self.monitoringMethodCombo
     def SetMonitoringMethodCombo(self, method):
-	if method in self.monitoringMethods:
-	    self.monitoringMethodCombo.SetSelection(self.monitoringMethods.index(method))
+        if method in self.monitoringMethods:
+            self.monitoringMethodCombo.SetSelection(self.monitoringMethods.index(method))
 
 
 

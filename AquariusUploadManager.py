@@ -3,7 +3,7 @@
 from suds.client import Client
 import suds
 import datetime
-import pytz
+#import pytz
 from AquariusMiscUploadDialogs import *
 from suds.xsd.doctor import Import, ImportDoctor
 

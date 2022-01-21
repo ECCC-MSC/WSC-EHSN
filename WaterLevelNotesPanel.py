@@ -100,7 +100,7 @@ class WaterLevelNotesPanel(wx.Panel):
         closurePanelSizer.Add(closureUnitTxt, 0, wx.EXPAND|wx.TOP|wx.LEFT, 10)
         closurePanelSizer.Add((-1, -1), 1, wx.EXPAND)
         closurePanelSizer.Add(self.uploadCkbox, 0, wx.EXPAND)
-        closurePanelSizer.Add(removeRunButton, 0, wx.EXPAND|wx.ALL|wx.ALIGN_RIGHT, 5)
+        closurePanelSizer.Add(removeRunButton, 0, wx.EXPAND|wx.ALL|wx.RIGHT, 5)
         self.runSizer.Add(closurePanel, 0, wx.EXPAND)
 
         pageBar = wx.Panel(self, style=wx.SIMPLE_BORDER)

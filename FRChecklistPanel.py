@@ -359,15 +359,15 @@ class FRChecklistPanel(wx.Panel):
                         and self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'adv' and \
                         self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'adcp' \
                         and self.manager.manager.instrDepManager.gui.instrumentCmbo.GetValue().lower() != 'current meter':
-            			labelTextLbl.Enable(False)
-            			labelPanel.Enable(False)
-            			revCB.Enable(False)
-            			checkCB.Enable(False)
-            			self.activeFieldReview(False)
-            		else:
-            			self.enableHeaderSizer(True)
-            			self.enableColSizer(True)
-            			self.activeFieldReview(True)
+                                labelTextLbl.Enable(False)
+                                labelPanel.Enable(False)
+                                revCB.Enable(False)
+                                checkCB.Enable(False)
+                                self.activeFieldReview(False)
+                        else:
+                                self.enableHeaderSizer(True)
+                                self.enableColSizer(True)
+                                self.activeFieldReview(True)
 
         
     # Remove all rows so that the entries can be replaced

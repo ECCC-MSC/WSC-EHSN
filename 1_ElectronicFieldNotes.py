@@ -98,7 +98,7 @@ eHSN_WINDOW_SIZE = (1100, 730)
 class ElectronicHydrometricSurveyNotes:
     def __init__(self):
         importlib.reload(sys)
-        sys.setdefaultencoding('utf-8')
+        #sys.setdefaultencoding('utf-8')
         self.headerTitle = "Hydrometric Survey Notes " + EHSN_VERSION
 
         # Label variables
