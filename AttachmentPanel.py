@@ -57,14 +57,6 @@ class AttachmentPanel(wx.Panel):
         self.createConfirm = "Are you sure you want to save the FV Package to the FV PACKAGE SAVE LOCATION?"
         self.fm = "%Y%m%d"
         self.zipPath = ""
-        self.legendHeader = "Photos and Drawings: "
-        self.legend = "SIT - Site (general view of the monitoring area)\n" \
-                      "STR - Structures, Site Facilities (includes construction)\n" \
-                      "COL - Control Conditions (view of channel)\n" \
-                      "CBL - Cableway\n" \
-                      "EQP - Device (general view of monitoring equipment deployed)\n" \
-                      "CDT - Device Conditions (includes details for vandalism)\n" \
-                      "HSN - Hydrometric Survey Note"
         self.InitUI()
 
     def InitUI(self):
@@ -111,9 +103,6 @@ class AttachmentPanel(wx.Panel):
         self.zipper = wx.Button(self, label="CREATE FV PACKAGE")
         self.zipper.Bind(wx.EVT_BUTTON, self.Zip)
 
-        legendHeader = wx.StaticText(self, label=self.legendHeader)
-        legend = wx.StaticText(self, label=self.legend)
-
         sizerList[0].Add(self.indent)
         sizerList[0].Add(Txt1, 1, wx.EXPAND | wx.ALL, 5)
         sizerList[0].Add(self.attachBox1)
@@ -153,18 +142,10 @@ class AttachmentPanel(wx.Panel):
         sizerList[9].Add(self.zipSpace)
         sizerList[9].Add(self.zipper)
 
-        sizerList[10].Add(self.indent2)
-        sizerList[10].Add(legendHeader)
-
-        sizerList[11].Add(self.indent2)
-        sizerList[11].Add(self.indent3)
-        sizerList[11].Add(legend)
         self.layout.Add(TitlePanel, 0, wx.EXPAND | wx.ALL, 3)
         for i in range(10):
             self.layout.Add(spaceList[i])
             self.layout.Add(sizerList[i])
-        self.layout.Add(sizerList[10])
-        self.layout.Add(sizerList[11])
 
     def BrowseZipLoc(self, evt):
         DirOpenDialog = wx.DirDialog(self, self.zipTitle, self.rootPath,

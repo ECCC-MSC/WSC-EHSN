@@ -20,7 +20,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.browseList = []
         self.columnList = []
         self.typeList = []
-        self.type = ["SIT", "STR", "COL", "CBL", "EQP", "CDT", "HSN"]
+        self.type = ["Site", "Structures, Site Facilities", "Control Conditions", "Cableway", "Device", "Device Conditions", "Hydrometric Survey Note"]
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
 
         self.InitUI()
@@ -36,7 +36,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
         self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
         self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.TE_READONLY, choices=self.type))
-        self.typeList[-1].SetValue("SIT")
+        self.typeList[-1].SetValue("Site")
         self.addrList.append(wx.TextCtrl(self, size=self.barSize))
         self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
@@ -62,7 +62,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
         self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
         self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN | wx.TE_READONLY, choices=self.type))
-        self.typeList[-1].SetValue("SIT")
+        self.typeList[-1].SetValue("Site")
         self.addrList.append(wx.TextCtrl(self, size=self.barSize))
         self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
@@ -82,7 +82,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
             self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
             self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
             self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN | wx.TE_READONLY, choices=self.type))
-            self.typeList[-1].SetValue("SIT")
+            self.typeList[-1].SetValue("Site")
             self.addrList.append(wx.TextCtrl(self, size=self.barSize))
             self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
@@ -141,49 +141,49 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
     def returnSIT(self):
         SITList = []
         for x in range(len(self.addrList)):
-            if self.typeList[x].GetValue() == "SIT" and self.addrList[x].GetValue() != "":
+            if self.typeList[x].GetValue() == "Site" and self.addrList[x].GetValue() != "":
                 SITList.append(self.addrList[x].GetValue())
         return SITList
 
     def returnSTR(self):
         STRList = []
         for x in range(len(self.addrList)):
-            if self.typeList[x].GetValue() == "STR" and self.addrList[x].GetValue() != "":
+            if self.typeList[x].GetValue() == "Structures, Site Facilities" and self.addrList[x].GetValue() != "":
                 STRList.append(self.addrList[x].GetValue())
         return STRList
 
     def returnCOL(self):
         COLList = []
         for x in range(len(self.addrList)):
-            if self.typeList[x].GetValue() == "COL" and self.addrList[x].GetValue() != "":
+            if self.typeList[x].GetValue() == "Control Conditions" and self.addrList[x].GetValue() != "":
                 COLList.append(self.addrList[x].GetValue())
         return COLList
 
     def returnCBL(self):
         CBLList = []
         for x in range(len(self.addrList)):
-            if self.typeList[x].GetValue() == "CBL" and self.addrList[x].GetValue() != "":
+            if self.typeList[x].GetValue() == "Cableway" and self.addrList[x].GetValue() != "":
                 CBLList.append(self.addrList[x].GetValue())
         return CBLList
 
     def returnEQP(self):
         EQPList = []
         for x in range(len(self.addrList)):
-            if self.typeList[x].GetValue() == "EQP" and self.addrList[x].GetValue() != "":
+            if self.typeList[x].GetValue() == "Device" and self.addrList[x].GetValue() != "":
                 EQPList.append(self.addrList[x].GetValue())
         return EQPList
 
     def returnCDT(self):
         CDTList = []
         for x in range(len(self.addrList)):
-            if self.typeList[x].GetValue() == "CDT" and self.addrList[x].GetValue() != "":
+            if self.typeList[x].GetValue() == "Device Conditions" and self.addrList[x].GetValue() != "":
                 CDTList.append(self.addrList[x].GetValue())
         return CDTList
 
     def returnHSN(self):
         HSNList = []
         for x in range(len(self.addrList)):
-            if self.typeList[x].GetValue() == "HSN" and self.addrList[x].GetValue() != "":
+            if self.typeList[x].GetValue() == "Hydrometric Survey Note" and self.addrList[x].GetValue() != "":
                 HSNList.append(self.addrList[x].GetValue())
         return HSNList
 

@@ -767,9 +767,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         defaultName = "AutoSave.xml"
         if self.manager is not None:
-            date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
-            date = date.strftime("%Y%m%d")
-            defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.xml"
+            defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(self.manager.genInfoManager.datePicker).replace('/', '') + "_FV.xml"
         folder = "c:\\temp\\eHSN\\"
         name = folder + defaultName
         if not os.path.isdir(folder):
