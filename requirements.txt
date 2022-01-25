@@ -26,6 +26,6 @@ six==1.16.0
 suds-jurko==0.6
 urllib3==1.26.8
 webencodings==0.5.1
-wxPython==4.1.1
+wxPython==4.0.7
 xhtml2pdf==0.2.5
 XlsxWriter==3.0.2
