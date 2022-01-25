@@ -101,6 +101,8 @@ ID_FILE_SAVE_EXIT = wx.NewId()
 ID_IMPORT_EHSN = wx.NewId()
 # ID_TOOLS_DRAW = wx.NewId()
 
+ID_FV_PACKAGE = wx.NewId()
+
 
 eHSN_WINDOW_SIZE = (500, 400)
 
@@ -249,6 +251,9 @@ class EHSNGui(wx.Frame):
         self.iFt2Desc = "Import FlowTracker2 (*.ft)"
         self.iEhsnLabel = "Merge eHSN Midsection (*.xml)"
         self.iEhsnDesc = "Merge eHSN Midsection (*.xml)"
+
+        self.FVpackLabel = "Create Field Visit Package"
+        self.FVpackDesc = "Create a ZIP file with eHSN XML and PDF, along with all files in the attachment tab (if there are any), for Aquarius Field Visit Upload."
 
         self.fullStyleSheetFileName = 'WSC_EHSN.xsml'
         self.summStyleSheetFileName = 'WSC_EHSN_Summary.xsml'
@@ -455,6 +460,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         fileMenu.AppendSeparator()
         faqu = fileMenu.Append(ID_FILE_EXPORT_AQUARIUS, self.fAquLabel, self.fAquDesc)
         fileMenu.AppendSeparator()
+        fvpack = fileMenu.Append(ID_FV_PACKAGE, self.FVpackLabel, self.FVpackDesc)
+        fileMenu.AppendSeparator()
         # fsexit = fileMenu.Append(ID_FILE_SAVE_EXIT, self.fSaveExitLabel, self.fSaveExitDesc)
         fsexit = fileMenu.Append(wx.MenuItem(fileMenu, ID_FILE_SAVE_EXIT, self.fSaveExitLabel, self.fSaveExitDesc))
         fexit = wx.MenuItem(fileMenu, ID_FILE_EXIT, self.fExitLabel, self.fExitDesc)
@@ -592,6 +599,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         # self.IniSaveAsPath()
         self.IniUploadSavePath()
         self.CreateFrames()
+
+        # Has to come after CreateFrames() otherwise self.attachment.Zip won't be accessable
+        self.Bind(wx.EVT_MENU, self.attachment.Zip, fvpack)
 
 
 
@@ -767,9 +777,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         defaultName = "AutoSave.xml"
         if self.manager is not None:
-            date = datetime.datetime.strptime(str(self.manager.genInfoManager.datePicker), self.manager.DT_FORMAT)
-            date = date.strftime("%Y%m%d")
-            defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(date) + "_FV.xml"
+            defaultName = str(self.manager.genInfoManager.stnNumCmbo) + "_" + str(self.manager.genInfoManager.datePicker).replace('/', '') + "_FV.xml"
         folder = "c:\\temp\\eHSN\\"
         name = folder + defaultName
         if not os.path.isdir(folder):

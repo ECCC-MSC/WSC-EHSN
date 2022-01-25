@@ -180,7 +180,7 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         self.columnList[-1].Add(self.establishSizer[-1], 1, wx.EXPAND)
         self.columnList[-1].Add(self.descList[-1])
 
-        self.tableSizer.Add(self.columnList[-1])
+        self.tableSizer.Add(self.columnList[-1], 0, wx.EXPAND)
         self.layoutSizer.Layout()
         self.Update()
         if self.refresh:
