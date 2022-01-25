@@ -8,19 +8,19 @@ All works in this repository have been curated by ECCC and licensed under the GN
 Python 3.8.2
 
 Packages:  
-wxPython (Phoenix, version 4.0.7)
-matplotlib (version 3.5.1) 
-requests (version 2.27.1) 
-qrcode (version 7.3.1) 
-lxml (version 4.7.1) 
+wxPython (Phoenix, version 4.0.7)  
+matplotlib (version 3.5.1)  
+requests (version 2.27.1)  
+qrcode (version 7.3.1)  
+lxml (version 4.7.1)  
 html2pdf (version 0.1)  
 suds-jurko (version 0.6)  
-html5lib (version 1.1)
-XlsxWriter (version 3.0.2)
-pywin32 (version 303)
-xhtml2pdf (version 0.2.5)
+html5lib (version 1.1)  
+XlsxWriter (version 3.0.2)  
+pywin32 (version 303)  
+xhtml2pdf (version 0.2.5)  
 
-See requirements.txt for full package list.
+See requirements.txt for full package list.  
 Note: An older version of wxPython (4.0.7) is required as later versions cause an error related to unknown locales.
 
 # EXCLUDED FILES
