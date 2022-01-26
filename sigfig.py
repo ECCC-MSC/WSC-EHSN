@@ -1,6 +1,6 @@
 '''This module provides function for working with significant
 figures.'''
-import types,re,string
+import re
 
 epat = re.compile(r'^([^e]+)e(.+)$')
 
@@ -18,7 +18,7 @@ def round_sig(x, n):
    st = form % x
    num,expo = epat.findall(st)[0]
    expo = int(expo)
-   fs = string.split(num,'.')
+   fs = num.split('.')
    if len(fs) < 2:
       fs = [fs[0],""]
    if expo == 0:
@@ -49,7 +49,7 @@ def round_sig_error(x, ex, n, paren=False):
       sigfigs = len(str(int(x))) - extra_zeros
       stx = round_sig(x,sigfigs)
    else:
-      num_after_dec = len(string.split(stex,'.')[1])
+      num_after_dec = len(stex.split('.')[1])
       stx = ("%%.%df" % num_after_dec) % (x)
    if paren:
       if stex.find('.') >= 0:
@@ -139,7 +139,7 @@ def round_sig_error2(x, ex1, ex2, n):
       stx = round_sig(x,sigfigs)
       maxstex = round_sig(max(ex1,ex2),sigfigs)
    else:
-      num_after_dec = len(string.split(minstex,'.')[1])
+      num_after_dec = len(minstex.split('.')[1])
       stx = ("%%.%df" % num_after_dec) % (x)
       maxstex = ("%%.%df" % num_after_dec) % (max(ex1,ex2))
    if ex1 < ex2:
