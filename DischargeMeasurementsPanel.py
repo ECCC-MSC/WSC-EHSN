@@ -5,6 +5,7 @@ import wx
 import wx.lib.masked as masked
 import NumberControl
 from DropdownTime import *
+import math
 
 
 from wx import ComboPopup
@@ -643,11 +644,11 @@ All uncertainty values reported here are 2-sigma value
             totalMinute = (startHour + endHour) * 60 + startMinute + endMinute
             meanMinute = totalMinute / 2
 
-            meanHour = meanMinute / 60 % 24
+            meanHour = math.floor(meanMinute / 60 % 24)
             if meanHour < 10:
                 meanHour = "0" + str(meanHour)
 
-            meanMinute = meanMinute % 60
+            meanMinute = round(meanMinute % 60)
             if meanMinute < 10:
                 meanMinute = "0" + str(meanMinute)
 
