@@ -28,7 +28,7 @@ class AQUARIUSDataExtractionToolFrame(wx.Frame):
         self.urlLbl = "Server:"
         self.stnCkboxLbl = "Station Metadata {Station ID, Name, Time Zone} (stations.txt)"
         self.lvlCkboxLbl = "Benchmark/Reference Information {Station ID, Reference, Elevation, Description} (levels.txt)"
-        self.rcCkboxLbl = 'Rating Curves (StationID_ratingcurves.xml)'
+        self.rcCkboxLbl = 'Rating Curves (StationID_ratingcurves.json)'
         self.dataPeriodTxtLbl = "Historical Field Visits (StationID_FieldVisits.csv)"
         self.dataPeriodFromTxtLbl = "From"
         self.dataPeriodToTxtLbl = "To"

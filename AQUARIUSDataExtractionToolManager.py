@@ -530,7 +530,7 @@ class AQUARIUSDataExtractionToolManager(object):
             exportFile = open(path + '\\stations.txt', 'a+')
             for line in writeList:
                 exportFile.write("\n")
-                exportFile.write(line.encode('utf8'))
+                exportFile.write(line)
 
             exportFile.close()
 
@@ -662,7 +662,7 @@ class AQUARIUSDataExtractionToolManager(object):
             for line in writeList:
                 exportFile.write("\n")
                 lineData = line[0] + ',' + line[1] + ',' + line[2]
-                exportFile.write(lineData.encode('utf8'))
+                exportFile.write(lineData)
 
             exportFile.close()
 
@@ -879,7 +879,7 @@ class AQUARIUSDataExtractionToolManager(object):
             for line in writeList:
                 # print line.encode("utf8")
                 line += '\n'
-                exportFile.write(line.encode('utf8'))
+                exportFile.write(line)
 
             exportFile.close()
 
@@ -1055,7 +1055,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 lineData = line[0] + ',' + line[1] + ',' + line[2] + ',' + line[3]
                 newStations.append(line[0])
                 # print lineData
-                exportFile.write(lineData.encode('utf8'))
+                exportFile.write(lineData)
             additional = []
             for station in stations:
                 if station not in newStations:
@@ -1064,7 +1064,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 if line[0:7] in additional:
                     exportFile.write("\n")
                     newline = line
-                    exportFile.write(newline.encode('utf8'))
+                    exportFile.write(newline)
                 
             exportFile.close()
 
@@ -1356,10 +1356,10 @@ class AQUARIUSDataExtractionToolManager(object):
                 while True:
                     try:
                         outputfile = open(path + '\\' + location + "_FieldVisits.csv","wb")
-                        outputfile.write('Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n')
+                        outputfile.write('Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n'.encode("utf8"))
                         for m in table:
                             for n in m:
-                                outputfile.write(n)
+                                outputfile.write(n.encode("utf8"))
                         outputfile.close()
                         break
                     except IOError:
@@ -1586,10 +1586,10 @@ class AQUARIUSDataExtractionToolManager(object):
                     try:
                         outputfile = open(path + '\\' + location + "_FieldVisits.csv", "wb")
                         outputfile.write(
-                            'Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n')
+                            'Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n'.encode("utf8"))
                         for m in fieldVisitInfoList:
                             for n in m:
-                                outputfile.write(n)
+                                outputfile.write(n.encode("utf8"))
                         outputfile.close()
                         break
                     except IOError:
