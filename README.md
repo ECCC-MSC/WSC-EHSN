@@ -13,15 +13,16 @@ matplotlib (version 3.5.1)
 requests (version 2.27.1)  
 qrcode (version 7.3.1)  
 lxml (version 4.7.1)  
-html2pdf (version 0.1)  
 suds-jurko (version 0.6)  
-html5lib (version 1.1)  
 XlsxWriter (version 3.0.2)  
 pywin32 (version 303)  
-xhtml2pdf (version 0.2.5)  
+reportlab (version 3.6.5)  
+PyQt5 (version 5.15.6)  
+PyQtWebEngine (version 5.15.5)  
 
 See requirements.txt for full package list.  
-Note: An older version of wxPython (4.0.7) is required as later versions cause an error related to unknown locales.
+Note: An older version of wxPython (4.0.7) is required as later versions cause an error related to unknown locales.  
+Note: The most up-to-date version of pip (22.0.2 or higher) is required to download PyQt5 sucessfully.
 
 # EXCLUDED FILES
 

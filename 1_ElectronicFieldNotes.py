@@ -38,7 +38,6 @@ from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
 from xml.dom import minidom
 
-from xhtml2pdf import pisa             # import python module
 from lxml import etree
 
 import os
@@ -59,6 +58,35 @@ import json
 import shutil
 from zipfile import ZipFile
 import importlib
+
+# Used to create the pdf
+from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets
+from multiprocessing import Process
+
+
+# Create the PDF from HTML using PyQt5
+# Taken and modified from https://stackoverflow.com/questions/63382399/how-to-convert-a-local-html-file-to-pdf-using-pyqt5
+def html_to_pdf(html, pdf):
+
+    dummy_app_for_pdf = QtWidgets.QApplication(sys.argv)
+    dummy_page_for_pdf = QtWebEngineWidgets.QWebEnginePage()
+
+    def handle_print_finished(filename, status):
+        print("finished", filename, status)
+        QtWidgets.QApplication.quit()
+
+    def handle_load_finished(status):
+        if status:
+            dummy_page_for_pdf.printToPdf(pdf)
+        else:
+            print("Failed")
+            QtWidgets.QApplication.quit()
+
+    dummy_page_for_pdf.pdfPrintingFinished.connect(handle_print_finished)
+    dummy_page_for_pdf.loadFinished.connect(handle_load_finished)
+    dummy_page_for_pdf.load(QtCore.QUrl.fromLocalFile(html))
+    dummy_app_for_pdf.exec_()
+
 
 
 
@@ -254,9 +282,6 @@ class ElectronicHydrometricSurveyNotes:
         if mode == "DEBUG":
             print("Saving PDF")
 
-##        pisa.showLogging()
-
-
         xml = self.EHSNToXML()
         print(xslPath)
         # transform = etree.XSLT(etree.parse(xslPath))
@@ -267,20 +292,22 @@ class ElectronicHydrometricSurveyNotes:
         result = str(result).replace("logo_path", self.gui.logo_path)
         result = result.replace("qr_path", self.gui.qr_path)
 
-        # open output file for writing (truncated binary)
-        resultFile = open(filePath, "w+b")
+        # Save html temporarily
+        # Set the path to the file, open and write it as utf8, and close the file
+        temp_folder = "c:\\temp\\eHSN\\"
+        temp_filename = os.path.join(temp_folder, "temp_file_to_be_deleted.html")
+        temp_file = open(temp_filename,"w",encoding='utf-8')
+        temp_file.write(result)
+        temp_file.close()
 
-        # convert HTML to PDF
-        pisa.CreatePDF(
-                src=result,                # the HTML to convert
-                dest=resultFile, show_error_as_pdf = True)           # file handle to receive result
+        # Convert the HTML to PDF in a separate thread
+        # https://stackoverflow.com/questions/2846653/how-can-i-use-threading-in-python
+        p = Process(target=html_to_pdf, args=(temp_filename,filePath))
+        p.start()
+        p.join()
 
-
-                # pisa.CreatePDF(
-                # src=result,                # the HTML to convert
-                # dest=resultFile,           # file handle to receive result
-                # encoding="UTF-8")
-        resultFile.close()
+        # Remove the temp file
+        os.remove(temp_filename)
 
 
 
@@ -303,30 +330,30 @@ class ElectronicHydrometricSurveyNotes:
         if mode == "DEBUG":
             print("Saving PDF")
 
-##        pisa.showLogging()
-
-
         transform = etree.XSLT(etree.parse(xslPath))
         result = transform(etree.fromstring(xml))
 
         result = str(result).replace("logo_path", self.gui.logo_path)
         result = result.replace("qr_path", self.gui.qr_path)
 
-        # open output file for writing (truncated binary)
-        resultFile = open(filePath, "w+b")
+        # Save html temporarily
+        # Set the path to the file, open and write it as utf8, and close the file
+        temp_folder = "c:\\temp\\eHSN\\"
+        temp_filename = os.path.join(temp_folder, "temp_file_to_be_deleted.html")
+        temp_file = open(temp_filename,"w",encoding='utf-8')
+        temp_file.write(result)
+        temp_file.close()
 
-        # convert HTML to PDF
-        pisa.CreatePDF(
-                src=result,                # the HTML to convert
-                dest=resultFile, show_error_as_pdf = True)           # file handle to receive result
+        # Convert the HTML to PDF in a separate thread
+        # https://stackoverflow.com/questions/2846653/how-can-i-use-threading-in-python
+        p = Process(target=html_to_pdf, args=(temp_filename,filePath))
+        p.start()
+        p.join()
 
-        # pisa.CreatePDF(
-        #         src=result,                # the HTML to convert
-        #         dest=resultFile,           # file handle to receive result
-        #         encoding="UTF-8")
+        # Remove the temp file
+        os.remove(temp_filename)
         
 
-        resultFile.close()
 
     #After generating the pdf from xml, open the pdf
     def ExportAsPDFFromXMLOpen(self, filePath, xslPath, xml):

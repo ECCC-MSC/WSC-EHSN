@@ -54,7 +54,6 @@ from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
 from xml.dom import minidom
-from xhtml2pdf import pisa
 import subprocess
 # import pyHook
 # import pythoncom, win32api
@@ -1317,7 +1316,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if path != "":
                 try:
                     self.manager.ExportAsPDF(path, self.fullStyleSheetFilePath)
-                except:
+                except Exception as e:
+                    print(type(e))
+                    print(e)
                     info = wx.MessageDialog(self, self.savePDFErrorMsg, self.savePDFErrorTitle,
                                      wx.OK | wx.ICON_ERROR)
                     info.ShowModal()
