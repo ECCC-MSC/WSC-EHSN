@@ -1869,8 +1869,8 @@ def PartyInfoAsXMLTree(PartyInfo, partyInfoManager):
     completed = SubElement(PartyInfo, 'completed')
     completed.text = partyInfoManager.completeCtrl
 
-    checked = SubElement(PartyInfo, 'checked')
-    checked.text = partyInfoManager.checkCtrl
+    #checked = SubElement(PartyInfo, 'checked')
+    #checked.text = partyInfoManager.checkCtrl
 
     reviewed = SubElement(PartyInfo, 'reviewed')
     reviewed.text = str(partyInfoManager.reviewedCB)
@@ -1883,8 +1883,8 @@ def PartyInfoFromXML(PartyInfo, partyInfoManager):
     completed = PartyInfo.find('completed').text
     partyInfoManager.completeCtrl = "" if completed is None else completed
 
-    checked = PartyInfo.find('checked').text
-    partyInfoManager.checkCtrl = "" if checked is None else checked
+    #checked = PartyInfo.find('checked').text
+    #partyInfoManager.checkCtrl = "" if checked is None else checked
 
     reviewed = None if PartyInfo.find('reviewed') is None else PartyInfo.find('reviewed').text
     partyInfoManager.reviewedCB = False if reviewed is None else (False if reviewed == 'False' else True)
@@ -2359,8 +2359,8 @@ def FieldReviewAsXMLTree(FieldReview, frChecklistManager):
         label = SubElement(FieldReviewTableRow, "label")
         label.text = str(frChecklistManager.GetLabelSizerVal(i))
 
-        checked = SubElement(FieldReviewTableRow, "checked")
-        checked.text = str(frChecklistManager.GetCBCheckSizerVal(i))
+        #checked = SubElement(FieldReviewTableRow, "checked")
+        #checked.text = str(frChecklistManager.GetCBCheckSizerVal(i))
 
         reviewed = SubElement(FieldReviewTableRow, "reviewed")
         reviewed.text = str(frChecklistManager.GetCBRevSizerVal(i))
@@ -2394,11 +2394,11 @@ def FieldReviewFromXML(FieldReview, frChecklistManager):
     for FieldReviewTableRow in FieldReviewTable.findall('FieldReviewTableRow'):
         row = int(FieldReviewTableRow.get('row'))
 
-        checked = FieldReviewTableRow.find('checked').text
+        #checked = FieldReviewTableRow.find('checked').text
         reviewed = FieldReviewTableRow.find('reviewed').text
         text = FieldReviewTableRow.find('text').text
 
-        frChecklistManager.SetCBCheckSizerVal(row, False if checked is None else (False if checked == 'False' else True))
+        #frChecklistManager.SetCBCheckSizerVal(row, False if checked is None else (False if checked == 'False' else True))
         frChecklistManager.SetCBRevSizerVal(row, False if reviewed is None else (False if reviewed == 'False' else True))
         frChecklistManager.SetCtrlSizerVal(row, "" if text is None else text)
 
