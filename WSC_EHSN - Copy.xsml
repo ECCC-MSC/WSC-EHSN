@@ -389,7 +389,6 @@
 				</xsl:choose>
 			</td>
 			<th>Review</th>
-			<th>Check</th>
 			<td><b>Review Comments </b>
 				<xsl:value-of select="dependencyType"/>
 				<xsl:text>    -    </xsl:text>
@@ -403,15 +402,6 @@
 				<td align="center" width="60">
 					<xsl:choose>
 						<xsl:when test="reviewed='True'">
-						<font size="4">&#x2714;</font>
-					</xsl:when>
-					<xsl:otherwise>
-						<font size="4">&#x2751;</font>
-						</xsl:otherwise>
-					</xsl:choose>
-				</td>
-				<td align="center" width="60"><xsl:choose>
-						<xsl:when test="checked='True'">
 						<font size="4">&#x2714;</font>
 					</xsl:when>
 					<xsl:otherwise>
@@ -1676,7 +1666,7 @@
 
 
 			</td>
-			<td class="noborder" style="text-align;vertical-align:bottom"><b>Checked by: </b> <xsl:value-of select="checked"/></td>
+			
 		</tr>
 	</tbody>
 	</table>
