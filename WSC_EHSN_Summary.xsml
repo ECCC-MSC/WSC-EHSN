@@ -16,9 +16,9 @@
     <BODY>
 	    <style>
 			table  {margin-left: 15mm Auto;
-						margin-right: 15 Auto; color:#111111; font-family: Arial, Sans-Serif; font-size: 8.5px; border: .1em solid #111111;}
+						margin-right: 15 Auto; color:#111111; font-family: Arial, Sans-Serif; font-size: 8.5px; border: 1px solid #111111; border-collapse: collapse;}
 			
-			th, tr, td { border:.01em solid black;vertical-align: middle;
+			th, tr, td { border: 1px solid black; border-collapse: collapse; vertical-align: middle;
 				padding-left:.2em ;padding-top: .2em; word-wrap: break-all;
 			}
 <!-- 			@page {
@@ -217,7 +217,7 @@
 				<td><xsl:value-of select="condition"/></td>
 				<th align="center" colspan = "2">Control Condition Remarks</th>
 
-				<td class="noborder" style="text-align:left;vertical-align:top;word-wrap:break-word" colspan = "5">
+				<td style="text-align:left;vertical-align:top;word-wrap:break-word" colspan = "6">
 					<xsl:call-template name="LFsToBRs">
 						<xsl:with-param name="input" select="controlConditionRemark"/>
 					</xsl:call-template>
@@ -432,7 +432,7 @@
 						<td class="noborder"><b>Departure</b></td>
 					</tr>
 					<tr class="noborder">
-						<td class="noborder" align="left"><font size="2"><b>Gas: Cyl.</b></font></td>
+						<td class="noborder" align="left"><b>Gas: Cyl.</b></td>
 						<td class="noborder"><xsl:value-of select="gasSys"/>@<xsl:value-of select="gasArrTime"/></td>
 						<td class="noborder"><xsl:value-of select="gasSysDepCtrl"/>@<xsl:value-of select="gasDepTime"/></td>
 					</tr>
