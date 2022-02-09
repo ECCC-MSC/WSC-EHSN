@@ -61,7 +61,37 @@ import importlib
 
 # Used to create the pdf
 from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets
-from multiprocessing import Process
+import multiprocessing.popen_spawn_win32 as forking
+
+
+# Needed to allow multiprocessing from within exe
+# https://stackoverflow.com/questions/24944558/pyinstaller-built-windows-exe-fails-with-multiprocessing
+class _Popen(forking.Popen):
+    def __init__(self, *args, **kw):
+        if hasattr(sys, 'frozen'):
+            # We have to set original _MEIPASS2 value from sys._MEIPASS
+            # to get --onefile mode working.
+            os.putenv('_MEIPASS2', sys._MEIPASS)
+        try:
+            super(_Popen, self).__init__(*args, **kw)
+        finally:
+            if hasattr(sys, 'frozen'):
+                # On some platforms (e.g. AIX) 'os.unsetenv()' is not
+                # available. In those cases we cannot delete the variable
+                # but only set it to the empty string. The bootloader
+                # can handle this case.
+                if hasattr(os, 'unsetenv'):
+                    os.unsetenv('_MEIPASS2')
+                else:
+                    os.putenv('_MEIPASS2', '')
+
+# Needed to allow multiprocessing from within exe
+# https://stackoverflow.com/questions/24944558/pyinstaller-built-windows-exe-fails-with-multiprocessing
+class Process(multiprocessing.Process):
+    _Popen = _Popen
+
+
+
 
 
 # Create the PDF from HTML using PyQt5
@@ -300,11 +330,13 @@ class ElectronicHydrometricSurveyNotes:
         temp_file.write(result)
         temp_file.close()
 
+        print('attempting to create pdf thread')
         # Convert the HTML to PDF in a separate thread
         # https://stackoverflow.com/questions/2846653/how-can-i-use-threading-in-python
         p = Process(target=html_to_pdf, args=(temp_filename,filePath))
         p.start()
         p.join()
+        print('finished pdf thread')
 
         # Remove the temp file
         os.remove(temp_filename)
@@ -344,11 +376,13 @@ class ElectronicHydrometricSurveyNotes:
         temp_file.write(result)
         temp_file.close()
 
+        print('attempting to create pdf thread')
         # Convert the HTML to PDF in a separate thread
         # https://stackoverflow.com/questions/2846653/how-can-i-use-threading-in-python
         p = Process(target=html_to_pdf, args=(temp_filename,filePath))
         p.start()
         p.join()
+        print('finished pdf thread')
 
         # Remove the temp file
         os.remove(temp_filename)
@@ -1641,4 +1675,9 @@ def main():
 
 
 if __name__=='__main__':
+
+    # Needed to allow multiprocessing from within exe
+    # https://stackoverflow.com/questions/24944558/pyinstaller-built-windows-exe-fails-with-multiprocessing
+    multiprocessing.freeze_support()
+
     main()
