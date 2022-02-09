@@ -34,7 +34,7 @@ class AttachmentPanel(wx.Panel):
         self.indent = (50, -1)
         self.indent2 = (55, -1)
         self.indent3 = (25, -1)
-        self.noteIndent = (55, -1)
+        self.noteIndent = (205, -1)
         self.barSize = (741, -1)
         self.tagSize = (300, -1)
         self.zipSpace = (1100, -1)
@@ -53,7 +53,7 @@ class AttachmentPanel(wx.Panel):
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.mmtFilesTitle = "Select the MMT Files Folder"
         self.loggerFilesTitle = "Select the Logger Files Folder"
-        self.zipTitle = "Choose zip file location"
+        self.zipTitle = "Field Visit Package (zip file) save location"
         self.createConfirm = "Are you sure you want to save the FV Package to the FV PACKAGE SAVE LOCATION?"
         self.fm = "%Y%m%d"
         self.zipPath = ""
@@ -70,7 +70,7 @@ class AttachmentPanel(wx.Panel):
         spaceList = []
         for x in range(10):
             spaceList.append(wx.StaticText(self, label=""))
-        note = wx.StaticText(self, label="The Field Visit Package (ZIP file) will include the eHSN xml and pdf, as well as the above attachments. \nThe created ZIP file will be saved to the FV PACKAGE SAVE LOCATION and should be dragged-dropped into AQUARIUS.")
+        note = wx.StaticText(self, label="The Field Visit Package (ZIP file) will include the eHSN xml and pdf, as well as the below attachments.")
 
         TitlePanel = AttachmentTitle(self.mode, self)
         Txt1 = AttachTag("Logger folders", "", self, size=self.tagSize)
@@ -103,41 +103,41 @@ class AttachmentPanel(wx.Panel):
         self.zipper = wx.Button(self, label="CREATE FV PACKAGE")
         self.zipper.Bind(wx.EVT_BUTTON, self.Zip)
 
-        sizerList[0].Add(self.indent)
-        sizerList[0].Add(Txt1, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[0].Add(self.attachBox1)
+        sizerList[0].Add(self.noteIndent)
+        sizerList[0].Add(note)
 
         sizerList[1].Add(self.indent)
-        sizerList[1].Add(Txt2, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[1].Add(self.attachBox2)
+        sizerList[1].Add(Txt1, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[1].Add(self.attachBox1)
 
         sizerList[2].Add(self.indent)
-        sizerList[2].Add(Txt3, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[2].Add(self.attachBox3)
+        sizerList[2].Add(Txt2, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[2].Add(self.attachBox2)
 
         sizerList[3].Add(self.indent)
-        sizerList[3].Add(Txt4, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[3].Add(self.attachBox4)
+        sizerList[3].Add(Txt3, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[3].Add(self.attachBox3)
 
         sizerList[4].Add(self.indent)
-        sizerList[4].Add(Txt5, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[4].Add(self.attachBox5)
+        sizerList[4].Add(Txt4, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[4].Add(self.attachBox4)
 
         sizerList[5].Add(self.indent)
-        sizerList[5].Add(Txt6, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[5].Add(self.attachBox6)
+        sizerList[5].Add(Txt5, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[5].Add(self.attachBox5)
 
         sizerList[6].Add(self.indent)
-        sizerList[6].Add(Txt7, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[6].Add(self.attachBox7)
-        
-        sizerList[7].Add(self.indent)
-        sizerList[7].Add(zipLoc, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[7].Add(self.zipAddr)
-        sizerList[7].Add(self.zipChoose)
+        sizerList[6].Add(Txt6, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[6].Add(self.attachBox6)
 
-        sizerList[8].Add(self.noteIndent)
-        sizerList[8].Add(note)
+        sizerList[7].Add(self.indent)
+        sizerList[7].Add(Txt7, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[7].Add(self.attachBox7)
+        
+        sizerList[8].Add(self.indent)
+        sizerList[8].Add(zipLoc, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[8].Add(self.zipAddr)
+        sizerList[8].Add(self.zipChoose)
 
         sizerList[9].Add(self.zipSpace)
         sizerList[9].Add(self.zipper)
