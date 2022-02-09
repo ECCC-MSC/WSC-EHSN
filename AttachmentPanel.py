@@ -42,7 +42,7 @@ class AttachmentPanel(wx.Panel):
         self.missingStnNumTitle = "Missing Station Number"
         self.nonexistentMessage = " does not exist"
         self.nonexistentTitle = "Target file does not exist"
-        self.successMessage = "FV PACKAGE are successfully created: "
+        self.successMessage = "Field Visit Package successfully created and zipped\n"
         self.successTitle = "File successfully zipped"
         self.errorMessage = "FV PACKAGE creation has failed"
         self.errorTitle = "Create Failure"
@@ -371,7 +371,7 @@ class AttachmentPanel(wx.Panel):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
 
             zipfile.close()
-            info = wx.MessageDialog(None, self.successMessage + Tag + " at " + zipPath, self.successTitle, wx.OK)
+            info = wx.MessageDialog(None, self.successMessage + "The field visit package: " + Tag + " was successfully created and saved here: " + zipPath, self.successTitle, wx.OK)
             self.zipPath = zipPath + "\\" + Tag + '.zip'
             info.ShowModal()
         except:
