@@ -199,7 +199,7 @@ class EHSNGui(wx.Frame):
         self.fPdfsDesc = "Generate a PDF of the front page of the current field note(good for providing to partners and clients)."
         self.fPdfvLabel = "Generate PDF - Complete Note on Full Page"
         self.fPdfvDesc = "Generate pdf for the current field visit as 8.5 x 11 size format."
-        self.fAquLabel = '&Upload eHSN to AQUARIUS\tCtrl+U'
+        self.fAquLabel = '&Upload eHSN && FV Package to AQUARIUS\tCtrl+U'
         self.fAquDesc = 'Upload this Field Visit\'s information to AQUARIUS (saves XML and PDF at the same time)'
         self.fExitLabel = '&Quit\tCtrl+Q'
         self.fExitDesc = 'Exit Program'
@@ -251,7 +251,7 @@ class EHSNGui(wx.Frame):
         self.iEhsnLabel = "Merge eHSN Midsection (*.xml)"
         self.iEhsnDesc = "Merge eHSN Midsection (*.xml)"
 
-        self.FVpackLabel = "Create Field Visit Package"
+        self.FVpackLabel = "Save Field Visit Package (ready for drag and drop)"
         self.FVpackDesc = "Create a ZIP file with eHSN XML and PDF, along with all files in the attachment tab (if there are any), for Aquarius Field Visit Upload."
 
         self.fullStyleSheetFileName = 'WSC_EHSN.xsml'
@@ -281,7 +281,7 @@ class EHSNGui(wx.Frame):
         self.fileAQStnTitle = "Station information missing"
         self.fileAQTZMessage = "Please select timezone"
         self.fileAQTZTitle = "Time zone missing"
-        self.fileAQUploadTitle = "Upload eHSN to AQUARIUS"
+        self.fileAQUploadTitle = "Upload eHSN and FV Package to AQUARIUS"
         self.fileAQUpSuccessMessage = "Upload Successful"
         self.fileAQUpSuccessTitle = "Upload Complete"
         self.errorTitle = "Error"
@@ -452,14 +452,14 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         fsave = fileMenu.Append(ID_FILE_SAVE, self.fSaveLabel, self.fXmlDesc)
         fxml = fileMenu.Append(ID_FILE_EXPORT_XML, self.fXmlLabel, self.fXmlDesc)
         fileMenu.AppendSeparator()
+        fvpack = fileMenu.Append(ID_FV_PACKAGE, self.FVpackLabel, self.FVpackDesc)
+        fileMenu.AppendSeparator()
         fpdf = fileMenu.Append(ID_FILE_EXPORT_PDF, self.fPdfLabel, self.fPdfDesc)
         fpdfs = fileMenu.Append(ID_FILE_EXPORT_PDF_SUMM, self.fPdfsLabel, self.fPdfsDesc)
         fileMenu.AppendSeparator()
         fpdfview = fileMenu.Append(ID_FILE_EXPORT_PDF_VIEW, self.fPdfvLabel, self.fPdfvDesc)
         fileMenu.AppendSeparator()
         faqu = fileMenu.Append(ID_FILE_EXPORT_AQUARIUS, self.fAquLabel, self.fAquDesc)
-        fileMenu.AppendSeparator()
-        fvpack = fileMenu.Append(ID_FV_PACKAGE, self.FVpackLabel, self.FVpackDesc)
         fileMenu.AppendSeparator()
         # fsexit = fileMenu.Append(ID_FILE_SAVE_EXIT, self.fSaveExitLabel, self.fSaveExitDesc)
         fsexit = fileMenu.Append(wx.MenuItem(fileMenu, ID_FILE_SAVE_EXIT, self.fSaveExitLabel, self.fSaveExitDesc))
