@@ -467,7 +467,7 @@ class AQUARIUSDataExtractionToolManager(object):
                     fileExists = True
                     exportFile = open(path + '\\stations.txt', 'a+')
                 else:
-                    exportFile = open(path + '\\stations.txt', "wb")
+                    exportFile = open(path + '\\stations.txt', "w")
                 break
             except IOError:
                 print("Could not open file! Please close Excel!")
@@ -606,7 +606,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
                     exportFile = open(path + '\\stations.txt', 'a+')
                 else:
-                    exportFile = open(path + '\\stations.txt', "wb")
+                    exportFile = open(path + '\\stations.txt', "w")
                 break
             except IOError:
                 print("Could not open file! Please close Excel!")
