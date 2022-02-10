@@ -37,7 +37,7 @@ class AttachmentPanel(wx.Panel):
         self.noteIndent = (205, -1)
         self.barSize = (741, -1)
         self.tagSize = (300, -1)
-        self.zipSpace = (1100, -1)
+        self.zipSpace = (1060, -1)
         self.missingStnNumMessage = "Station Number is missing"
         self.missingStnNumTitle = "Missing Station Number"
         self.nonexistentMessage = " does not exist"
@@ -54,7 +54,7 @@ class AttachmentPanel(wx.Panel):
         self.mmtFilesTitle = "Select the MMT Files Folder"
         self.loggerFilesTitle = "Select the Logger Files Folder"
         self.zipTitle = "Field Visit Package (zip file) save location"
-        self.createConfirm = "Are you sure you want to save the FV Package to the FV PACKAGE SAVE LOCATION?"
+        #self.createConfirm = "Are you sure you want to save the FV Package to the FV PACKAGE SAVE LOCATION?"
         self.fm = "%Y%m%d"
         self.zipPath = ""
         self.InitUI()
@@ -94,11 +94,10 @@ class AttachmentPanel(wx.Panel):
         Txt7 = AttachTag("Photos and Drawings", "(.jpg, .DWG, etc.)", self, size=self.tagSize)
         self.attachBox7 = AttachPhotoBox(self, "*", self, size=(860, 200), style=wx.SIMPLE_BORDER)
 
-        zipLoc = AttachTag("FV PACKAGE SAVE LOCATION", "", self, size=self.tagSize)
         self.zipAddr = wx.TextCtrl(self, size=self.barSize)
-        self.zipChoose = wx.Button(self, label="SELECT")
-        self.zipChoose.Bind(wx.EVT_BUTTON, self.BrowseZipLoc)
         self.zipAddr.SetValue(self.rootPath)
+        # Hide the text field 
+        self.zipAddr.Hide()
 
         self.zipper = wx.Button(self, label="CREATE FV PACKAGE")
         self.zipper.Bind(wx.EVT_BUTTON, self.Zip)
@@ -133,33 +132,32 @@ class AttachmentPanel(wx.Panel):
         sizerList[7].Add(self.indent)
         sizerList[7].Add(Txt7, 1, wx.EXPAND | wx.ALL, 5)
         sizerList[7].Add(self.attachBox7)
-        
-        sizerList[8].Add(self.indent)
-        sizerList[8].Add(zipLoc, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[8].Add(self.zipAddr)
-        sizerList[8].Add(self.zipChoose)
 
-        sizerList[9].Add(self.zipSpace)
-        sizerList[9].Add(self.zipper)
+        sizerList[8].Add(self.zipSpace)
+        sizerList[8].Add(self.zipper)
+
+        # Hidden text field
+        sizerList[9].Add(self.zipAddr)
 
         self.layout.Add(TitlePanel, 0, wx.EXPAND | wx.ALL, 3)
         for i in range(10):
             self.layout.Add(spaceList[i])
             self.layout.Add(sizerList[i])
 
-    def BrowseZipLoc(self, evt):
-        DirOpenDialog = wx.DirDialog(self, self.zipTitle, self.rootPath,
-                                     style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
-        if DirOpenDialog.ShowModal() == wx.ID_CANCEL:
+    def Zip(self, evt, openSaveDialog=True):
+
+        if openSaveDialog:
+            DirOpenDialog = wx.DirDialog(self, self.zipTitle, self.rootPath,
+                                        style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
+            if DirOpenDialog.ShowModal() == wx.ID_CANCEL:
+                DirOpenDialog.Destroy()
+                return
+
+            self.zipPath = DirOpenDialog.GetPath()
+            self.zipAddr.ChangeValue(self.zipPath)
+
             DirOpenDialog.Destroy()
-            return
 
-        self.zipPath = DirOpenDialog.GetPath()
-        self.zipAddr.ChangeValue(self.zipPath)
-
-        DirOpenDialog.Destroy()
-
-    def Zip(self, evt):
         if not self.parent.partyInfo.reviewedCB.GetValue():
             info = wx.MessageDialog(None, self.reviewMessage, self.reviewTitle,
                                     wx.OK)
@@ -180,10 +178,10 @@ class AttachmentPanel(wx.Panel):
             info.ShowModal()
             return
 
-        dlg = wx.MessageDialog(None, self.createConfirm, 'Create Confirmation', wx.YES_NO)
-        res = dlg.ShowModal()
-        if res != wx.ID_YES:
-            return
+        #dlg = wx.MessageDialog(None, self.createConfirm, 'Create Confirmation', wx.YES_NO)
+        #res = dlg.ShowModal()
+        #if res != wx.ID_YES:
+        #    return
         
         date = self.parent.genInfo.datePicker.GetValue().Format(self.fm)
 
