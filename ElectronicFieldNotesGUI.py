@@ -1387,7 +1387,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.CreateQR()
                 try:
                     self.manager.ExportAsPDF(path, self.summStyleSheetFilePath)
-                except:
+                except Exception as e:
+                    print(type(e))
+                    print(e)
                     info = wx.MessageDialog(self, self.savePDFErrorMsg, self.savePDFErrorTitle,
                                      wx.OK | wx.ICON_ERROR)
                     info.ShowModal()
@@ -1452,7 +1454,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if path != "":
                 try:
                     self.manager.ExportAsPDF(path, self.viewStyleSheetFilePath)
-                except:
+                except Exception as e:
+                    print(type(e))
+                    print(e)
                     info = wx.MessageDialog(self, self.savePDFErrorMsg, self.savePDFErrorTitle,
                                      wx.OK | wx.ICON_ERROR)
                     info.ShowModal()
@@ -1623,6 +1627,10 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     def createProgressDialog(self, title, message):
         self.dialog = wx.ProgressDialog(title, message, 1, parent=self.aquariusUploadDialog, style=wx.PD_AUTO_HIDE|wx.PD_APP_MODAL)
+        self.dialog.Pulse()
+    
+    def createProgressDialogPDF(self, title, message):
+        self.dialog = wx.ProgressDialog(title, message, 1, parent=None, style=wx.PD_AUTO_HIDE|wx.PD_APP_MODAL)
         self.dialog.Pulse()
 
     def updateProgressDialog(self, message):

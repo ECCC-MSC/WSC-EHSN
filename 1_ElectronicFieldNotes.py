@@ -314,13 +314,20 @@ class ElectronicHydrometricSurveyNotes:
 
         xml = self.EHSNToXML()
         print(xslPath)
+        
+        self.gui.createProgressDialogPDF('PDF Creation In Progress...', 'Transform XML to HTML string')
+
         # transform = etree.XSLT(etree.parse(xslPath))
         transform = etree.XSLT(etree.parse(xslPath))
         result = transform(etree.fromstring(xml))
 
+        self.gui.updateProgressDialog('Set Logo and QR paths')
+
         # result = str(result).replace("%5C", "\\")
         result = str(result).replace("logo_path", self.gui.logo_path)
         result = result.replace("qr_path", self.gui.qr_path)
+
+        self.gui.updateProgressDialog('Save temporary local HTML file')
 
         # Save html temporarily
         # Set the path to the file, open and write it as utf8, and close the file
@@ -330,6 +337,8 @@ class ElectronicHydrometricSurveyNotes:
         temp_file.write(result)
         temp_file.close()
 
+        self.gui.updateProgressDialog('Converting HTML to PDF file')
+
         print('attempting to create pdf thread')
         # Convert the HTML to PDF in a separate thread
         # https://stackoverflow.com/questions/2846653/how-can-i-use-threading-in-python
@@ -338,9 +347,12 @@ class ElectronicHydrometricSurveyNotes:
         p.join()
         print('finished pdf thread')
 
+        self.gui.updateProgressDialog('Cleaning up')
+
         # Remove the temp file
         os.remove(temp_filename)
 
+        self.gui.deleteProgressDialog()
 
 
 
@@ -362,11 +374,17 @@ class ElectronicHydrometricSurveyNotes:
         if mode == "DEBUG":
             print("Saving PDF")
 
+        self.gui.createProgressDialogPDF('PDF Creation In Progress...', 'Transform XML to HTML string')
+
         transform = etree.XSLT(etree.parse(xslPath))
         result = transform(etree.fromstring(xml))
 
+        self.gui.updateProgressDialog('Set Logo and QR paths')
+
         result = str(result).replace("logo_path", self.gui.logo_path)
         result = result.replace("qr_path", self.gui.qr_path)
+
+        self.gui.updateProgressDialog('Save temporary local HTML file')
 
         # Save html temporarily
         # Set the path to the file, open and write it as utf8, and close the file
@@ -376,6 +394,8 @@ class ElectronicHydrometricSurveyNotes:
         temp_file.write(result)
         temp_file.close()
 
+        self.gui.updateProgressDialog('Converting HTML to PDF file')
+
         print('attempting to create pdf thread')
         # Convert the HTML to PDF in a separate thread
         # https://stackoverflow.com/questions/2846653/how-can-i-use-threading-in-python
@@ -384,8 +404,12 @@ class ElectronicHydrometricSurveyNotes:
         p.join()
         print('finished pdf thread')
 
+        self.gui.updateProgressDialog('Cleaning up')
+
         # Remove the temp file
         os.remove(temp_filename)
+
+        self.gui.deleteProgressDialog()
         
 
 
