@@ -171,7 +171,7 @@
 </xsl:template>
 
 <xsl:template match="EHSN/TitleHeader">
-	
+
 	<table class="noborder" align="center" style="text-align:center; border:none; width:750px">
 		<tbody>
 		<tr class="noborder">
@@ -182,16 +182,7 @@
 					<font size="5">Hydrometric Survey Note </font><font size="2"><xsl:value-of select="../@version"/></font>
 			</td>
 			<td class="noborder" align="right">
-				<H4  style="padding-top:13px" align="right">Data Entered in HWS? 
-					<xsl:choose>
-					<xsl:when test="enteredInHWS='True'">
-						<font size="4">&#x2714;</font>
-					</xsl:when>
-					<xsl:otherwise>
-						<font size="4">&#x2751;</font>
-					</xsl:otherwise>
-					</xsl:choose>
-				</H4>
+				<h1><img src="qr_path" style="margin-left:0px; width:80px;height:80px"></img></h1>
 			</td>
 		</tr>
 	</tbody>
@@ -203,17 +194,32 @@
 	<table style="text-align:center; border:none; width:750px">
 		<tbody>
 			<tr style="border:none;">
-				<td style="border:none; width:50%">
+				<td style="border:none; width:100%">
 					<h2 style="padding-left: 0px;" align="left">Station Number: <u><xsl:value-of select="station/@number"/></u></h2>
 				</td>
-				<td style="border:none; width:20%"/>
-				<td style="border:none; width:30%"> 
-					<h2>Survey Date: <u><xsl:value-of select="date"/> <xsl:value-of select="date/@timezone"/> </u> </h2>
+
+
+				<td style="border:none; width:100%">
+					<H4  style="padding-top:13px" align="right">Data Entered in HWS?
+						<xsl:choose>
+							<xsl:when test="enteredInHWS='True'">
+								<font size="4">&#x2714;</font>
+							</xsl:when>
+							<xsl:otherwise>
+								<font size="4">&#x2751;</font>
+							</xsl:otherwise>
+						</xsl:choose>
+					</H4>
+
 				</td>
 			</tr>
 			<tr style="border:none; height:30px">
-				<td colspan = "3" style="border:none;">
+				<td style="border:none;width:100%">
 					<h2 style="padding-left: 0px;" align="left">Station Name: <u><xsl:value-of select="station"/></u> </h2>
+				</td>
+
+				<td style="border:none; width:100%">
+				<h2 align="right">Survey Date: <u><xsl:value-of select="date"/>-<xsl:value-of select="date/@timezone"/> </u> </h2>
 				</td>
 			</tr>
 		</tbody>
