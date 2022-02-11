@@ -539,6 +539,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.Bind(wx.EVT_MENU, self.OnFileOpen, fopen)
         self.Bind(wx.EVT_MENU, self.OnFileSaveAs, fxml)
         self.Bind(wx.EVT_MENU, self.OnFileSave, fsave)
+        self.Bind(wx.EVT_MENU, self.OnSaveFVPackage, fvpack)
         #self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDF, fpdf)
         self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDFSumm, fpdfs)
         self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDFView, fpdfview)
@@ -599,8 +600,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.IniUploadSavePath()
         self.CreateFrames()
 
-        # Has to come after CreateFrames() otherwise self.attachment.Zip won't be accessable
-        self.Bind(wx.EVT_MENU, self.attachment.Zip, fvpack)
 
 
 
@@ -1255,6 +1254,11 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
         return 1
+
+
+    # Save field visit package
+    def OnSaveFVPackage(self, evt):
+        self.attachment.Zip(None)
 
 
     # Save eHSN as PDF as designated by stylesheet
