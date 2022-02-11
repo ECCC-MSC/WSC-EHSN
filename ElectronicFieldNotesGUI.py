@@ -65,7 +65,7 @@ ID_FILE_NEW = wx.NewId()
 ID_FILE_OPEN = wx.NewId()
 ID_FILE_SAVE = wx.NewId()
 ID_FILE_EXIT = wx.NewId()
-ID_FILE_EXPORT_PDF = wx.NewId()
+#ID_FILE_EXPORT_PDF = wx.NewId()
 ID_FILE_EXPORT_PDF_SUMM = wx.NewId()
 ID_FILE_EXPORT_PDF_VIEW = wx.NewId()
 ID_FILE_EXPORT_XML = wx.NewId()
@@ -193,8 +193,8 @@ class EHSNGui(wx.Frame):
         self.fXmlDesc = 'Save the current eHSN field note as an XML file.'
         self.fSaveLabel = 'Save\tCtrl+S'
         self.fSaveDesc = 'Save the current eHSN field note as an XML file.'
-        self.fPdfLabel = 'Generate PDF - Booklet Type\tCtrl+P'
-        self.fPdfDesc = 'Generate a PDF of the current field note in the same size format as previous paper field notes.'
+        #self.fPdfLabel = 'Generate PDF - Booklet Type\tCtrl+P'
+        #self.fPdfDesc = 'Generate a PDF of the current field note in the same size format as previous paper field notes.'
         self.fPdfsLabel = "Generate PDF - Front Page Only"
         self.fPdfsDesc = "Generate a PDF of the front page of the current field note(good for providing to partners and clients)."
         self.fPdfvLabel = "Generate PDF - Complete Note on Full Page"
@@ -454,9 +454,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         fileMenu.AppendSeparator()
         fvpack = fileMenu.Append(ID_FV_PACKAGE, self.FVpackLabel, self.FVpackDesc)
         fileMenu.AppendSeparator()
-        fpdf = fileMenu.Append(ID_FILE_EXPORT_PDF, self.fPdfLabel, self.fPdfDesc)
+        #fpdf = fileMenu.Append(ID_FILE_EXPORT_PDF, self.fPdfLabel, self.fPdfDesc)
         fpdfs = fileMenu.Append(ID_FILE_EXPORT_PDF_SUMM, self.fPdfsLabel, self.fPdfsDesc)
-        fileMenu.AppendSeparator()
+        #fileMenu.AppendSeparator()
         fpdfview = fileMenu.Append(ID_FILE_EXPORT_PDF_VIEW, self.fPdfvLabel, self.fPdfvDesc)
         fileMenu.AppendSeparator()
         faqu = fileMenu.Append(ID_FILE_EXPORT_AQUARIUS, self.fAquLabel, self.fAquDesc)
@@ -539,7 +539,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.Bind(wx.EVT_MENU, self.OnFileOpen, fopen)
         self.Bind(wx.EVT_MENU, self.OnFileSaveAs, fxml)
         self.Bind(wx.EVT_MENU, self.OnFileSave, fsave)
-        self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDF, fpdf)
+        #self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDF, fpdf)
         self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDFSumm, fpdfs)
         self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDFView, fpdfview)
         self.Bind(wx.EVT_MENU, self.OnAquariusUpload, faqu)
