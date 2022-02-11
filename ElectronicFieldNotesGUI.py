@@ -2366,11 +2366,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
     def CreateQR(self):
-        manager = self.manager
-        code = "MATMSG:TO:dummy@dummy.com;SUB: Field visit for: " + manager.genInfoManager.datePicker + ";BODY: <?xml version="'"1.0"'"?><?xml-stylesheet type="'"text/xsl"'" href="'"WSC_EHSN.xsml"'"?><EHSN version="'"v1.2.1.1"'"><TitleHeader><enteredInHWS>False</enteredInHWS></TitleHeader><GenInfo><station number="'"08OA003"'">PREMIER CREEK NEAR QUEEN CHARLOTTE</station><date>timezone="'"PST"'">2016/05/09</date></GenInfo><StageMeas><HgCkbox>True</HgCkbox><Hg2Ckbox>False</Hg2Ckbox><Wlr1Ckbox>False</Wlr1Ckbox><Wlr2Ckbox>False</Wlr2Ckbox><HG1Header/><HG2Header/><WL1Header/><WL2Header/><StageMeasTable><StageMeasRow row="'"0"'"><time>15:23</time><HG1>12.000</HG1><HG2/><WL1/><WL2/><SRC/><SRCApp/><MghCkbox>True</MghCkbox></StageMeasRow></StageMeasTable><hgCkbox>True</hgCkbox><hg2Ckbox>False</hg2Ckbox><wlr1Ckbox>False</wlr1Ckbox><wlr2Ckbox>False</wlr2Ckbox><MGHHG1>12.0</MGHHG1><MGHHG2/><MGHWL1/><MGHWL2/><SRCHG1>0.000</SRCHG1><SRCHG2/><GCHG1>0.000</GCHG1><GCHG2/><GCWL1/><GCWL2/><CMGHHG1>12.0</CMGHHG1><CMGHHG2/><CMGHWL1/><CMGHWL2/><MghMethod>Average</MghMethod><Factors/></StageMeas><DisMeas><startTime>15:44</startTime><endTime>04:00</endTime><airTemp/><waterTemp/><width/><area/><meanVel/><mgh/><mghCmbo/><discharge>12.0</discharge><mmtTimeVal>21:52</mmtTimeVal><shift>3</shift><diff>3</diff><curve>3</curve></DisMeas><PartyInfo><party/><completed/><checked/><reviewed>True</reviewed></PartyInfo></EHSN>;;"
-
-        self.img = qrcode.make(code)
-        self.img.save(self.qr_path, "jpeg")
+        link = "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=" + str(self.manager.genInfoManager.stnNumCmbo)
+        self.img = qrcode.make(link)
+        self.img.save(self.qr_path)
 
 
     #Import any external file from the menu list
