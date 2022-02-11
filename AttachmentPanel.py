@@ -186,14 +186,14 @@ class AttachmentPanel(wx.Panel):
         date = self.parent.genInfo.datePicker.GetValue().Format(self.fm)
 
         Tag = stnNum + "_" + date + "_FV"
-        filePath = self.parent.dir + "\\" + Tag
+        filePath = "c:\\temp\\eHSN\\"
         boxList = [self.attachBox1, self.attachBox2, self.attachBox3, self.attachBox4, self.attachBox5, self.attachBox6, self.attachBox7]
         pathList = []
         for box in boxList:
             pathList.append(box.returnPath())
 
-        pdfPath = filePath + ".pdf"
-        xmlPath = filePath + ".xml"
+        pdfPath = os.path.join(filePath, Tag+".pdf")
+        xmlPath = os.path.join(filePath, Tag+".xml")
 
         for pathGroup in pathList:
             for path in pathGroup:
@@ -375,6 +375,11 @@ class AttachmentPanel(wx.Panel):
         except:
             info = wx.MessageDialog(None, self.errorMessage, self.errorTitle, wx.OK)
             info.ShowModal()
+        
+        if os.path.exists(pdfPath):
+            os.remove(pdfPath)
+        if os.path.exists(xmlPath):
+            os.remove(xmlPath)
 
 def main():
     app = wx.App()
