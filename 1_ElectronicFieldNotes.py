@@ -59,63 +59,7 @@ import shutil
 from zipfile import ZipFile
 import importlib
 
-# Used to create the pdf
-from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets
-import multiprocessing.popen_spawn_win32 as forking
-
-
-# Needed to allow multiprocessing from within exe
-# https://stackoverflow.com/questions/24944558/pyinstaller-built-windows-exe-fails-with-multiprocessing
-class _Popen(forking.Popen):
-    def __init__(self, *args, **kw):
-        if hasattr(sys, 'frozen'):
-            # We have to set original _MEIPASS2 value from sys._MEIPASS
-            # to get --onefile mode working.
-            os.putenv('_MEIPASS2', sys._MEIPASS)
-        try:
-            super(_Popen, self).__init__(*args, **kw)
-        finally:
-            if hasattr(sys, 'frozen'):
-                # On some platforms (e.g. AIX) 'os.unsetenv()' is not
-                # available. In those cases we cannot delete the variable
-                # but only set it to the empty string. The bootloader
-                # can handle this case.
-                if hasattr(os, 'unsetenv'):
-                    os.unsetenv('_MEIPASS2')
-                else:
-                    os.putenv('_MEIPASS2', '')
-
-# Needed to allow multiprocessing from within exe
-# https://stackoverflow.com/questions/24944558/pyinstaller-built-windows-exe-fails-with-multiprocessing
-class Process(multiprocessing.Process):
-    _Popen = _Popen
-
-
-
-
-
-# Create the PDF from HTML using PyQt5
-# Taken and modified from https://stackoverflow.com/questions/63382399/how-to-convert-a-local-html-file-to-pdf-using-pyqt5
-def html_to_pdf(html, pdf):
-
-    dummy_app_for_pdf = QtWidgets.QApplication(sys.argv)
-    dummy_page_for_pdf = QtWebEngineWidgets.QWebEnginePage()
-
-    def handle_print_finished(filename, status):
-        print("finished", filename, status)
-        QtWidgets.QApplication.quit()
-
-    def handle_load_finished(status):
-        if status:
-            dummy_page_for_pdf.printToPdf(pdf)
-        else:
-            print("Failed")
-            QtWidgets.QApplication.quit()
-
-    dummy_page_for_pdf.pdfPrintingFinished.connect(handle_print_finished)
-    dummy_page_for_pdf.loadFinished.connect(handle_load_finished)
-    dummy_page_for_pdf.load(QtCore.QUrl.fromLocalFile(html))
-    dummy_app_for_pdf.exec_()
+from xhtml2pdf import pisa 
 
 
 
@@ -327,31 +271,19 @@ class ElectronicHydrometricSurveyNotes:
         result = str(result).replace("logo_path", self.gui.logo_path)
         result = result.replace("qr_path", self.gui.qr_path)
 
-        self.gui.updateProgressDialog('Save temporary local HTML file')
-
-        # Save html temporarily
-        # Set the path to the file, open and write it as utf8, and close the file
-        temp_folder = "c:\\temp\\eHSN\\"
-        temp_filename = os.path.join(temp_folder, "temp_file_to_be_deleted.html")
-        temp_file = open(temp_filename,"w",encoding='utf-8')
-        temp_file.write(result)
-        temp_file.close()
-
         self.gui.updateProgressDialog('Converting HTML to PDF file')
 
-        print('attempting to create pdf thread')
-        # Convert the HTML to PDF in a separate thread
-        # https://stackoverflow.com/questions/2846653/how-can-i-use-threading-in-python
-        p = Process(target=html_to_pdf, args=(temp_filename,filePath))
-        p.start()
-        p.join()
-        print('finished pdf thread')
+        # open output file for writing (truncated binary)
+        resultFile = open(filePath, "w+b")
 
-        self.gui.updateProgressDialog('Cleaning up')
+        # convert HTML to PDF
+        pisa.CreatePDF(
+                src=result,                # the HTML to convert
+                dest=resultFile, show_error_as_pdf = True)           # file handle to receive result
 
-        # Remove the temp file
-        os.remove(temp_filename)
+        resultFile.close()
 
+        self.gui.updateProgressDialog('Successfully created PDF file')
         self.gui.deleteProgressDialog()
 
 
@@ -384,31 +316,19 @@ class ElectronicHydrometricSurveyNotes:
         result = str(result).replace("logo_path", self.gui.logo_path)
         result = result.replace("qr_path", self.gui.qr_path)
 
-        self.gui.updateProgressDialog('Save temporary local HTML file')
-
-        # Save html temporarily
-        # Set the path to the file, open and write it as utf8, and close the file
-        temp_folder = "c:\\temp\\eHSN\\"
-        temp_filename = os.path.join(temp_folder, "temp_file_to_be_deleted.html")
-        temp_file = open(temp_filename,"w",encoding='utf-8')
-        temp_file.write(result)
-        temp_file.close()
-
         self.gui.updateProgressDialog('Converting HTML to PDF file')
 
-        print('attempting to create pdf thread')
-        # Convert the HTML to PDF in a separate thread
-        # https://stackoverflow.com/questions/2846653/how-can-i-use-threading-in-python
-        p = Process(target=html_to_pdf, args=(temp_filename,filePath))
-        p.start()
-        p.join()
-        print('finished pdf thread')
+        # open output file for writing (truncated binary)
+        resultFile = open(filePath, "w+b")
 
-        self.gui.updateProgressDialog('Cleaning up')
+        # convert HTML to PDF
+        pisa.CreatePDF(
+                src=result,                # the HTML to convert
+                dest=resultFile, show_error_as_pdf = True)           # file handle to receive result
 
-        # Remove the temp file
-        os.remove(temp_filename)
+        resultFile.close()
 
+        self.gui.updateProgressDialog('Successfully created PDF file')
         self.gui.deleteProgressDialog()
         
 
@@ -1699,9 +1619,4 @@ def main():
 
 
 if __name__=='__main__':
-
-    # Needed to allow multiprocessing from within exe
-    # https://stackoverflow.com/questions/24944558/pyinstaller-built-windows-exe-fails-with-multiprocessing
-    multiprocessing.freeze_support()
-
     main()
