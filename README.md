@@ -16,13 +16,10 @@ lxml (version 4.7.1)
 suds-jurko (version 0.6)  
 XlsxWriter (version 3.0.2)  
 pywin32 (version 303)  
-reportlab (version 3.6.5)  
-PyQt5 (version 5.15.6)  
-PyQtWebEngine (version 5.15.5)  
+xhtml2pdf (version 0.2.5)  
 
 See requirements.txt for full package list.  
 Note: An older version of wxPython (4.0.7) is required as later versions cause an error related to unknown locales.  
-Note: The most up-to-date version of pip (22.0.2 or higher) is required to download PyQt5 sucessfully.
 
 # EXCLUDED FILES
 
@@ -40,16 +37,12 @@ Once the environment is created, the file 1_ElectronicFieldNotes.py runs the pro
 
 We use pyinstaller but of course you can use whatever you like.
 
-If using pyinstaller, navigate to your local clone of WSC-EHSN and use the command:   
-pyinstaller 1_ElectronicFieldNotes.py  
+If using pyinstaller to create a testing exe, navigate to your local clone of WSC-EHSN and use the command:   
+pyinstaller create_ehsn_exe.spec  
 
-Move the image files:  
-"downarrow.png"  
-"backarrow.png"  
-"icon_transparent.ico"   
-into the "1_ElectronicFieldNotes" folder (found in the newly created "dist" folder)
+This will create a single executable in the "dist" folder called WSC_eHSN_Python_test.exe with all required files included.  
 
-You can now run the program using 1_ElectronicFieldNotes.exe
+
 # MANUAL
 
 User manual is available upon request.
