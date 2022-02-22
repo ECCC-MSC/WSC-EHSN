@@ -457,12 +457,10 @@ class MidSectionHeader(wx.Panel):
                 isIncreasing = False
 
 
-        width, height = wx.GetDisplaySize()
-
-        fig, self.ax = plt.subplots(2, facecolor="white", sharex=True, figsize=(width/80*0.8,height/80*0.8))
+        fig, self.ax = plt.subplots(2, facecolor="white", sharex=True)
         velo = self.ax[0].twinx()
 
-        
+        self.ax[0].tick_params(labelbottom=True)
 
         for tk in self.ax[0].get_xticklabels():
             tk.set_visible(True)
@@ -495,10 +493,10 @@ class MidSectionHeader(wx.Panel):
 
 
             if panelObjs[i].flow!="":
-                flowList.append(panelObjs[i].flow)
+                flowList.append(float(panelObjs[i].flow))
                 flowTagList.append(float(panelObjs[i].distance))
             if panelObjs[i].corrMeanVelocity!="":
-                veloList.append(panelObjs[i].corrMeanVelocity)
+                veloList.append(float(panelObjs[i].corrMeanVelocity))
                 veloTagList.append(float(panelObjs[i].distance))
             if isinstance(panelObjs[i], PanelObj):
                 if panelObjs[i].panelCondition == "Open" and panelObjs[i].openDepthRead != "":
@@ -648,7 +646,7 @@ class MidSectionHeader(wx.Panel):
         # observation points for panel
         for tagmark, depthObs in zip(panelTagmarkList, depthObsList):
             for point in depthObs:
-                lns6, = self.ax[1].plot(tagmark, point, "ro", marker="s", label="Obsevation Points")
+                lns6, = self.ax[1].plot(float(tagmark), float(point), "r", marker="s", label="Obsevation Points")
         # Lines
         if isIncreasing:
             
