@@ -152,8 +152,11 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         
         self.establishList.append(MyTextCtrl(self, style= wx.TE_CENTRE))
         self.establishList[-1].Enable(False)
+        self.establishList[-1].Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.establishList[-1].Bind(wx.EVT_TEXT, self.establishUpdate)
         self.establishList[-1].Bind(wx.EVT_TEXT, self.OnEstablish)
+        self.establishList[-1].Bind(wx.EVT_KILL_FOCUS, self.OnKillFocus)
+        self.establishList[-1].Bind(wx.EVT_KILL_FOCUS, self.estRound3)
         
         self.establishSizer[-1].Add(self.establishCheckList[-1], 0, wx.EXPAND|wx.ALL, 3)
         self.establishSizer[-1].Add(self.establishList[-1], 1, wx.EXPAND)
@@ -599,6 +602,10 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
     def eleRound3(self, event):
         NumberControl.Round3(event)
         self.elevatedUpdate(event)
+    
+    def estRound3(self, event):
+        NumberControl.Round3(event)
+        self.establishUpdate(event)
 
     #On check elevation check box do uncheck establish check box
     def OnElevationCkbox(self, event):
