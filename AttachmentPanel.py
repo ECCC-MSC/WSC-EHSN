@@ -319,7 +319,7 @@ class AttachmentPanel(wx.Panel):
 
         try:
             zipfile = ZipFile(zipPath + "\\" + Tag + '.zip', 'w')
-            zipfile.write(ntpath.basename(pdfPath), Tag + "\\" + ntpath.basename(pdfPath))
+            zipfile.write(pdfPath, Tag + "\\" + ntpath.basename(pdfPath))
             zipfile.write(xmlPath, ntpath.basename(xmlPath))
     
             for path in loggerDownload:
