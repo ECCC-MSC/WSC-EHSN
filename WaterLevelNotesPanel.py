@@ -230,7 +230,7 @@ class WaterLevelNotesPanel(wx.Panel):
                         pairEle = self.panel.elevatedList[i].GetValue()
                         try:
                             pairEle = float(pairEle)
-                            closureValue = round(startElevation - pairEle, 3)
+                            closureValue = round(pairEle - startElevation, 3)
                             self.closureCtrl.SetValue(str(closureValue))
                             if abs(closureValue) > 0.003:
                                 self.closureCtrl.SetBackgroundColour("red")
