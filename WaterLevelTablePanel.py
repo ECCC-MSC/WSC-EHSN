@@ -254,7 +254,7 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
 
     def stationUpdate(self, evt):
         id = self.stationList.index(evt.GetEventObject())
-        if evt.GetEventObject().GetValue() in self.stationType:
+        if len(evt.GetEventObject().GetValue()) > 0:
             self.rowUnlock(id)
         self.circuit[id][0] = evt.GetEventObject().GetValue()
         self.FindMatch()
