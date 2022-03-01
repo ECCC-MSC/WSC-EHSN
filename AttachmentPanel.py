@@ -339,13 +339,13 @@ class AttachmentPanel(wx.Panel):
                 if valid(folder):
                     count += 1
                     for file in os.listdir(folder):
-                        zipfile.write(folder + "\\" + file, Tag + "\\" + Tag + "_M" + str(count) + "\\" + file)
+                        zipfile.write(folder + "\\" + file, Tag + "\\" + stnNum + "_" + date + "_M" + str(count) + "\\" + file)
             count = 0
             for folder in loggerFolder:
                 if valid(folder):
                     count += 1
                     for file in os.listdir(folder):
-                        zipfile.write(folder + "\\" + file, Tag + "\\" + Tag + "_LG" + str(count) + "\\" + file)
+                        zipfile.write(folder + "\\" + file, Tag + "\\" + stnNum + "_" + date + "_LG" + str(count) + "\\" + file)
             for path in SIT:
                 if valid(path):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
@@ -372,7 +372,9 @@ class AttachmentPanel(wx.Panel):
             info = wx.MessageDialog(None, self.successMessage + "The field visit package: " + Tag + " was successfully created and saved here: " + zipPath, self.successTitle, wx.OK)
             self.zipPath = zipPath + "\\" + Tag + '.zip'
             info.ShowModal()
-        except:
+        except Exception as e:
+            print(type(e))
+            print(e)
             info = wx.MessageDialog(None, self.errorMessage, self.errorTitle, wx.OK)
             info.ShowModal()
         
