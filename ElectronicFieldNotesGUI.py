@@ -899,7 +899,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.LoadDefaultConfig()
         self.manager.BindAutoSave()
         self.manager.stageMeasManager.AddEntry()
-        self.manager.waterLevelRunManager.AddRun()
         # 6 Entries
         for i in range(9):
             self.manager.movingBoatMeasurementsManager.AddEntry()
