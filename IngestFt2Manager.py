@@ -184,7 +184,8 @@ def AddDischargeDetail(filePath, instrDepManager):
         instrDepManager.serialCmbo = serial
         instrDepManager.GetSerialCmbo().SetBackgroundColour(color)
     if numberOfPanels is not None and numberOfPanels != "":
-        instrDepManager.numOfPanelsScroll = str(numberOfPanels)
+        # Two panels are subtracted as the edges do not need to be considered
+        instrDepManager.numOfPanelsScroll = str(numberOfPanels-2)
         instrDepManager.GetNumOfPanelsScroll().SetBackgroundColour(color)
 
     instrDepManager.instrumentCmbo = "ADV"
@@ -193,9 +194,10 @@ def AddDischargeDetail(filePath, instrDepManager):
     instrDepManager.GetDeploymentCmbo().SetBackgroundColour(color)
     instrDepManager.manufactureCmbo = "SonTek"
     instrDepManager.GetManufactureCmbo().SetBackgroundColour(color)
-    instrDepManager.modelCmbo = "FlowTracker"
+    instrDepManager.modelCmbo = "FlowTracker2"
     instrDepManager.GetModelCmbo().SetBackgroundColour(color)
-
+    instrDepManager.frequencyCmbo = "10000"
+    instrDepManager.GetFrequencyCmbo().SetBackgroundColour(color)
 
 
 # a= GetData("C:\\eHSN\\eHSN_Version_1_2_4_ReleasedVersion_Ingest\\FT2_02KF013_20170328\\02KF013_20170328\\DataFile.json")
