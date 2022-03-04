@@ -262,11 +262,17 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
 
 
     def hourUpdate(self, evt):
+        hours = evt.GetEventObject().parent.GenerateHours()
+        if evt.GetEventObject().GetValue() not in hours:
+            evt.GetEventObject().SetValue('')
         id = self.timeList.index(evt.GetEventObject().parent)
         self.circuit[id][1] = evt.GetEventObject().GetValue()
         evt.Skip()
 
     def minuteUpdate(self, evt):
+        minutes = evt.GetEventObject().parent.GenerateMinutes()
+        if evt.GetEventObject().GetValue() not in minutes:
+            evt.GetEventObject().SetValue('')
         id = self.timeList.index(evt.GetEventObject().parent)
         self.circuit[id][2] = evt.GetEventObject().GetValue()
         evt.Skip()
