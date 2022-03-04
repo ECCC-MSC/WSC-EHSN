@@ -625,6 +625,17 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
             self.circuit[id][7] = self.eleCheckList[id].GetValue()
         event.Skip()
 
+    # Uncheck a given establish check box
+    def clearEstablishCkbox(self, id):
+        if self.establishCheckList[id].IsChecked():
+            self.establishCheckList[id].SetValue(False)
+            self.circuit[id][9] = self.establishCheckList[id].GetValue()
+    
+    # Uncheck a given elevation check box
+    def clearElevationCkbox(self, id):
+        if self.eleCheckList[id].IsChecked():
+            self.eleCheckList[id].SetValue(False)
+            self.circuit[id][7] = self.eleCheckList[id].GetValue()
 
 def main():
     app = wx.App()
