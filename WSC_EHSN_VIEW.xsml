@@ -114,14 +114,6 @@
 
 					<xsl:apply-templates select="EHSN/LevelNotes"/>
 
-
-
-
-					<xsl:apply-templates select="EHSN/FieldReview"/>
-
-
-
-
 					<xsl:if test="EHSN/MovingBoatMeas/@empty='False' or EHSN/MidsecMeas/@empty='False'">
 
 						<xsl:if test="EHSN/MovingBoatMeas/@empty='False' and EHSN/InstrumentDeployment/GeneralInfo/methodType='ADCP by Moving Boat'">
@@ -136,6 +128,7 @@
 						<xsl:apply-templates select="EHSN/AQ_Upload_Record"/>
 					</xsl:if>
 					</xsl:if>
+					<xsl:apply-templates select="EHSN/FieldReview"/>
 				    <xsl:apply-templates select="EHSN/Attachments"/>
 
 
@@ -303,11 +296,11 @@
 						<td align="center"><b>WL2 Reference (m):</b><xsl:value-of select="WL2Header"/>
 
 						</td>
-						<th>Surge (+/- m)</th>
 						<th>Sensor Reset Correction</th>
 						<th><font>Action Taken</font></th>
 						<th>Reading Type</th>
 						<th>M.G.H. Aggr.</th>
+						<th>Surge (+/- m)</th>
 					</tr>
 					<xsl:for-each select="StageMeasTable/StageMeasRow">
 						<tr>
@@ -316,7 +309,6 @@
 							<td  align="center"><font color="black"><xsl:value-of select="HG2"/></font></td>
 							<td  align="center"><font color="black"><xsl:value-of select="WL1"/></font></td>
 							<td  align="center"><font color="black"><xsl:value-of select="WL2"/></font></td>
-							<td  align="center"><font color="black"><xsl:value-of select="Surge"/></font></td>
 							<td  align="center"><font color="blue"><xsl:value-of select="SRC"/></font></td>
 							<td align="center"><font color="black">
 								<xsl:choose>
@@ -356,6 +348,7 @@
 									<xsl:otherwise><font size="4">&#x2751;</font></xsl:otherwise>
 								</xsl:choose>
 							</td>
+							<td  align="center"><font color="black"><xsl:value-of select="Surge"/></font></td>
 						</tr>
 					</xsl:for-each>
 					<tr>
@@ -1758,27 +1751,6 @@
 	</table>
 
 </xsl:template>
-
-
-<xsl:template match="EHSN/AQ_Upload_Record">
-	<h2>AQUARIUS Upload Record</h2>
-	<table style="width:750px">
-		<tr>
-			<th>Status</th>
-			<th>Datetime</th>
-			<th>User</th>
-		</tr>
-		<xsl:for-each select="record">
-			<tr>
-				<td><font color="black"><xsl:value-of select="status"/></font></td>
-				<td><font color="black"><xsl:value-of select="time"/></font></td>
-				<td><font color="black"><xsl:value-of select="user"/></font></td>
-			</tr>
-		</xsl:for-each>
-	</table>
-</xsl:template>
-
-
 
 
 <xsl:template match="EHSN/AQ_Upload_Record">
