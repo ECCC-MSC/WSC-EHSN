@@ -798,7 +798,7 @@
 
 <xsl:template match="EHSN/InstrumentDeployment/ADCPInfo">
 <br/>
-		<table style="height: 92px;" width="750">
+		<table>
 
 		<tr>
 			<td colspan = "6"><b>Config: </b>
@@ -1031,17 +1031,17 @@
 		</tr>
 		<xsl:for-each select="LevelChecks/LevelChecksSummaryTable/SummaryTableRow">
 			<tr>
-				<td><xsl:value-of select="time"/></td>
-				<td><xsl:value-of select="reference"/></td>
-				<td><xsl:value-of select="waterLevel"/></td>
-				<td><xsl:value-of select="dist"/></td>
+				<td><font color="black"><xsl:value-of select="time"/></font></td>
+				<td><font color="black"><xsl:value-of select="reference"/></font></td>
+				<td><font color="black"><xsl:value-of select="waterLevel"/></font></td>
+				<td><font color="black"><xsl:value-of select="dist"/></font></td>
 				<td><font color="blue"><xsl:value-of select="wlElev"/></font></td>
-				<td><xsl:value-of select="datum"/></td>
+				<td><font color="black"><xsl:value-of select="datum"/></font></td>
 				<td><font color="blue"><xsl:value-of select="cwl"/></font></td>
-				<td><xsl:value-of select="loggerReading"/></td>
-				<td><xsl:value-of select="loggerReading2"/></td>
-				<td align="left"><xsl:value-of select="surge"/></td>
-				<td align="left"><xsl:value-of select="Comment"/></td>
+				<td><font color="black"><xsl:value-of select="loggerReading"/></font></td>
+				<td><font color="black"><xsl:value-of select="loggerReading2"/></font></td>
+				<td align="left"><font color="black"><xsl:value-of select="surge"/></font></td>
+				<td align="left"><font color="black"><xsl:value-of select="Comment"/></font></td>
 			</tr>
 		</xsl:for-each>
 		</tbody>
@@ -1209,14 +1209,14 @@
 	<table style="width:750px">
 		<tbody>
 		<tr>
-			<th width="60">Selected</th>
-			<th width="60">Transect ID</th>
-			<th width="50">Bank*</th>
-			<th>Start Time*</th>
-			<th>Start Distance (m)*</th>
-			<th>End Distance (m)*</th>
-			<th>Discharge (m<sup>3</sup>/s)</th>
-			<th width="350">Remarks</th>
+			<th width="66px">Selected</th>
+			<th width="66px">Transect ID</th>
+			<th width="55.5px">Bank*</th>
+			<th width="65px">Start Time*</th>
+			<th width="75px">Start Distance (m)*</th>
+			<th width="75px">End Distance (m)*</th>
+			<th width="78px">Discharge (m<sup>3</sup>/s)</th>
+			<th width="269.5px">Remarks</th>
 		</tr>
 
 
@@ -1234,13 +1234,13 @@
 
 				</td>
 
-				<td><xsl:value-of select="transectID"/></td>
-				<td><xsl:value-of select="startBank"/></td>
-				<td><xsl:value-of select="startTime"/></td>
-				<td><xsl:value-of select="startDistance"/></td>
-				<td><xsl:value-of select="endDistance"/></td>
-				<td><xsl:value-of select="rawDischarge"/></td>
-				<td align="left"><xsl:value-of select="remarks"/></td>
+				<td><font color="black"><xsl:value-of select="transectID"/></font></td>
+				<td><font color="black"><xsl:value-of select="startBank"/></font></td>
+				<td><font color="black"><xsl:value-of select="startTime"/></font></td>
+				<td><font color="black"><xsl:value-of select="startDistance"/></font></td>
+				<td><font color="black"><xsl:value-of select="endDistance"/></font></td>
+				<td><font color="black"><xsl:value-of select="rawDischarge"/></font></td>
+				<td align="left"><font color="black"><xsl:value-of select="remarks"/></font></td>
 			</tr>
 		</xsl:for-each>
 		</tbody>
@@ -1289,17 +1289,17 @@
 					<tr class="noborder" align="left">
 						<td class="noborder" align="left" style="width:170px" colspan='2'>Mmt Start Time: </td>
 						<!-- <td class="noborder" align="left" style="width:70px"><xsl:value-of select="substring(DischargeMeasurement/MmtInitAndSummary/MmtSummary/StartDate, 12, 8)"/></td> -->
-						<td class="noborder" align="left" style="width:70px"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MmtSummary/StartDate"/></td>
+						<td class="noborder" align="left" style="width:70px"><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MmtSummary/StartDate"/></font></td>
 						<td class="noborder" align="left" style="width:170px" colspan='2'>Mmt End Time: </td>
 						<!-- <td class="noborder" align="left" style="width:70px"><xsl:value-of select="substring(DischargeMeasurement/MmtInitAndSummary/MmtSummary/EndDate, 12, 8)"/></td> -->
-						<td class="noborder" align="left" style="width:70px"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MmtSummary/EndDate"/></td>
+						<td class="noborder" align="left" style="width:70px"><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MmtSummary/EndDate"/></font></td>
 
 					</tr>
 					<tr class="noborder" align="left">
 						<td class="noborder" align="left" colspan='2'>Measurement Section: </td>
-						<td class="noborder" align="left"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MmtInit/measureSectionCtrl"/></td>
+						<td class="noborder" align="left"><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MmtInit/measureSectionCtrl"/></font></td>
 						<td class="noborder" align="left" colspan='2'>Deployment Method: </td>
-						<td class="noborder" align="left"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MmtInit/DeploymentMethod"/></td>
+						<td class="noborder" align="left"><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MmtInit/DeploymentMethod"/></font></td>
 
 					</tr>
 					<tr class="noborder" align="left">
@@ -1328,20 +1328,20 @@
 						<th>Calibration Date</th>
 					</tr>
 					<tr>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/Number"/></td>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/Equation[1]/Slope"/></td>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/Equation[1]/Intercept"/></td>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/Equation[2]/Slope"/></td>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/Equation[2]/Intercept"/></td>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/MeterCalibDate"/></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/Number"/></font></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/Equation[1]/Slope"/></font></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/Equation[1]/Intercept"/></font></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/Equation[2]/Slope"/></font></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/Equation[2]/Intercept"/></font></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[1]/MeterCalibDate"/></font></td>
 					</tr>
 					<tr>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/Number"/></td>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/Equation[1]/Slope"/></td>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/Equation[1]/Intercept"/></td>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/Equation[2]/Slope"/></td>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/Equation[2]/Intercept"/></td>
-						<td><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/MeterCalibDate"/></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/Number"/></font></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/Equation[1]/Slope"/></font></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/Equation[1]/Intercept"/></font></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/Equation[2]/Slope"/></font></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/Equation[2]/Intercept"/></font></td>
+						<td><font color="black"><xsl:value-of select="DischargeMeasurement/MmtInitAndSummary/MetersUsed/Meter[2]/MeterCalibDate"/></font></td>
 					</tr>
 
 				</table>
@@ -1421,21 +1421,21 @@
 				</xsl:choose>
 
 
-				<td><xsl:value-of select="Edges/Edge[1]/Tagmark"/></td>
-				<td><xsl:value-of select="Edges/Edge[1]/Width"/></td>
-				<td><xsl:value-of select="Edges/Edge[1]/Depth"/></td>
-				<td></td>
-				<td><xsl:value-of select="Edges/Edge[1]/Depth"/></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td></td>
-				<td><xsl:value-of select="Edges/Edge[1]/Velocity"/></td>
-				<td><xsl:value-of select="format-number(Edges/Edge[1]/Width * Edges/Edge[1]/Depth, '0.000')"/></td>
-				<td><xsl:value-of select="format-number(Edges/Edge[1]/Width * Edges/Edge[1]/Depth * Edges/Edge[1]/Velocity, '0.000')"/></td>
-				<td><xsl:value-of select="Edges/Edge[1]/Flow"/></td>
+				<td><font color="black"><xsl:value-of select="Edges/Edge[1]/Tagmark"/></font></td>
+				<td><font color="black"><xsl:value-of select="Edges/Edge[1]/Width"/></font></td>
+				<td><font color="black"><xsl:value-of select="Edges/Edge[1]/Depth"/></font></td>
+				<td><font color="black"></font></td>
+				<td><font color="black"><xsl:value-of select="Edges/Edge[1]/Depth"/></font></td>
+				<td><font color="black"></font></td>
+				<td><font color="black"></font></td>
+				<td><font color="black"></font></td>
+				<td><font color="black"></font></td>
+				<td><font color="black"></font></td>
+				<td><font color="black"></font></td>
+				<td><font color="black"><xsl:value-of select="Edges/Edge[1]/Velocity"/></font></td>
+				<td><font color="black"><xsl:value-of select="format-number(Edges/Edge[1]/Width * Edges/Edge[1]/Depth, '0.000')"/></font></td>
+				<td><font color="black"><xsl:value-of select="format-number(Edges/Edge[1]/Width * Edges/Edge[1]/Depth * Edges/Edge[1]/Velocity, '0.000')"/></font></td>
+				<td><font color="black"><xsl:value-of select="Edges/Edge[1]/Flow"/></font></td>
 
 
 
@@ -1444,17 +1444,17 @@
 				
 			<xsl:for-each select="Panels/Panel">
 				<tr class="noborder" align="left">
-					<td><xsl:value-of select="PanelNum"/></td>
-					<td><xsl:value-of select="Tagmark"/></td>
-					<td><xsl:value-of select="Width"/></td>
-					<td><xsl:value-of select="DepthReading"/></td>
+					<td><font color="black"><xsl:value-of select="PanelNum"/></font></td>
+					<td><font color="black"><xsl:value-of select="Tagmark"/></font></td>
+					<td><font color="black"><xsl:value-of select="Width"/></font></td>
+					<td><font color="black"><xsl:value-of select="DepthReading"/></font></td>
 
 					<xsl:choose>
 						<xsl:when test="IceCovered">
-							<td><xsl:value-of select="IceCovered/WaterSurfaceToBottomOfIce"/></td>
+							<td><font color="black"><xsl:value-of select="IceCovered/WaterSurfaceToBottomOfIce"/></font></td>
 						</xsl:when>
 						<xsl:otherwise>
-							<td></td>
+							<td><font color="black"></font></td>
 						</xsl:otherwise>
 					</xsl:choose>
 
@@ -1464,20 +1464,20 @@
 
 					<xsl:choose>
 						<xsl:when test="Open">
-							<td><xsl:value-of select="Open/TotalDepth"/></td>
+							<td><font color="black"><xsl:value-of select="Open/TotalDepth"/></font></td>
 						</xsl:when>
 						<xsl:otherwise>
-							<td><xsl:value-of select="IceCovered/EffectiveDepth"/></td>
+							<td><font color="black"><xsl:value-of select="IceCovered/EffectiveDepth"/></font></td>
 						</xsl:otherwise>
 					</xsl:choose>
 
 					<xsl:choose>
 						<xsl:when test="PointMeasurements/PointMeasurement[1]">
 
-						<td><xsl:value-of select="PointMeasurements/PointMeasurement[1]/MeasurementDepth"/></td>
-						<td><xsl:value-of select="PointMeasurements/PointMeasurement[1]/Revolutions"/></td>
-						<td><xsl:value-of select="PointMeasurements/PointMeasurement[1]/ElapsedTime"/></td>
-						<td><xsl:value-of select="PointMeasurements/PointMeasurement[1]/Velocity"/></td>
+						<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[1]/MeasurementDepth"/></font></td>
+						<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[1]/Revolutions"/></font></td>
+						<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[1]/ElapsedTime"/></font></td>
+						<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[1]/Velocity"/></font></td>
 
 
 						</xsl:when>
@@ -1486,65 +1486,65 @@
 
 
 
-					<td><xsl:value-of select="PointMeasurements/PointMeasurement/VelocityCoefficient"/></td>
-					<td><xsl:value-of select="AngleOfFlowCoefficient"/></td>
-					<td><xsl:value-of select="AverageVelocity"/></td>
+					<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement/VelocityCoefficient"/></font></td>
+					<td><font color="black"><xsl:value-of select="AngleOfFlowCoefficient"/></font></td>
+					<td><font color="black"><xsl:value-of select="AverageVelocity"/></font></td>
 					<xsl:choose>
 						<xsl:when test="Open">
-							<td><xsl:value-of select="format-number(Width * Open/TotalDepth, '0.000')"/></td>
-							<td><xsl:value-of select="format-number(Width * Open/TotalDepth * AverageVelocity, '0.000')"/></td>
+							<td><font color="black"><xsl:value-of select="format-number(Width * Open/TotalDepth, '0.000')"/></font></td>
+							<td><font color="black"><xsl:value-of select="format-number(Width * Open/TotalDepth * AverageVelocity, '0.000')"/></font></td>
 						</xsl:when>
 						<xsl:otherwise>
-							<td><xsl:value-of select="format-number(Width * IceCovered/EffectiveDepth, '0.000')"/></td>
-							<td><xsl:value-of select="format-number(Width * IceCovered/EffectiveDepth * AverageVelocity, '0.000')"/></td>
+							<td><font color="black"><xsl:value-of select="format-number(Width * IceCovered/EffectiveDepth, '0.000')"/></font></td>
+							<td><font color="black"><xsl:value-of select="format-number(Width * IceCovered/EffectiveDepth * AverageVelocity, '0.000')"/></font></td>
 						</xsl:otherwise>
 					</xsl:choose>
 					<!-- <td><xsl:value-of select="format-number(area, '0.000')"/></td> -->
 					<!-- <td><xsl:valu e-of select="format-number(discharge, '0.000')"/></td> -->
-					<td><xsl:value-of select="Flow"/></td>
+					<td><font color="black"><xsl:value-of select="Flow"/></font></td>
 				</tr>
 
 				<xsl:choose>
 					<xsl:when test="PointMeasurements/PointMeasurement[2]">
 					<tr>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td><xsl:value-of select="PointMeasurements/PointMeasurement[2]/MeasurementDepth"/></td>
-						<td><xsl:value-of select="PointMeasurements/PointMeasurement[2]/Revolutions"/></td>
-						<td><xsl:value-of select="PointMeasurements/PointMeasurement[2]/ElapsedTime"/></td>
-						<td><xsl:value-of select="PointMeasurements/PointMeasurement[2]/Velocity"/></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
-						<td></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[2]/MeasurementDepth"/></font></td>
+						<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[2]/Revolutions"/></font></td>
+						<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[2]/ElapsedTime"/></font></td>
+						<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[2]/Velocity"/></font></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"></font></td>
+						<td><font color="black"></font></td>
 					
 					</tr>
 
 					<xsl:choose>
 						<xsl:when test="PointMeasurements/PointMeasurement[3]">
 							<tr>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td><xsl:value-of select="PointMeasurements/PointMeasurement[3]/MeasurementDepth"/></td>
-								<td><xsl:value-of select="PointMeasurements/PointMeasurement[3]/Revolutions"/></td>
-								<td><xsl:value-of select="PointMeasurements/PointMeasurement[3]/ElapsedTime"/></td>
-								<td><xsl:value-of select="PointMeasurements/PointMeasurement[3]/Velocity"/></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
-								<td></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[3]/MeasurementDepth"/></font></td>
+								<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[3]/Revolutions"/></font></td>
+								<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[3]/ElapsedTime"/></font></td>
+								<td><font color="black"><xsl:value-of select="PointMeasurements/PointMeasurement[3]/Velocity"/></font></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"></font></td>
+								<td><font color="black"></font></td>
 							</tr>
 
 						</xsl:when>
@@ -1563,41 +1563,41 @@
 							<xsl:when test="contains(Edges/Edge[2]/EdgeType, 'Edge')">
 								<tr>
 									<td>End Edge</td>
-									<td><xsl:value-of select="Edges/Edge[2]/Tagmark"/></td>
-									<td><xsl:value-of select="Edges/Edge[2]/Width"/></td>
-									<td><xsl:value-of select="Edges/Edge[2]/Depth"/></td>
-									<td></td>
-									<td><xsl:value-of select="Edges/Edge[2]/Depth"/></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td><xsl:value-of select="Edges/Edge[2]/Velocity"/></td>
-									<td><xsl:value-of select="format-number(Edges/Edge[2]/Width * Edges/Edge[2]/Depth, '0.000')"/></td>
-									<td><xsl:value-of select="format-number(Edges/Edge[2]/Width * Edges/Edge[2]/Depth * Edges/Edge[2]/Velocity, '0.000')"/></td>
-									<td><xsl:value-of select="Edges/Edge[2]/Flow"/></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Tagmark"/></font></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Width"/></font></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Depth"/></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Depth"/></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Velocity"/></font></td>
+									<td><font color="black"><xsl:value-of select="format-number(Edges/Edge[2]/Width * Edges/Edge[2]/Depth, '0.000')"/></font></td>
+									<td><font color="black"><xsl:value-of select="format-number(Edges/Edge[2]/Width * Edges/Edge[2]/Depth * Edges/Edge[2]/Velocity, '0.000')"/></font></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Flow"/></font></td>
 								</tr>
 							</xsl:when>
 							<xsl:when test="Edges/Edge[2]">
 								<tr>
 									<td>Start Pier</td>
-									<td><xsl:value-of select="Edges/Edge[2]/Tagmark"/></td>
-									<td><xsl:value-of select="Edges/Edge[2]/Width"/></td>
-									<td><xsl:value-of select="Edges/Edge[2]/Depth"/></td>
-									<td></td>
-									<td><xsl:value-of select="Edges/Edge[2]/Depth"/></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td></td>
-									<td><xsl:value-of select="Edges/Edge[2]/Velocity"/></td>
-									<td><xsl:value-of select="format-number(Edges/Edge[2]/Width * Edges/Edge[2]/Depth, '0.000')"/></td>
-									<td><xsl:value-of select="format-number(Edges/Edge[2]/Width * Edges/Edge[2]/Depth * Edges/Edge[2]/Velocity, '0.000')"/></td>
-									<td><xsl:value-of select="Edges/Edge[2]/Flow"/></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Tagmark"/></font></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Width"/></font></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Depth"/></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Depth"/></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"></font></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Velocity"/></font></td>
+									<td><font color="black"><xsl:value-of select="format-number(Edges/Edge[2]/Width * Edges/Edge[2]/Depth, '0.000')"/></font></td>
+									<td><font color="black"><xsl:value-of select="format-number(Edges/Edge[2]/Width * Edges/Edge[2]/Depth * Edges/Edge[2]/Velocity, '0.000')"/></font></td>
+									<td><font color="black"><xsl:value-of select="Edges/Edge[2]/Flow"/></font></td>
 								</tr>
 							</xsl:when>
 							<!-- <xsl:otherwise>
@@ -1770,9 +1770,9 @@
 		</tr>
 		<xsl:for-each select="record">
 			<tr>
-				<td><xsl:value-of select="status"/></td>
-				<td><xsl:value-of select="time"/></td>
-				<td><xsl:value-of select="user"/></td>
+				<td><font color="black"><xsl:value-of select="status"/></font></td>
+				<td><font color="black"><xsl:value-of select="time"/></font></td>
+				<td><font color="black"><xsl:value-of select="user"/></font></td>
 			</tr>
 		</xsl:for-each>
 	</table>
@@ -1791,9 +1791,9 @@
 		</tr>
 		<xsl:for-each select="record">
 			<tr>
-				<td><xsl:value-of select="status"/></td>
-				<td><xsl:value-of select="time"/></td>
-				<td><xsl:value-of select="user"/></td>
+				<td><font color="black"><xsl:value-of select="status"/></font></td>
+				<td><font color="black"><xsl:value-of select="time"/></font></td>
+				<td><font color="black"><xsl:value-of select="user"/></font></td>
 			</tr>
 		</xsl:for-each>
 	</table>
