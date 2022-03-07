@@ -13,7 +13,7 @@ class WaterLevelNotesPanel(wx.Panel):
         self.manager = manager
 
         self.headerRow = 34
-        self.headerCol = 40
+        self.headerCol = 100
 
         self.circuitList = []
         self.closureList = []
@@ -33,19 +33,19 @@ class WaterLevelNotesPanel(wx.Panel):
         self.titleSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         blank = WaterTag("", "", (32, self.headerRow), self, style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
-        station = WaterTag("Station", "", (self.headerCol + 6, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        station = WaterTag("Station", "", (self.headerCol + 30, self.headerRow), self, style=wx.SIMPLE_BORDER,
                            size=(-1, self.headerRow))
-        time = WaterTag("   Time", self.levelingMessage, (self.headerCol + 6, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        time = WaterTag("   Time", self.levelingMessage, (self.headerCol + 18, self.headerRow), self, style=wx.SIMPLE_BORDER,
                         size=(-1, self.headerRow))
-        backsight = WaterTag("Backsight", "", (self.headerCol, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        backsight = WaterTag("Backsight", "", (self.headerCol + 30, self.headerRow), self, style=wx.SIMPLE_BORDER,
                              size=(-1, self.headerRow))
-        heightOfInstrument = WaterTag("Height of Instrument", "", (self.headerCol + 6, self.headerRow), self,
+        heightOfInstrument = WaterTag("Height of Instrument", "", (self.headerCol + 31, self.headerRow), self,
                                       style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
-        foresight = WaterTag("Foresight", "", (self.headerCol - 2, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        foresight = WaterTag("Foresight", "", (self.headerCol + 31, self.headerRow), self, style=wx.SIMPLE_BORDER,
                              size=(-1, self.headerRow))
-        elevated = WaterTag("Elevated [Surveyed]", "", (self.headerCol, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        elevated = WaterTag("Elevated [Surveyed]", "", (self.headerCol + 31, self.headerRow), self, style=wx.SIMPLE_BORDER,
                             size=(-1, self.headerRow))
-        comments = WaterTag("Comments", "", (self.headerCol * 2, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        comments = WaterTag("Comments", "", ((self.headerCol * 2) + 64, self.headerRow), self, style=wx.SIMPLE_BORDER,
                             size=(-1, self.headerRow))
         established = WaterTag("Established Elev.\n(m)[AQUARIUS]", "", (self.headerCol, self.headerRow), self,
                                style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
