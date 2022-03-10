@@ -706,7 +706,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         form6Sizer = wx.BoxSizer(wx.VERTICAL)
         self.form6 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER)
         self.form6.SetupScrolling()
-        self.attachment = AttachmentPanel(self, self.mode, self.lang, self.form6, size=(920, -1))
+        self.attachment = AttachmentPanel(self, self.mode, self.lang, self.form6, size=(1, -1))
         form6Sizer.Add(self.attachment, 1, wx.EXPAND)
         self.form6.SetSizerAndFit(form6Sizer)
         self.form6.SetSizerAndFit(form6Sizer)

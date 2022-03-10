@@ -19,25 +19,24 @@ from os import chdir
 from os import environ
 from os.path import join
 from os.path import dirname
+import wx.lib.scrolledpanel as scrolled
 
 def valid(path):
     if path != None and path != "" and not path.isspace():
         return True
     return False
 
-class AttachmentPanel(wx.Panel):
+class AttachmentPanel(scrolled.ScrolledPanel):
     def __init__(self, parent, mode, lang, *args, **kwargs):
         super(AttachmentPanel, self).__init__(*args, **kwargs)
         self.parent = parent
         self.mode = mode
         self.lang = lang
-        self.indent = (50, -1)
-        self.indent2 = (55, -1)
-        self.indent3 = (25, -1)
-        self.noteIndent = (205, -1)
+        self.indent = (30, -1)
+        self.noteIndent = (200, -1)
         self.barSize = (741, -1)
-        self.tagSize = (300, -1)
-        self.zipSpace = (1060, -1)
+        self.tagSize = (160, -1)
+        self.zipSpace = (900, -1)
         self.missingStnNumMessage = "Station Number is missing"
         self.missingStnNumTitle = "Missing Station Number"
         self.nonexistentMessage = " does not exist"
@@ -64,7 +63,7 @@ class AttachmentPanel(wx.Panel):
         self.SetSizer(self.layout)
 
         sizerList = []
-        for i in range(12):
+        for i in range(10):
             sizerList.append(wx.BoxSizer(wx.HORIZONTAL))
 
         spaceList = []
@@ -73,22 +72,22 @@ class AttachmentPanel(wx.Panel):
         note = wx.StaticText(self, label="The Field Visit Package (ZIP file) will include the eHSN xml and pdf, as well as the below attachments.")
 
         TitlePanel = AttachmentTitle(self.mode, self)
-        Txt1 = AttachTag("Logger folders", "", self, size=self.tagSize)
+        Txt1 = AttachTag("Logger Folders", "", self, size=self.tagSize)
         self.attachBox1 = AttachFolderBox(self, "*", self, size=(860, 125), style=wx.SIMPLE_BORDER)
 
-        Txt2 = AttachTag("Logger Data files", "", self, size=self.tagSize)
+        Txt2 = AttachTag("Logger Data Files", "", self, size=self.tagSize)
         self.attachBox2 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt3 = AttachTag("Logger Diagnostic files", "", self, size=self.tagSize)
+        Txt3 = AttachTag("Logger Diagnostic Files", "", self, size=self.tagSize)
         self.attachBox3 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt4 = AttachTag("Logger Program files", "", self, size = self.tagSize)
+        Txt4 = AttachTag("Logger Program Files", "", self, size = self.tagSize)
         self.attachBox4 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt5 = AttachTag("Discharge Measurement files or folder", "", self, size = self.tagSize)
+        Txt5 = AttachTag("Discharge Measurement", "Files or Folder", self, size = self.tagSize)
         self.attachBox5 = AttachFileFolderBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt6 = AttachTag("Discharge Measurement Summary files", "", self, size = self.tagSize)
+        Txt6 = AttachTag("Discharge Measurement", "Summary Files", self, size = self.tagSize)
         self.attachBox6 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
         Txt7 = AttachTag("Photos and Drawings", "(.jpg, .DWG, etc.)", self, size=self.tagSize)
@@ -143,6 +142,9 @@ class AttachmentPanel(wx.Panel):
         for i in range(10):
             self.layout.Add(spaceList[i])
             self.layout.Add(sizerList[i])
+        
+        self.SetupScrolling()
+        self.ShowScrollbars(wx.SHOW_SB_DEFAULT, wx.SHOW_SB_DEFAULT)
 
     def Zip(self, evt, openSaveDialog=True):
 
