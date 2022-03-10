@@ -251,7 +251,7 @@ class EHSNGui(wx.Frame):
         self.iEhsnLabel = "Merge eHSN Midsection (*.xml)"
         self.iEhsnDesc = "Merge eHSN Midsection (*.xml)"
 
-        self.FVpackLabel = "Save Field Visit Package (ready for drag and drop)"
+        self.FVpackLabel = "Create Field Visit Package (ready for RFT)"
         self.FVpackDesc = "Create a ZIP file with eHSN XML and PDF, along with all files in the attachment tab (if there are any), for Aquarius Field Visit Upload."
 
         self.fullStyleSheetFileName = 'WSC_EHSN.xsml'
@@ -940,7 +940,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.config.metersPathText.SetLabel('No meters information file selected')
             if self.emptyLevel:
                 self.config.levelsPathText.SetForegroundColour("Red")
-                self.config.levelsPathText.SetLabel('No bencmark information file selected')
+                self.config.levelsPathText.SetLabel('No benchmark information file selected')
 
 
             self.config.Layout()
@@ -2063,7 +2063,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.waterLevelRun.levelNotes.updateBMs(self.bm, self.bmIndex)
             self.waterLevelRun.updateBMs(self.bm, self.bmIndex)
             wlrManager = self.manager.waterLevelRunManager
-            panel = wlrManager.levelnotes.panel
+            panel = wlrManager.levelNotes.panel
             for station in panel.stationList:
                 station.Bind(wx.EVT_TEXT, self.OnLevelNoteStationSelect)
                 # wlrManager.GetEstablishedElevationBtn(i, rowIndex).Bind(wx.EVT_BUTTON, self.OnLevelNoteEstablishedBtn)
