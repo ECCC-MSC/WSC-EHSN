@@ -929,6 +929,33 @@
 <xsl:template match="EHSN/LevelNotes">
 
 <h2 style="padding-top:15px">LEVEL NOTES</h2>
+
+	<table class="noborder" style="text-align:center; border:none;">
+	<tbody>
+		<tr class="noborder">
+			<td class="noborder" style="text-align:left;vertical-align:center;width:20%"><b>Conventional Leveling: </b>
+				<xsl:choose>
+					<xsl:when test="ConventionalTotal/conventional_leveling='True'">
+						<font size="4">&#x2714;</font>
+					</xsl:when>
+					<xsl:otherwise>
+						<font size="4">&#x2751;</font>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td class="noborder" style="text-align:left;vertical-align:center;width:80%"><b>Total Station: </b>
+				<xsl:choose>
+					<xsl:when test="ConventionalTotal/total_station='True'">
+						<font size="4">&#x2714;</font>
+					</xsl:when>
+					<xsl:otherwise>
+						<font size="4">&#x2751;</font>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+		</tr>
+	</tbody>
+	</table>
  
 <!-- 	<xsl:if test="/EHSN/LevelNotes/LevelChecks/LevelOrAnnual='GC'">
 	<h3>Gauge Check</h3>

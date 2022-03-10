@@ -1857,6 +1857,14 @@ def InstrumentDepFromXML(InstrumentDeployment, instrDepManager, attachmentManage
     #     pass
 
 
+# Create XML structure for Conventional Leveling vs Total Station
+def ConventionalTotalAsXMLTree(ConventionalTotal, waterLevelRunManager):
+
+    conventional_leveling = SubElement(ConventionalTotal, 'conventional_leveling')
+    conventional_leveling.text = str(waterLevelRunManager.GetConventionalLevellingRb().GetValue())
+
+    total_station = SubElement(ConventionalTotal, 'total_station')
+    total_station.text = str(waterLevelRunManager.GetTotalStationRb().GetValue())
     
        
 

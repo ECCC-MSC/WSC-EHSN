@@ -709,6 +709,10 @@ class ElectronicHydrometricSurveyNotes:
         #LevelNotes
         LevelNotes = SubElement(EHSN, 'LevelNotes')
 
+        # Conventional Leveling vs Total Station
+        ConventionalTotal = SubElement(LevelNotes, 'ConventionalTotal')
+        self.ConventionalTotalAsXMLTree(ConventionalTotal)
+
         #Level Checks
         LevelChecks = SubElement(LevelNotes, 'LevelChecks')
         self.LevelChecksAsXMLTree(LevelChecks)
@@ -938,6 +942,9 @@ class ElectronicHydrometricSurveyNotes:
     def PartyInfoFromXML(self, PartyInfo):
         XMLManager.PartyInfoFromXML(PartyInfo, self.partyInfoManager)
 
+
+    def ConventionalTotalAsXMLTree(self, ConventionalTotal):
+        XMLManager.ConventionalTotalAsXMLTree(ConventionalTotal, self.waterLevelRunManager)
 
     def LevelChecksAsXMLTree(self, LevelChecks):
         XMLManager.LevelChecksAsXMLTree(LevelChecks, self.waterLevelRunManager)
