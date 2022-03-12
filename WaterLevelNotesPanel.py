@@ -236,7 +236,14 @@ class WaterLevelNotesPanel(wx.Panel):
                                 self.closureCtrl.SetBackgroundColour("red")
 
                             self.uploadCkbox.SetValue(True)
-                            self.panel.uploadVal = True
+                            self.panel.uploadVal = self.uploadCkbox.GetValue()
+                            self.uploadList[self.current] = self.panel.uploadVal
+                            # Clear all other upload checkboxes
+                            # as only one circuit should be uploaded at a time
+                            for i in range(len(self.uploadList)):
+                                if i != self.current and self.uploadList[i] == True:
+                                    self.uploadList[i] = False
+                            
                             event.Skip()
                             return
                         except:
@@ -282,6 +289,11 @@ class WaterLevelNotesPanel(wx.Panel):
     def uploadUpdate(self, event):
         self.panel.uploadVal = self.uploadCkbox.GetValue()
         self.uploadList[self.current] = self.panel.uploadVal
+        # Clear all other upload checkboxes
+        # as only one circuit should be uploaded at a time
+        for i in range(len(self.uploadList)):
+            if i != self.current and self.uploadList[i] == True:
+                self.uploadList[i] = False
 
     def AddEntry(self, index):
         self.circuitList[index].append(["", "", "", "", "", "", "", False, "", False, ""])
