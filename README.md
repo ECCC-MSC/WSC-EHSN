@@ -41,6 +41,7 @@ If using pyinstaller to create a testing exe, navigate to your local clone of WS
 pyinstaller create_ehsn_exe.spec  
 
 This will create a single executable in the "dist" folder called WSC_eHSN_Python_test.exe with all required files included.  
+If your virtual environment where the packages are installed is not called 'env', then you must modify the pathex variable in create_ehsn_exe.spec.  
 
 
 # MANUAL
