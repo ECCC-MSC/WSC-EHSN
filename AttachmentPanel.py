@@ -100,6 +100,8 @@ class AttachmentPanel(scrolled.ScrolledPanel):
 
         self.zipper = wx.Button(self, label="CREATE FV PACKAGE")
         self.zipper.Bind(wx.EVT_BUTTON, self.Zip)
+        # Hide the create fv package button
+        self.zipper.Hide()
 
         sizerList[0].Add(self.noteIndent)
         sizerList[0].Add(note)
