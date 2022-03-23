@@ -21,7 +21,12 @@ class WaterLevelNotesPanel(wx.Panel):
         
         self.levelingMessage = "NOTE: Time entered only for the first Station will propagate to the others within the Circuit upon upload to AQUARIUS."
 
+        # Current index into lists
         self.current = 0
+
+        # Conventional leveling (0) or total station (1)
+        # Defaults to conventional leveling
+        self.type = 0
 
         self.InitUI()
 
@@ -137,7 +142,7 @@ class WaterLevelNotesPanel(wx.Panel):
 
     def add(self, evt):
         self.circuitList[self.current] = self.panel.returnCircuit()
-        self.panel.newCircuit()
+        self.panel.newCircuit(self.type)
         self.circuitList.append(self.panel.returnCircuit())
         self.closureList.append(self.panel.returnClosure())
         self.uploadList.append(self.panel.returnUpload())
@@ -158,7 +163,7 @@ class WaterLevelNotesPanel(wx.Panel):
                 self.current = self.current - 1
             self.newPage()
             data = self.circuitList[self.current]
-            self.panel.load(data)
+            self.panel.load(data, self.type)
             self.closureCtrl.SetValue(self.closureList[self.current])
             self.uploadCkbox.SetValue(self.uploadList[self.current])
 
@@ -167,7 +172,7 @@ class WaterLevelNotesPanel(wx.Panel):
             self.current = self.current - 1
             self.newPage()
             data = self.circuitList[self.current]
-            self.panel.load(data)
+            self.panel.load(data, self.type)
             self.closureCtrl.SetValue(self.closureList[self.current])
             self.uploadCkbox.SetValue(self.uploadList[self.current])
 
@@ -176,7 +181,7 @@ class WaterLevelNotesPanel(wx.Panel):
             self.current = self.current + 1
             self.newPage()
             data = self.circuitList[self.current]
-            self.panel.load(data)
+            self.panel.load(data, self.type)
             self.closureCtrl.SetValue(self.closureList[self.current])
             self.uploadCkbox.SetValue(self.uploadList[self.current])
 
@@ -186,7 +191,7 @@ class WaterLevelNotesPanel(wx.Panel):
             self.current = destination
             self.newPage()
             data = self.circuitList[self.current]
-            self.panel.load(data)
+            self.panel.load(data, self.type)
             self.closureCtrl.SetValue(self.closureList[self.current])
             self.uploadCkbox.SetValue(self.uploadList[self.current])
 
@@ -194,7 +199,7 @@ class WaterLevelNotesPanel(wx.Panel):
         self.current = page
         self.newPage()
         data = self.circuitList[self.current]
-        self.panel.load(data)
+        self.panel.load(data, self.type)
         self.closureCtrl.SetValue(self.closureList[self.current])
         self.uploadCkbox.SetValue(self.uploadList[self.current])
 
@@ -368,6 +373,54 @@ class WaterLevelNotesPanel(wx.Panel):
                     if self.circuitList[circuitIndex][rowIndex][0] != "":
                         return False
         return True
+    
+    # Update height of instrument and elevation for all circuits when type is changed
+    def UpdateCircuitHOIandElevation(self):
+
+        # Iterate over every circuit
+        for circuitIndex in range(len(self.circuitList)):
+
+            # Get the circuit
+            given_circuit = self.circuitList[circuitIndex]
+
+            # Iterate over every row in the given circuit
+            for rowIndex in range(len(given_circuit)):
+
+                # Get the row
+                row = self.circuitList[circuitIndex][rowIndex]
+
+                try:
+                    # Get the float value for elevation and backsight
+                    elevationVal = float(row[6])
+                    backsightVal = float(row[3])
+
+                    # Calculate the height of instrument based on these
+                    if self.type == 0:
+                        # Conventional Leveling
+                        row[4] = str(elevationVal + backsightVal)
+                    else:
+                        # Total Station
+                        row[4] = str(elevationVal - backsightVal)
+                except:
+                    pass
+                
+                # If it is not the first row, then set the foresight as well
+                if rowIndex != 0:
+                    try:
+                        # Get the float value for foresight and height of instrument
+                        foresightVal = float(row[5])
+                        hi = float(row[4])
+
+                        # Calculate the elevation based on these
+                        if self.type == 0:
+                            # Conventional Leveling
+                            row[6] = str(hi - foresightVal)
+                        else:
+                            # Total Station
+                            row[6] = str(hi + foresightVal)
+                    except:
+                        pass
+
 
 def main():
     app = wx.App()

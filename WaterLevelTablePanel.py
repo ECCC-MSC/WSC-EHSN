@@ -44,7 +44,9 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.refresh = False
         self.match = False
-        self.type = 0
+        # Conventional leveling (0) or total station (1)
+        # Set to the value stored in parent
+        self.type = self.parent.type
         self.circuit = []
         self.closureVal = ""
         self.uploadVal = False
@@ -349,15 +351,19 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
 
         self.parent.Layout()
 
-    def newCircuit(self):
+    def newCircuit(self, type):
         self.removeAll()
         self.circuit = []
+        # When adding set the type
+        self.type = type
         self.closureVal = ""
         self.uploadVal = False
         for x in range(6):
             self.add(None)
 
-    def load(self, circuit):
+    def load(self, circuit, type):
+        # When loading set the type
+        self.type = type
         self.removeAll()
         self.circuit = circuit
         for row in circuit:
@@ -471,8 +477,10 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
             try:
                 backsightVal = float(self.bsList[id].GetValue())
                 if self.type == 0:
+                    # Conventional Leveling
                     self.hoiList[id].SetValue(str(elevationVal + backsightVal))
                 else:
+                    # Total Station
                     self.hoiList[id].SetValue(str(elevationVal - backsightVal))
 
                 self.bsList[id].SetBackgroundColour("WHITE")
@@ -515,8 +523,10 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
             try:
                 elevationVal = float(self.elevatedList[id].GetValue())
                 if self.type == 0:
+                    # Conventional Leveling
                     self.hoiList[id].SetValue(str(elevationVal + backsightVal))
                 else:
+                    # Total Station
                     self.hoiList[id].SetValue(str(elevationVal - backsightVal))
             except:
 
@@ -547,8 +557,10 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
                     try:
                         foresightVal = float(foresightVal)
                         if self.type == 0:
+                            # Conventional Leveling
                             self.elevatedList[i].SetValue(str(hi - foresightVal))
                         else:
+                            # Total Station
                             self.elevatedList[i].SetValue(str(hi + foresightVal))
                         try:
                             float(self.hoiList[i].GetValue())
@@ -579,8 +591,10 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
             try:
                 foresightVal = float(foresightVal)
                 if self.type == 0:
+                    # Conventional Leveling
                     self.elevatedList[id].SetValue(str(hiVal - foresightVal))
                 else:
+                    # Total Station
                     self.elevatedList[id].SetValue(str(hiVal + foresightVal))
 
                 # if
@@ -642,6 +656,48 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         if self.eleCheckList[id].IsChecked():
             self.eleCheckList[id].SetValue(False)
             self.circuit[id][7] = self.eleCheckList[id].GetValue()
+    
+    # Update height of instrument and elevation when type is changed
+    def updateHOIandElevation(self):
+
+        # Set the type to be the type of the parent as this has already been set by OnChangeLevelType
+        self.type = self.parent.type
+
+        # Iterate over every row in the table
+        for i in range(len(self.stationList)):
+            
+            try:
+                # Get the float value for elevation and backsight
+                elevationVal = float(self.elevatedList[i].GetValue())
+                backsightVal = float(self.bsList[i].GetValue())
+
+                # Calculate the height of instrument based on these
+                if self.type == 0:
+                    # Conventional Leveling
+                    self.hoiList[i].SetValue(str(elevationVal + backsightVal))
+                else:
+                    # Total Station
+                    self.hoiList[i].SetValue(str(elevationVal - backsightVal))
+            except:
+                pass
+            
+            # If it is not the first row, then set the foresight as well
+            if i != 0:
+                try:
+                    # Get the float value for foresight and height of instrument
+                    foresightVal = float(self.fsList[i].GetValue())
+                    hi = float(self.hoiList[i].GetValue())
+
+                    # Calculate the elevation based on these
+                    if self.type == 0:
+                        # Conventional Leveling
+                        self.elevatedList[i].SetValue(str(hi - foresightVal))
+                    else:
+                        # Total Station
+                        self.elevatedList[i].SetValue(str(hi + foresightVal))
+                except:
+                    pass
+
 
 def main():
     app = wx.App()
