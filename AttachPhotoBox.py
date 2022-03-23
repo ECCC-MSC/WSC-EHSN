@@ -36,7 +36,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
         self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
         self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.TE_READONLY, choices=self.type))
-        self.typeList[-1].SetValue("Structures, Site Facilities")
+        self.typeList[-1].SetValue("Control Conditions")
         self.addrList.append(wx.TextCtrl(self, size=self.barSize))
         self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
@@ -62,7 +62,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
         self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
         self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN | wx.TE_READONLY, choices=self.type))
-        self.typeList[-1].SetValue("Structures, Site Facilities")
+        self.typeList[-1].SetValue("Control Conditions")
         self.addrList.append(wx.TextCtrl(self, size=self.barSize))
         self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
@@ -82,7 +82,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
             self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
             self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
             self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN | wx.TE_READONLY, choices=self.type))
-            self.typeList[-1].SetValue("Structures, Site Facilities")
+            self.typeList[-1].SetValue("Control Conditions")
             self.addrList.append(wx.TextCtrl(self, size=self.barSize))
             self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
