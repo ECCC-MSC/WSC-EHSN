@@ -33,18 +33,13 @@ def mean(start, end):
 
     return meanTime
 
-# Create XML structure for Title Header info (enteredInHWS checkbox)
+# Create XML structure for Title Header info
 def TitleHeaderAsXMLTree(TitleHeader, titleHeaderManager):
-    enteredInHWS = SubElement(TitleHeader, 'enteredInHWS')
-    enteredInHWS.text = str(titleHeaderManager.enteredInHWSCB)
+    pass
 
-# Set Title Header info (enteredInHWS checkbox) from an existing XML structure
+# Set Title Header info from an existing XML structure
 def TitleHeaderFromXML(TitleHeader, titleHeaderManager):
-    try:
-        enteredInHWSCB = TitleHeader.find('enteredInHWS').text
-        titleHeaderManager.enteredInHWSCB = False if enteredInHWSCB is None else (False if enteredInHWSCB == "False" else True)
-    except:
-        pass
+    pass
 
 # Create XML structure for General Info
 def GenInfoAsXMLTree( GenInfo, genInfoManager):

@@ -150,7 +150,6 @@ class ElectronicHydrometricSurveyNotes:
         self.midSectionDetailXml = {}
         self.midSectionRawData = None
 
-        self.gui.titleHeader.enteredInHWSCB.Bind(wx.EVT_CHECKBOX, self.LockEvent)
 
 
         # try:
@@ -597,16 +596,13 @@ class ElectronicHydrometricSurveyNotes:
         self.gui.deleteProgressDialog()
         return None
 
-    # Checks the "Entered in HWS" checkbox at top of front page
+    # Locks after uploading to Aquarius
     def ExportToAquariusSuccess(self):
-        self.titleHeaderManager.enteredInHWSCB = True
         self.Lock()
 
     # Locks all the pages except the title header.
     def LockEvent(self, e):
-        if self.gui.titleHeader.enteredInHWSCB.GetValue():
-            self.Lock()
-        elif e is not None:
+        if e is not None:
             dlg = wx.MessageDialog(None, self.lockWarningMessage, self.lockWarningTitle, wx.YES_NO)
             res = dlg.ShowModal()
             if res==wx.ID_YES:
@@ -616,8 +612,6 @@ class ElectronicHydrometricSurveyNotes:
                 self.gui.form3.Enable()
                 self.gui.form4.Enable()
                 self.gui.form5.Enable()
-            else:
-                self.gui.titleHeader.enteredInHWSCB.SetValue(True)
         else:
             for widget in self.gui.form.GetChildren():
                 widget.Enable()

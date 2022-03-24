@@ -1393,18 +1393,6 @@
 			<td class="noborder" style="padding-top:5px; width:350px " align="center">
 					<font size="5">Hydrometric Survey Note </font><font size="2"><xsl:value-of select="../@version"/></font>
 			</td>
-			<td class="noborder" align="right">
-				<H4  style="padding-top:13px" align="right">Data Entered in HWS?
-					<xsl:choose>
-					<xsl:when test="enteredInHWS='True'">
-						<font size="4">&#x2714;</font>
-					</xsl:when>
-					<xsl:otherwise>
-						<font size="4">&#x2751;</font>
-					</xsl:otherwise>
-					</xsl:choose>
-				</H4>
-			</td>
 		</tr>
 	</tbody>
 	</table>

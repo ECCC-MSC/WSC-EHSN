@@ -177,21 +177,6 @@
 				<td style="border:none; width:100%">
 					<h2 style="padding-left: 0px;" align="left">Station Number: <u><xsl:value-of select="station/@number"/></u></h2>
 				</td>
-
-
-				<td style="border:none; width:100%">
-					<H4  style="padding-top:13px" align="right">Data Entered in HWS?
-						<xsl:choose>
-							<xsl:when test="enteredInHWS='True'">
-								<font size="4">&#x2714;</font>
-							</xsl:when>
-							<xsl:otherwise>
-								<font size="4">&#x2751;</font>
-							</xsl:otherwise>
-						</xsl:choose>
-					</H4>
-
-				</td>
 			</tr>
 			<tr style="border:none; height:30px">
 				<td style="border:none;width:100%">

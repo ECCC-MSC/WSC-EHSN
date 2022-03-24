@@ -1519,10 +1519,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.manager.OpenFile(path)
                 self.instrDep.RefreshDeploymentMethod()
 
-                # After loading XML, If lock was checked, lock everything
-                #if self.titleHeader.enteredInHWSCB.GetValue():
-                #    self.manager.Lock()
-                #else:
                 self.manager.LockEvent(e=None)
 
                 self.SetTitle(self.noteHeaderTxt + "   " + path)

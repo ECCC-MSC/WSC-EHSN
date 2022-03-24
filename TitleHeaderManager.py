@@ -15,13 +15,7 @@ class TitleHeaderManager(object):
         if self.mode == "DEBUG":
             print("TitleHeaderManager")
 
-    @property
-    def enteredInHWSCB(self):
-        return self.gui.enteredInHWSCB.GetValue()
 
-    @enteredInHWSCB.setter
-    def enteredInHWSCB(self, enteredInHWSCB):
-        self.gui.enteredInHWSCB.SetValue(enteredInHWSCB)
 
 
 def main():

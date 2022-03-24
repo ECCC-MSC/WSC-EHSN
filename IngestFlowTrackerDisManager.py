@@ -271,10 +271,6 @@ def ConvertToSerialDate(path):
     return (end-start).days + float((end-start).seconds)/86400
 
 
-def CreateDiscreteMeasurementDetailsXML():
-    imported = Element('Imported')
-    discreteMeasurementDetails = SubElement(imported, 'DiscreteMeasurementDetails')
-    enteredInHWS.text = str(titleHeaderManager.enteredInHWSCB)
 
 
 
