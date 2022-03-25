@@ -44,7 +44,9 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.refresh = False
         self.match = False
-        self.type = 0
+        # Conventional leveling (0) or total station (1)
+        # Set to the value stored in parent
+        self.type = self.parent.type
         self.circuit = []
         self.closureVal = ""
         self.uploadVal = False
@@ -152,8 +154,11 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         
         self.establishList.append(MyTextCtrl(self, style= wx.TE_CENTRE))
         self.establishList[-1].Enable(False)
+        self.establishList[-1].Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
         self.establishList[-1].Bind(wx.EVT_TEXT, self.establishUpdate)
         self.establishList[-1].Bind(wx.EVT_TEXT, self.OnEstablish)
+        self.establishList[-1].Bind(wx.EVT_KILL_FOCUS, self.OnKillFocus)
+        self.establishList[-1].Bind(wx.EVT_KILL_FOCUS, self.estRound3)
         
         self.establishSizer[-1].Add(self.establishCheckList[-1], 0, wx.EXPAND|wx.ALL, 3)
         self.establishSizer[-1].Add(self.establishList[-1], 1, wx.EXPAND)
@@ -251,7 +256,7 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
 
     def stationUpdate(self, evt):
         id = self.stationList.index(evt.GetEventObject())
-        if evt.GetEventObject().GetValue() in self.stationType:
+        if len(evt.GetEventObject().GetValue()) > 0:
             self.rowUnlock(id)
         self.circuit[id][0] = evt.GetEventObject().GetValue()
         self.FindMatch()
@@ -259,11 +264,17 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
 
 
     def hourUpdate(self, evt):
+        hours = evt.GetEventObject().parent.GenerateHours()
+        if evt.GetEventObject().GetValue() not in hours:
+            evt.GetEventObject().SetValue('')
         id = self.timeList.index(evt.GetEventObject().parent)
         self.circuit[id][1] = evt.GetEventObject().GetValue()
         evt.Skip()
 
     def minuteUpdate(self, evt):
+        minutes = evt.GetEventObject().parent.GenerateMinutes()
+        if evt.GetEventObject().GetValue() not in minutes:
+            evt.GetEventObject().SetValue('')
         id = self.timeList.index(evt.GetEventObject().parent)
         self.circuit[id][2] = evt.GetEventObject().GetValue()
         evt.Skip()
@@ -340,15 +351,19 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
 
         self.parent.Layout()
 
-    def newCircuit(self):
+    def newCircuit(self, type):
         self.removeAll()
         self.circuit = []
+        # When adding set the type
+        self.type = type
         self.closureVal = ""
         self.uploadVal = False
         for x in range(6):
             self.add(None)
 
-    def load(self, circuit):
+    def load(self, circuit, type):
+        # When loading set the type
+        self.type = type
         self.removeAll()
         self.circuit = circuit
         for row in circuit:
@@ -462,8 +477,10 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
             try:
                 backsightVal = float(self.bsList[id].GetValue())
                 if self.type == 0:
+                    # Conventional Leveling
                     self.hoiList[id].SetValue(str(elevationVal + backsightVal))
                 else:
+                    # Total Station
                     self.hoiList[id].SetValue(str(elevationVal - backsightVal))
 
                 self.bsList[id].SetBackgroundColour("WHITE")
@@ -506,8 +523,10 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
             try:
                 elevationVal = float(self.elevatedList[id].GetValue())
                 if self.type == 0:
+                    # Conventional Leveling
                     self.hoiList[id].SetValue(str(elevationVal + backsightVal))
                 else:
+                    # Total Station
                     self.hoiList[id].SetValue(str(elevationVal - backsightVal))
             except:
 
@@ -538,8 +557,10 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
                     try:
                         foresightVal = float(foresightVal)
                         if self.type == 0:
+                            # Conventional Leveling
                             self.elevatedList[i].SetValue(str(hi - foresightVal))
                         else:
+                            # Total Station
                             self.elevatedList[i].SetValue(str(hi + foresightVal))
                         try:
                             float(self.hoiList[i].GetValue())
@@ -570,8 +591,10 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
             try:
                 foresightVal = float(foresightVal)
                 if self.type == 0:
+                    # Conventional Leveling
                     self.elevatedList[id].SetValue(str(hiVal - foresightVal))
                 else:
+                    # Total Station
                     self.elevatedList[id].SetValue(str(hiVal + foresightVal))
 
                 # if
@@ -599,6 +622,10 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
     def eleRound3(self, event):
         NumberControl.Round3(event)
         self.elevatedUpdate(event)
+    
+    def estRound3(self, event):
+        NumberControl.Round3(event)
+        self.establishUpdate(event)
 
     #On check elevation check box do uncheck establish check box
     def OnElevationCkbox(self, event):
@@ -617,6 +644,59 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
             self.eleCheckList[id].SetValue(False)
             self.circuit[id][7] = self.eleCheckList[id].GetValue()
         event.Skip()
+
+    # Uncheck a given establish check box
+    def clearEstablishCkbox(self, id):
+        if self.establishCheckList[id].IsChecked():
+            self.establishCheckList[id].SetValue(False)
+            self.circuit[id][9] = self.establishCheckList[id].GetValue()
+    
+    # Uncheck a given elevation check box
+    def clearElevationCkbox(self, id):
+        if self.eleCheckList[id].IsChecked():
+            self.eleCheckList[id].SetValue(False)
+            self.circuit[id][7] = self.eleCheckList[id].GetValue()
+    
+    # Update height of instrument and elevation when type is changed
+    def updateHOIandElevation(self):
+
+        # Set the type to be the type of the parent as this has already been set by OnChangeLevelType
+        self.type = self.parent.type
+
+        # Iterate over every row in the table
+        for i in range(len(self.stationList)):
+            
+            try:
+                # Get the float value for elevation and backsight
+                elevationVal = float(self.elevatedList[i].GetValue())
+                backsightVal = float(self.bsList[i].GetValue())
+
+                # Calculate the height of instrument based on these
+                if self.type == 0:
+                    # Conventional Leveling
+                    self.hoiList[i].SetValue(str(elevationVal + backsightVal))
+                else:
+                    # Total Station
+                    self.hoiList[i].SetValue(str(elevationVal - backsightVal))
+            except:
+                pass
+            
+            # If it is not the first row, then set the foresight as well
+            if i != 0:
+                try:
+                    # Get the float value for foresight and height of instrument
+                    foresightVal = float(self.fsList[i].GetValue())
+                    hi = float(self.hoiList[i].GetValue())
+
+                    # Calculate the elevation based on these
+                    if self.type == 0:
+                        # Conventional Leveling
+                        self.elevatedList[i].SetValue(str(hi - foresightVal))
+                    else:
+                        # Total Station
+                        self.elevatedList[i].SetValue(str(hi + foresightVal))
+                except:
+                    pass
 
 
 def main():

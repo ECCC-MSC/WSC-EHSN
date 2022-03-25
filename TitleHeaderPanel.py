@@ -9,7 +9,6 @@ class TitleHeaderPanel(wx.Panel):
         super(TitleHeaderPanel, self).__init__(*args, **kwargs)
 
         self.titleLbl = "ELECTRONIC HYDROMETRIC SURVEY NOTES " + eHSN_Version
-        self.enteredInHWSLbl = "Data Entered in HWS?"
 
         self.mode = mode
         self.manager = None
@@ -25,13 +24,9 @@ class TitleHeaderPanel(wx.Panel):
         self.noteHeader = wx.StaticText(self, label=self.titleLbl, style=wx.ALIGN_CENTRE_HORIZONTAL)
         # print self.noteHeader.GetWindowStyleFlag()
 
-        enteredSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.enteredInHWSCB = wx.CheckBox(self, label=self.enteredInHWSLbl)
-        enteredSizer.Add((0, 0), 1, wx.EXPAND)
-        enteredSizer.Add(self.enteredInHWSCB, 0, wx.EXPAND)
 
         layoutSizer.Add(self.noteHeader, 0, wx.EXPAND)
-        layoutSizer.Add(enteredSizer, 0, wx.EXPAND)
+        layoutSizer.Add((-1, 10), 0, wx.EXPAND)
 
         self.SetSizer(layoutSizer)
 

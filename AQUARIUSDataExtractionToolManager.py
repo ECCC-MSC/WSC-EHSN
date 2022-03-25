@@ -467,7 +467,7 @@ class AQUARIUSDataExtractionToolManager(object):
                     fileExists = True
                     exportFile = open(path + '\\stations.txt', 'a+')
                 else:
-                    exportFile = open(path + '\\stations.txt', "wb")
+                    exportFile = open(path + '\\stations.txt', "w")
                 break
             except IOError:
                 print("Could not open file! Please close Excel!")
@@ -606,7 +606,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
                     exportFile = open(path + '\\stations.txt', 'a+')
                 else:
-                    exportFile = open(path + '\\stations.txt', "wb")
+                    exportFile = open(path + '\\stations.txt', "w")
                 break
             except IOError:
                 print("Could not open file! Please close Excel!")
@@ -943,7 +943,13 @@ class AQUARIUSDataExtractionToolManager(object):
 
                         try:
                             refPoint = benchMark['ReferencePointPeriods']
+                            # Get the most recent reference point elevation
                             staElevation = refPoint[len(refPoint) - 1]['Elevation']
+                            # If the elevation has a precision of more than 5 decimal places
+                            # then it should be rounded to 3 decimal places
+                            if "." in str(staElevation):
+                                if len(str(staElevation).split(".")[1]) > 5:
+                                    staElevation = round(staElevation, 3)
                         except:
                             refPoint = ''
                             print("The elevation is empty.")

@@ -276,6 +276,9 @@ For example:\n\
         buttonsSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.ngExportChk = wx.CheckBox(basePanel, label=self.ngExportLabel, style=wx.ALIGN_LEFT)
         self.ngExportChk.SetValue(True)
+        # Hide this checkbox as AQUARIUS NG is now the only method of getting data
+        # So the checkbox will always be set to true
+        self.ngExportChk.Hide()
         self.runButton = wx.Button(basePanel, label=self.runButtonLbl)
         self.runButton.Bind(wx.EVT_BUTTON, self.OnRun)
         self.canButton = wx.Button(basePanel, label=self.canButtonLbl)

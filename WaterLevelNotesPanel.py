@@ -13,7 +13,7 @@ class WaterLevelNotesPanel(wx.Panel):
         self.manager = manager
 
         self.headerRow = 34
-        self.headerCol = 40
+        self.headerCol = 100
 
         self.circuitList = []
         self.closureList = []
@@ -21,7 +21,12 @@ class WaterLevelNotesPanel(wx.Panel):
         
         self.levelingMessage = "NOTE: Time entered only for the first Station will propagate to the others within the Circuit upon upload to AQUARIUS."
 
+        # Current index into lists
         self.current = 0
+
+        # Conventional leveling (0) or total station (1)
+        # Defaults to conventional leveling
+        self.type = 0
 
         self.InitUI()
 
@@ -33,19 +38,19 @@ class WaterLevelNotesPanel(wx.Panel):
         self.titleSizer = wx.BoxSizer(wx.HORIZONTAL)
 
         blank = WaterTag("", "", (32, self.headerRow), self, style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
-        station = WaterTag("Station", "", (self.headerCol + 6, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        station = WaterTag("Station", "", (self.headerCol + 30, self.headerRow), self, style=wx.SIMPLE_BORDER,
                            size=(-1, self.headerRow))
-        time = WaterTag("   Time", self.levelingMessage, (self.headerCol + 6, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        time = WaterTag("   Time", self.levelingMessage, (self.headerCol + 18, self.headerRow), self, style=wx.SIMPLE_BORDER,
                         size=(-1, self.headerRow))
-        backsight = WaterTag("Backsight", "", (self.headerCol, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        backsight = WaterTag("Backsight", "", (self.headerCol + 30, self.headerRow), self, style=wx.SIMPLE_BORDER,
                              size=(-1, self.headerRow))
-        heightOfInstrument = WaterTag("Height of Instrument", "", (self.headerCol + 6, self.headerRow), self,
+        heightOfInstrument = WaterTag("Height of Instrument", "", (self.headerCol + 31, self.headerRow), self,
                                       style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
-        foresight = WaterTag("Foresight", "", (self.headerCol - 2, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        foresight = WaterTag("Foresight", "", (self.headerCol + 31, self.headerRow), self, style=wx.SIMPLE_BORDER,
                              size=(-1, self.headerRow))
-        elevated = WaterTag("Elevated [Surveyed]", "", (self.headerCol, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        elevated = WaterTag("Elevated [Surveyed]", "", (self.headerCol + 31, self.headerRow), self, style=wx.SIMPLE_BORDER,
                             size=(-1, self.headerRow))
-        comments = WaterTag("Comments", "", (self.headerCol * 2, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        comments = WaterTag("Comments", "", ((self.headerCol * 2) + 64, self.headerRow), self, style=wx.SIMPLE_BORDER,
                             size=(-1, self.headerRow))
         established = WaterTag("Established Elev.\n(m)[AQUARIUS]", "", (self.headerCol, self.headerRow), self,
                                style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
@@ -137,7 +142,7 @@ class WaterLevelNotesPanel(wx.Panel):
 
     def add(self, evt):
         self.circuitList[self.current] = self.panel.returnCircuit()
-        self.panel.newCircuit()
+        self.panel.newCircuit(self.type)
         self.circuitList.append(self.panel.returnCircuit())
         self.closureList.append(self.panel.returnClosure())
         self.uploadList.append(self.panel.returnUpload())
@@ -158,7 +163,7 @@ class WaterLevelNotesPanel(wx.Panel):
                 self.current = self.current - 1
             self.newPage()
             data = self.circuitList[self.current]
-            self.panel.load(data)
+            self.panel.load(data, self.type)
             self.closureCtrl.SetValue(self.closureList[self.current])
             self.uploadCkbox.SetValue(self.uploadList[self.current])
 
@@ -167,7 +172,7 @@ class WaterLevelNotesPanel(wx.Panel):
             self.current = self.current - 1
             self.newPage()
             data = self.circuitList[self.current]
-            self.panel.load(data)
+            self.panel.load(data, self.type)
             self.closureCtrl.SetValue(self.closureList[self.current])
             self.uploadCkbox.SetValue(self.uploadList[self.current])
 
@@ -176,7 +181,7 @@ class WaterLevelNotesPanel(wx.Panel):
             self.current = self.current + 1
             self.newPage()
             data = self.circuitList[self.current]
-            self.panel.load(data)
+            self.panel.load(data, self.type)
             self.closureCtrl.SetValue(self.closureList[self.current])
             self.uploadCkbox.SetValue(self.uploadList[self.current])
 
@@ -186,7 +191,7 @@ class WaterLevelNotesPanel(wx.Panel):
             self.current = destination
             self.newPage()
             data = self.circuitList[self.current]
-            self.panel.load(data)
+            self.panel.load(data, self.type)
             self.closureCtrl.SetValue(self.closureList[self.current])
             self.uploadCkbox.SetValue(self.uploadList[self.current])
 
@@ -194,7 +199,7 @@ class WaterLevelNotesPanel(wx.Panel):
         self.current = page
         self.newPage()
         data = self.circuitList[self.current]
-        self.panel.load(data)
+        self.panel.load(data, self.type)
         self.closureCtrl.SetValue(self.closureList[self.current])
         self.uploadCkbox.SetValue(self.uploadList[self.current])
 
@@ -230,13 +235,20 @@ class WaterLevelNotesPanel(wx.Panel):
                         pairEle = self.panel.elevatedList[i].GetValue()
                         try:
                             pairEle = float(pairEle)
-                            closureValue = round(startElevation - pairEle, 3)
+                            closureValue = round(pairEle - startElevation, 3)
                             self.closureCtrl.SetValue(str(closureValue))
                             if abs(closureValue) > 0.003:
                                 self.closureCtrl.SetBackgroundColour("red")
 
                             self.uploadCkbox.SetValue(True)
-                            self.panel.uploadVal = True
+                            self.panel.uploadVal = self.uploadCkbox.GetValue()
+                            self.uploadList[self.current] = self.panel.uploadVal
+                            # Clear all other upload checkboxes
+                            # as only one circuit should be uploaded at a time
+                            for i in range(len(self.uploadList)):
+                                if i != self.current and self.uploadList[i] == True:
+                                    self.uploadList[i] = False
+                            
                             event.Skip()
                             return
                         except:
@@ -282,6 +294,11 @@ class WaterLevelNotesPanel(wx.Panel):
     def uploadUpdate(self, event):
         self.panel.uploadVal = self.uploadCkbox.GetValue()
         self.uploadList[self.current] = self.panel.uploadVal
+        # Clear all other upload checkboxes
+        # as only one circuit should be uploaded at a time
+        for i in range(len(self.uploadList)):
+            if i != self.current and self.uploadList[i] == True:
+                self.uploadList[i] = False
 
     def AddEntry(self, index):
         self.circuitList[index].append(["", "", "", "", "", "", "", False, "", False, ""])
@@ -356,6 +373,54 @@ class WaterLevelNotesPanel(wx.Panel):
                     if self.circuitList[circuitIndex][rowIndex][0] != "":
                         return False
         return True
+    
+    # Update height of instrument and elevation for all circuits when type is changed
+    def UpdateCircuitHOIandElevation(self):
+
+        # Iterate over every circuit
+        for circuitIndex in range(len(self.circuitList)):
+
+            # Get the circuit
+            given_circuit = self.circuitList[circuitIndex]
+
+            # Iterate over every row in the given circuit
+            for rowIndex in range(len(given_circuit)):
+
+                # Get the row
+                row = self.circuitList[circuitIndex][rowIndex]
+
+                try:
+                    # Get the float value for elevation and backsight
+                    elevationVal = float(row[6])
+                    backsightVal = float(row[3])
+
+                    # Calculate the height of instrument based on these
+                    if self.type == 0:
+                        # Conventional Leveling
+                        row[4] = str(elevationVal + backsightVal)
+                    else:
+                        # Total Station
+                        row[4] = str(elevationVal - backsightVal)
+                except:
+                    pass
+                
+                # If it is not the first row, then set the foresight as well
+                if rowIndex != 0:
+                    try:
+                        # Get the float value for foresight and height of instrument
+                        foresightVal = float(row[5])
+                        hi = float(row[4])
+
+                        # Calculate the elevation based on these
+                        if self.type == 0:
+                            # Conventional Leveling
+                            row[6] = str(hi - foresightVal)
+                        else:
+                            # Total Station
+                            row[6] = str(hi + foresightVal)
+                    except:
+                        pass
+
 
 def main():
     app = wx.App()

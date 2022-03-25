@@ -175,7 +175,7 @@ class WaterLevelRunPanel(wx.Panel):
         self.picture = wx.Image(self.myBitmap, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
         self.transToFrontpicture = wx.Image(self.myBitmapFront, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 
-        self.conventionalLevellingRbLbl = "Conventional Levelling"
+        self.conventionalLevellingRbLbl = "Conventional Leveling"
         self.totalStationRbLbl = "Total Station"
         # self.rb3Lbl = "Both"
         # self.levelNoteToolTipDesc = "Note: Aggregation of the Foresight and/or Backsight measurements may be needed externally before entering the values" \
@@ -1774,10 +1774,15 @@ class WaterLevelRunPanel(wx.Panel):
         res = dlg.ShowModal()
         if res == wx.ID_YES:
             if self.conventionalLevellingRb.GetValue():
+                # Conventional Leveling
                 self.levelNotes.type = 0
             else:
+                # Total Station
                 self.levelNotes.type = 1
-            self.levelNotes.RefreshTable()
+            # Update all circuits
+            self.levelNotes.UpdateCircuitHOIandElevation()
+            # Update the displayed table itself
+            self.levelNotes.panel.updateHOIandElevation()
             dlg.Destroy()
         else:
             if not self.conventionalLevellingRb.GetValue():

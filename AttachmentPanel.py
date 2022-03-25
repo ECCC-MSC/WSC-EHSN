@@ -19,30 +19,30 @@ from os import chdir
 from os import environ
 from os.path import join
 from os.path import dirname
+import wx.lib.scrolledpanel as scrolled
+from shutil import make_archive
 
 def valid(path):
     if path != None and path != "" and not path.isspace():
         return True
     return False
 
-class AttachmentPanel(wx.Panel):
+class AttachmentPanel(scrolled.ScrolledPanel):
     def __init__(self, parent, mode, lang, *args, **kwargs):
         super(AttachmentPanel, self).__init__(*args, **kwargs)
         self.parent = parent
         self.mode = mode
         self.lang = lang
-        self.indent = (50, -1)
-        self.indent2 = (55, -1)
-        self.indent3 = (25, -1)
-        self.noteIndent = (55, -1)
+        self.indent = (30, -1)
+        self.noteIndent = (200, -1)
         self.barSize = (741, -1)
-        self.tagSize = (300, -1)
-        self.zipSpace = (1100, -1)
+        self.tagSize = (160, -1)
+        self.zipSpace = (900, -1)
         self.missingStnNumMessage = "Station Number is missing"
         self.missingStnNumTitle = "Missing Station Number"
         self.nonexistentMessage = " does not exist"
         self.nonexistentTitle = "Target file does not exist"
-        self.successMessage = "FV PACKAGE are successfully created: "
+        self.successMessage = "Field Visit Package successfully created and zipped\n"
         self.successTitle = "File successfully zipped"
         self.errorMessage = "FV PACKAGE creation has failed"
         self.errorTitle = "Create Failure"
@@ -53,8 +53,8 @@ class AttachmentPanel(wx.Panel):
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.mmtFilesTitle = "Select the MMT Files Folder"
         self.loggerFilesTitle = "Select the Logger Files Folder"
-        self.zipTitle = "Choose zip file location"
-        self.createConfirm = "Are you sure you want to save the FV Package to the FV PACKAGE SAVE LOCATION?"
+        self.zipTitle = "Field Visit Package (zip file) save location"
+        #self.createConfirm = "Are you sure you want to save the FV Package to the FV PACKAGE SAVE LOCATION?"
         self.fm = "%Y%m%d"
         self.zipPath = ""
         self.InitUI()
@@ -64,102 +64,105 @@ class AttachmentPanel(wx.Panel):
         self.SetSizer(self.layout)
 
         sizerList = []
-        for i in range(12):
+        for i in range(10):
             sizerList.append(wx.BoxSizer(wx.HORIZONTAL))
 
         spaceList = []
         for x in range(10):
             spaceList.append(wx.StaticText(self, label=""))
-        note = wx.StaticText(self, label="The Field Visit Package (ZIP file) will include the eHSN xml and pdf, as well as the above attachments. \nThe created ZIP file will be saved to the FV PACKAGE SAVE LOCATION and should be dragged-dropped into AQUARIUS.")
+        note = wx.StaticText(self, label="The Field Visit Package (ZIP file) will include the eHSN xml and pdf, as well as the below attachments.")
 
         TitlePanel = AttachmentTitle(self.mode, self)
-        Txt1 = AttachTag("Logger folders", "", self, size=self.tagSize)
+        Txt1 = AttachTag("Logger Folders", "", self, size=self.tagSize)
         self.attachBox1 = AttachFolderBox(self, "*", self, size=(860, 125), style=wx.SIMPLE_BORDER)
 
-        Txt2 = AttachTag("Logger Data files", "", self, size=self.tagSize)
+        Txt2 = AttachTag("Logger Data Files", "", self, size=self.tagSize)
         self.attachBox2 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt3 = AttachTag("Logger Diagnostic files", "", self, size=self.tagSize)
+        Txt3 = AttachTag("Logger Diagnostic Files", "", self, size=self.tagSize)
         self.attachBox3 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt4 = AttachTag("Logger Program files", "", self, size = self.tagSize)
+        Txt4 = AttachTag("Logger Program Files", "", self, size = self.tagSize)
         self.attachBox4 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt5 = AttachTag("Discharge Measurement files or folder", "", self, size = self.tagSize)
+        Txt5 = AttachTag("Discharge Measurement", "Files or Folder", self, size = self.tagSize)
         self.attachBox5 = AttachFileFolderBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
-        Txt6 = AttachTag("Discharge Measurement Summary files", "", self, size = self.tagSize)
+        Txt6 = AttachTag("Discharge Measurement", "Summary Files", self, size = self.tagSize)
         self.attachBox6 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
 
         Txt7 = AttachTag("Photos and Drawings", "(.jpg, .DWG, etc.)", self, size=self.tagSize)
         self.attachBox7 = AttachPhotoBox(self, "*", self, size=(860, 200), style=wx.SIMPLE_BORDER)
 
-        zipLoc = AttachTag("FV PACKAGE SAVE LOCATION", "", self, size=self.tagSize)
         self.zipAddr = wx.TextCtrl(self, size=self.barSize)
-        self.zipChoose = wx.Button(self, label="SELECT")
-        self.zipChoose.Bind(wx.EVT_BUTTON, self.BrowseZipLoc)
         self.zipAddr.SetValue(self.rootPath)
+        # Hide the text field 
+        self.zipAddr.Hide()
 
         self.zipper = wx.Button(self, label="CREATE FV PACKAGE")
         self.zipper.Bind(wx.EVT_BUTTON, self.Zip)
+        # Hide the create fv package button
+        self.zipper.Hide()
 
-        sizerList[0].Add(self.indent)
-        sizerList[0].Add(Txt1, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[0].Add(self.attachBox1)
+        sizerList[0].Add(self.noteIndent)
+        sizerList[0].Add(note)
 
         sizerList[1].Add(self.indent)
-        sizerList[1].Add(Txt2, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[1].Add(self.attachBox2)
+        sizerList[1].Add(Txt1, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[1].Add(self.attachBox1)
 
         sizerList[2].Add(self.indent)
-        sizerList[2].Add(Txt3, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[2].Add(self.attachBox3)
+        sizerList[2].Add(Txt2, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[2].Add(self.attachBox2)
 
         sizerList[3].Add(self.indent)
-        sizerList[3].Add(Txt4, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[3].Add(self.attachBox4)
+        sizerList[3].Add(Txt3, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[3].Add(self.attachBox3)
 
         sizerList[4].Add(self.indent)
-        sizerList[4].Add(Txt5, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[4].Add(self.attachBox5)
+        sizerList[4].Add(Txt4, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[4].Add(self.attachBox4)
 
         sizerList[5].Add(self.indent)
-        sizerList[5].Add(Txt6, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[5].Add(self.attachBox6)
+        sizerList[5].Add(Txt5, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[5].Add(self.attachBox5)
 
         sizerList[6].Add(self.indent)
-        sizerList[6].Add(Txt7, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[6].Add(self.attachBox7)
-        
+        sizerList[6].Add(Txt6, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[6].Add(self.attachBox6)
+
         sizerList[7].Add(self.indent)
-        sizerList[7].Add(zipLoc, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[7].Add(self.zipAddr)
-        sizerList[7].Add(self.zipChoose)
+        sizerList[7].Add(Txt7, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[7].Add(self.attachBox7)
 
-        sizerList[8].Add(self.noteIndent)
-        sizerList[8].Add(note)
+        sizerList[8].Add(self.zipSpace)
+        sizerList[8].Add(self.zipper)
 
-        sizerList[9].Add(self.zipSpace)
-        sizerList[9].Add(self.zipper)
+        # Hidden text field
+        sizerList[9].Add(self.zipAddr)
 
         self.layout.Add(TitlePanel, 0, wx.EXPAND | wx.ALL, 3)
         for i in range(10):
             self.layout.Add(spaceList[i])
             self.layout.Add(sizerList[i])
+        
+        self.SetupScrolling()
+        self.ShowScrollbars(wx.SHOW_SB_DEFAULT, wx.SHOW_SB_DEFAULT)
 
-    def BrowseZipLoc(self, evt):
-        DirOpenDialog = wx.DirDialog(self, self.zipTitle, self.rootPath,
-                                     style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
-        if DirOpenDialog.ShowModal() == wx.ID_CANCEL:
+    def Zip(self, evt, openSaveDialog=True):
+
+        if openSaveDialog:
+            DirOpenDialog = wx.DirDialog(self, self.zipTitle, self.rootPath,
+                                        style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
+            if DirOpenDialog.ShowModal() == wx.ID_CANCEL:
+                DirOpenDialog.Destroy()
+                return
+
+            self.zipPath = DirOpenDialog.GetPath()
+            self.zipAddr.ChangeValue(self.zipPath)
+
             DirOpenDialog.Destroy()
-            return
 
-        self.zipPath = DirOpenDialog.GetPath()
-        self.zipAddr.ChangeValue(self.zipPath)
-
-        DirOpenDialog.Destroy()
-
-    def Zip(self, evt):
         if not self.parent.partyInfo.reviewedCB.GetValue():
             info = wx.MessageDialog(None, self.reviewMessage, self.reviewTitle,
                                     wx.OK)
@@ -180,22 +183,22 @@ class AttachmentPanel(wx.Panel):
             info.ShowModal()
             return
 
-        dlg = wx.MessageDialog(None, self.createConfirm, 'Create Confirmation', wx.YES_NO)
-        res = dlg.ShowModal()
-        if res != wx.ID_YES:
-            return
+        #dlg = wx.MessageDialog(None, self.createConfirm, 'Create Confirmation', wx.YES_NO)
+        #res = dlg.ShowModal()
+        #if res != wx.ID_YES:
+        #    return
         
         date = self.parent.genInfo.datePicker.GetValue().Format(self.fm)
 
         Tag = stnNum + "_" + date + "_FV"
-        filePath = self.parent.dir + "\\" + Tag
+        filePath = "c:\\temp\\eHSN\\"
         boxList = [self.attachBox1, self.attachBox2, self.attachBox3, self.attachBox4, self.attachBox5, self.attachBox6, self.attachBox7]
         pathList = []
         for box in boxList:
             pathList.append(box.returnPath())
 
-        pdfPath = filePath + ".pdf"
-        xmlPath = filePath + ".xml"
+        pdfPath = os.path.join(filePath, Tag+".pdf")
+        xmlPath = os.path.join(filePath, Tag+".xml")
 
         for pathGroup in pathList:
             for path in pathGroup:
@@ -321,7 +324,7 @@ class AttachmentPanel(wx.Panel):
 
         try:
             zipfile = ZipFile(zipPath + "\\" + Tag + '.zip', 'w')
-            zipfile.write(ntpath.basename(pdfPath), Tag + "\\" + ntpath.basename(pdfPath))
+            zipfile.write(pdfPath, Tag + "\\" + ntpath.basename(pdfPath))
             zipfile.write(xmlPath, ntpath.basename(xmlPath))
     
             for path in loggerDownload:
@@ -340,14 +343,26 @@ class AttachmentPanel(wx.Panel):
             for folder in mmtFolder:
                 if valid(folder):
                     count += 1
-                    for file in os.listdir(folder):
-                        zipfile.write(folder + "\\" + file, Tag + "\\" + Tag + "_M" + str(count) + "\\" + file)
+                    # Save the zipped folder in the temp directory
+                    zip_folder_name = stnNum + "_" + date + "_M" + str(count)
+                    make_archive(filePath + zip_folder_name, 'zip', folder)
+                    # Add this zipped folder to the main zip
+                    zipfile.write(filePath + zip_folder_name + '.zip', Tag + "\\" + zip_folder_name + '.zip')
+                    # Remove the folder zip from temp
+                    if os.path.exists(filePath + zip_folder_name + '.zip'):
+                        os.remove(filePath + zip_folder_name + '.zip')
             count = 0
             for folder in loggerFolder:
                 if valid(folder):
                     count += 1
-                    for file in os.listdir(folder):
-                        zipfile.write(folder + "\\" + file, Tag + "\\" + Tag + "_LG" + str(count) + "\\" + file)
+                    # Save the zipped folder in the temp directory
+                    zip_folder_name = stnNum + "_" + date + "_LG" + str(count)
+                    make_archive(filePath + zip_folder_name, 'zip', folder)
+                    # Add this zipped folder to the main zip
+                    zipfile.write(filePath + zip_folder_name + '.zip', Tag + "\\" + zip_folder_name + '.zip')
+                    # Remove the folder zip from temp
+                    if os.path.exists(filePath + zip_folder_name + '.zip'):
+                        os.remove(filePath + zip_folder_name + '.zip')
             for path in SIT:
                 if valid(path):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
@@ -371,12 +386,19 @@ class AttachmentPanel(wx.Panel):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
 
             zipfile.close()
-            info = wx.MessageDialog(None, self.successMessage + Tag + " at " + zipPath, self.successTitle, wx.OK)
+            info = wx.MessageDialog(None, self.successMessage + "The field visit package: " + Tag + " was successfully created and saved here: " + zipPath, self.successTitle, wx.OK)
             self.zipPath = zipPath + "\\" + Tag + '.zip'
             info.ShowModal()
-        except:
+        except Exception as e:
+            print(type(e))
+            print(e)
             info = wx.MessageDialog(None, self.errorMessage, self.errorTitle, wx.OK)
             info.ShowModal()
+        
+        if os.path.exists(pdfPath):
+            os.remove(pdfPath)
+        if os.path.exists(xmlPath):
+            os.remove(xmlPath)
 
 def main():
     app = wx.App()

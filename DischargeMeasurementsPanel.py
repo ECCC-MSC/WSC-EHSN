@@ -648,7 +648,7 @@ All uncertainty values reported here are 2-sigma value
             if meanHour < 10:
                 meanHour = "0" + str(meanHour)
 
-            meanMinute = round(meanMinute % 60)
+            meanMinute = math.floor(meanMinute % 60)
             if meanMinute < 10:
                 meanMinute = "0" + str(meanMinute)
 

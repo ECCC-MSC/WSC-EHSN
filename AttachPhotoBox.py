@@ -12,7 +12,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.parent = parent
         self.func = func
         self.manager = None
-        self.barSize = (655, -1)
+        self.barSize = (535, -1)
         self.buttonSize = (30, 24)
         self.browseSize = (-1, 24)
         self.buttonList = []
@@ -20,7 +20,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.browseList = []
         self.columnList = []
         self.typeList = []
-        self.type = ["Site", "Structures, Site Facilities", "Control Conditions", "Cableway", "Device", "Device Conditions", "Hydrometric Survey Note"]
+        self.type = ["Structures, Site Facilities", "Site", "Control Conditions", "Cableway", "Device", "Device Conditions", "Hydrometric Survey Note"]
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
 
         self.InitUI()
@@ -36,7 +36,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
         self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
         self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN|wx.TE_READONLY, choices=self.type))
-        self.typeList[-1].SetValue("Site")
+        self.typeList[-1].SetValue("Control Conditions")
         self.addrList.append(wx.TextCtrl(self, size=self.barSize))
         self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
@@ -62,7 +62,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
         self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
         self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN | wx.TE_READONLY, choices=self.type))
-        self.typeList[-1].SetValue("Site")
+        self.typeList[-1].SetValue("Control Conditions")
         self.addrList.append(wx.TextCtrl(self, size=self.barSize))
         self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 
@@ -82,7 +82,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
             self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
             self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
             self.typeList.append(wx.ComboBox(self, style=wx.CB_DROPDOWN | wx.TE_READONLY, choices=self.type))
-            self.typeList[-1].SetValue("Site")
+            self.typeList[-1].SetValue("Control Conditions")
             self.addrList.append(wx.TextCtrl(self, size=self.barSize))
             self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
 

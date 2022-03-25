@@ -59,33 +59,7 @@ import shutil
 from zipfile import ZipFile
 import importlib
 
-# Used to create the pdf
-from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets
-from multiprocessing import Process
-
-
-# Create the PDF from HTML using PyQt5
-# Taken and modified from https://stackoverflow.com/questions/63382399/how-to-convert-a-local-html-file-to-pdf-using-pyqt5
-def html_to_pdf(html, pdf):
-
-    dummy_app_for_pdf = QtWidgets.QApplication(sys.argv)
-    dummy_page_for_pdf = QtWebEngineWidgets.QWebEnginePage()
-
-    def handle_print_finished(filename, status):
-        print("finished", filename, status)
-        QtWidgets.QApplication.quit()
-
-    def handle_load_finished(status):
-        if status:
-            dummy_page_for_pdf.printToPdf(pdf)
-        else:
-            print("Failed")
-            QtWidgets.QApplication.quit()
-
-    dummy_page_for_pdf.pdfPrintingFinished.connect(handle_print_finished)
-    dummy_page_for_pdf.loadFinished.connect(handle_load_finished)
-    dummy_page_for_pdf.load(QtCore.QUrl.fromLocalFile(html))
-    dummy_app_for_pdf.exec_()
+from xhtml2pdf import pisa 
 
 
 
@@ -115,7 +89,7 @@ if 0:
 
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v2.3.0"
+EHSN_VERSION = "v2.2.0"
 eHSN_WINDOW_SIZE = (1100, 730)
 
 # import wx.lib.inspection
@@ -176,7 +150,6 @@ class ElectronicHydrometricSurveyNotes:
         self.midSectionDetailXml = {}
         self.midSectionRawData = None
 
-        self.gui.titleHeader.enteredInHWSCB.Bind(wx.EVT_CHECKBOX, self.LockEvent)
 
 
         # try:
@@ -284,31 +257,33 @@ class ElectronicHydrometricSurveyNotes:
 
         xml = self.EHSNToXML()
         print(xslPath)
+        
+        self.gui.createProgressDialogPDF('PDF Creation In Progress...', 'Transform XML to HTML string')
+
         # transform = etree.XSLT(etree.parse(xslPath))
         transform = etree.XSLT(etree.parse(xslPath))
         result = transform(etree.fromstring(xml))
+
+        self.gui.updateProgressDialog('Set Logo and QR paths')
 
         # result = str(result).replace("%5C", "\\")
         result = str(result).replace("logo_path", self.gui.logo_path)
         result = result.replace("qr_path", self.gui.qr_path)
 
-        # Save html temporarily
-        # Set the path to the file, open and write it as utf8, and close the file
-        temp_folder = "c:\\temp\\eHSN\\"
-        temp_filename = os.path.join(temp_folder, "temp_file_to_be_deleted.html")
-        temp_file = open(temp_filename,"w",encoding='utf-8')
-        temp_file.write(result)
-        temp_file.close()
+        self.gui.updateProgressDialog('Converting HTML to PDF file')
 
-        # Convert the HTML to PDF in a separate thread
-        # https://stackoverflow.com/questions/2846653/how-can-i-use-threading-in-python
-        p = Process(target=html_to_pdf, args=(temp_filename,filePath))
-        p.start()
-        p.join()
+        # open output file for writing (truncated binary)
+        resultFile = open(filePath, "w+b")
 
-        # Remove the temp file
-        os.remove(temp_filename)
+        # convert HTML to PDF
+        pisa.CreatePDF(
+                src=result,                # the HTML to convert
+                dest=resultFile, show_error_as_pdf = True)           # file handle to receive result
 
+        resultFile.close()
+
+        self.gui.updateProgressDialog('Successfully created PDF file')
+        self.gui.deleteProgressDialog()
 
 
 
@@ -330,28 +305,30 @@ class ElectronicHydrometricSurveyNotes:
         if mode == "DEBUG":
             print("Saving PDF")
 
+        self.gui.createProgressDialogPDF('PDF Creation In Progress...', 'Transform XML to HTML string')
+
         transform = etree.XSLT(etree.parse(xslPath))
         result = transform(etree.fromstring(xml))
+
+        self.gui.updateProgressDialog('Set Logo and QR paths')
 
         result = str(result).replace("logo_path", self.gui.logo_path)
         result = result.replace("qr_path", self.gui.qr_path)
 
-        # Save html temporarily
-        # Set the path to the file, open and write it as utf8, and close the file
-        temp_folder = "c:\\temp\\eHSN\\"
-        temp_filename = os.path.join(temp_folder, "temp_file_to_be_deleted.html")
-        temp_file = open(temp_filename,"w",encoding='utf-8')
-        temp_file.write(result)
-        temp_file.close()
+        self.gui.updateProgressDialog('Converting HTML to PDF file')
 
-        # Convert the HTML to PDF in a separate thread
-        # https://stackoverflow.com/questions/2846653/how-can-i-use-threading-in-python
-        p = Process(target=html_to_pdf, args=(temp_filename,filePath))
-        p.start()
-        p.join()
+        # open output file for writing (truncated binary)
+        resultFile = open(filePath, "w+b")
 
-        # Remove the temp file
-        os.remove(temp_filename)
+        # convert HTML to PDF
+        pisa.CreatePDF(
+                src=result,                # the HTML to convert
+                dest=resultFile, show_error_as_pdf = True)           # file handle to receive result
+
+        resultFile.close()
+
+        self.gui.updateProgressDialog('Successfully created PDF file')
+        self.gui.deleteProgressDialog()
         
 
 
@@ -619,16 +596,13 @@ class ElectronicHydrometricSurveyNotes:
         self.gui.deleteProgressDialog()
         return None
 
-    # Checks the "Entered in HWS" checkbox at top of front page
+    # Locks after uploading to Aquarius
     def ExportToAquariusSuccess(self):
-        self.titleHeaderManager.enteredInHWSCB = True
         self.Lock()
 
     # Locks all the pages except the title header.
     def LockEvent(self, e):
-        if self.gui.titleHeader.enteredInHWSCB.GetValue():
-            self.Lock()
-        elif e is not None:
+        if e is not None:
             dlg = wx.MessageDialog(None, self.lockWarningMessage, self.lockWarningTitle, wx.YES_NO)
             res = dlg.ShowModal()
             if res==wx.ID_YES:
@@ -638,8 +612,6 @@ class ElectronicHydrometricSurveyNotes:
                 self.gui.form3.Enable()
                 self.gui.form4.Enable()
                 self.gui.form5.Enable()
-            else:
-                self.gui.titleHeader.enteredInHWSCB.SetValue(True)
         else:
             for widget in self.gui.form.GetChildren():
                 widget.Enable()
@@ -730,6 +702,10 @@ class ElectronicHydrometricSurveyNotes:
         #Page 2
         #LevelNotes
         LevelNotes = SubElement(EHSN, 'LevelNotes')
+
+        # Conventional Leveling vs Total Station
+        ConventionalTotal = SubElement(LevelNotes, 'ConventionalTotal')
+        self.ConventionalTotalAsXMLTree(ConventionalTotal)
 
         #Level Checks
         LevelChecks = SubElement(LevelNotes, 'LevelChecks')
@@ -960,6 +936,9 @@ class ElectronicHydrometricSurveyNotes:
     def PartyInfoFromXML(self, PartyInfo):
         XMLManager.PartyInfoFromXML(PartyInfo, self.partyInfoManager)
 
+
+    def ConventionalTotalAsXMLTree(self, ConventionalTotal):
+        XMLManager.ConventionalTotalAsXMLTree(ConventionalTotal, self.waterLevelRunManager)
 
     def LevelChecksAsXMLTree(self, LevelChecks):
         XMLManager.LevelChecksAsXMLTree(LevelChecks, self.waterLevelRunManager)

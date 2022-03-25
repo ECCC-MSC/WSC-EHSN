@@ -40,12 +40,13 @@ class AquariusUploadDialog(wx.Dialog):
          (e.g. HFC 3, WinRiver II, FlowTracker)"""
 
         self.dir = dir if dir is not None else str(os.getcwd())
-        self.header = "The survey note will be saved as xml and a pdf will be created at the time of upload"
+        self.header = "Field Visit Package (zip file) will be saved to:"
         self.desc = "All eHSN files must be saved at the time of upload. Where would you like this file to be saved?"
         self.changeButtonDesc = "Change"
         self.changeTitleLbl = "Choose directory & change name for xml and pdf file"
         self.uploadConfirm = "Are you sure you want to upload this file?"
-        self.zipConfirm = "Before uploading, do you want to zip the attachments at"
+        self.zipConfirm = "Yes, create a new field visit package in "
+        self.zipCancel = "No, select existing field visit package"
         self.autoOpenLbl = "Auto Open PDF?"
         self.uploadLevelNotesLbl = 'Upload Level Notes'
 
@@ -246,12 +247,12 @@ class AquariusUploadDialog(wx.Dialog):
     # Implementing Zip
     def UploadAQ(self, evt):
         chosenFile = ""
-        zipDlg = wx.MessageDialog(self, self.zipConfirm + "\n\"" + self.zipCtrl.GetValue() + "\" ?",
-                                  'Zipping files', wx.YES_NO)
+        zipDlg = wx.MessageDialog(self, self.zipConfirm + self.zipCtrl.GetValue() + "\n \n" + self.zipCancel,
+                                  'Creation of Field Visit Package (zip file)', wx.YES_NO)
         res = zipDlg.ShowModal()
         if res == wx.ID_YES:
             self.GetParent().attachment.zipAddr.SetValue(self.zipCtrl.GetValue())
-            self.GetParent().attachment.Zip(None)
+            self.GetParent().attachment.Zip(None, False)
             if not os.path.exists(self.GetParent().attachment.zipPath):
                 return
         else:

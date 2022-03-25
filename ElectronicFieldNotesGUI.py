@@ -65,7 +65,7 @@ ID_FILE_NEW = wx.NewId()
 ID_FILE_OPEN = wx.NewId()
 ID_FILE_SAVE = wx.NewId()
 ID_FILE_EXIT = wx.NewId()
-ID_FILE_EXPORT_PDF = wx.NewId()
+#ID_FILE_EXPORT_PDF = wx.NewId()
 ID_FILE_EXPORT_PDF_SUMM = wx.NewId()
 ID_FILE_EXPORT_PDF_VIEW = wx.NewId()
 ID_FILE_EXPORT_XML = wx.NewId()
@@ -193,13 +193,13 @@ class EHSNGui(wx.Frame):
         self.fXmlDesc = 'Save the current eHSN field note as an XML file.'
         self.fSaveLabel = 'Save\tCtrl+S'
         self.fSaveDesc = 'Save the current eHSN field note as an XML file.'
-        self.fPdfLabel = 'Generate PDF - Booklet Type\tCtrl+P'
-        self.fPdfDesc = 'Generate a PDF of the current field note in the same size format as previous paper field notes.'
+        #self.fPdfLabel = 'Generate PDF - Booklet Type\tCtrl+P'
+        #self.fPdfDesc = 'Generate a PDF of the current field note in the same size format as previous paper field notes.'
         self.fPdfsLabel = "Generate PDF - Front Page Only"
         self.fPdfsDesc = "Generate a PDF of the front page of the current field note(good for providing to partners and clients)."
-        self.fPdfvLabel = "Generate PDF - Complete Note on Full Page"
+        self.fPdfvLabel = "Generate PDF - Complete Note on Full Page\tCtrl+P"
         self.fPdfvDesc = "Generate pdf for the current field visit as 8.5 x 11 size format."
-        self.fAquLabel = '&Upload eHSN to AQUARIUS\tCtrl+U'
+        self.fAquLabel = '&Upload eHSN && FV Package to AQUARIUS\tCtrl+U'
         self.fAquDesc = 'Upload this Field Visit\'s information to AQUARIUS (saves XML and PDF at the same time)'
         self.fExitLabel = '&Quit\tCtrl+Q'
         self.fExitDesc = 'Exit Program'
@@ -251,7 +251,7 @@ class EHSNGui(wx.Frame):
         self.iEhsnLabel = "Merge eHSN Midsection (*.xml)"
         self.iEhsnDesc = "Merge eHSN Midsection (*.xml)"
 
-        self.FVpackLabel = "Create Field Visit Package"
+        self.FVpackLabel = "Create Field Visit Package (ready for RFT)"
         self.FVpackDesc = "Create a ZIP file with eHSN XML and PDF, along with all files in the attachment tab (if there are any), for Aquarius Field Visit Upload."
 
         self.fullStyleSheetFileName = 'WSC_EHSN.xsml'
@@ -281,7 +281,7 @@ class EHSNGui(wx.Frame):
         self.fileAQStnTitle = "Station information missing"
         self.fileAQTZMessage = "Please select timezone"
         self.fileAQTZTitle = "Time zone missing"
-        self.fileAQUploadTitle = "Upload eHSN to AQUARIUS"
+        self.fileAQUploadTitle = "Upload eHSN and FV Package to AQUARIUS"
         self.fileAQUpSuccessMessage = "Upload Successful"
         self.fileAQUpSuccessTitle = "Upload Complete"
         self.errorTitle = "Error"
@@ -452,14 +452,14 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         fsave = fileMenu.Append(ID_FILE_SAVE, self.fSaveLabel, self.fXmlDesc)
         fxml = fileMenu.Append(ID_FILE_EXPORT_XML, self.fXmlLabel, self.fXmlDesc)
         fileMenu.AppendSeparator()
-        fpdf = fileMenu.Append(ID_FILE_EXPORT_PDF, self.fPdfLabel, self.fPdfDesc)
-        fpdfs = fileMenu.Append(ID_FILE_EXPORT_PDF_SUMM, self.fPdfsLabel, self.fPdfsDesc)
+        fvpack = fileMenu.Append(ID_FV_PACKAGE, self.FVpackLabel, self.FVpackDesc)
         fileMenu.AppendSeparator()
+        #fpdf = fileMenu.Append(ID_FILE_EXPORT_PDF, self.fPdfLabel, self.fPdfDesc)
+        fpdfs = fileMenu.Append(ID_FILE_EXPORT_PDF_SUMM, self.fPdfsLabel, self.fPdfsDesc)
+        #fileMenu.AppendSeparator()
         fpdfview = fileMenu.Append(ID_FILE_EXPORT_PDF_VIEW, self.fPdfvLabel, self.fPdfvDesc)
         fileMenu.AppendSeparator()
         faqu = fileMenu.Append(ID_FILE_EXPORT_AQUARIUS, self.fAquLabel, self.fAquDesc)
-        fileMenu.AppendSeparator()
-        fvpack = fileMenu.Append(ID_FV_PACKAGE, self.FVpackLabel, self.FVpackDesc)
         fileMenu.AppendSeparator()
         # fsexit = fileMenu.Append(ID_FILE_SAVE_EXIT, self.fSaveExitLabel, self.fSaveExitDesc)
         fsexit = fileMenu.Append(wx.MenuItem(fileMenu, ID_FILE_SAVE_EXIT, self.fSaveExitLabel, self.fSaveExitDesc))
@@ -539,7 +539,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.Bind(wx.EVT_MENU, self.OnFileOpen, fopen)
         self.Bind(wx.EVT_MENU, self.OnFileSaveAs, fxml)
         self.Bind(wx.EVT_MENU, self.OnFileSave, fsave)
-        self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDF, fpdf)
+        self.Bind(wx.EVT_MENU, self.OnSaveFVPackage, fvpack)
+        #self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDF, fpdf)
         self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDFSumm, fpdfs)
         self.Bind(wx.EVT_MENU, self.OnFileSaveAsPDFView, fpdfview)
         self.Bind(wx.EVT_MENU, self.OnAquariusUpload, faqu)
@@ -599,8 +600,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.IniUploadSavePath()
         self.CreateFrames()
 
-        # Has to come after CreateFrames() otherwise self.attachment.Zip won't be accessable
-        self.Bind(wx.EVT_MENU, self.attachment.Zip, fvpack)
 
 
 
@@ -707,7 +706,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         form6Sizer = wx.BoxSizer(wx.VERTICAL)
         self.form6 = SpecialScrolledPanel(self.layout, style=wx.SIMPLE_BORDER)
         self.form6.SetupScrolling()
-        self.attachment = AttachmentPanel(self, self.mode, self.lang, self.form6, size=(920, -1))
+        self.attachment = AttachmentPanel(self, self.mode, self.lang, self.form6, size=(1, -1))
         form6Sizer.Add(self.attachment, 1, wx.EXPAND)
         self.form6.SetSizerAndFit(form6Sizer)
         self.form6.SetSizerAndFit(form6Sizer)
@@ -900,7 +899,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.LoadDefaultConfig()
         self.manager.BindAutoSave()
         self.manager.stageMeasManager.AddEntry()
-        self.manager.waterLevelRunManager.AddRun()
         # 6 Entries
         for i in range(9):
             self.manager.movingBoatMeasurementsManager.AddEntry()
@@ -942,7 +940,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.config.metersPathText.SetLabel('No meters information file selected')
             if self.emptyLevel:
                 self.config.levelsPathText.SetForegroundColour("Red")
-                self.config.levelsPathText.SetLabel('No bencmark information file selected')
+                self.config.levelsPathText.SetLabel('No benchmark information file selected')
 
 
             self.config.Layout()
@@ -1257,6 +1255,11 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         return 1
 
 
+    # Save field visit package
+    def OnSaveFVPackage(self, evt):
+        self.attachment.Zip(None)
+
+
     # Save eHSN as PDF as designated by stylesheet
     # Prompts user to locate stylesheet if the default is not in same folder
     # default name is STATIONNUM_YYYYMMDD_eHSN.pdf
@@ -1387,7 +1390,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.CreateQR()
                 try:
                     self.manager.ExportAsPDF(path, self.summStyleSheetFilePath)
-                except:
+                except Exception as e:
+                    print(type(e))
+                    print(e)
                     info = wx.MessageDialog(self, self.savePDFErrorMsg, self.savePDFErrorTitle,
                                      wx.OK | wx.ICON_ERROR)
                     info.ShowModal()
@@ -1452,7 +1457,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             if path != "":
                 try:
                     self.manager.ExportAsPDF(path, self.viewStyleSheetFilePath)
-                except:
+                except Exception as e:
+                    print(type(e))
+                    print(e)
                     info = wx.MessageDialog(self, self.savePDFErrorMsg, self.savePDFErrorTitle,
                                      wx.OK | wx.ICON_ERROR)
                     info.ShowModal()
@@ -1512,10 +1519,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.manager.OpenFile(path)
                 self.instrDep.RefreshDeploymentMethod()
 
-                # After loading XML, If lock was checked, lock everything
-                #if self.titleHeader.enteredInHWSCB.GetValue():
-                #    self.manager.Lock()
-                #else:
                 self.manager.LockEvent(e=None)
 
                 self.SetTitle(self.noteHeaderTxt + "   " + path)
@@ -1623,6 +1626,10 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     def createProgressDialog(self, title, message):
         self.dialog = wx.ProgressDialog(title, message, 1, parent=self.aquariusUploadDialog, style=wx.PD_AUTO_HIDE|wx.PD_APP_MODAL)
+        self.dialog.Pulse()
+    
+    def createProgressDialogPDF(self, title, message):
+        self.dialog = wx.ProgressDialog(title, message, 1, parent=None, style=wx.PD_AUTO_HIDE|wx.PD_APP_MODAL)
         self.dialog.Pulse()
 
     def updateProgressDialog(self, message):
@@ -2052,7 +2059,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.waterLevelRun.levelNotes.updateBMs(self.bm, self.bmIndex)
             self.waterLevelRun.updateBMs(self.bm, self.bmIndex)
             wlrManager = self.manager.waterLevelRunManager
-            panel = wlrManager.levelnotes.panel
+            panel = wlrManager.levelNotes.panel
             for station in panel.stationList:
                 station.Bind(wx.EVT_TEXT, self.OnLevelNoteStationSelect)
                 # wlrManager.GetEstablishedElevationBtn(i, rowIndex).Bind(wx.EVT_BUTTON, self.OnLevelNoteEstablishedBtn)
@@ -2358,11 +2365,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
     def CreateQR(self):
-        manager = self.manager
-        code = "MATMSG:TO:dummy@dummy.com;SUB: Field visit for: " + manager.genInfoManager.datePicker + ";BODY: <?xml version="'"1.0"'"?><?xml-stylesheet type="'"text/xsl"'" href="'"WSC_EHSN.xsml"'"?><EHSN version="'"v1.2.1.1"'"><TitleHeader><enteredInHWS>False</enteredInHWS></TitleHeader><GenInfo><station number="'"08OA003"'">PREMIER CREEK NEAR QUEEN CHARLOTTE</station><date>timezone="'"PST"'">2016/05/09</date></GenInfo><StageMeas><HgCkbox>True</HgCkbox><Hg2Ckbox>False</Hg2Ckbox><Wlr1Ckbox>False</Wlr1Ckbox><Wlr2Ckbox>False</Wlr2Ckbox><HG1Header/><HG2Header/><WL1Header/><WL2Header/><StageMeasTable><StageMeasRow row="'"0"'"><time>15:23</time><HG1>12.000</HG1><HG2/><WL1/><WL2/><SRC/><SRCApp/><MghCkbox>True</MghCkbox></StageMeasRow></StageMeasTable><hgCkbox>True</hgCkbox><hg2Ckbox>False</hg2Ckbox><wlr1Ckbox>False</wlr1Ckbox><wlr2Ckbox>False</wlr2Ckbox><MGHHG1>12.0</MGHHG1><MGHHG2/><MGHWL1/><MGHWL2/><SRCHG1>0.000</SRCHG1><SRCHG2/><GCHG1>0.000</GCHG1><GCHG2/><GCWL1/><GCWL2/><CMGHHG1>12.0</CMGHHG1><CMGHHG2/><CMGHWL1/><CMGHWL2/><MghMethod>Average</MghMethod><Factors/></StageMeas><DisMeas><startTime>15:44</startTime><endTime>04:00</endTime><airTemp/><waterTemp/><width/><area/><meanVel/><mgh/><mghCmbo/><discharge>12.0</discharge><mmtTimeVal>21:52</mmtTimeVal><shift>3</shift><diff>3</diff><curve>3</curve></DisMeas><PartyInfo><party/><completed/><checked/><reviewed>True</reviewed></PartyInfo></EHSN>;;"
-
-        self.img = qrcode.make(code)
-        self.img.save(self.qr_path, "jpeg")
+        link = "https://wateroffice.ec.gc.ca/report/real_time_e.html?stn=" + str(self.manager.genInfoManager.stnNumCmbo)
+        self.img = qrcode.make(link)
+        self.img.save(self.qr_path)
 
 
     #Import any external file from the menu list

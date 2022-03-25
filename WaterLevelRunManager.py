@@ -109,7 +109,13 @@ class WaterLevelRunManager(object):
     def GetLevelNotesElevationCheckbox(self, run, row):
         return self.levelNotes.circuitList[run][row][7]
 
+    #Uncheck the checkbox for specific circuit and row number:
+    def SetLevelNotesEstablishCheckbox(self, run, row):
+        self.levelNotes.circuitList[run][row][9] = False
 
+    #Uncheck the checkbox for specific circuit and row number:
+    def SetLevelNotesElevationCheckbox(self, run, row):
+        self.levelNotes.circuitList[run][row][7] = False
 
     #Return the Established Elevation for specific circuit and row number:
     def GetLevelNotesEstablishedElevation(self, run, row):
@@ -173,6 +179,15 @@ class WaterLevelRunManager(object):
                             self.SetElevationVal(index, establishedEle)
                         else:
                             self.SetElevationVal(index, elevation)
+                        
+                        # Uncheck all the checkboxes (both in the lists and in the display)
+                        if bool(ckbox1):
+                            self.levelNotes.panel.clearEstablishCkbox(rowIndex)
+                            self.SetLevelNotesEstablishCheckbox(circuitIndex, rowIndex)
+                        if bool(ckbox2):
+                            self.levelNotes.panel.clearElevationCkbox(rowIndex)
+                            self.SetLevelNotesElevationCheckbox(circuitIndex, rowIndex)
+                        
         if len(stations) > 0 and find:
 
             td = TransferDialog(times, stations, elevations, establishedEles, closures, self.gui, size=(-1, 400), style=wx.RESIZE_BORDER|wx.CLOSE_BOX|wx.CAPTION)
