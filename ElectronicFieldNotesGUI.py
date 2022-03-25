@@ -197,7 +197,7 @@ class EHSNGui(wx.Frame):
         #self.fPdfDesc = 'Generate a PDF of the current field note in the same size format as previous paper field notes.'
         self.fPdfsLabel = "Generate PDF - Front Page Only"
         self.fPdfsDesc = "Generate a PDF of the front page of the current field note(good for providing to partners and clients)."
-        self.fPdfvLabel = "Generate PDF - Complete Note on Full Page"
+        self.fPdfvLabel = "Generate PDF - Complete Note on Full Page\tCtrl+P"
         self.fPdfvDesc = "Generate pdf for the current field visit as 8.5 x 11 size format."
         self.fAquLabel = '&Upload eHSN && FV Package to AQUARIUS\tCtrl+U'
         self.fAquDesc = 'Upload this Field Visit\'s information to AQUARIUS (saves XML and PDF at the same time)'

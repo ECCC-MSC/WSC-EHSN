@@ -449,7 +449,7 @@
 				<th>Area (m<sup>2</sup>)</th>
 				<th>Mean Velocity (m/s)</th>
 				<th>Corrected MGH (m)</th>
-				<th>Discharge1 (m<sup>3</sup>/s)</th>
+				<th>Discharge (m<sup>3</sup>/s)</th>
 			</tr>
 			<tr>
 				<td align="center"><xsl:value-of select="startTime"/></td>
