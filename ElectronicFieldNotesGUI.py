@@ -196,7 +196,7 @@ class EHSNGui(wx.Frame):
         #self.fPdfLabel = 'Generate PDF - Booklet Type\tCtrl+P'
         #self.fPdfDesc = 'Generate a PDF of the current field note in the same size format as previous paper field notes.'
         self.fPdfsLabel = "Generate PDF - Front Page Only"
-        self.fPdfsDesc = "Generate a PDF of the front page of the current field note(good for providing to partners and clients)."
+        self.fPdfsDesc = "Generate a PDF of the front page of the current field note (good for providing to partners and clients)."
         self.fPdfvLabel = "Generate PDF - Complete Note on Full Page\tCtrl+P"
         self.fPdfvDesc = "Generate pdf for the current field visit as 8.5 x 11 size format."
         self.fAquLabel = '&Upload eHSN && FV Package to AQUARIUS\tCtrl+U'
@@ -1335,8 +1335,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
     # Save eHSN as PDF as designated by stylesheet
     # Prompts user to locate stylesheet if the default is not in same folder
-    # Stylesheet to be used to is be only the first page
-    # default name is STATIONNUM_YYYYMMDD_eHSN_SUMMARY.pdf
+    # Stylesheet to be used is WSC_EHSN_Summary.xsml
+    # default name is STATIONNUM_YYYYMMDD_FV_FRONTPAGE.pdf
     def OnFileSaveAsPDFSumm(self, evt):
         # Locate stylesheet based on stylesheet_path
         found_stylesheet = os.path.exists(self.summStyleSheetFilePath)
@@ -1402,7 +1402,10 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
 
-
+    # Save eHSN as PDF as designated by stylesheet
+    # Prompts user to locate stylesheet if the default is not in same folder
+    # Stylesheet to be used is WSC_EHSN_VIEW.xsml
+    # default name is STATIONNUM_YYYYMMDD_FV.pdf
     def OnFileSaveAsPDFView(self, evt):
 
         # Locate stylesheet based on stylesheet_path
@@ -1455,6 +1458,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 print("path exp")
                 print(path)
             if path != "":
+                self.CreateQR()
                 try:
                     self.manager.ExportAsPDF(path, self.viewStyleSheetFilePath)
                 except Exception as e:
