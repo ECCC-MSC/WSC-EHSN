@@ -20,6 +20,7 @@ from os import environ
 from os.path import join
 from os.path import dirname
 import wx.lib.scrolledpanel as scrolled
+from shutil import make_archive
 
 def valid(path):
     if path != None and path != "" and not path.isspace():
@@ -342,14 +343,26 @@ class AttachmentPanel(scrolled.ScrolledPanel):
             for folder in mmtFolder:
                 if valid(folder):
                     count += 1
-                    for file in os.listdir(folder):
-                        zipfile.write(folder + "\\" + file, Tag + "\\" + stnNum + "_" + date + "_M" + str(count) + "\\" + file)
+                    # Save the zipped folder in the temp directory
+                    zip_folder_name = stnNum + "_" + date + "_M" + str(count)
+                    make_archive(filePath + zip_folder_name, 'zip', folder)
+                    # Add this zipped folder to the main zip
+                    zipfile.write(filePath + zip_folder_name + '.zip', Tag + "\\" + zip_folder_name + '.zip')
+                    # Remove the folder zip from temp
+                    if os.path.exists(filePath + zip_folder_name + '.zip'):
+                        os.remove(filePath + zip_folder_name + '.zip')
             count = 0
             for folder in loggerFolder:
                 if valid(folder):
                     count += 1
-                    for file in os.listdir(folder):
-                        zipfile.write(folder + "\\" + file, Tag + "\\" + stnNum + "_" + date + "_LG" + str(count) + "\\" + file)
+                    # Save the zipped folder in the temp directory
+                    zip_folder_name = stnNum + "_" + date + "_LG" + str(count)
+                    make_archive(filePath + zip_folder_name, 'zip', folder)
+                    # Add this zipped folder to the main zip
+                    zipfile.write(filePath + zip_folder_name + '.zip', Tag + "\\" + zip_folder_name + '.zip')
+                    # Remove the folder zip from temp
+                    if os.path.exists(filePath + zip_folder_name + '.zip'):
+                        os.remove(filePath + zip_folder_name + '.zip')
             for path in SIT:
                 if valid(path):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
