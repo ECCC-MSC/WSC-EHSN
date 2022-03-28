@@ -6,7 +6,7 @@ import wx
 class TransferDialog(wx.Dialog):
     def __init__(self, times, stations, elevations, estEles, closures, *args, **kwargs):
         super(TransferDialog, self).__init__(*args, **kwargs)
-        self.headerCol1Lbl = "Station"
+        self.headerCol1Lbl = "WL reference"
         self.headerCol2Lbl = "Difference between observed and established elevations (m)" 
         self.closureLbl = "Closure = "
         self.closureEmptyLbl = "Not Calculated"

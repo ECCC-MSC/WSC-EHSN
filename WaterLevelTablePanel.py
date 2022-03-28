@@ -139,8 +139,8 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         self.elevatedList[-1].Bind(wx.EVT_TEXT, self.OnElevation)
         self.elevatedList[-1].Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
 
-        self.eleSizerList[-1].Add(self.elevatedList[-1], 1, wx.EXPAND)
         self.eleSizerList[-1].Add(self.eleCheckList[-1], 0, wx.EXPAND|wx.ALL, 3)
+        self.eleSizerList[-1].Add(self.elevatedList[-1], 1, wx.EXPAND)
 
         self.commentsList.append(MyTextCtrl(self))
         self.commentsList[-1].Enable(False)

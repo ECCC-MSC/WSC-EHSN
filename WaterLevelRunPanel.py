@@ -133,7 +133,7 @@ class WaterLevelRunPanel(wx.Panel):
         self.levelNotesLbl = "Level Notes"
         self.timeLbl = "Time"
         self.WLRefLbl = "WL Reference Point"
-        self.elevationLbl = "Established Elevation (m)"
+        self.elevationLbl = "Elevation (m)"
         self.DtWSLbl = "Distance to Water Surface (+/- m)"
         self.upDownLbl = "Up to/Down to Water Surface"
         self.surgeLbl = "Surge (+/- m)"
