@@ -628,11 +628,11 @@ class AQUARIUSDataExtractionToolManager(object):
             else:
                 readList = []
 
-                with open(path + '\\stations.txt', 'a+') as f:
-                    reader = csv.reader(f, delimiter=",")
-                    for i, line in enumerate(reader):
+                with open(path + '\\stations.txt') as f:
+                    lines = f.readlines()
+                    for i, line in enumerate(lines):
                         if i > 0:
-                            readList.append(line[0])
+                            readList.append(line.split(',')[0])
 
                 # print "-----------------"
                 # for j in readList:
