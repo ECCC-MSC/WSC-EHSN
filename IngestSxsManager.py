@@ -240,6 +240,12 @@ def AddDischargeDetail(filePath, instrDepManager, disManager):
     numberOfPanels = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('Num_Cells').text
     adcpDepth = root.find('Summary').find('WinRiver_II_Section_by_Section_Summary').find('ADCP_Depth').text
 
+    # Remove * character from the number of panels
+    if '*' in numberOfPanels:
+        # Find index and remove by slicing the string
+        char_index = numberOfPanels.find('*')
+        numberOfPanels = numberOfPanels[0:char_index:] + numberOfPanels[char_index+1::]
+
     # print comments is None
 
     # counter = 0
