@@ -402,7 +402,7 @@ class DischargeMeasurementsManager(object):
         error = None
         if curveIndex is not None:
             error = self.RCVTMan.CalculateShiftDisch(obsHG, obsQ, curveIndex)
-        elif self.curveCtrl.strip() is not "":
+        elif self.curveCtrl.strip() != "":
             error = "Rating curve id is not listed"
 
         self.HandleErrorDuringCalc(error)
