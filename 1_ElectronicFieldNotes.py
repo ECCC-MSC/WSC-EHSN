@@ -1068,10 +1068,9 @@ class ElectronicHydrometricSurveyNotes:
         # update rating curve dropdown in discharge measurements panel
         self.disMeasManager.SetCurveList(self.ratingCurveViewerToolManager.ratingCurveList)
 
-        # Set the value of the rating curve dropdown on the front page 
-        # to the curve that has a period of applicability that is not closed
-        # (or an empty string if none exist)
-        self.disMeasManager.curveCtrl = self.ratingCurveViewerToolManager.currentCurveVal
+        # Set the index of the rating curve dropdown for the front page (if not already chosen by the user)
+        # to the curve that has a period of applicability that is not closed (if found, 0 by default)
+        self.disMeasManager.currentCurveIndex = self.ratingCurveViewerToolManager.currentCurveIndex
 
         # attempt to calculate
         self.disMeasManager.OnUpdateHGQValues()

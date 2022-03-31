@@ -70,9 +70,9 @@ class RatingCurveViewerToolManager(object):
 
         self.ratingCurveList = []
         self.rcIndex = 0
-        # Variable to store the curve id 
+        # Variable to store the curve index 
         # for the curve that has a period of applicability that is not closed
-        self.currentCurveVal = ''
+        self.currentCurveIndex = 0
 
         self.Init()
 
@@ -345,7 +345,6 @@ class RatingCurveViewerToolManager(object):
         self.period = None
         self.curveNum = None
         self.shiftDiffDisch = None
-        self.currentCurveVal = ''
         self.curveIdList = []
 
         # Clear old table
@@ -396,9 +395,9 @@ class RatingCurveViewerToolManager(object):
 
                 # If convertedToDate is an empty string
                 # Then this curve has a period of applicability that is not closed
-                # Save this curve id value
+                # Save the index value of this curve
                 if convertedToDate == '':
-                    self.currentCurveVal = curveId
+                    self.currentCurveIndex = self.ratingCurveList.index(curveId)
                 
                 if self.gui is not None:
                     # Add row to the table in the rating curve viewer tool
@@ -406,9 +405,12 @@ class RatingCurveViewerToolManager(object):
 
         if self.gui is not None:
             # If a curve was found that has a period of applicability that is not closed
-            # Set rcIndex to the index of this curve id   
-            if self.currentCurveVal != '':
-                self.rcIndex = self.ratingCurveList.index(self.currentCurveVal)
+            # and rcIndex is not already equal to the index of this curve
+            if self.rcIndex != self.currentCurveIndex:
+                # Set rcIndex to the index of the curve chosen by the user in the front page
+                self.rcIndex = self.disMeasManager.GetCurrentCurveIndexInList(self.ratingCurveList)
+                # If this index is not in the list, then set rcIndex to the index of the curve
+                self.rcIndex = self.rcIndex if self.rcIndex >= 0 and self.rcIndex < len(self.ratingCurveList) else self.currentCurveIndex
             
             # Set the curve value in the dropdown in the rating curve viewer tool
             self.gui.SetCurveCombo(self.ratingCurveList, self.rcIndex)
