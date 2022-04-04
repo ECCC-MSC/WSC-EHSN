@@ -61,6 +61,9 @@ import importlib
 
 from xhtml2pdf import pisa 
 
+# Aquarius Python Wrapper created by Doug Schmidt
+from timeseries_client import timeseries_client
+from requests.exceptions import HTTPError
 
 
 
@@ -474,34 +477,25 @@ class ElectronicHydrometricSurveyNotes:
         self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
 
         # Login
-        s = requests.Session()
-        data = '{"Username": "' + username + '", "EncryptedPassword": "' + password + '", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = "https://" + server + "/AQUARIUS/Provisioning/v1/session"
         try:
-            s.get(url)
-            req = s.post(url, data = data, headers = headers)
-            token = req.text
-            try:
-                toMessage = req.json()
-                exists = False
-                self.gui.deleteProgressDialog()
-                return "The username or the password is incorrect."
-            except:
-                #print token
-                exists = True
-        except:
-            # print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
+            # Using Aquarius Python Wrapper created by Doug Schmidt
+            aq = timeseries_client('https://' + server, username, password)
+            exists = True
+        except HTTPError as e:
             exists = False
             self.gui.deleteProgressDialog()
-            return "Failed to login."
-            # print exists
+            if e.response.status_code == 401:
+                return "The username or the password is incorrect."
+            else:
+                return "Failed to login."
+
         print("login")
         if exists:
             try:
-                req = requests.get("https://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
+                parameters = {'LocationIdentifier': self.genInfoManager.stnNumCmbo}
+                req = aq.publish.get('/GetLocationDescriptionList', params=parameters)
                 try:
-                    locid = req.json()['LocationDescriptions'][0]['UniqueId']
+                    locid = req['LocationDescriptions'][0]['UniqueId']
                     exists = True
                     # print locid
                 except:
@@ -526,8 +520,9 @@ class ElectronicHydrometricSurveyNotes:
                     # get the field visit data from NG check if the fv already exist
                     # self.gui.updateProgressDialog(self.exportAQFVMessage)
                 try:
-                    req = requests.get("https://" + server + "/AQUARIUS/Publish/v2/GetFieldVisitDescriptionList?LocationIdentifier=" + self.genInfoManager.stnNumCmbo + "&QueryFrom=" + fvDate + "&QueryTo=" + fvDate1 + "&Token=" + token)
-                    fvexData = req.json()['FieldVisitDescriptions'][0]['Identifier']
+                    parameters = {'LocationIdentifier': self.genInfoManager.stnNumCmbo, 'QueryFrom': fvDate, 'QueryTo': fvDate1}
+                    req = aq.publish.get('/GetFieldVisitDescriptionList', params=parameters)
+                    fvexData = req['FieldVisitDescriptions'][0]['Identifier']
                     # print fvexData
                     exists = True
                 except:
@@ -578,12 +573,13 @@ class ElectronicHydrometricSurveyNotes:
 
                     # files = {'file': open(fvPath, 'rb')}
                     files = {'file': open(uploadZipDir, 'rb')}
+                    payload = {}
 
                     print("Uploading")
-                    req = requests.post("https://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=files)
-                    visitUris = req.json()
+                    req = aq.acquisition.post('/locations/' + locid + '/visits/upload/plugins', json=payload, files=files)
+                    visitUris = req
                     try:
-                        visitUris = req.json()['ResponseStatus']['Message']
+                        visitUris = req['ResponseStatus']['Message']
                         self.gui.deleteProgressDialog()
                         return visitUris
                     except:
