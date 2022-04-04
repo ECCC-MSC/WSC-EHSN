@@ -118,7 +118,8 @@ def AddDischargeDetail(path, instrDepManager):
         instrDepManager.serialCmbo = serial
         instrDepManager.GetSerialCmbo().SetBackgroundColour(color)
     if numberOfPanels is not None and numberOfPanels != "":
-        instrDepManager.numOfPanelsScroll = numberOfPanels
+        # Two panels are subtracted as the edges do not need to be considered
+        instrDepManager.numOfPanelsScroll = str(int(numberOfPanels)-2)
         instrDepManager.GetNumOfPanelsScroll().SetBackgroundColour(color)
 
     instrDepManager.instrumentCmbo = "ADV"
