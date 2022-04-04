@@ -4217,7 +4217,7 @@ def convertList(text):
         return []
     lst = list(text.split(", "))
     for i in range(len(lst)):
-        lst[i] = lst[i][2:-1]
+        lst[i] = lst[i][1:-1]
     return lst
 
 
