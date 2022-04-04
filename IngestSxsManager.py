@@ -271,7 +271,8 @@ def AddDischargeDetail(filePath, instrDepManager, disManager):
     #     instrDepManager.numOfPanelsScroll = str(counter)
 
     if numberOfPanels is not None and numberOfPanels != "":
-        instrDepManager.numOfPanelsScroll = numberOfPanels
+        # Two panels are subtracted as the edges do not need to be considered
+        instrDepManager.numOfPanelsScroll = str(int(numberOfPanels)-2)
         instrDepManager.GetNumOfPanelsScroll().SetBackgroundColour(color)
     if frequency is not None and frequency != "":
         instrDepManager.frequencyCmbo = frequency

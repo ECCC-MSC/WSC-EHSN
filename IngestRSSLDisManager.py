@@ -246,7 +246,8 @@ def AddDischargeDetail(path, instrDepManager, disManager):
             disManager.dischRemarksCtrl += "\nRSSL Comments:\n" + comments
 
     if numberOfPanels != "":
-        instrDepManager.numOfPanelsScroll = numberOfPanels
+        # Two panels are subtracted as the edges do not need to be considered
+        instrDepManager.numOfPanelsScroll = str(int(numberOfPanels)-2)
         instrDepManager.GetNumOfPanelsScroll().SetBackgroundColour(color)
 
 
