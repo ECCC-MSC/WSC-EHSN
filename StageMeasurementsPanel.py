@@ -143,7 +143,7 @@ class StageMeasurementsPanel(wx.Panel):
 
         self.weightMGHBtnHint = "*Always enter Weighted M.G.H even if its the same as Corrected M.G.H.*\nYou should always\
  enter Weighted M.G.H even if it is the same as Corrected M.G.H since Corrected M.G.H. is automatically calculated \
-in Aquarius.\n\n1. The value of the Weighted M.G.H. is put in the 'Observed gage height' of the Mean Gage Height section\
+in Aquarius.\n\n1. The value of the Weighted M.G.H. is put in the 'Observed gauge height' of the Mean Gauge Height section\
  within the Discharge page of Aquarius\n2. The Gauge Correction and S.R.C. are put in the 'Adjustment' column in Aquarius\n3. Aquarius adds \
 these numbers together to get the Corrected M.G.H.\n\nSince Corrected M.G.H. is auto-calculated in Aquarius and will \
 be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field here."
