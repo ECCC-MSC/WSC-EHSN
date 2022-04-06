@@ -1773,16 +1773,24 @@ class WaterLevelRunPanel(wx.Panel):
         dlg = wx.MessageDialog(self, self.changeLvlMethodMessage, "Are you sure?", wx.YES_NO|wx.YES_DEFAULT)
         res = dlg.ShowModal()
         if res == wx.ID_YES:
+
             if self.conventionalLevellingRb.GetValue():
                 # Conventional Leveling
                 self.levelNotes.type = 0
             else:
                 # Total Station
                 self.levelNotes.type = 1
-            # Update all circuits
-            self.levelNotes.UpdateCircuitHOIandElevation()
+            
             # Update the displayed table itself
             self.levelNotes.panel.updateHOIandElevation()
+            # Update all circuits
+            self.levelNotes.UpdateCircuitHOIandElevation()
+
+            # Update the closure value displayed in the table
+            self.levelNotes.ClosureUpdate()
+            # Update the closure value in the circuits
+            self.levelNotes.CircuitClosureUpdate()
+
             dlg.Destroy()
         else:
             if not self.conventionalLevellingRb.GetValue():

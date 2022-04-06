@@ -206,10 +206,14 @@ class WaterLevelNotesPanel(wx.Panel):
     def NoScrolling(self, evt):
         pass
 
-    #Recalculate the closure when pressing the closure button for the run
+    # Recalculate the closure when pressing the closure button for the run
     def OnClosure(self, event):
+
+        # Get the starting benchmark and starting elevation
         startBenchmark = self.panel.stationList[0].GetValue()
         startElevation = self.panel.elevatedList[0].GetValue()
+
+        # If either of these are empty, then display an error message to the user
         if startBenchmark == "":
             warning = wx.MessageDialog(None,"The first station is empty",
                                             "Error", wx.OK | wx.ICON_EXCLAMATION)
@@ -224,25 +228,34 @@ class WaterLevelNotesPanel(wx.Panel):
             if cont == wx.ID_OK:
                 event.Skip()
                 return
+        
         try:
-        # if True:
             startElevation = float(startElevation)
+            # Iterate over every benchmark value in reverse
             for i in range(len(self.panel.stationList) - 1, -1, -1):
                 if i > 0:
                     pairBM = self.panel.stationList[i].GetValue()
 
+                    # If the benchmark value here is equal to the starting benchmark
+                    # Then the closure can be calculated using the corresponding elevation
                     if pairBM == startBenchmark:
                         pairEle = self.panel.elevatedList[i].GetValue()
                         try:
+                            # Calculate the closure
                             pairEle = float(pairEle)
                             closureValue = round(startElevation - pairEle, 3)
+
+                            # Set the closure and set the colour
                             self.closureCtrl.SetValue(str(closureValue))
                             if abs(closureValue) > 0.003:
                                 self.closureCtrl.SetBackgroundColour("red")
 
+                            # Set the upload checkbox as this is automatically checked
+                            # when the closure is calculated
                             self.uploadCkbox.SetValue(True)
                             self.panel.uploadVal = self.uploadCkbox.GetValue()
                             self.uploadList[self.current] = self.panel.uploadVal
+                            
                             # Clear all other upload checkboxes
                             # as only one circuit should be uploaded at a time
                             for i in range(len(self.uploadList)):
@@ -252,6 +265,7 @@ class WaterLevelNotesPanel(wx.Panel):
                             event.Skip()
                             return
                         except:
+                            # Display an error message for the user
                             warning = wx.MessageDialog(None,"The elevation values provided for the 'BMs' is not a valid number.",
                                             "Error", wx.OK | wx.ICON_EXCLAMATION)
                             cont = warning.ShowModal()
@@ -261,7 +275,7 @@ class WaterLevelNotesPanel(wx.Panel):
 
             event.Skip()
 
-
+            # Display an error message for the user
             warning = wx.MessageDialog(None,"The beginning and ending BM/Reference names are not identical.",
                                             "Error", wx.OK | wx.ICON_EXCLAMATION)
             cont = warning.ShowModal()
@@ -270,6 +284,7 @@ class WaterLevelNotesPanel(wx.Panel):
 
         except Exception as e:
             print(str(e))
+            # Display an error message for the user
             warning = wx.MessageDialog(None,"The elevation values provided for thr 'REF' is not a valid number.",
                                             "Error", wx.OK | wx.ICON_EXCLAMATION)
             cont = warning.ShowModal()
@@ -380,47 +395,203 @@ class WaterLevelNotesPanel(wx.Panel):
         # Iterate over every circuit
         for circuitIndex in range(len(self.circuitList)):
 
-            # Get the circuit
-            given_circuit = self.circuitList[circuitIndex]
+            # Don't update height of instrument or elevation if the circuit is currently displayed
+            # This is updated separately
+            if circuitIndex != self.current:
 
-            # Iterate over every row in the given circuit
-            for rowIndex in range(len(given_circuit)):
+                # Get the circuit
+                given_circuit = self.circuitList[circuitIndex]
 
-                # Get the row
-                row = self.circuitList[circuitIndex][rowIndex]
+                # Iterate over every row in the given circuit
+                for rowIndex in range(len(given_circuit)):
+                    
+                    # Get the row
+                    row = self.circuitList[circuitIndex][rowIndex]
 
-                try:
-                    # Get the float value for elevation and backsight
-                    elevationVal = float(row[6])
-                    backsightVal = float(row[3])
-
-                    # Calculate the height of instrument based on these
-                    if self.type == 0:
-                        # Conventional Leveling
-                        row[4] = str(elevationVal + backsightVal)
-                    else:
-                        # Total Station
-                        row[4] = str(elevationVal - backsightVal)
-                except:
-                    pass
-                
-                # If it is not the first row, then set the foresight as well
-                if rowIndex != 0:
+                    # ---------------------------
+                    # Update height of instrument
+                    # ---------------------------
                     try:
-                        # Get the float value for foresight and height of instrument
-                        foresightVal = float(row[5])
-                        hi = float(row[4])
+                        # Get the float value for backsight
+                        backsightVal = float(row[3])
+                        try:
+                            # Get the float value for elevation
+                            elevationVal = float(row[6])
 
-                        # Calculate the elevation based on these
-                        if self.type == 0:
-                            # Conventional Leveling
-                            row[6] = str(hi - foresightVal)
-                        else:
-                            # Total Station
-                            row[6] = str(hi + foresightVal)
+                            # Calculate the height of instrument based on these
+                            if self.type == 0:
+                                # Conventional Leveling
+                                row[4] = str(elevationVal + backsightVal)
+                            else:
+                                # Total Station
+                                row[4] = str(elevationVal - backsightVal)
+
+                        except:
+                            # If the elevation value cannot be obtained
+                            # then set the height of instrument to the backsight
+                            row[4] = str(backsightVal)
+
                     except:
-                        pass
+                        # If both values cannot be obtained
+                        # then set the height of instrument to an empty string
+                        row[4] = ''
+                    
 
+                    # ----------------
+                    # Update elevation
+                    # ----------------
+
+                    # Get the height of instrument value
+                    hoiVal = row[4]
+
+                    # If height of instrument is an empty string
+                    # then set it to zero
+                    if hoiVal == '':
+                        hoiVal = 0
+
+                    try:
+                        # Get the float value for height of instrument
+                        hoiVal = float(hoiVal)
+
+                        # If the index of the row is less than the second last index in the circuit
+                        if rowIndex < len(self.circuitList[circuitIndex]) - 2:
+
+                            # Iterate from the next index for the row up to the last index in the circuit
+                            for i in range(rowIndex + 1, len(self.circuitList[circuitIndex]) - 1):
+
+                                # Get the forsight value at this given row
+                                foresightVal = self.circuitList[circuitIndex][i][5]
+
+                                # If the foresight is an empty string
+                                # then break out of the loop
+                                if foresightVal == '':
+                                    break
+
+                                try:
+                                    # Get the float value for foresight
+                                    foresightVal = float(foresightVal)
+
+                                    # Calculate the elevation based on these
+                                    if self.type == 0:
+                                        # Conventional Leveling
+                                        self.circuitList[circuitIndex][i][6] = str(hoiVal - foresightVal)
+                                    else:
+                                        # Total Station
+                                        self.circuitList[circuitIndex][i][6] = str(hoiVal + foresightVal)
+                                    
+                                    # Try converting the height of instrument at this index to a float
+                                    # If this succeeds, then break out of the loop
+                                    try:
+                                        float(self.circuitList[circuitIndex][i][4])
+                                        break
+                                    except:
+                                        continue
+                                except:
+                                    continue
+                    except:
+                        continue
+
+
+    # Update the previously calculated closure value for the level notes table 
+    # when conventional leveling is changed to total station and vice versa
+    def ClosureUpdate(self):
+
+        # If there is a closure value already calculated, then it must be recalculated
+        if self.closureList[self.current] != '':
+
+            # Get the starting benchmark and starting elevation
+            startBenchmark = self.panel.stationList[0].GetValue()
+            startElevation = self.panel.elevatedList[0].GetValue()
+
+            # If either of these are empty, then return
+            if startBenchmark == "":
+                return
+            if startElevation == "":
+                return
+            
+            try:
+                startElevation = float(startElevation)
+                # Iterate over every benchmark value in reverse
+                for i in range(len(self.panel.stationList) - 1, -1, -1):
+                    if i > 0:
+                        pairBM = self.panel.stationList[i].GetValue()
+
+                        # If the benchmark value here is equal to the starting benchmark
+                        # Then the closure can be calculated using the corresponding elevation
+                        if pairBM == startBenchmark:
+                            pairEle = self.panel.elevatedList[i].GetValue()
+                            try:
+                                # Calculate the closure
+                                pairEle = float(pairEle)
+                                closureValue = round(startElevation - pairEle, 3)
+
+                                # Set the closure and set the colour
+                                self.closureCtrl.SetValue(str(closureValue))
+                                if abs(closureValue) > 0.003:
+                                    self.closureCtrl.SetBackgroundColour("red")
+
+                                return
+                            except:
+                                return
+                return
+            except:
+                return
+
+
+    # Update all previously calculated closure values for all circuits
+    # when conventional leveling is changed to total station and vice versa
+    def CircuitClosureUpdate(self):
+        
+        # Iterate over every circuit
+        for circuitIndex in range(len(self.circuitList)):
+            
+            # Don't update the closure value if the circuit is currently displayed
+            # This is updated separately
+            if circuitIndex != self.current:
+
+                # If there is a previous value for closure for this circuit, it must be updated
+                if self.closureList[circuitIndex] != '':
+
+                    # Get the circuit list
+                    given_circuit = self.circuitList[circuitIndex]
+
+                    # Get the starting benchmark and starting elevation from the list
+                    startBenchmark = given_circuit[0][0]
+                    startElevation = given_circuit[0][6]
+
+                    # If either of these are empty, then continue to the next circuit
+                    if startBenchmark == "":
+                        continue
+                    if startElevation == "":
+                        continue
+                    
+                    try:
+                        startElevation = float(startElevation)
+                        # Iterate over every row in the circuit in reverse
+                        for i in range(len(given_circuit) - 1, -1, -1):
+                            if i > 0:
+                                # Get the benchmark for this row
+                                pairBM = given_circuit[i][0]
+
+                                # If the benchmark value here is equal to the starting benchmark
+                                # Then the closure can be calculated using the corresponding elevation
+                                if pairBM == startBenchmark:
+                                    # Get the elevation for this row
+                                    pairEle = given_circuit[i][6]
+                                    try:
+                                        # Calculate the closure
+                                        pairEle = float(pairEle)
+                                        closureValue = round(startElevation - pairEle, 3)
+
+                                        # Set the new closure value in the closure list
+                                        self.closureList[circuitIndex] = str(closureValue)
+                                        
+                                        continue
+                                    except:
+                                        continue
+                        continue
+                    except:
+                        continue
 
 def main():
     app = wx.App()
