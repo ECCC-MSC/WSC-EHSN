@@ -170,6 +170,15 @@ def AddDischargeSummary(path, disMeasManager):
     if uncertainty is not None and uncertainty != "":
         disMeasManager.uncertaintyCtrl = str(round(float(uncertainty)*2, 2))
         disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
+    
+        # Adding uncertainty text to Discharge Activity Remarks
+        dischargeUncertainty = '@ Uncertainty: ISO and IVE method, 2-sigma value (2 x Uncertainty Value reported in *.dis File). @'
+        dischargeRemarks = disMeasManager.dischRemarksCtrl
+        if dischargeRemarks != '':
+            disMeasManager.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty
+        else:
+            disMeasManager.dischRemarksCtrl = dischargeUncertainty
+
     # print PmTo24H(startTime)
     # print PmTo24H(endTime)
     # # print waterTemp
