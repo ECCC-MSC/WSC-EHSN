@@ -43,7 +43,6 @@
 			<xsl:apply-templates select="EHSN/TitleHeader"/>
 			<xsl:apply-templates select="EHSN/GenInfo"/>
 			<p/>
-			<br/>
 			<xsl:apply-templates select="EHSN/DisMeas"/>
 			<p/>
 			<br/>
@@ -82,7 +81,6 @@
 			<br/>
 			<xsl:apply-templates select="EHSN/PartyInfo"/>
 			<p/>
-			<br/>
 			<H1>This data may be subject to revision and should be regarded as provisional only</H1>
 
 
@@ -159,11 +157,52 @@
 				<td align="center"><font color="black"><xsl:value-of select="endTime"/></font></td>
 				<td align="center"><font color="black"><xsl:value-of select="airTemp"/></font></td>
 				<td align="center"><font color="black"><xsl:value-of select="waterTemp"/></font></td>
-				<td align="center"><font color="black"><xsl:value-of select="width"/></font></td>
-				<td align="center"><font color="black"><xsl:value-of select="area"/></font></td>
-				<td align="center"><font color="black"><xsl:value-of select="meanVel"/></font></td>
-				<td align="center"><font color="blue"><xsl:value-of select="mgh"/></font></td>
-				<td align="center"><font color="black"><xsl:value-of select="discharge"/><xsl:value-of select="dischCombo"/></font></td>
+				
+				<xsl:choose>
+					<xsl:when test="width/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="width"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="black"><xsl:value-of select="width"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
+				<xsl:choose>
+					<xsl:when test="area/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="area"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="black"><xsl:value-of select="area"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
+				<xsl:choose>
+					<xsl:when test="meanVel/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="meanVel"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="black"><xsl:value-of select="meanVel"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
+				<xsl:choose>
+					<xsl:when test="mgh/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="mgh"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="blue"><xsl:value-of select="mgh"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
+				<xsl:choose>
+					<xsl:when test="discharge/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="discharge"/><xsl:value-of select="dischCombo"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="black"><xsl:value-of select="discharge"/><xsl:value-of select="dischCombo"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
 				<xsl:choose>
 					<xsl:when test="uncertainty/@imported='1'">
 						<td align="center"><font color="green"><xsl:value-of select="uncertainty"/><xsl:value-of select="uncertaintyCtrl"/></font></td>
@@ -177,9 +216,27 @@
 				<th>Mmt Mean Time (hh:mm)</th>
 				<td align="center"><font color="blue"><xsl:value-of select="mmtTimeVal"/></font></td>
 				<th align="center" colspan="2">Calc Shift Base Curve (m)</th>
-				<td align="center"><font color="blue"><xsl:value-of select="shift"/></font></td>
+
+				<xsl:choose>
+					<xsl:when test="shift/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="shift"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="blue"><xsl:value-of select="shift"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
 				<th>Difference Base Curve (%)</th>
-				<td align="center"><font color="blue"><xsl:value-of select="diff"/></font></td>
+
+				<xsl:choose>
+					<xsl:when test="diff/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="diff"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="blue"><xsl:value-of select="diff"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
 				<th>Curve #</th>
 				<td align="center" colspan = "2"><font color="blue"><xsl:value-of select="curve"/></font></td>
 			</tr>
