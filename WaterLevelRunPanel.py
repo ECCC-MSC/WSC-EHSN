@@ -156,7 +156,7 @@ class WaterLevelRunPanel(wx.Panel):
         self.duplicateColMessage = "WL elevations from the same WL Reference Point cannot be mapped to two fields on Front Page"
         self.nameTransferMessage = "Either empty or conflict WL Reference/Logger header names are detected. Do you want to overwrite these names?"
         self.emptyTimeMessage = "Invalid time input!"
-        self.changeLvlMethodMessage = "Selecting this will automatically deselect the other leveling method, and this will cause changes to the calculated values in the Level Notes page. Are you sure you want to change the levelling method?"
+        self.changeLvlMethodMessage = "Selecting this will automatically deselect the other leveling method for ALL CIRCUITS, and this will cause changes to the calculated values in the Level Notes page for ALL CIRCUITS. Are you sure you want to change the levelling method?"
         self.transferLbl = "Transfer Elevations to DWL Table"
         self.transferToFrontLbl = "Transfer to Front Page Stage Table"
         self.wls = ["", "WLR1", "WLR2"]
