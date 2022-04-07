@@ -494,7 +494,7 @@ def AddDischargeSummary(filePath, disMeasManager):
         disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
     
         # Adding uncertainty text to Discharge Activity Remarks
-        dischargeUncertainty = '@ Uncertainty: NA, 2-sigma value (1 x Uncertainty Value reported in *.xml File). @'
+        dischargeUncertainty = '@ Uncertainty: QRev Uncertainty Analysis (DS Mueller, 2016), 2-sigma value (1 x Uncertainty Value reported in *.xml File). @'
         dischargeRemarks = disMeasManager.dischRemarksCtrl
         if dischargeRemarks != '':
             disMeasManager.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty

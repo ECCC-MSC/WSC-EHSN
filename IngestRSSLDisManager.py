@@ -172,7 +172,7 @@ def AddDischargeSummary(path, disMeasManager):
         disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
     
         # Adding uncertainty text to Discharge Activity Remarks
-        dischargeUncertainty = '@ Uncertainty: ISO and IVE method, 2-sigma value (2 x Uncertainty Value reported in *.dis File). @'
+        dischargeUncertainty = '@ Uncertainty: IVE method, 2-sigma value (2 x Uncertainty Value reported in *.dis File). @'
         dischargeRemarks = disMeasManager.dischRemarksCtrl
         if dischargeRemarks != '':
             disMeasManager.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty
