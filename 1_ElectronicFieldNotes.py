@@ -784,13 +784,6 @@ class ElectronicHydrometricSurveyNotes:
         MidsecMeas = EHSN.find('MidsecMeas')
         self.MidsecMeasFromXML(MidsecMeas)
 
-        # Adding uncertainty text to Discharge Activity Remarks
-        dischargeUncertainty = '@ Uncertainty: IVE method, 2-sigma value (1 x Uncertainty Value reported in *.xml File). @'
-        dischargeRemarks = self.disMeasManager.dischRemarksCtrl
-        if dischargeRemarks != '':
-            self.disMeasManager.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty
-        else:
-            self.disMeasManager.dischRemarksCtrl = dischargeUncertainty
 
 
 
