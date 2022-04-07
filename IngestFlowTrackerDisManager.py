@@ -125,8 +125,7 @@ def AddDischargeDetail(path, instrDepManager):
         instrDepManager.serialCmbo = serial
         instrDepManager.GetSerialCmbo().SetBackgroundColour(color)
     if numberOfPanels is not None and numberOfPanels != "":
-        # Two panels are subtracted as the edges do not need to be considered
-        instrDepManager.numOfPanelsScroll = str(int(numberOfPanels)-2)
+        instrDepManager.numOfPanelsScroll = numberOfPanels
         instrDepManager.GetNumOfPanelsScroll().SetBackgroundColour(color)
 
     instrDepManager.instrumentCmbo = "ADV"
@@ -179,6 +178,7 @@ def GetInstrumentValues(path):
             elif data[0] == "Start_Edge":
                 startEdge = data[1]
             elif data[0] == "#_Stations" and finalData[index-1][0] == "Start_Edge":
+                # Two panels are subtracted as the edges do not need to be considered
                 numberOfPanels = str(int(data[1])-2)
 
             elif "ISO" in data[0] and finalData[index+1][0] == "Overall":
