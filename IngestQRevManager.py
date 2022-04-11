@@ -492,8 +492,14 @@ def AddDischargeSummary(filePath, disMeasManager):
         myEvent.SetEventObject(disMeasManager.GetUncertaintyCtrl())
         wx.PostEvent(disMeasManager.GetUncertaintyCtrl(), myEvent)
         disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
-
-
+    
+        # Adding uncertainty text to Discharge Activity Remarks
+        dischargeUncertainty = '@ Uncertainty: QRev Uncertainty Analysis (DS Mueller, 2016), 2-sigma value (1 x Uncertainty Value reported in *.xml File). @'
+        dischargeRemarks = disMeasManager.dischRemarksCtrl
+        if dischargeRemarks != '':
+            disMeasManager.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty
+        else:
+            disMeasManager.dischRemarksCtrl = dischargeUncertainty
 
     # if water is not None:
     #     disMeasManager.waterTempCtrl = water

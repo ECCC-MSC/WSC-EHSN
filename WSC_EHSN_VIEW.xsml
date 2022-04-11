@@ -211,11 +211,52 @@
 				<td align="center"><font color="black"><xsl:value-of select="endTime"/></font></td>
 				<td align="center"><font color="black"><xsl:value-of select="airTemp"/></font></td>
 				<td align="center"><font color="black"><xsl:value-of select="waterTemp"/></font></td>
-				<td align="center"><font color="black"><xsl:value-of select="width"/></font></td>
-				<td align="center"><font color="black"><xsl:value-of select="area"/></font></td>
-				<td align="center"><font color="black"><xsl:value-of select="meanVel"/></font></td>
-				<td align="center"><font color="blue"><xsl:value-of select="mgh"/></font></td>
-				<td align="center"><font color="black"><xsl:value-of select="discharge"/><xsl:value-of select="dischCombo"/></font></td>
+
+				<xsl:choose>
+					<xsl:when test="width/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="width"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="black"><xsl:value-of select="width"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
+				<xsl:choose>
+					<xsl:when test="area/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="area"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="black"><xsl:value-of select="area"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
+				<xsl:choose>
+					<xsl:when test="meanVel/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="meanVel"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="black"><xsl:value-of select="meanVel"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
+				<xsl:choose>
+					<xsl:when test="mgh/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="mgh"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="blue"><xsl:value-of select="mgh"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
+				<xsl:choose>
+					<xsl:when test="discharge/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="discharge"/><xsl:value-of select="dischCombo"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="black"><xsl:value-of select="discharge"/><xsl:value-of select="dischCombo"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
+
 				<xsl:choose>
 					<xsl:when test="uncertainty/@imported='1'">
 						<td align="center"><font color="green"><xsl:value-of select="uncertainty"/><xsl:value-of select="uncertaintyCtrl"/></font></td>
@@ -229,9 +270,23 @@
 				<th>Mmt Mean Time (hh:mm)</th>
 				<td align="center"><font color="blue"><xsl:value-of select="mmtTimeVal"/></font></td>
 				<th align="center" colspan="2">Calc Shift Base Curve (m)</th>
-				<td align="center"><font color="blue"><xsl:value-of select="shift"/></font></td>
+				<xsl:choose>
+					<xsl:when test="shift/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="shift"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="blue"><xsl:value-of select="shift"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
 				<th>Difference Base Curve (%)</th>
-				<td align="center"><font color="blue"><xsl:value-of select="diff"/></font></td>
+				<xsl:choose>
+					<xsl:when test="diff/@imported='1'">
+						<td align="center"><font color="green"><xsl:value-of select="diff"/></font></td>
+					</xsl:when>
+					<xsl:otherwise>
+						<td align="center"><font color="blue"><xsl:value-of select="diff"/></font></td>
+					</xsl:otherwise>
+				</xsl:choose>
 				<th>Curve #</th>
 				<td align="center" colspan = "2"><font color="blue"><xsl:value-of select="curve"/></font></td>
 			</tr>
@@ -676,7 +731,18 @@
 		<table>
 
 		<tr class="noborder">
-			<td class="noborder" align="left"><b>Method: </b><xsl:value-of select="methodType"/></td>
+			<td class="noborder" align="left"><b>Method: </b>
+			
+			<xsl:choose>
+				<xsl:when test="methodType/@imported='1'">
+					<font color="green"><xsl:value-of select="methodType"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="methodType"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
             <td class="noborder" align="left"><font color="black">
                 <xsl:choose>
                     <xsl:when test="methodType='Other Methods'">
@@ -689,13 +755,57 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </font></td>
-			<td class="noborder" align="left"><b>Deployment Method:  </b><xsl:value-of select="deployment"/></td>
+			<td class="noborder" align="left"><b>Deployment Method:  </b>
+			
+			<xsl:choose>
+				<xsl:when test="deployment/@imported='1'">
+					<font color="green"><xsl:value-of select="deployment"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="deployment"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
 			
 		</tr>
 		<tr class="noborder">
-			<td class="noborder" align="left"><b>Position Method: </b><xsl:value-of select="position"/></td>
-			<td class="noborder" align="left"> <b>Instrument Type: </b><xsl:value-of select="instrument"/></td>
-			<td class="noborder" align="left"> <b>Serial/Meter Number: </b><xsl:value-of select="serialNum"/></td>
+			<td class="noborder" align="left"><b>Position Method: </b>
+			
+			<xsl:choose>
+				<xsl:when test="position/@imported='1'">
+					<font color="green"><xsl:value-of select="position"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="position"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td class="noborder" align="left"> <b>Instrument Type: </b>
+			
+			<xsl:choose>
+				<xsl:when test="instrument/@imported='1'">
+					<font color="green"><xsl:value-of select="instrument"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="instrument"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td class="noborder" align="left"> <b>Serial/Meter Number: </b>
+			
+			<xsl:choose>
+				<xsl:when test="serialNum/@imported='1'">
+					<font color="green"><xsl:value-of select="serialNum"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="serialNum"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
 		</tr>
 		<tr class="noborder">
 			<td class="noborder" align="left">
@@ -721,13 +831,57 @@
 				
 				<xsl:value-of select="selectedGauge"/>
 			</td>
-			<td class="noborder" align="left"><b>Manufacturer: </b><xsl:value-of select="manufacturer"/></td>
+			<td class="noborder" align="left"><b>Manufacturer: </b>
+
+			<xsl:choose>
+				<xsl:when test="manufacturer/@imported='1'">
+					<font color="green"><xsl:value-of select="manufacturer"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="manufacturer"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
 			<td class="noborder" align="left"><b>Model: </b><xsl:value-of select="model"/></td>
 		</tr>
 		<tr class="noborder">
-			<td class="noborder" align="left"><b>Frequency: </b><xsl:value-of select="frequency"/></td>
-			<td class="noborder" align="left"><b>Firmware:  </b><xsl:value-of select="firmware"/></td>
-			<td class="noborder" align="left"><b>Software: </b><xsl:value-of select="software"/></td>
+			<td class="noborder" align="left"><b>Frequency: </b>
+			
+			<xsl:choose>
+				<xsl:when test="frequency/@imported='1'">
+					<font color="green"><xsl:value-of select="frequency"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="frequency"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td class="noborder" align="left"><b>Firmware:  </b>
+			
+			<xsl:choose>
+				<xsl:when test="firmware/@imported='1'">
+					<font color="green"><xsl:value-of select="firmware"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="firmware"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td class="noborder" align="left"><b>Software: </b>
+			
+			<xsl:choose>
+				<xsl:when test="software/@imported='1'">
+					<font color="green"><xsl:value-of select="software"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="software"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
 			
 		</tr>
 		</table>
@@ -739,14 +893,67 @@
 <br/>
 		<table>
 		<tr class="noborder">
-			<td class="noborder" align="left"><b>Number of Panels: </b> <xsl:value-of select="panelsNum"/></td>
-			<td class="noborder" align="left"><b>Flow Angle: </b> <xsl:value-of select="flowAngle"/></td>
-			<td class="noborder" align="left"><b>Coefficient: </b> <xsl:value-of select="coeff"/></td>
+			<td class="noborder" align="left"><b>Number of Panels: </b>
+			
+			<xsl:choose>
+				<xsl:when test="panelsNum/@imported='1'">
+					<font color="green"><xsl:value-of select="panelsNum"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="panelsNum"/></font>
+				</xsl:otherwise>
+			</xsl:choose> 
+			
+			</td>
+			<td class="noborder" align="left"><b>Flow Angle: </b>
+
+			<xsl:choose>
+				<xsl:when test="flowAngle/@imported='1'">
+					<font color="green"><xsl:value-of select="flowAngle"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="flowAngle"/></font>
+				</xsl:otherwise>
+			</xsl:choose> 
+			
+			</td>
+			<td class="noborder" align="left"><b>Coefficient: </b>
+			
+			<xsl:choose>
+				<xsl:when test="coeff/@imported='1'">
+					<font color="green"><xsl:value-of select="coeff"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="coeff"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
 			
 		</tr>
 		<tr class="noborder">
-			<td class="noborder" align="left"><b>Method: </b> <xsl:value-of select="method"/></td>
-			<td class="noborder" align="left" colspan="2"><b>Located: </b> <xsl:value-of select="metres"/>
+			<td class="noborder" align="left"><b>Method: </b>
+			
+			<xsl:choose>
+				<xsl:when test="method/@imported='1'">
+					<font color="green"><xsl:value-of select="method"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="method"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td class="noborder" align="left" colspan="2"><b>Located: </b>
+
+				<xsl:choose>
+					<xsl:when test="metres/@imported='1'">
+						<font color="green"><xsl:value-of select="metres"/></font>
+					</xsl:when>
+					<xsl:otherwise>
+						<font color="black"><xsl:value-of select="metres"/></font>
+					</xsl:otherwise>
+				</xsl:choose>
 			
 				<b> metres above </b>
 				<xsl:choose>
@@ -805,9 +1012,29 @@
 		</tr>
 		<tr>
 			<td colspan = "3"><b>ADCP Depth: </b>
-				<xsl:value-of select="depth"/></td>
+			
+			<xsl:choose>
+				<xsl:when test="depth/@imported='1'">
+					<font color="green"><xsl:value-of select="depth"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="depth"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
 			<td colspan = "3"><b>Magnetic Declination </b>
-				<xsl:value-of select="magDecl"/></td>
+				
+			<xsl:choose>
+				<xsl:when test="magDecl/@imported='1'">
+					<font color="green"><xsl:value-of select="magDecl"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="magDecl"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+				
+			</td>
 			<td colspan = "3"><b>Compass Calibration: </b>
 				<xsl:choose>
 					<xsl:when test="compassCali='True'">
@@ -1182,9 +1409,43 @@
 				</xsl:choose>
 				<xsl:text>        </xsl:text>
 				<xsl:value-of select="mbTestChoice"/>:<br/>
-			<b>% detected </b> <xsl:value-of select="detected"/></td>
-			<td><b>Track Ref Selected* </b> <xsl:value-of select="trackRefChoice"/></td>
-			<td><b>Composite Tracks: </b><xsl:value-of select="compositeTrackCmbo" /></td>
+			<b>% detected </b>
+
+			<xsl:choose>
+				<xsl:when test="detected/@imported='1'">
+					<font color="green"><xsl:value-of select="detected"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="detected"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+
+			</td>
+
+			<td><b>Track Ref Selected* </b>
+
+			<xsl:choose>
+				<xsl:when test="trackRefChoice/@imported='1'">
+					<font color="green"><xsl:value-of select="trackRefChoice"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="trackRefChoice"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td><b>Composite Tracks: </b>
+
+			<xsl:choose>
+				<xsl:when test="compositeTrackCmbo/@imported='1'">
+					<font color="green"><xsl:value-of select="compositeTrackCmbo"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="compositeTrackCmbo"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
 		</tr>
 		<tr>
 			<td><b>Left Bank*</b><xsl:value-of select="leftBankChoice"/>
@@ -1193,18 +1454,84 @@
 			<td><b>Right Bank*</b><xsl:value-of select="rightBankChoice"/>
 				<xsl:text>        </xsl:text>
 				<xsl:value-of select="rightBank"/></td>
-			<td><b>Edge Dist Mmnt Method </b> <xsl:value-of select="edgeDistMmntMethod"/></td>
-			<td><b>Depth Ref: </b><xsl:value-of select="depthRefCmbo"/></td>
+			<td><b>Edge Dist Mmnt Method </b>
+
+			<xsl:choose>
+				<xsl:when test="edgeDistMmntMethod/@imported='1'">
+					<font color="green"><xsl:value-of select="edgeDistMmntMethod"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="edgeDistMmntMethod"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td><b>Depth Ref: </b>
+			
+			<xsl:choose>
+				<xsl:when test="depthRefCmbo/@imported='1'">
+					<font color="green"><xsl:value-of select="depthRefCmbo"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="depthRefCmbo"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
 		</tr>
 		<tr>
 			<td colspan="3"><b>Velocity Extrapolation Method:</b></td>
 			<td rowspan="1"><b>% Difference in Q: </b><xsl:value-of select="differenceCtrl"/></td>
 		</tr>
 		<tr>
-			<td><b>Top: </b><xsl:value-of select="velocityTopCombo"/></td>
-			<td><b>Bottom: </b><xsl:value-of select="velocityBottomCombo"/></td>
-			<td><b>Exponent: </b><xsl:value-of select="velocityExponentCtrl"/></td>
-			<td rowspan="1"><b>Extrapolation Uncertainty %: </b><xsl:value-of select="extrapUncerCtrl"/></td>
+			<td><b>Top: </b>
+
+			<xsl:choose>
+				<xsl:when test="velocityTopCombo/@imported='1'">
+					<font color="green"><xsl:value-of select="velocityTopCombo"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="velocityTopCombo"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td><b>Bottom: </b>
+			
+			<xsl:choose>
+				<xsl:when test="velocityBottomCombo/@imported='1'">
+					<font color="green"><xsl:value-of select="velocityBottomCombo"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="velocityBottomCombo"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+
+			</td>
+			<td><b>Exponent: </b>
+			
+			<xsl:choose>
+				<xsl:when test="velocityExponentCtrl/@imported='1'">
+					<font color="green"><xsl:value-of select="velocityExponentCtrl"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="velocityExponentCtrl"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td rowspan="1"><b>Extrapolation Uncertainty %: </b>
+			
+			<xsl:choose>
+				<xsl:when test="extrapUncerCtrl/@imported='1'">
+					<font color="green"><xsl:value-of select="extrapUncerCtrl"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="extrapUncerCtrl"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
 
 		</tr>
 
@@ -1239,13 +1566,90 @@
 
 				</td>
 
-				<td><font color="black"><xsl:value-of select="transectID"/></font></td>
-				<td><font color="black"><xsl:value-of select="startBank"/></font></td>
-				<td><font color="black"><xsl:value-of select="startTime"/></font></td>
-				<td><font color="black"><xsl:value-of select="startDistance"/></font></td>
-				<td><font color="black"><xsl:value-of select="endDistance"/></font></td>
-				<td><font color="black"><xsl:value-of select="rawDischarge"/></font></td>
-				<td align="left"><font color="black"><xsl:value-of select="remarks"/></font></td>
+				<td>
+				
+				<xsl:choose>
+                    <xsl:when test="transectID/@imported='1'">
+                        <font color="green"><xsl:value-of select="transectID"/></font>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <font color="black"><xsl:value-of select="transectID"/></font>
+                    </xsl:otherwise>
+                </xsl:choose>
+				
+				</td>
+				<td>
+				
+				<xsl:choose>
+                    <xsl:when test="startBank/@imported='1'">
+                        <font color="green"><xsl:value-of select="startBank"/></font>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <font color="black"><xsl:value-of select="startBank"/></font>
+                    </xsl:otherwise>
+                </xsl:choose>
+				
+				</td>
+				<td>
+				
+				<xsl:choose>
+                    <xsl:when test="startTime/@imported='1'">
+                        <font color="green"><xsl:value-of select="startTime"/></font>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <font color="black"><xsl:value-of select="startTime"/></font>
+                    </xsl:otherwise>
+                </xsl:choose>
+				
+				</td>
+				<td>
+				
+				<xsl:choose>
+                        <xsl:when test="startDistance/@imported='1'">
+                            <font color="green"><xsl:value-of select="startDistance"/></font>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <font color="black"><xsl:value-of select="startDistance"/></font>
+                        </xsl:otherwise>
+                    </xsl:choose>
+				
+				</td>
+				<td>
+				
+				<xsl:choose>
+                    <xsl:when test="endDistance/@imported='1'">
+                        <font color="green"><xsl:value-of select="endDistance"/></font>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <font color="black"><xsl:value-of select="endDistance"/></font>
+                    </xsl:otherwise>
+                </xsl:choose>
+				
+				</td>
+				<td>
+				
+				<xsl:choose>
+                    <xsl:when test="rawDischarge/@imported='1'">
+                        <font color="green"><xsl:value-of select="rawDischarge"/></font>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <font color="black"><xsl:value-of select="rawDischarge"/></font>
+                    </xsl:otherwise>
+                </xsl:choose>
+				
+				</td>
+				<td align="left">
+				
+				<xsl:choose>
+					<xsl:when test="remarks/@imported='1'">
+						<font color="green"><xsl:value-of select="remarks"/></font>
+					</xsl:when>
+					<xsl:otherwise>
+						<font color="black"><xsl:value-of select="remarks"/></font>
+					</xsl:otherwise>
+				</xsl:choose>
+				
+				</td>
 			</tr>
 		</xsl:for-each>
 		</tbody>
@@ -1254,23 +1658,144 @@
 	<table style="width:750px" align="left">
 		<tbody>
 		<tr>
-			<td align="left"><b>Mmnt Start Time: </b><xsl:value-of select="ADCPMeasResults/mmntStartTime"/></td>
-			<td align="left"><b>MB Correction(%): <br/></b><xsl:value-of select="ADCPMeasResults/mbCorrectionApplied"/></td>
-			<!-- <td><b>Raw Discharge Mean(m<sup>3</sup>/s): </b><font color="blue"><xsl:value-of select="ADCPMeasResults/rawDischargeMean"/></font></td> -->
-			<td align="left"><b>Corrected Mean Gauge Height(m): </b><font color="blue"><xsl:value-of select="ADCPMeasResults/correctedMeanGaugeHeight"/></font></td>
-			<td align="left"><b>Standard Dev/<br/>Mean Discharge(%): </b><xsl:value-of select="ADCPMeasResults/standardDevMeanDischarge"/></td>
-		</tr>
-		<tr>
-			<td align="left"><b>Mmnt End Time*: </b><xsl:value-of select="ADCPMeasResults/mmntEndTime"/></td>
-			<td align="left" rowspan='2'><b>Final Discharge<br/>Mean(m<sup>3</sup>/s): </b><font color="blue"><xsl:value-of select="ADCPMeasResults/finalDischargeMean"/></font></td>
-			<td align="left"><b>Base Curve<br/>Gauge Height(m): </b><font color="blue"><xsl:value-of select="ADCPMeasResults/baseCurveGaugeHeight"/></font></td>
-			<td align="left"><b>Calculate Shift from<br/>Base Curve(m): </b><font color="blue"><xsl:value-of select="ADCPMeasResults/calculateShiftforBaseCurve"/></font></td>
-		</tr>
-		<tr>
-			<td align="left"><b>Mmnt Mean Time: </b><font color="blue"><xsl:value-of select="ADCPMeasResults/mmntMeanTime"/></font></td>
+			<td align="left"><b>Mmnt Start Time: </b>
 			
-			<td align="left"><b>Base Curve<br/>Discharge(m<sup>3</sup>/s): </b><font color="blue"><xsl:value-of select="ADCPMeasResults/calcBaseCurveDischarge"/></font></td>
-			<td align="left"><b>Discharge Difference<br/>Base Curve(%): </b><font color="blue"><xsl:value-of select="ADCPMeasResults/dischargeDifferenceBaseCurve"/></font></td>
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/mmntStartTime/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/mmntStartTime"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="ADCPMeasResults/mmntStartTime"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td align="left"><b>MB Correction(%): <br/></b>
+			
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/mbCorrectionApplied/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/mbCorrectionApplied"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="ADCPMeasResults/mbCorrectionApplied"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<!-- <td><b>Raw Discharge Mean(m<sup>3</sup>/s): </b><font color="blue"><xsl:value-of select="ADCPMeasResults/rawDischargeMean"/></font></td> -->
+			<td align="left"><b>Corrected Mean Gauge Height(m): </b>
+			
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/correctedMeanGaugeHeight/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/correctedMeanGaugeHeight"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="blue"><xsl:value-of select="ADCPMeasResults/correctedMeanGaugeHeight"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td align="left"><b>Standard Dev/<br/>Mean Discharge(%): </b>
+			
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/standardDevMeanDischarge/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/standardDevMeanDischarge"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="ADCPMeasResults/standardDevMeanDischarge"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+		</tr>
+		<tr>
+			<td align="left"><b>Mmnt End Time*: </b>
+			
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/mmntEndTime/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/mmntEndTime"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="black"><xsl:value-of select="ADCPMeasResults/mmntEndTime"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td align="left" rowspan='2'><b>Final Discharge<br/>Mean(m<sup>3</sup>/s): </b>
+			
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/finalDischargeMean/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/finalDischargeMean"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="blue"><xsl:value-of select="ADCPMeasResults/finalDischargeMean"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td align="left"><b>Base Curve<br/>Gauge Height(m): </b>
+			
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/baseCurveGaugeHeight/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/baseCurveGaugeHeight"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="blue"><xsl:value-of select="ADCPMeasResults/baseCurveGaugeHeight"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td align="left"><b>Calculate Shift from<br/>Base Curve(m): </b>
+			
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/calculateShiftforBaseCurve/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/calculateShiftforBaseCurve"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="blue"><xsl:value-of select="ADCPMeasResults/calculateShiftforBaseCurve"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+		</tr>
+		<tr>
+			<td align="left"><b>Mmnt Mean Time: </b>
+			
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/mmntMeanTime/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/mmntMeanTime"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="blue"><xsl:value-of select="ADCPMeasResults/mmntMeanTime"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			
+			<td align="left"><b>Base Curve<br/>Discharge(m<sup>3</sup>/s): </b>
+			
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/calcBaseCurveDischarge/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/calcBaseCurveDischarge"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="blue"><xsl:value-of select="ADCPMeasResults/calcBaseCurveDischarge"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
+			<td align="left"><b>Discharge Difference<br/>Base Curve(%): </b>
+			
+			<xsl:choose>
+				<xsl:when test="ADCPMeasResults/dischargeDifferenceBaseCurve/@imported='1'">
+					<font color="green"><xsl:value-of select="ADCPMeasResults/dischargeDifferenceBaseCurve"/></font>
+				</xsl:when>
+				<xsl:otherwise>
+					<font color="blue"><xsl:value-of select="ADCPMeasResults/dischargeDifferenceBaseCurve"/></font>
+				</xsl:otherwise>
+			</xsl:choose>
+			
+			</td>
 		</tr>
 		<tr>
 			<td align="left"><b>Comments:</b></td>

@@ -149,7 +149,14 @@ def AddDischargeSummary(filePath, disMeasManager):
         myEvent.SetEventObject(disMeasManager.GetUncertaintyCtrl())
         wx.PostEvent(disMeasManager.GetUncertaintyCtrl(), myEvent)
         disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
-
+    
+        # Adding uncertainty text to Discharge Activity Remarks
+        dischargeUncertainty = '@ Uncertainty: IVE method, 2-sigma value (2 x Uncertainty Value reported in *.ft File). @'
+        dischargeRemarks = disMeasManager.dischRemarksCtrl
+        if dischargeRemarks != '':
+            disMeasManager.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty
+        else:
+            disMeasManager.dischRemarksCtrl = dischargeUncertainty
 
 
 

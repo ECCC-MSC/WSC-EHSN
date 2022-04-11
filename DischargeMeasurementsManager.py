@@ -19,6 +19,7 @@ class DischargeMeasurementsManager(object):
         self.currentRC = None
         self.curveIndex = None
         self.curveProcessed = False
+        self.currentCurveIndex = 0
 
         self.mode = mode
 
@@ -375,9 +376,10 @@ class DischargeMeasurementsManager(object):
         if self.CheckForValidHGQ() < 0:
             return
 
-        # If the curve ctrl is empty, auto-select the latest curve
+        # If the curve ctrl is empty, auto-select the curve 
+        # that has a period of applicability that is not closed (0 by default)
         if self.curveCtrl == "":
-            self.curveIndex = 0
+            self.curveIndex = self.currentCurveIndex
             self.gui.SetCurveIndex(self.curveIndex)
 
         self.AutoCalculateShiftDiff()
@@ -402,7 +404,7 @@ class DischargeMeasurementsManager(object):
         error = None
         if curveIndex is not None:
             error = self.RCVTMan.CalculateShiftDisch(obsHG, obsQ, curveIndex)
-        elif self.curveCtrl.strip() is not "":
+        elif self.curveCtrl.strip() != "":
             error = "Rating curve id is not listed"
 
         self.HandleErrorDuringCalc(error)

@@ -23,6 +23,9 @@ import heapq
 from suds.xsd.doctor import Import, ImportDoctor
 from operator import itemgetter
 
+# Aquarius Python Wrapper created by Doug Schmidt
+from timeseries_client import timeseries_client
+from requests.exceptions import HTTPError
 
 
 from xml.etree import ElementTree
@@ -215,9 +218,6 @@ class AQUARIUSDataExtractionToolManager(object):
         #print "here"
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
-        Server = self.gui.GetURL()
-        #print Server + "<-- Server name"
-        #print Password + " <-- Password"
 
         if Login == "":
             self.gui.CreateErrorDialog("Username field cannot be left blank.  Please use your AQUARIUS username.")
@@ -231,26 +231,18 @@ class AQUARIUSDataExtractionToolManager(object):
             return
 
         # Login
-        s = requests.Session()
-        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            s.get(url)
-            aq = s.post(url, data=data, headers=headers)
-            print(aq.status_code)
-            token = aq.text
-            if aq.status_code != 200:
+            # Using Aquarius Python Wrapper created by Doug Schmidt
+            aq = timeseries_client('https://wsc.aquaticinformatics.net', Login, Password)
+        except HTTPError as e:
+            if e.response.status_code == 401:
                 result = "The username or the password is incorrect."
                 error = wx.MessageDialog(None, result, 'Error', wx.OK | wx.ICON_ERROR)
                 error.ShowModal()
                 return "The username or the password is incorrect."
-        except:
-            # print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
-            exists = False
-            self.gui.deleteProgressDialog()
-            return "Failed to login."
-            # print exists
+            else:
+                self.gui.deleteProgressDialog()
+                return "Failed to login."
         print("login")
 
         if not os.path.exists(path):
@@ -314,7 +306,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 self.gui.CreateProgressDialog('Extraction In Progress...',
                                               'Collecting Rating Curve Information (StationID_ratingcurves.xml)')
 
-            res = self.GetRatingInfoNg(path, failedRatingInfo)
+            res = self.GetRatingInfoNg(aq, path, failedRatingInfo)
             self.CheckReturn(res)
             if res == -1 or res == -2:
                 pass
@@ -340,7 +332,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 numMinMax = self.gui.GetNumOfMinMax()
             else:
                 numMinMax = None
-            res = self.GetFieldVisitNg(path, failedHistMmts, numMinMax)
+            res = self.GetFieldVisitNg(aq, path, failedHistMmts, numMinMax)
             self.CheckReturn(res)
             if res == -1 or res == -2:
                 pass
@@ -540,25 +532,9 @@ class AQUARIUSDataExtractionToolManager(object):
 
         print("Get Station Info")
 
-        Login = self.gui.GetUsername()
-        Password = self.gui.GetPassword()
-        Server = self.gui.GetURL()
-
         authcode = None
 
         stationsList = []
-
-        s = requests.Session()
-        data = '{"Username": "'+Login+'", "EncryptedPassword": "'+Password+'", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
-        try:
-            s.get(url)
-            aq = s.post(url, data = data, headers = headers)
-            MyAuthCode = aq.text
-        except:
-            self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
-            return -1
 
         # For each station in the stationlist
         locations = self.GetStationList()
@@ -567,8 +543,8 @@ class AQUARIUSDataExtractionToolManager(object):
         writeList = []
         for station in locations:
             # Check if real station
-            locid1 = requests.get(Server + "GetLocationData?Token=" + MyAuthCode + "&LocationIdentifier=" + station)
-            locid = locid1.json()
+            parameters = {'LocationIdentifier': station}
+            locid = aq.publish.get('/GetLocationData', params=parameters)
             # print locid
 
             if 'ResponseStatus' in locid:
@@ -628,11 +604,11 @@ class AQUARIUSDataExtractionToolManager(object):
             else:
                 readList = []
 
-                with open(path + '\\stations.txt', 'a+') as f:
-                    reader = csv.reader(f, delimiter=",")
-                    for i, line in enumerate(reader):
+                with open(path + '\\stations.txt') as f:
+                    lines = f.readlines()
+                    for i, line in enumerate(lines):
                         if i > 0:
-                            readList.append(line[0])
+                            readList.append(line.split(',')[0])
 
                 # print "-----------------"
                 # for j in readList:
@@ -888,35 +864,20 @@ class AQUARIUSDataExtractionToolManager(object):
     def GetLevelsInfoNg(self, aq, path, failedStations):
         print("Level Info Checked")
 
-        Login = self.gui.GetUsername()
-        Password = self.gui.GetPassword()
-        Server = self.gui.GetURL()
-
         totalBenchmarkList = []
         extractedBenchmarkList = []
         inactiveBMList = []
-
-        # Login
-        s = requests.Session()
-        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
-        try:
-            s.get(url)
-            aq = s.post(url, data=data, headers=headers)
-            token = aq.text
-        except:
-            return -1
 
         # for each station
         locations = self.GetStationList()
         for station in locations:
             try:
-                req = requests.get(Server + "GetLocationData?LocationIdentifier=" + station + "&token=" + token)
+                parameters = {'LocationIdentifier': station}
+                req = aq.publish.get('/GetLocationData', params=parameters)
             except:
                 failedStations.append(station)
                 return -1
-            staInfo = req.json()['ReferencePoints']
+            staInfo = req['ReferencePoints']
             # print staInfo
             for benchMark in staInfo:
                 benchMarkInfo = []
@@ -1115,34 +1076,20 @@ class AQUARIUSDataExtractionToolManager(object):
 
         return 0
 
-    def GetRatingInfoNg(self, path, failedStations):
+    def GetRatingInfoNg(self, aq, path, failedStations):
         if self.mode == "DEBUG":
             print("Manager Run Script")
 
         stationList = self.GetStationList()
-        Server = self.gui.GetURL()
         path = self.gui.GetPath()
-        Login = self.gui.GetUsername()
-        Password = self.gui.GetPassword()
 
-        # Login
-        s = requests.Session()
-        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
-        try:
-            s.get(url)
-            aq = s.post(url, data=data, headers=headers)
-            token = aq.text
-        except:
-            return -1
 
         for station in stationList:
             # Get rating curve Id
             try:
-                req = requests.get(
-                    Server + "GetRatingModelDescriptionList?LocationIdentifier=" + station + "&token=" + token)
-                for desc in req.json()['RatingModelDescriptions']:
+                parameters = {'LocationIdentifier': station}
+                req = aq.publish.get('/GetRatingModelDescriptionList', params=parameters)
+                for desc in req['RatingModelDescriptions']:
                     if desc['Identifier'][0:29] == "Stage-Discharge.Rating Curve@":
                         ratingCurveId = desc['Identifier']
                         break
@@ -1152,12 +1099,12 @@ class AQUARIUSDataExtractionToolManager(object):
 
             # Get rating curve data
             try:
-                req = requests.get(
-                    Server + "GetRatingCurveList?RatingModelIdentifier=" + ratingCurveId + "&token=" + token)
+                parameters = {'RatingModelIdentifier': ratingCurveId}
+                req = aq.publish.get('/GetRatingCurveList', params=parameters)
             except:
                 failedStations.append(station)
                 continue
-            ratingCurveData = req.json()
+            ratingCurveData = req
 
             with io.open(path + '\\' + station + "_ratingcurves.json", 'w', encoding='utf8') as outfile:
                 str_ = json.dumps(ratingCurveData, indent=4, sort_keys=True, separators=(',', ': '), ensure_ascii=False)
@@ -1385,23 +1332,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
         return 0
 
-    def GetFieldVisitNg(self, path, failedStations, numMinMax):
-
-        Server = self.gui.GetURL()
-        Login = self.gui.GetUsername()
-        Password = self.gui.GetPassword()
-
-        # Login
-        s = requests.Session()
-        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
-        try:
-            s.get(url)
-            aq = s.post(url, data=data, headers=headers)
-            token = aq.text
-        except:
-            return -1
+    def GetFieldVisitNg(self, aq, path, failedStations, numMinMax):
 
         locations = self.GetStationList()
         timeFrom = str(self.gui.GetDataPeriodFrom()).replace("/", "-")
@@ -1419,8 +1350,9 @@ class AQUARIUSDataExtractionToolManager(object):
         for location in locations:
             dataEmpty = True
             try:
-                req = requests.get(Server + 'GetFieldVisitDataByLocation?LocationIdentifier=' + location + '&token=' + token)
-                fieldDescriptions = req.json()['FieldVisitData']
+                parameters = {'LocationIdentifier': location}
+                req = aq.publish.get('/GetFieldVisitDataByLocation', params=parameters)
+                fieldDescriptions = req['FieldVisitData']
             except:
                 failedStations.append(location)
                 continue

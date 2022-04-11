@@ -139,8 +139,8 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         self.elevatedList[-1].Bind(wx.EVT_TEXT, self.OnElevation)
         self.elevatedList[-1].Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
 
-        self.eleSizerList[-1].Add(self.elevatedList[-1], 1, wx.EXPAND)
         self.eleSizerList[-1].Add(self.eleCheckList[-1], 0, wx.EXPAND|wx.ALL, 3)
+        self.eleSizerList[-1].Add(self.elevatedList[-1], 1, wx.EXPAND)
 
         self.commentsList.append(MyTextCtrl(self))
         self.commentsList[-1].Enable(False)
@@ -663,40 +663,14 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         # Set the type to be the type of the parent as this has already been set by OnChangeLevelType
         self.type = self.parent.type
 
-        # Iterate over every row in the table
-        for i in range(len(self.stationList)):
-            
-            try:
-                # Get the float value for elevation and backsight
-                elevationVal = float(self.elevatedList[i].GetValue())
-                backsightVal = float(self.bsList[i].GetValue())
+        # Iterate over every value in the backsight list
+        for i in range(len(self.bsList)):
 
-                # Calculate the height of instrument based on these
-                if self.type == 0:
-                    # Conventional Leveling
-                    self.hoiList[i].SetValue(str(elevationVal + backsightVal))
-                else:
-                    # Total Station
-                    self.hoiList[i].SetValue(str(elevationVal - backsightVal))
-            except:
-                pass
-            
-            # If it is not the first row, then set the foresight as well
-            if i != 0:
-                try:
-                    # Get the float value for foresight and height of instrument
-                    foresightVal = float(self.fsList[i].GetValue())
-                    hi = float(self.hoiList[i].GetValue())
-
-                    # Calculate the elevation based on these
-                    if self.type == 0:
-                        # Conventional Leveling
-                        self.elevatedList[i].SetValue(str(hi - foresightVal))
-                    else:
-                        # Total Station
-                        self.elevatedList[i].SetValue(str(hi + foresightVal))
-                except:
-                    pass
+            # Get the given backsight value and set it to itself
+            # This will trigger the the code to update height of instrument and elevation
+            # Change in backsight -> OnBacksightUpdateHI() -> OnHIUpdateEle()
+            backsightVal = self.bsList[i].GetValue()
+            self.bsList[i].SetValue(backsightVal)
 
 
 def main():

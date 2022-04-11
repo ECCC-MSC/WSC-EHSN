@@ -70,6 +70,9 @@ class RatingCurveViewerToolManager(object):
 
         self.ratingCurveList = []
         self.rcIndex = 0
+        # Variable to store the curve index 
+        # for the curve that has a period of applicability that is not closed
+        self.currentCurveIndex = 0
 
         self.Init()
 
@@ -161,7 +164,7 @@ class RatingCurveViewerToolManager(object):
     def LoadRatingFile(self):
         shouldClearGui = False
 
-        if self.stnNum is not "":
+        if self.stnNum != "":
             xmlfilepath = self.path + "\\" + self.stnNum + "_ratingcurves.xml"
             jsonfilepath = self.path + "\\" + self.stnNum + "_ratingcurves.json"
             txtfilepath = self.path + "\\" + self.stnNum + "_RatingTable.txt"
@@ -193,7 +196,7 @@ class RatingCurveViewerToolManager(object):
     def LoadHistoricalData(self):
         shouldClearGui = False
 
-        if self.stnNum is not "":
+        if self.stnNum != "":
             fvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits.csv"
             jsonfvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits.csv"
             csvfilepath = self.path + "\\" + self.stnNum + "_FieldVisitExport.csv"
@@ -342,7 +345,6 @@ class RatingCurveViewerToolManager(object):
         self.period = None
         self.curveNum = None
         self.shiftDiffDisch = None
-        self.periodData = []
         self.curveIdList = []
 
         # Clear old table
@@ -369,37 +371,50 @@ class RatingCurveViewerToolManager(object):
             curvePeriod = curv['PeriodsOfApplicability']
             idNum = 1
             self.ratingCurveList.append(curveId)
-            if self.gui is not None:
-                for curvPeriod in curvePeriod:
-                    curveFromDate = datetime.strptime(str(curvPeriod['StartTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
-                    if int(curveFromDate.strftime("%Y")) < 1800 or int(curveFromDate.strftime("%Y")) > 2500:
-                        convertedFromDate = ''
-                    else:
-                        convertedFromDate = curveFromDate.strftime("%B %d %Y")
-                    # curveFromDate = curvPeriod['StartTime']
 
-                    curveToDate = datetime.strptime(str(curvPeriod['EndTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
-                    if int(curveToDate.strftime("%Y")) < 1800 or int(curveToDate.strftime("%Y")) > 2500:
-                        convertedToDate = ''
-                    else:
-                        convertedToDate = curveToDate.strftime("%B %d %Y")
-                    # curveToDate = curvPeriod['EndTime']
-                    if idNum != 1:
-                        curveNewId = curveId + '(' + str(idNum) + ')'
-                    else:
-                        curveNewId = curveId
-                    idNum = idNum + 1
-                    # print curveNewId,convertedFromDate,convertedToDate
+            for curvPeriod in curvePeriod:
+                curveFromDate = datetime.strptime(str(curvPeriod['StartTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
+                if int(curveFromDate.strftime("%Y")) < 1800 or int(curveFromDate.strftime("%Y")) > 2500:
+                    convertedFromDate = ''
+                else:
+                    convertedFromDate = curveFromDate.strftime("%B %d %Y")
+                # curveFromDate = curvPeriod['StartTime']
 
+                curveToDate = datetime.strptime(str(curvPeriod['EndTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
+                if int(curveToDate.strftime("%Y")) < 1800 or int(curveToDate.strftime("%Y")) > 2500:
+                    convertedToDate = ''
+                else:
+                    convertedToDate = curveToDate.strftime("%B %d %Y")
+                # curveToDate = curvPeriod['EndTime']
+                if idNum != 1:
+                    curveNewId = curveId + '(' + str(idNum) + ')'
+                else:
+                    curveNewId = curveId
+                idNum = idNum + 1
+                # print curveNewId,convertedFromDate,convertedToDate
+
+                # If convertedToDate is an empty string
+                # Then this curve has a period of applicability that is not closed
+                # Save the index value of this curve
+                if convertedToDate == '':
+                    self.currentCurveIndex = self.ratingCurveList.index(curveId)
+                
+                if self.gui is not None:
+                    # Add row to the table in the rating curve viewer tool
                     self.gui.AddRowToAppRange(curveNewId, convertedFromDate, convertedToDate)
 
-                    curvPeriData = []
-                    curvPeriData.append(str(curveNewId))
-                    curvPeriData.append(str(convertedFromDate))
-                    curvPeriData.append(str(convertedToDate))
+        if self.gui is not None:
+            # If a curve was found that has a period of applicability that is not closed
+            # and rcIndex is not already equal to the index of this curve
+            if self.rcIndex != self.currentCurveIndex:
+                # Set rcIndex to the index of the curve chosen by the user in the front page
+                self.rcIndex = self.disMeasManager.GetCurrentCurveIndexInList(self.ratingCurveList)
+                # If this index is not in the list, then set rcIndex to the index of the curve
+                self.rcIndex = self.rcIndex if self.rcIndex >= 0 and self.rcIndex < len(self.ratingCurveList) else self.currentCurveIndex
+            
+            # Set the curve value in the dropdown in the rating curve viewer tool
+            self.gui.SetCurveCombo(self.ratingCurveList, self.rcIndex)
 
-                    self.periodData.append(curvPeriData)
-                    self.gui.SetCurveCombo(self.ratingCurveList, self.rcIndex)
         return self.ratingCurveList
 
     def OnRCUpdate(self, selectedCurveIndex):

@@ -145,6 +145,14 @@ class MidSectionTransferFrame(wx.Frame):
             dischargePanel.uncertaintyCtrl.SetValue(uncertainty)
             transferCommon = True
 
+            # Adding uncertainty text to Discharge Activity Remarks
+            dischargeUncertainty = '@ Uncertainty: IVE method, 2-sigma value (IVE Value). @'
+            dischargeRemarks = dischargePanel.dischRemarksCtrl
+            if dischargeRemarks != '':
+                dischargePanel.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty
+            else:
+                dischargePanel.dischRemarksCtrl = dischargeUncertainty
+
         if self.mmntTimeCkbox.GetValue() and self.GetParent().startTimeCtrl.GetValue() != "" \
                 and self.GetParent().endTimeCtrl.GetValue() != "":
             start = self.GetParent().startTimeCtrl.GetValue()

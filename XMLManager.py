@@ -2069,9 +2069,11 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
         if conventionalLevellingRb == "True":
             waterLevelRunManager.SetConventionalLevellingRb(True)
             waterLevelRunManager.levelNotes.type = 0
+            waterLevelRunManager.levelNotes.panel.type = 0
         else:
             waterLevelRunManager.SetTotalStationRb(True)
             waterLevelRunManager.levelNotes.type = 1
+            waterLevelRunManager.levelNotes.panel.type = 1
     except:
         pass
     
@@ -4217,7 +4219,7 @@ def convertList(text):
         return []
     lst = list(text.split(", "))
     for i in range(len(lst)):
-        lst[i] = lst[i][2:-1]
+        lst[i] = lst[i][1:-1]
     return lst
 
 

@@ -101,7 +101,14 @@ def AddDischargeSummary(path, disMeasManager):
         myEvent.SetEventObject(disMeasManager.GetUncertaintyCtrl())
         wx.PostEvent(disMeasManager.GetUncertaintyCtrl(), myEvent)
         disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
-
+    
+        # Adding uncertainty text to Discharge Activity Remarks
+        dischargeUncertainty = '@ Uncertainty: IVE method, 2-sigma value (2 x Uncertainty Value reported in *.dis File). @'
+        dischargeRemarks = disMeasManager.dischRemarksCtrl
+        if dischargeRemarks != '':
+            disMeasManager.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty
+        else:
+            disMeasManager.dischRemarksCtrl = dischargeUncertainty
 
 def AddDischargeDetail(path, instrDepManager):
 
@@ -171,6 +178,7 @@ def GetInstrumentValues(path):
             elif data[0] == "Start_Edge":
                 startEdge = data[1]
             elif data[0] == "#_Stations" and finalData[index-1][0] == "Start_Edge":
+                # Two panels are subtracted as the edges do not need to be considered
                 numberOfPanels = str(int(data[1])-2)
 
             elif "ISO" in data[0] and finalData[index+1][0] == "Overall":

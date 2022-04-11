@@ -20,6 +20,7 @@ xhtml2pdf (version 0.2.5)
 
 See requirements.txt for full package list.  
 Note: An older version of wxPython (4.0.7) is required as later versions cause an error related to unknown locales.  
+Note: The pytz and pyRFC3339 packages are also required to properly use the Aquarius Python Wrapper created by Doug Schmidt.  
 
 # EXCLUDED FILES
 
@@ -42,6 +43,7 @@ pyinstaller create_ehsn_exe.spec
 
 This will create a single executable in the "dist" folder called WSC_eHSN_Python_test.exe with all required files included.  
 If your virtual environment where the packages are installed is not called 'env', then you must modify the pathex variable in create_ehsn_exe.spec.  
+You will have to copy the Aquarius Python Wrapper code (timeseries_client.py) created by Doug Schmidt into your local clone of WSC-EHSN as well.  
 
 
 # MANUAL
