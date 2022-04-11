@@ -307,7 +307,7 @@ class EHSNGui(wx.Frame):
         self.savePDFErrorTitle = "Error saving PDF file"
         self.qrName = "qr.jpg"
         self.icon_path = self.iconName
-        self.qr_path = self.qrName
+        self.qr_path = "c:\\temp\\eHSN\\" + self.qrName
         self.logo_path = self.logoName
         self.configPath = self.configName
         self.uploadOpenPdf = False
@@ -580,11 +580,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         #Icon Path
 
         if hasattr(sys, '_MEIPASS'):
-            self.qr_path = os.path.join(sys._MEIPASS, self.qr_path)
             self.icon_path = os.path.join(sys._MEIPASS, self.icon_path)
             self.logo_path = os.path.join(sys._MEIPASS, self.logo_path)
         else:
-            self.qr_path = os.path.join(self.dir, self.qr_path)
             self.icon_path = os.path.join(self.dir, self.icon_path)
             self.logo_path = os.path.join(self.dir, self.logo_path)
 
