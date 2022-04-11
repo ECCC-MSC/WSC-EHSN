@@ -138,6 +138,11 @@ class ElectronicHydrometricSurveyNotes:
     def InitUI(self):
         if mode == "DEBUG":
             print("EHSN")
+
+        # Delete any existing iniPath.ini files stored in the temp directory
+        if os.path.exists('c:\\temp\\eHSN\\iniPath.ini'):
+            os.remove('c:\\temp\\eHSN\\iniPath.ini')
+
         app = wx.App()
         self.uploadRecord = None
         self.gui = EHSNGui(mode, EHSN_VERSION, None, title=self.headerTitle, size=eHSN_WINDOW_SIZE)
