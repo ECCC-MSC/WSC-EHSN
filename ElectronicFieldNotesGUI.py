@@ -1660,11 +1660,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         aboutInfo.SetCopyright("This code was developed by the Water Survey of Canada. \nFor support please submit an issue to: ")
         aboutInfo.SetWebSite("https://watersurveyofcanada.atlassian.net/")
         aboutInfo.AddDeveloper("Xu Yan")
+        aboutInfo.AddDeveloper("Adam Mohiuddin")
         aboutInfo.AddDeveloper("Wenbin Zhang")
         aboutInfo.AddDeveloper("Yugo Brunet")
         aboutInfo.AddDeveloper("Vincent Vallee")
         aboutInfo.AddDeveloper("Taewan Kang")
-        aboutInfo.SetArtists(["Project Management, testing and thanks to:\nMuluken Yeheyis", "Doug Stiff, Elizabeth Jamieson, Tim Andrews, Tim Antonio, Zachary Bishop, Andrew Creighton, Adam Dowler, Debbie Forlanski, Malyssa Maurer, Colin McCann, Mark Scott"])
+        aboutInfo.SetArtists(["Project Management, testing and thanks to:\nMuluken Yeheyis", "Doug Stiff, Elizabeth Jamieson, Gianni Montanaro, Tim Andrews, Jordan Greco, Tim Antonio, Zachary Bishop, Andrew Creighton, Adam Dowler, Debbie Forlanski, Malyssa Maurer, Colin McCann, Mark Scott"])
         aboutInfo.SetLicence("This software has no license restrictions and is used at your own risk.")
         aboutInfo.SetIcon(icon)
 
