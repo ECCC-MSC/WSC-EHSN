@@ -12,16 +12,22 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
         self.parent = parent
         self.func = func
         self.manager = None
-        self.barSize = (645, -1)
+        self.barSize = (545, -1)
         self.buttonSize = (30, 24)
         self.browseSize = (-1, 24)
+        self.labelSize = (190, -1)
         self.buttonList = []
         self.addrList = []
+        self.labelList = []
         self.browseList = []
         self.columnList = []
         self.typeList = []
         self.type = ["File", "Folder"]
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
+
+        # Counts for files and folders
+        self.file_count = 0
+        self.folder_count = 0
 
         self.InitUI()
 
@@ -39,6 +45,7 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
         self.typeList[-1].SetValue("Folder")
         self.addrList.append(wx.TextCtrl(self, size=self.barSize))
         self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
+        self.labelList.append(wx.TextCtrl(self, size=self.labelSize, style=wx.TE_READONLY))
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
         self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
@@ -47,6 +54,7 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
         self.columnList[-1].Add(self.typeList[-1])
         self.columnList[-1].Add(self.addrList[-1])
         self.columnList[-1].Add(self.browseList[-1])
+        self.columnList[-1].Add(self.labelList[-1])
 
         self.tableSizer.Add(self.columnList[-1])
 
@@ -66,6 +74,7 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
         self.typeList[-1].SetValue("Folder")
         self.addrList.append(wx.TextCtrl(self, size=self.barSize))
         self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
+        self.labelList.append(wx.TextCtrl(self, size=self.labelSize, style=wx.TE_READONLY))
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
         self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
@@ -73,6 +82,7 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
         self.columnList[-1].Add(self.typeList[-1])
         self.columnList[-1].Add(self.addrList[-1])
         self.columnList[-1].Add(self.browseList[-1])
+        self.columnList[-1].Add(self.labelList[-1])
 
         self.tableSizer.Add(self.columnList[-1])
         self.layoutSizer.Layout()
@@ -87,6 +97,7 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
             self.typeList[-1].SetValue("Folder")
             self.addrList.append(wx.TextCtrl(self, size=self.barSize))
             self.browseList.append(wx.Button(self, label="Browse", size=self.browseSize))
+            self.labelList.append(wx.TextCtrl(self, size=self.labelSize, style=wx.TE_READONLY))
 
             self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
             self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
@@ -94,8 +105,10 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
             self.columnList[-1].Add(self.typeList[-1])
             self.columnList[-1].Add(self.addrList[-1])
             self.columnList[-1].Add(self.browseList[-1])
+            self.columnList[-1].Add(self.labelList[-1])
 
             self.tableSizer.Add(self.columnList[-1])
+            self.updateLabels()
             self.layoutSizer.Layout()
 
             self.Update()
@@ -106,15 +119,43 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
             self.typeList[id].Destroy()
             self.addrList[id].Destroy()
             self.browseList[id].Destroy()
+            self.labelList[id].Destroy()
             del self.columnList[id]
             del self.buttonList[id]
             del self.typeList[id]
             del self.addrList[id]
             del self.browseList[id]
+            del self.labelList[id]
+            self.updateLabels()
 
             self.layoutSizer.Layout()
             self.Update()
         self.parent.Layout()
+
+    # Update the displayed file labels for the window
+    def updateLabels(self):
+
+        # Set the counts for files and folders back to zero
+        self.file_count = 0
+        self.folder_count = 0
+
+        # Get the station number
+        stnNum = self.parent.parent.genInfo.stnNumCmbo.GetValue()
+        if stnNum.isspace():
+            stnNum = ''
+        
+        # Get the date
+        dateVal = self.parent.parent.genInfo.datePicker.GetValue().Format(self.parent.fm)
+
+        # Iterate over every entered path
+        # And increment the count and set the label based on whether it is a folder or a file
+        for id in range(len(self.addrList)):
+            if self.typeList[id].GetValue() == "Folder" and self.addrList[id].GetValue() != "":
+                self.folder_count += 1
+                self.labelList[id].ChangeValue(stnNum + "_" + dateVal + "_M" + str(self.folder_count))
+            elif self.addrList[id].GetValue() != "":
+                self.file_count += 1
+                self.labelList[id].ChangeValue(stnNum + "_" + dateVal + "_M" + str(self.file_count))
 
     def Browse(self, evt):
         id = self.browseList.index(evt.GetEventObject())
@@ -128,6 +169,7 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
             self.addrList[id].ChangeValue(DirOpenDialog.GetPath())
 
             DirOpenDialog.Destroy()
+            self.updateLabels()
 
         else:
             fileOpenDialog = wx.FileDialog(self, "Select the File", self.rootPath, '',
@@ -137,9 +179,21 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
                 fileOpenDialog.Destroy()
                 return
 
-            self.addrList[id].ChangeValue(fileOpenDialog.GetPath())
-
+            filepath = fileOpenDialog.GetPath()
             fileOpenDialog.Destroy()
+
+            # Get the extension of the file
+            name, extension = os.path.splitext(filepath)
+
+            # If the discharge measurement file is a pdf, then display a warning to the user
+            if extension == '.pdf':
+                info = wx.MessageDialog(self, 'The Discharge Measurement File type cannot be PDF.', 'Incorect file type',
+                                    wx.OK | wx.ICON_ERROR)
+                info.ShowModal()
+                return
+            else:
+                self.addrList[id].ChangeValue(filepath)
+                self.updateLabels()
 
     def returnFilePath(self):
         fileList = []

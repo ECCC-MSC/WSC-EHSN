@@ -12,15 +12,18 @@ class AttachFolderBox(wx.Panel):
         self.parent = parent
         self.func = func
         self.manager = None
-        self.barSize = (710, -1)
+        self.barSize = (610, -1)
         self.buttonSize = (30, 24)
         self.browseSize = (-1, 24)
+        self.labelSize = (190, -1)
         self.buttonList = []
         self.addrList = []
+        self.labelList = []
         self.browseList = []
         self.columnList = []
         self.pathList = []
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
+        self.count = 0
 
         self.InitUI()
 
@@ -40,6 +43,7 @@ class AttachFolderBox(wx.Panel):
         self.buttonList.append(wx.Button(self.pathPanel, label="-", size=self.buttonSize))
         self.addrList.append(wx.TextCtrl(self.pathPanel, size=self.barSize))
         self.browseList.append(wx.Button(self.pathPanel, label="Browse", size=self.browseSize))
+        self.labelList.append(wx.TextCtrl(self.pathPanel, size=self.labelSize, style=wx.TE_READONLY))
         self.pathList.append("")
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
@@ -48,6 +52,7 @@ class AttachFolderBox(wx.Panel):
         self.columnList[-1].Add(self.buttonList[-1])
         self.columnList[-1].Add(self.addrList[-1])
         self.columnList[-1].Add(self.browseList[-1])
+        self.columnList[-1].Add(self.labelList[-1])
 
         self.tableSizer.Add(self.columnList[-1])
         
@@ -107,6 +112,7 @@ class AttachFolderBox(wx.Panel):
         self.buttonList.append(wx.Button(self.pathPanel, label="-", size=self.buttonSize))
         self.addrList.append(wx.TextCtrl(self.pathPanel, size=self.barSize))
         self.browseList.append(wx.Button(self.pathPanel, label="Browse", size=self.browseSize))
+        self.labelList.append(wx.TextCtrl(self.pathPanel, size=self.labelSize, style=wx.TE_READONLY))
         self.pathList.append("")
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
@@ -114,6 +120,7 @@ class AttachFolderBox(wx.Panel):
         self.columnList[-1].Add(self.buttonList[-1])
         self.columnList[-1].Add(self.addrList[-1])
         self.columnList[-1].Add(self.browseList[-1])
+        self.columnList[-1].Add(self.labelList[-1])
 
         self.tableSizer.Add(self.columnList[-1])
         self.layoutSizer.Layout()
@@ -126,6 +133,7 @@ class AttachFolderBox(wx.Panel):
             self.buttonList.append(wx.Button(self.pathPanel, label="-", size=self.buttonSize))
             self.addrList.append(wx.TextCtrl(self.pathPanel, size=self.barSize))
             self.browseList.append(wx.Button(self.pathPanel, label="Browse", size=self.browseSize))
+            self.labelList.append(wx.TextCtrl(self.pathPanel, size=self.labelSize, style=wx.TE_READONLY))
             self.pathList.append("")
 
             self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
@@ -133,8 +141,10 @@ class AttachFolderBox(wx.Panel):
             self.columnList[-1].Add(self.buttonList[-1])
             self.columnList[-1].Add(self.addrList[-1])
             self.columnList[-1].Add(self.browseList[-1])
+            self.columnList[-1].Add(self.labelList[-1])
 
             self.tableSizer.Add(self.columnList[-1])
+            self.updateLabels()
             self.layoutSizer.Layout()
 
             self.Update()
@@ -144,20 +154,45 @@ class AttachFolderBox(wx.Panel):
             self.buttonList[id].Destroy()
             self.addrList[id].Destroy()
             self.browseList[id].Destroy()
+            self.labelList[id].Destroy()
             del self.columnList[id]
             del self.buttonList[id]
             del self.addrList[id]
             del self.browseList[id]
+            del self.labelList[id]
             del self.pathList[id]
 
             if len(self.returnPath()) == 0:
                 self.dataCheck.SetValue(False)
                 self.diagnosticCheck.SetValue(False)
                 self.programCheck.SetValue(False)
+            
+            self.updateLabels()
 
             self.layoutSizer.Layout()
             self.Update()
         self.parent.Layout()
+    
+    # Update the displayed file labels for the window
+    def updateLabels(self):
+
+        # Set the count back to zero
+        self.count = 0
+
+        # Get the station number
+        stnNum = self.parent.parent.genInfo.stnNumCmbo.GetValue()
+        if stnNum.isspace():
+            stnNum = ''
+
+        # Get the date
+        dateVal = self.parent.parent.genInfo.datePicker.GetValue().Format(self.parent.fm)
+        
+        # Iterate over every entered path
+        # And increment the count and set the label
+        for id in range(len(self.addrList)):
+            if self.addrList[id].GetValue() != "":
+                self.count += 1
+                self.labelList[id].ChangeValue(stnNum + "_" + dateVal + "_LG" + str(self.count))
 
     def Browse(self, evt):
         id = self.browseList.index(evt.GetEventObject())
@@ -171,6 +206,7 @@ class AttachFolderBox(wx.Panel):
         self.addrList[id].ChangeValue(self.pathList[id])
 
         folderOpenDialog.Destroy()
+        self.updateLabels()
 
     # return none empty path
     def returnPath(self):
