@@ -581,18 +581,23 @@ class ElectronicHydrometricSurveyNotes:
                     payload = {}
 
                     print("Uploading")
-                    req = aq.acquisition.post('/locations/' + locid + '/visits/upload/plugins', json=payload, files=files)
-                    visitUris = req
                     try:
-                        visitUris = req['ResponseStatus']['Message']
+                        req = aq.acquisition.post('/locations/' + locid + '/visits/upload/plugins', json=payload, files=files)
+                        visitUris = req
+                        try:
+                            visitUris = req['ResponseStatus']['Message']
+                            self.gui.deleteProgressDialog()
+                            return visitUris
+                        except:
+                            try:
+                                visitUris = visitUris['VisitUris'][0]
+                            except:
+                                self.gui.deleteProgressDialog()
+                                return "Failed"
+                    except HTTPError as e:
+                        visitUris = json.loads(e.response.text)['ResponseStatus']['Message']
                         self.gui.deleteProgressDialog()
                         return visitUris
-                    except:
-                        try:
-                            visitUris = visitUris['VisitUris'][0]
-                        except:
-                            self.gui.deleteProgressDialog()
-                            return "Failed"
                 # return self.exportAQWarning
         self.gui.deleteProgressDialog()
         return None
