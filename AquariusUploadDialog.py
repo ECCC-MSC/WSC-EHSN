@@ -319,7 +319,6 @@ class AquariusUploadDialog(wx.Dialog):
 
 
                         else:
-                            self.GetParent().manager.ExportToAquariusSuccess()
 
                             self.EnableButtons(True)
 
@@ -387,7 +386,6 @@ class AquariusUploadDialog(wx.Dialog):
                         else:
                             succ = wx.MessageDialog(None, 'Upload successful!', "Finish",
                                                     wx.OK | wx.ICON_NONE)
-                            self.GetParent().manager.ExportToAquariusSuccess()
                             succ.ShowModal()
                 self.EnableButtons(True)
             except Exception as e:

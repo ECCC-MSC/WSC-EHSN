@@ -602,9 +602,6 @@ class ElectronicHydrometricSurveyNotes:
         self.gui.deleteProgressDialog()
         return None
 
-    # Locks after uploading to Aquarius
-    def ExportToAquariusSuccess(self):
-        self.Lock()
 
     # Locks all the pages except the title header.
     def LockEvent(self, e):
