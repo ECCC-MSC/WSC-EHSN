@@ -24,7 +24,7 @@ def GetLocalTimeUtcOffset(filePath):
     return GetData(filePath)['Properties']['LocalTimeUtcOffset']
 
 
-def AddDischargeSummary(filePath, disMeasManager, editedFile):
+def AddDischargeSummary(filePath, disMeasManager):
     print("importing discharge summary from ft2")
     color = disMeasManager.manager.gui.importedBGColor
     properties = GetData(filePath)['Properties']
@@ -32,21 +32,14 @@ def AddDischargeSummary(filePath, disMeasManager, editedFile):
     # print properties['SiteNumber']
 
     allTimes = []
-    allTypes = []
     for st in GetData(filePath)['Stations']:
         allTimes.append(st['CreationTime'])
-        allTypes.append(st['StationType'])
+    
+    # Sort to ensure that the timestamps are ordered properly
+    allTimes.sort()
+    
     startTime = allTimes[0][11:16]
     endTime = allTimes[-1][11:16]
-        
-    # If the starting location is the right bank and the ending location is the left bank
-    # and the file has been edited, then swap the starting and ending times
-    startLocation = allTypes[0]
-    endLocation = allTypes[-1]
-    if startLocation == 'RightBank' and endLocation == 'LeftBank' and editedFile:
-        temp_time = startTime
-        startTime = endTime
-        endTime = temp_time
 
     offset = properties['LocalTimeUtcOffset'][:3]
     if offset[0] != '+' and offset[0] != '-':

@@ -13,8 +13,6 @@ class IngestOptionFrame(wx.Frame):
         self.ID_HFC = self.GetParent().ID_IMPORT_HFC
         self.ID_FT = self.GetParent().ID_IMPORT_FTDIS
         self.ID_FT2 = self.GetParent().ID_IMPORT_FT2
-        # Get the boolean for whether or not the FlowTracker2 file is a .ft file or a .ft.edited file
-        self.editedFile = self.GetParent().ft2_edited
         self.ID_QREV = self.GetParent().ID_IMPORT_QRXML
         self.ID_MMT = self.GetParent().ID_IMPORT_SXSMMT
         self.ID_RSSL = self.GetParent().ID_IMPORT_RSSDIS
@@ -117,8 +115,7 @@ class IngestOptionFrame(wx.Frame):
             elif self.inType == self.ID_HFC:
                 self.GetParent().manager.AddDischargeSummaryFromHfc()
             elif self.inType == self.ID_FT2:
-                # Pass in the boolean for whether or not the FlowTracker2 file is a .ft file or a .ft.edited file
-                self.GetParent().manager.AddDischargeSummaryFromFt2(self.editedFile)
+                self.GetParent().manager.AddDischargeSummaryFromFt2()
             elif self.inType == self.ID_MMT:
                 self.GetParent().manager.AddDischargeSummaryFromSxs()
             elif self.inType == self.ID_RSSL:

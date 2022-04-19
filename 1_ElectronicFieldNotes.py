@@ -1440,9 +1440,8 @@ class ElectronicHydrometricSurveyNotes:
 
 
     #Ingest from FlowTracker2 (*.json)
-    # This takes in a boolean for whether or not the file is a .ft file or a .ft.edited file
-    def AddDischargeSummaryFromFt2(self, editedFile):
-        IngestFt2Manager.AddDischargeSummary(self.GetFT2JsonDir(), self.disMeasManager, editedFile)
+    def AddDischargeSummaryFromFt2(self):
+        IngestFt2Manager.AddDischargeSummary(self.GetFT2JsonDir(), self.disMeasManager)
 
     def AddDischargeDetailFromFt2(self):
         IngestFt2Manager.AddDischargeDetail(self.GetFT2JsonDir(), self.instrDepManager) 

@@ -150,9 +150,6 @@ class EHSNGui(wx.Frame):
         self.ID_IMPORT_HFC = ID_IMPORT_HFC
         self.ID_IMPORT_FTDIS = ID_IMPORT_FTDIS
         self.ID_IMPORT_FT2 = ID_IMPORT_FT2
-        # If a FlowTracker2 file is imported, then whether the file is a .ft file or a .ft.edited file must be recorded
-        # By default this boolean is set to false, indicating a .ft file
-        self.ft2_edited = False
         self.ID_IMPORT_QRXML = ID_IMPORT_QRXML
         self.ID_IMPORT_SXSMMT = ID_IMPORT_SXSMMT
         self.ID_IMPORT_RSSDIS = ID_IMPORT_RSSDIS
@@ -2663,11 +2660,6 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         if self.manager is not None:
             path = fileOpenDialog.GetPath()
-            # If the FlowTracker2 filename contains ".ft.edited"
-            # Then this is an edited FT2 file
-            if ".ft.edited" in path:
-                # Set the boolean to true
-                self.ft2_edited = True
             if self.mode == "DEBUG":
                 print("path open")
                 print(path)
