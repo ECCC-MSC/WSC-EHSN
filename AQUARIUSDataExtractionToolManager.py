@@ -248,6 +248,16 @@ class AQUARIUSDataExtractionToolManager(object):
         if not os.path.exists(path):
             os.makedirs(path)
 
+        # Remove previous error report if it exists
+        if os.path.exists(os.path.join(path, 'ExtractionErrorReport.txt')):
+            os.remove(os.path.join(path, 'ExtractionErrorReport.txt'))
+        
+        # Remove all previously created rating curve json files and field visit csv files
+        extracted_data_files = os.listdir(path)
+        for file in extracted_data_files:
+            if file.endswith(".json") or file.endswith(".csv"):
+                os.remove(os.path.join(path, file))
+        
         # Lists of stations that go wrong per method
         failedStnInfo = []
         failedLvlInfo = []
