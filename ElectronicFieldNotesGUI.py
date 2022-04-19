@@ -1027,7 +1027,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         return False
 
-
+    '''
     def SaveAsXMLNg(self, path):
         try:
             name = self.SaveAsXMLAtUploadNg(path).split('.')[0]
@@ -1064,7 +1064,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.fullname = newpath
 
         return defaultName
-
+    '''
+    
     #Save as pdf and xml before uploading to AQ
     def SaveAsPDFAndXML4Upload(self, path, success):
         try:
