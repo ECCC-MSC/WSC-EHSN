@@ -42,7 +42,8 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.missingStnNumTitle = "Missing Station Number"
         self.nonexistentMessage = " does not exist"
         self.nonexistentTitle = "Target file does not exist"
-        self.successMessage = "Field Visit Package successfully created and zipped\n"
+        self.successMessage = "Field Visit Package successfully created and zipped at: "
+        self.exitMessage = "You can now safely exit eHSN; your xml is already saved within the FV Package."
         self.successTitle = "File successfully zipped"
         self.errorMessage = "FV PACKAGE creation has failed"
         self.errorTitle = "Create Failure"
@@ -415,7 +416,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
 
             zipfile.close()
-            info = wx.MessageDialog(None, self.successMessage + "The field visit package: " + Tag + " was successfully created and saved here: " + zipPath, self.successTitle, wx.OK)
+            info = wx.MessageDialog(None, self.successMessage + zipPath + '\n' + self.exitMessage, self.successTitle, wx.OK)
             self.zipPath = zipPath + "\\" + Tag + '.zip'
             info.ShowModal()
         except Exception as e:

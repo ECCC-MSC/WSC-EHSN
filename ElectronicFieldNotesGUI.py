@@ -275,8 +275,8 @@ class EHSNGui(wx.Frame):
         self.fileSavePDFStylesheetViewMessage = "Stylesheet not found, please locate stylesheet file: " + self.viewStyleSheetFileName
         self.fileSavePDFSaveTitle = 'Save eHSN as PDF'
         self.fileOpenTitle = 'Open'
-        self.fileExitMessage = 'Save Hydrometric Survey Notes before exit?'
-        self.fileExitTitle = 'Save before exit?'
+        self.fileExitMessage = 'Do you want to Exit?'
+        self.fileExitTitle = 'Exit'
         self.fileAQStnMessage = "Please enter a Station Number"
         self.fileAQStnTitle = "Station information missing"
         self.fileAQTZMessage = "Please select timezone"
@@ -1541,27 +1541,16 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     # want to exit, then close everything down if they do.
     def OnFileExit(self, evt):
         dlg = wx.MessageDialog(self, self.fileExitMessage, self.fileExitTitle,
-                              wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
-
+                              wx.YES_NO | wx.ICON_QUESTION)
         res = dlg.ShowModal()
         if res == wx.ID_YES:
-            dlg.Destroy()
-            re = self.OnSaveExit(evt)
-            if re:
-                if self.calc is not None:
-                    if not self.calc.quitFlag:
-                        self.calc.quit()
-                self.Destroy()
-        elif res == wx.ID_CANCEL:
-            dlg.Destroy()
-        else:
-
             if self.calc is not None:
                 if not self.calc.quitFlag:
                     self.calc.quit()
-
             dlg.Destroy()
             self.Destroy()
+        else:
+            dlg.Destroy()
 
 
 

@@ -383,7 +383,7 @@ class AquariusUploadDialog(wx.Dialog):
                                                     wx.OK | wx.ICON_ERROR)
                             error.ShowModal()
                         else:
-                            succ = wx.MessageDialog(None, 'Upload successful!', "Finish",
+                            succ = wx.MessageDialog(None, 'Upload successful! You can now safely exit eHSN; your xml is already saved within the FV Package.', "Finish",
                                                     wx.OK | wx.ICON_NONE)
                             succ.ShowModal()
                 self.EnableButtons(True)
