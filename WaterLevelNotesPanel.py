@@ -444,13 +444,23 @@ class WaterLevelNotesPanel(wx.Panel):
                     # Get the height of instrument value
                     hoiVal = row[4]
 
-                    # If height of instrument is an empty string
-                    # then set it to zero
                     if hoiVal == '':
-                        hoiVal = 0
-
+                        # If height of instrument is an empty string
+                        # Then iterate in reverse to find the last height of instrument value that is not empty
+                        for i in reversed(list(range(rowIndex))):
+                            try:
+                                # If this value can be converted to a float
+                                # then a suitable height of instrument has been found
+                                hoiVal = float(self.circuitList[circuitIndex][i][4])
+                                break
+                            except:
+                                # If no suitable values can be found
+                                # then height of instrument will remain an empty string
+                                if i == 0:
+                                    break
                     try:
                         # Get the float value for height of instrument
+                        # This will fail if hoiVal is an empty string
                         hoiVal = float(hoiVal)
 
                         # If the index of the row is less than the second last index in the circuit

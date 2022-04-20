@@ -545,7 +545,14 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         id = self.hoiList.index(evt.GetEventObject())
         hi = self.hoiList[id].GetValue()
         if hi == '':
-            hi = 0
+            for i in reversed(list(range(id))):
+                try:
+                    hi = float(self.hoiList[i].GetValue())
+                    break
+                except:
+                    if i == 0:
+                        evt.Skip()
+                        return
         try:
             hi = float(hi)
             if id < len(self.stationList) - 2:
