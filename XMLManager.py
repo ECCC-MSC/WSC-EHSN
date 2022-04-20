@@ -2189,12 +2189,24 @@ def LevelChecksFromXML(LevelChecks, waterLevelRunManager):
         waterLevel = SummaryTableRow.find('waterLevel').text
         dist = SummaryTableRow.find('dist').text
         # updown = SummaryTableRow.find('updown').text
-        surge = SummaryTableRow.find('surge').text
+
+        # If the comment tag is present then the xml is from ehsn 2.3.0 or later
+        # In this case the surge value should be placed in surge
+        try:
+            SummaryTableRow.find('Comment').text
+            surge = SummaryTableRow.find('surge').text
+            comment = ""
+        # Otherwise the xml is earlier than 2.3.0
+        # and the surge value should be placed in comment
+        except:
+            surge = ""
+            comment = SummaryTableRow.find('surge').text
+        
         wlElev = SummaryTableRow.find('wlElev').text
         try:
             comment = SummaryTableRow.find('Comment').text
         except (RuntimeError, AttributeError):
-            comment = ""
+            pass
         try:
             datum = SummaryTableRow.find('datum').text
         except (RuntimeError, AttributeError):
