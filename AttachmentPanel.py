@@ -416,7 +416,11 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
 
             zipfile.close()
-            info = wx.MessageDialog(None, self.successMessage + zipPath + '\n' + self.exitMessage, self.successTitle, wx.OK)
+            if openSaveDialog:
+                info = wx.MessageDialog(None, self.successMessage + zipPath + '\n' + self.exitMessage, self.successTitle, wx.OK)
+            else:
+                info = wx.MessageDialog(None, self.successMessage + zipPath, self.successTitle, wx.OK)
+
             self.zipPath = zipPath + "\\" + Tag + '.zip'
             info.ShowModal()
         except Exception as e:
