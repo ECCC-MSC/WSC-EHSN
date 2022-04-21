@@ -34,8 +34,13 @@ def AddDischargeSummary(filePath, disMeasManager):
     allTimes = []
     for st in GetData(filePath)['Stations']:
         allTimes.append(st['CreationTime'])
+    
+    # Sort to ensure that the timestamps are ordered properly
+    allTimes.sort()
+    
     startTime = allTimes[0][11:16]
     endTime = allTimes[-1][11:16]
+
     offset = properties['LocalTimeUtcOffset'][:3]
     if offset[0] != '+' and offset[0] != '-':
         offset = offset[:2]

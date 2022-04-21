@@ -138,6 +138,11 @@ class ElectronicHydrometricSurveyNotes:
     def InitUI(self):
         if mode == "DEBUG":
             print("EHSN")
+
+        # Delete any existing iniPath.ini files stored in the temp directory
+        if os.path.exists('c:\\temp\\eHSN\\iniPath.ini'):
+            os.remove('c:\\temp\\eHSN\\iniPath.ini')
+
         app = wx.App()
         self.uploadRecord = None
         self.gui = EHSNGui(mode, EHSN_VERSION, None, title=self.headerTitle, size=eHSN_WINDOW_SIZE)
@@ -576,25 +581,27 @@ class ElectronicHydrometricSurveyNotes:
                     payload = {}
 
                     print("Uploading")
-                    req = aq.acquisition.post('/locations/' + locid + '/visits/upload/plugins', json=payload, files=files)
-                    visitUris = req
                     try:
-                        visitUris = req['ResponseStatus']['Message']
+                        req = aq.acquisition.post('/locations/' + locid + '/visits/upload/plugins', json=payload, files=files)
+                        visitUris = req
+                        try:
+                            visitUris = req['ResponseStatus']['Message']
+                            self.gui.deleteProgressDialog()
+                            return visitUris
+                        except:
+                            try:
+                                visitUris = visitUris['VisitUris'][0]
+                            except:
+                                self.gui.deleteProgressDialog()
+                                return "Failed"
+                    except HTTPError as e:
+                        visitUris = json.loads(e.response.text)['ResponseStatus']['Message']
                         self.gui.deleteProgressDialog()
                         return visitUris
-                    except:
-                        try:
-                            visitUris = visitUris['VisitUris'][0]
-                        except:
-                            self.gui.deleteProgressDialog()
-                            return "Failed"
                 # return self.exportAQWarning
         self.gui.deleteProgressDialog()
         return None
 
-    # Locks after uploading to Aquarius
-    def ExportToAquariusSuccess(self):
-        self.Lock()
 
     # Locks all the pages except the title header.
     def LockEvent(self, e):

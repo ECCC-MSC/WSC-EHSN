@@ -275,8 +275,8 @@ class EHSNGui(wx.Frame):
         self.fileSavePDFStylesheetViewMessage = "Stylesheet not found, please locate stylesheet file: " + self.viewStyleSheetFileName
         self.fileSavePDFSaveTitle = 'Save eHSN as PDF'
         self.fileOpenTitle = 'Open'
-        self.fileExitMessage = 'Save Hydrometric Survey Notes before exit?'
-        self.fileExitTitle = 'Save before exit?'
+        self.fileExitMessage = 'Do you want to Exit?'
+        self.fileExitTitle = 'Exit'
         self.fileAQStnMessage = "Please enter a Station Number"
         self.fileAQStnTitle = "Station information missing"
         self.fileAQTZMessage = "Please select timezone"
@@ -307,7 +307,7 @@ class EHSNGui(wx.Frame):
         self.savePDFErrorTitle = "Error saving PDF file"
         self.qrName = "qr.jpg"
         self.icon_path = self.iconName
-        self.qr_path = self.qrName
+        self.qr_path = "c:\\temp\\eHSN\\" + self.qrName
         self.logo_path = self.logoName
         self.configPath = self.configName
         self.uploadOpenPdf = False
@@ -580,11 +580,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         #Icon Path
 
         if hasattr(sys, '_MEIPASS'):
-            self.qr_path = os.path.join(sys._MEIPASS, self.qr_path)
             self.icon_path = os.path.join(sys._MEIPASS, self.icon_path)
             self.logo_path = os.path.join(sys._MEIPASS, self.logo_path)
         else:
-            self.qr_path = os.path.join(self.dir, self.qr_path)
             self.icon_path = os.path.join(self.dir, self.icon_path)
             self.logo_path = os.path.join(self.dir, self.logo_path)
 
@@ -1026,7 +1024,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         return False
 
-
+    '''
     def SaveAsXMLNg(self, path):
         try:
             name = self.SaveAsXMLAtUploadNg(path).split('.')[0]
@@ -1063,7 +1061,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.fullname = newpath
 
         return defaultName
-
+    '''
+    
     #Save as pdf and xml before uploading to AQ
     def SaveAsPDFAndXML4Upload(self, path, success):
         try:
@@ -1542,27 +1541,16 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     # want to exit, then close everything down if they do.
     def OnFileExit(self, evt):
         dlg = wx.MessageDialog(self, self.fileExitMessage, self.fileExitTitle,
-                              wx.YES_NO | wx.CANCEL | wx.ICON_QUESTION)
-
+                              wx.YES_NO | wx.ICON_QUESTION)
         res = dlg.ShowModal()
         if res == wx.ID_YES:
-            dlg.Destroy()
-            re = self.OnSaveExit(evt)
-            if re:
-                if self.calc is not None:
-                    if not self.calc.quitFlag:
-                        self.calc.quit()
-                self.Destroy()
-        elif res == wx.ID_CANCEL:
-            dlg.Destroy()
-        else:
-
             if self.calc is not None:
                 if not self.calc.quitFlag:
                     self.calc.quit()
-
             dlg.Destroy()
             self.Destroy()
+        else:
+            dlg.Destroy()
 
 
 
@@ -1662,11 +1650,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         aboutInfo.SetCopyright("This code was developed by the Water Survey of Canada. \nFor support please submit an issue to: ")
         aboutInfo.SetWebSite("https://watersurveyofcanada.atlassian.net/")
         aboutInfo.AddDeveloper("Xu Yan")
+        aboutInfo.AddDeveloper("Adam Mohiuddin")
         aboutInfo.AddDeveloper("Wenbin Zhang")
         aboutInfo.AddDeveloper("Yugo Brunet")
         aboutInfo.AddDeveloper("Vincent Vallee")
         aboutInfo.AddDeveloper("Taewan Kang")
-        aboutInfo.SetArtists(["Project Management, testing and thanks to:\nMuluken Yeheyis", "Doug Stiff, Elizabeth Jamieson, Tim Andrews, Tim Antonio, Zachary Bishop, Andrew Creighton, Adam Dowler, Debbie Forlanski, Malyssa Maurer, Colin McCann, Mark Scott"])
+        aboutInfo.SetArtists(["Project Management, testing and thanks to:\nMuluken Yeheyis", "Doug Stiff, Elizabeth Jamieson, Gianni Montanaro, Tim Andrews, Jordan Greco, Tim Antonio, Zachary Bishop, Andrew Creighton, Adam Dowler, Debbie Forlanski, Malyssa Maurer, Colin McCann, Mark Scott"])
         aboutInfo.SetLicence("This software has no license restrictions and is used at your own risk.")
         aboutInfo.SetIcon(icon)
 

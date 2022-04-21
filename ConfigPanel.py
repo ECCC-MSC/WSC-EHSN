@@ -22,9 +22,10 @@ class ConfigPanel(wx.Frame):
         desc1 = """These directories point to configuration files to allow you to view Station Information, Benchmarks and Field Equipment in drop-down menus.
 
 Station Information and Benchmarks can be extracted and created using the AQUARIUS Data Extraction Tool (next menu over), but the meters.csv 
-file will have to be set up by you or your office.
+file will have to be set up by you or your office. The AQUARIUS Data Extraction Tool should be run for every new eHSN release, as well as periodically 
+to ensure that all data is up-to-date; data should be extracted using the same version of eHSN that will be used to collect data.
 
-If you are just starting out, it is recommended to use the default locations. """
+It is recommended to store all configuration files in the default location (i.e. alongside the eHSN exe). """
 
 
         self.stationsDefaultPath = 'stations.txt'

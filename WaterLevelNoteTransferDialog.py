@@ -93,7 +93,8 @@ class TransferDialog(wx.Dialog):
                     result = ""
                     if self.elevations[i][j] != "" and self.estEles[i][j] != "":
                         try:
-                            result = str(float(self.elevations[i][j]) - float(self.estEles[i][j]))
+                            # Round to 3 sig figs
+                            result = str(round(float(self.elevations[i][j]) - float(self.estEles[i][j]), 3))
                         except:
                             result = ""
                     stationTxt = wx.StaticText(secondPanel, label=result, size=(-1, self.height))

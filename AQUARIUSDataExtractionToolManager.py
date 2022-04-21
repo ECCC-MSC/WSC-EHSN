@@ -248,6 +248,16 @@ class AQUARIUSDataExtractionToolManager(object):
         if not os.path.exists(path):
             os.makedirs(path)
 
+        # Remove previous error report if it exists
+        if os.path.exists(os.path.join(path, 'ExtractionErrorReport.txt')):
+            os.remove(os.path.join(path, 'ExtractionErrorReport.txt'))
+        
+        # Remove all previously created rating curve json files and field visit csv files
+        extracted_data_files = os.listdir(path)
+        for file in extracted_data_files:
+            if file.endswith(".json") or file.endswith(".csv"):
+                os.remove(os.path.join(path, file))
+        
         # Lists of stations that go wrong per method
         failedStnInfo = []
         failedLvlInfo = []
@@ -261,7 +271,6 @@ class AQUARIUSDataExtractionToolManager(object):
                                           'Collecting data for Station Information (stations.txt)')
 
             res = self.GetStationInfoNg(aq, path, failedStnInfo)
-            self.CheckReturn(res)
             if res == -1 or res == -2:
                 pass
                 self.gui.DeleteProgressDialog()
@@ -285,7 +294,6 @@ class AQUARIUSDataExtractionToolManager(object):
                                               'Collecting data for Levels Information (levels.txt)')
 
             res = self.GetLevelsInfoNg(aq, path, failedLvlInfo)
-            self.CheckReturn(res)
             if res == -1 or res == -2:
                 pass
             elif res != 0:
@@ -307,7 +315,6 @@ class AQUARIUSDataExtractionToolManager(object):
                                               'Collecting Rating Curve Information (StationID_ratingcurves.xml)')
 
             res = self.GetRatingInfoNg(aq, path, failedRatingInfo)
-            self.CheckReturn(res)
             if res == -1 or res == -2:
                 pass
             elif res != 0:
@@ -333,7 +340,6 @@ class AQUARIUSDataExtractionToolManager(object):
             else:
                 numMinMax = None
             res = self.GetFieldVisitNg(aq, path, failedHistMmts, numMinMax)
-            self.CheckReturn(res)
             if res == -1 or res == -2:
                 pass
             elif res != 0:
@@ -543,12 +549,16 @@ class AQUARIUSDataExtractionToolManager(object):
         writeList = []
         for station in locations:
             # Check if real station
-            parameters = {'LocationIdentifier': station}
-            locid = aq.publish.get('/GetLocationData', params=parameters)
-            # print locid
-
-            if 'ResponseStatus' in locid:
-                print(locid['ResponseStatus']['Message'])
+            try:
+                parameters = {'LocationIdentifier': station}
+                locid = aq.publish.get('/GetLocationData', params=parameters)
+                # print locid
+    
+                if 'ResponseStatus' in locid:
+                    print(locid['ResponseStatus']['Message'])
+                    failedStations.append(station)
+                    continue
+            except:
                 failedStations.append(station)
                 continue
 
@@ -577,12 +587,7 @@ class AQUARIUSDataExtractionToolManager(object):
         exportFile = None
         while True:
             try:
-                if os.path.isfile(path + '\\stations.txt'):
-                    fileExists = True
-
-                    exportFile = open(path + '\\stations.txt', 'a+')
-                else:
-                    exportFile = open(path + '\\stations.txt', "w")
+                exportFile = open(path + '\\stations.txt', "w")
                 break
             except IOError:
                 print("Could not open file! Please close Excel!")
@@ -598,43 +603,7 @@ class AQUARIUSDataExtractionToolManager(object):
                     return
 
         if exportFile is not None:
-            if not fileExists:
-                exportFile.write("STATION ID,STATION NAME,TIMEZONE")
-
-            else:
-                readList = []
-
-                with open(path + '\\stations.txt') as f:
-                    lines = f.readlines()
-                    for i, line in enumerate(lines):
-                        if i > 0:
-                            readList.append(line.split(',')[0])
-
-                # print "-----------------"
-                # for j in readList:
-                #     print j
-                # print "-----------------"
-
-                removeIndices = []
-
-                for i in range(len(writeList)):
-
-                    if len(writeList[i]) > 2:
-
-                        for row in readList:
-                            if writeList[i][0] == row:
-                                print(writeList[i][0] + " is in file")
-                                removeIndices.append(i)
-                                break
-
-                        # exportFile.seek(0)
-                        # reader = csv.reader(exportFile, delimiter=',')
-
-                removeIndices.reverse()
-                for i in removeIndices:
-                    writeList.remove(writeList[i])
-            exportFile.close()
-            exportFile = open(path + '\\stations.txt', 'a+')
+            exportFile.write("STATION ID,STATION NAME,TIMEZONE")
             for line in writeList:
                 exportFile.write("\n")
                 lineData = line[0] + ',' + line[1] + ',' + line[2]
@@ -874,10 +843,10 @@ class AQUARIUSDataExtractionToolManager(object):
             try:
                 parameters = {'LocationIdentifier': station}
                 req = aq.publish.get('/GetLocationData', params=parameters)
+                staInfo = req['ReferencePoints']
             except:
                 failedStations.append(station)
-                return -1
-            staInfo = req['ReferencePoints']
+                continue
             # print staInfo
             for benchMark in staInfo:
                 benchMarkInfo = []
@@ -998,41 +967,14 @@ class AQUARIUSDataExtractionToolManager(object):
                 # totalBenchmarkList = sorted(fileBMList, key=itemgetter(0, 1))
             '''
             # Write to file
-            original = ""
-            with open(path + '\\levels.txt') as file:
-                try:
-                    next(file)
-                    for lines in file:
-                        original += lines
-                except:
-                    original =""
-            originalList = original.split("\n")
-            stations = []
-            for lines in originalList:
-                stationId = lines[0:7]
-                if stationId not in stations:
-                    stations.append(stationId)
-            
-            newStations = []
             exportFile = open(path + '\\levels.txt', "w+")
             exportFile.write("STATION,REFERENCE,ELEVATION,DESCRIPTION")
             for line in totalBenchmarkList:
                 # print line
                 exportFile.write("\n")
                 lineData = line[0] + ',' + line[1] + ',' + line[2] + ',' + line[3]
-                newStations.append(line[0])
                 # print lineData
                 exportFile.write(lineData)
-            additional = []
-            for station in stations:
-                if station not in newStations:
-                    additional.append(station)
-            for line in originalList:
-                if line[0:7] in additional:
-                    exportFile.write("\n")
-                    newline = line
-                    exportFile.write(newline)
-                
             exportFile.close()
 
         return 0
@@ -1565,7 +1507,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
     def ReportOnFailedStations(self, failedStnInfo, failedLvlInfo, failedRatingInfo, failedHistMmts, path):
         # report on which stations failed
-        report = "Oh dear, some data was not successfully extracted:\n"
+        report = "Data extraction failed for the following:\n"
         stationTab = "          "
         stations = self.GetStationList()
         failedStations = set()
@@ -1651,11 +1593,11 @@ class AQUARIUSDataExtractionToolManager(object):
 
 
             with open(path + "\\ExtractionErrorReport.txt","wb") as errorFile:
-                errorFile.write(report)
+                errorFile.write(report.encode("utf8"))
 
             return -1
         else:
-            self.gui.CreateMessageDialog("Success! All data successfully extracted for all stations! The files are saved to " + path, "AQUARIUS Extraction Summary")
+            self.gui.CreateMessageDialog("All data successfully extracted for all stations! The files are saved to " + path, "AQUARIUS Extraction Summary")
             return 0
 
 

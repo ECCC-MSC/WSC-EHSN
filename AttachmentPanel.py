@@ -42,7 +42,8 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.missingStnNumTitle = "Missing Station Number"
         self.nonexistentMessage = " does not exist"
         self.nonexistentTitle = "Target file does not exist"
-        self.successMessage = "Field Visit Package successfully created and zipped\n"
+        self.successMessage = "Field Visit Package successfully created and zipped at: "
+        self.exitMessage = "You can now safely exit eHSN; your xml is already saved within the FV Package."
         self.successTitle = "File successfully zipped"
         self.errorMessage = "FV PACKAGE creation has failed"
         self.errorTitle = "Create Failure"
@@ -74,25 +75,25 @@ class AttachmentPanel(scrolled.ScrolledPanel):
 
         TitlePanel = AttachmentTitle(self.mode, self)
         Txt1 = AttachTag("Logger Folders", "", self, size=self.tagSize)
-        self.attachBox1 = AttachFolderBox(self, "*", self, size=(860, 125), style=wx.SIMPLE_BORDER)
+        self.attachBox1 = AttachFolderBox(self, "*", self, size=(955, 125), style=wx.SIMPLE_BORDER)
 
         Txt2 = AttachTag("Logger Data Files", "", self, size=self.tagSize)
-        self.attachBox2 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
+        self.attachBox2 = AttachBox(self, "LoggerData", self, size=(955, 100), style=wx.SIMPLE_BORDER)
 
         Txt3 = AttachTag("Logger Diagnostic Files", "", self, size=self.tagSize)
-        self.attachBox3 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
+        self.attachBox3 = AttachBox(self, "LoggerDiagnostic", self, size=(955, 100), style=wx.SIMPLE_BORDER)
 
         Txt4 = AttachTag("Logger Program Files", "", self, size = self.tagSize)
-        self.attachBox4 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
+        self.attachBox4 = AttachBox(self, "LoggerProgram", self, size=(955, 100), style=wx.SIMPLE_BORDER)
 
         Txt5 = AttachTag("Discharge Measurement", "Files or Folder", self, size = self.tagSize)
-        self.attachBox5 = AttachFileFolderBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
+        self.attachBox5 = AttachFileFolderBox(self, "*", self, size=(955, 100), style=wx.SIMPLE_BORDER)
 
         Txt6 = AttachTag("Discharge Measurement", "Summary Files", self, size = self.tagSize)
-        self.attachBox6 = AttachBox(self, "*", self, size=(860, 100), style=wx.SIMPLE_BORDER)
+        self.attachBox6 = AttachBox(self, "DischargeSummary", self, size=(955, 100), style=wx.SIMPLE_BORDER)
 
         Txt7 = AttachTag("Photos and Drawings", "(.jpg, .DWG, etc.)", self, size=self.tagSize)
-        self.attachBox7 = AttachPhotoBox(self, "*", self, size=(860, 200), style=wx.SIMPLE_BORDER)
+        self.attachBox7 = AttachPhotoBox(self, "*", self, size=(955, 200), style=wx.SIMPLE_BORDER)
 
         self.zipAddr = wx.TextCtrl(self, size=self.barSize)
         self.zipAddr.SetValue(self.rootPath)
@@ -149,6 +150,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.SetupScrolling()
         self.ShowScrollbars(wx.SHOW_SB_DEFAULT, wx.SHOW_SB_DEFAULT)
 
+    # Create the FV package zip file
     def Zip(self, evt, openSaveDialog=True):
 
         if openSaveDialog:
@@ -212,7 +214,8 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         loggerDiagnostic = self.attachBox3.returnPath()
         loggerProgram = self.attachBox4.returnPath()
         loggerFolder = self.attachBox1.returnPath()
-        mmtPdf = self.attachBox6.returnPath() + self.attachBox5.returnFilePath()
+        mmtPdf = self.attachBox6.returnPath()
+        mmtFile = self.attachBox5.returnFilePath()
         mmtFolder = self.attachBox5.returnFolderPath()
 
         SIT = self.attachBox7.returnSIT()
@@ -224,6 +227,8 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         HSN = self.attachBox7.returnHSN()
 
         dir_temp = tempfile.mkdtemp()
+
+        # Logger data files
         count = 0
         for i in range(len(loggerDownload)):
             if valid(loggerDownload[i]):
@@ -232,6 +237,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_LG" + str(count) + extension
                 shutil.copy(loggerDownload[i], dir_temp + "\\" + rename)
                 loggerDownload[i] = dir_temp + "\\" + rename
+        # Logger diagnostic files
         count = 0
         for i in range(len(loggerDiagnostic)):
             if valid(loggerDiagnostic[i]):
@@ -240,6 +246,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_LD" + str(count) + extension
                 shutil.copy(loggerDiagnostic[i], dir_temp + "\\" + rename)
                 loggerDiagnostic[i] = dir_temp + "\\" + rename
+        # Logger program files
         count = 0
         for i in range(len(loggerProgram)):
             if valid(loggerProgram[i]):
@@ -248,6 +255,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_LP" + str(count) + extension
                 shutil.copy(loggerProgram[i], dir_temp + "\\" + rename)
                 loggerProgram[i] = dir_temp + "\\" + rename
+        # Discharge measurement summary files
         count = 0
         for i in range(len(mmtPdf)):
             if valid(mmtPdf[i]):
@@ -256,6 +264,16 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_M" + str(count) + extension
                 shutil.copy(mmtPdf[i], dir_temp + "\\" + rename)
                 mmtPdf[i] = dir_temp + "\\" + rename
+        # Discharge measurement files
+        count = 0
+        for i in range(len(mmtFile)):
+            if valid(mmtFile[i]):
+                count += 1
+                name, extension = os.path.splitext(mmtFile[i])
+                rename = stnNum + "_" + date + "_M" + str(count) + extension
+                shutil.copy(mmtFile[i], dir_temp + "\\" + rename)
+                mmtFile[i] = dir_temp + "\\" + rename
+        # Photos and drawings
         count = 0
         for i in range(len(SIT)):
             if valid(SIT[i]):
@@ -264,6 +282,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_SIT" + str(count) + extension
                 shutil.copy(SIT[i], dir_temp + "\\" + rename)
                 SIT[i] = dir_temp + "\\" + rename
+        # Photos and drawings
         count = 0
         for i in range(len(STR)):
             if valid(STR[i]):
@@ -272,6 +291,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_STR" + str(count)  + extension
                 shutil.copy(STR[i], dir_temp + "\\" + rename)
                 STR[i] = dir_temp + "\\" + rename
+        # Photos and drawings
         count = 0
         for i in range(len(COL)):
             if valid(COL[i]):
@@ -280,6 +300,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_COL" + str(count) + extension
                 shutil.copy(COL[i], dir_temp + "\\" + rename)
                 COL[i] = dir_temp + "\\" + rename
+        # Photos and drawings
         count = 0
         for i in range(len(CBL)):
             if valid(CBL[i]):
@@ -288,6 +309,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_CBL" + str(count) + extension
                 shutil.copy(CBL[i], dir_temp + "\\" + rename)
                 CBL[i] = dir_temp + "\\" + rename
+        # Photos and drawings
         count = 0
         for i in range(len(EQP)):
             if valid(EQP[i]):
@@ -296,6 +318,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_EQP" + str(count) + extension
                 shutil.copy(EQP[i], dir_temp + "\\" + rename)
                 EQP[i] = dir_temp + "\\" + rename
+        # Photos and drawings
         count = 0
         for i in range(len(CDT)):
             if valid(CDT[i]):
@@ -304,6 +327,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_CDT" + str(count) + extension
                 shutil.copy(CDT[i], dir_temp + "\\" + rename)
                 CDT[i] = dir_temp + "\\" + rename
+        # Photos and drawings
         count = 0
         for i in range(len(HSN)):
             if valid(HSN[i]):
@@ -339,6 +363,11 @@ class AttachmentPanel(scrolled.ScrolledPanel):
             for path in mmtPdf:
                 if valid(path):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in mmtFile:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            
+            # Discharge measurement folders
             count = 0
             for folder in mmtFolder:
                 if valid(folder):
@@ -351,6 +380,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                     # Remove the folder zip from temp
                     if os.path.exists(filePath + zip_folder_name + '.zip'):
                         os.remove(filePath + zip_folder_name + '.zip')
+            # Logger folders
             count = 0
             for folder in loggerFolder:
                 if valid(folder):
@@ -386,7 +416,11 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
 
             zipfile.close()
-            info = wx.MessageDialog(None, self.successMessage + "The field visit package: " + Tag + " was successfully created and saved here: " + zipPath, self.successTitle, wx.OK)
+            if openSaveDialog:
+                info = wx.MessageDialog(None, self.successMessage + zipPath + '\n' + self.exitMessage, self.successTitle, wx.OK)
+            else:
+                info = wx.MessageDialog(None, self.successMessage + zipPath, self.successTitle, wx.OK)
+
             self.zipPath = zipPath + "\\" + Tag + '.zip'
             info.ShowModal()
         except Exception as e:

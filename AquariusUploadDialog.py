@@ -319,7 +319,6 @@ class AquariusUploadDialog(wx.Dialog):
 
 
                         else:
-                            self.GetParent().manager.ExportToAquariusSuccess()
 
                             self.EnableButtons(True)
 
@@ -372,7 +371,6 @@ class AquariusUploadDialog(wx.Dialog):
                         username = self.usernameCtrl.GetValue()
                         password = self.passwordCtrl.GetValue()
                         fvDate = self.GetParent().manager.genInfoManager.datePicker
-                        name = self.GetParent().SaveAsXMLNg(self.GetParent().uploadSaveDir)
                         # print self.GetParent().uploadSaveDir, name
                         if chosenFile != "":
                             fvPath = chosenFile
@@ -385,9 +383,8 @@ class AquariusUploadDialog(wx.Dialog):
                                                     wx.OK | wx.ICON_ERROR)
                             error.ShowModal()
                         else:
-                            succ = wx.MessageDialog(None, 'Upload successful!', "Finish",
+                            succ = wx.MessageDialog(None, 'Upload successful! You can now safely exit eHSN; your xml is already saved within the FV Package.', "Finish",
                                                     wx.OK | wx.ICON_NONE)
-                            self.GetParent().manager.ExportToAquariusSuccess()
                             succ.ShowModal()
                 self.EnableButtons(True)
             except Exception as e:
