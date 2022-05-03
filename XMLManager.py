@@ -4291,9 +4291,9 @@ def AttachmentFromXML(Attachment, attachmentManager):
         pass
     
     try:
-        mmtFiles = convertList(Attachment.find('mmtFolders').text)
-        if mmtFiles:
-            for addr in mmtFiles:
+        mmtFolders = convertList(Attachment.find('mmtFolders').text)
+        if mmtFolders:
+            for addr in mmtFolders:
                 attachmentManager.gui.attachBox5.addrList[-1].ChangeValue(addr)
                 attachmentManager.gui.attachBox5.typeList[-1].SetValue("Folder")
                 attachmentManager.gui.attachBox5.add()

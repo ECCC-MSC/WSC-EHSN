@@ -2158,7 +2158,7 @@
 	        <ul style="list-style-type:none;">
                 <li style="text-align:left;">
                     <xsl:choose>
-			            <xsl:when test="loggerFiles!='' or logData != 'False'">
+			            <xsl:when test="loggerFiles!='' or loggerFolder!='' or logData != 'False'">
 					        <font size="4">&#x2714;</font><c>Logger Data files or folder   </c>
 			            </xsl:when>
 			            <xsl:otherwise>
@@ -2188,7 +2188,7 @@
 		        </li>
 		        <li style="text-align:left;">
                     <xsl:choose>
-			            <xsl:when test="mmtFiles!=''">
+			            <xsl:when test="mmtFiles!='' or mmtFolders!=''">
 					        <font size="4">&#x2714;</font><c>Discharge Measurement files or folder    </c>
 			            </xsl:when>
 			            <xsl:otherwise>
