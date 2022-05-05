@@ -258,9 +258,9 @@ class WaterLevelNotesPanel(wx.Panel):
                             
                             # Clear all other upload checkboxes
                             # as only one circuit should be uploaded at a time
-                            for i in range(len(self.uploadList)):
-                                if i != self.current and self.uploadList[i] == True:
-                                    self.uploadList[i] = False
+                            #for i in range(len(self.uploadList)):
+                            #    if i != self.current and self.uploadList[i] == True:
+                            #        self.uploadList[i] = False
                             
                             event.Skip()
                             return
@@ -311,9 +311,9 @@ class WaterLevelNotesPanel(wx.Panel):
         self.uploadList[self.current] = self.panel.uploadVal
         # Clear all other upload checkboxes
         # as only one circuit should be uploaded at a time
-        for i in range(len(self.uploadList)):
-            if i != self.current and self.uploadList[i] == True:
-                self.uploadList[i] = False
+        #for i in range(len(self.uploadList)):
+        #    if i != self.current and self.uploadList[i] == True:
+        #        self.uploadList[i] = False
 
     def AddEntry(self, index):
         self.circuitList[index].append(["", "", "", "", "", "", "", False, "", False, ""])

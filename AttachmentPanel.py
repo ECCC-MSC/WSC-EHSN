@@ -58,6 +58,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         #self.createConfirm = "Are you sure you want to save the FV Package to the FV PACKAGE SAVE LOCATION?"
         self.fm = "%Y%m%d"
         self.zipPath = ""
+        self.zipName = ""
         self.InitUI()
 
     def InitUI(self):
@@ -153,17 +154,30 @@ class AttachmentPanel(scrolled.ScrolledPanel):
     # Create the FV package zip file
     def Zip(self, evt, openSaveDialog=True):
 
+        stnNum = self.parent.genInfo.stnNumCmbo.GetValue()
+        if stnNum == "" or stnNum.isspace():
+            info = wx.MessageDialog(None, self.missingStnNumMessage, self.missingStnNumTitle,
+                                    wx.OK)
+            info.ShowModal()
+            return
+        
+        date = self.parent.genInfo.datePicker.GetValue().Format(self.fm)
+
+        self.zipName = stnNum + "_" + date + "_FV" + ".zip"
+
         if openSaveDialog:
-            DirOpenDialog = wx.DirDialog(self, self.zipTitle, self.rootPath,
-                                        style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
-            if DirOpenDialog.ShowModal() == wx.ID_CANCEL:
-                DirOpenDialog.Destroy()
+            FileSaveDialog = wx.FileDialog(self, self.zipTitle, self.rootPath, self.zipName, 'FV Package (*.zip)|*.zip',
+                                style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
+
+            if FileSaveDialog.ShowModal() == wx.ID_CANCEL:
+                FileSaveDialog.Destroy()
                 return
 
-            self.zipPath = DirOpenDialog.GetPath()
+            self.zipName = FileSaveDialog.GetFilename()
+            self.zipPath = os.path.dirname(os.path.abspath(FileSaveDialog.GetPath()))
             self.zipAddr.ChangeValue(self.zipPath)
 
-            DirOpenDialog.Destroy()
+            FileSaveDialog.Destroy()
 
         if not self.parent.partyInfo.reviewedCB.GetValue():
             info = wx.MessageDialog(None, self.reviewMessage, self.reviewTitle,
@@ -178,19 +192,10 @@ class AttachmentPanel(scrolled.ScrolledPanel):
             info.ShowModal()
             return
 
-        stnNum = self.parent.genInfo.stnNumCmbo.GetValue()
-        if stnNum == "" or stnNum.isspace():
-            info = wx.MessageDialog(None, self.missingStnNumMessage, self.missingStnNumTitle,
-                                    wx.OK)
-            info.ShowModal()
-            return
-
         #dlg = wx.MessageDialog(None, self.createConfirm, 'Create Confirmation', wx.YES_NO)
         #res = dlg.ShowModal()
         #if res != wx.ID_YES:
         #    return
-        
-        date = self.parent.genInfo.datePicker.GetValue().Format(self.fm)
 
         Tag = stnNum + "_" + date + "_FV"
         filePath = "c:\\temp\\eHSN\\"
@@ -347,7 +352,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
             return
 
         try:
-            zipfile = ZipFile(zipPath + "\\" + Tag + '.zip', 'w')
+            zipfile = ZipFile(zipPath + "\\" + self.zipName, 'w')
             zipfile.write(pdfPath, Tag + "\\" + ntpath.basename(pdfPath))
             zipfile.write(xmlPath, ntpath.basename(xmlPath))
     
@@ -421,7 +426,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
             else:
                 info = wx.MessageDialog(None, self.successMessage + zipPath, self.successTitle, wx.OK)
 
-            self.zipPath = zipPath + "\\" + Tag + '.zip'
+            self.zipPath = zipPath + "\\" + self.zipName
             info.ShowModal()
         except Exception as e:
             print(type(e))

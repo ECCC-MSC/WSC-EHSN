@@ -31,7 +31,7 @@ class FRChecklistPanel(wx.Panel):
                               "Missing Data Distributed?",
                               "Proper Edge Measurement Method?",
                               "Each Edge < 5% of Total Q?",
-                              "Velocity Profile Checked with extrap?",
+                              "Velocity Profile Checked with QRev?",
                               "Reciprocal Pairs?",
                               "Moving Bed Corrected If Any?",
                               "Directional Bias < 5%?",
@@ -52,7 +52,7 @@ class FRChecklistPanel(wx.Panel):
                                     "No Boundary or Spike Problem?",
                                     "Bed Contour as Expected for Site?",
                                     "Ice/Slush Depth as Expected?",
-                                    "Velocity Profile Checked with extrap?",
+                                    "Velocity Profile Checked with QRev?",
                                     "# Panels ≥ 20?",
                                     "No Panel Q > 10%?"]
 
@@ -86,7 +86,7 @@ class FRChecklistPanel(wx.Panel):
                                "Valid Ensembles/Panel > 30?",
                                "Bed Contour as Expected for Site?",
                                "Ice/Slush Depth as Expected?",
-                               "Velocity Profile Checked with extrap?",
+                               "Velocity Profile Checked with QRev?",
                                "# Panels ≥ 20?",
                                "No Panel Q > 10%?"]
 
@@ -104,7 +104,7 @@ class FRChecklistPanel(wx.Panel):
                          "Missing Data Distributed?",
                          "Proper Edge Measurement Method?",
                          "Each Edge < 5% of Total Q?",
-                         "Velocity Profile Checked with extrap?",
+                         "Velocity Profile Checked with QRev?",
                          "Reciprocal Pairs?",
                          "Moving Bed Corrected If Any?",
                          "Directional Bias < 5%?",
