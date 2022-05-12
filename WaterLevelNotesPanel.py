@@ -48,7 +48,7 @@ class WaterLevelNotesPanel(wx.Panel):
                                       style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
         foresight = WaterTag("Foresight", "", (self.headerCol + 31, self.headerRow), self, style=wx.SIMPLE_BORDER,
                              size=(-1, self.headerRow))
-        elevated = WaterTag("Elevated [Surveyed]", "", (self.headerCol + 31, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        elevated = WaterTag("Elevation [Surveyed]", "", (self.headerCol + 31, self.headerRow), self, style=wx.SIMPLE_BORDER,
                             size=(-1, self.headerRow))
         comments = WaterTag("Comments", "", ((self.headerCol * 2) + 64, self.headerRow), self, style=wx.SIMPLE_BORDER,
                             size=(-1, self.headerRow))
