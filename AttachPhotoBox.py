@@ -54,6 +54,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
         self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
+        self.typeList[-1].Bind(wx.EVT_COMBOBOX, self.dropdownUpdateLabels)
 
         self.columnList[-1].Add(self.buttonList[-1])
         self.columnList[-1].Add(self.typeList[-1])
@@ -82,6 +83,8 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
         self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
+        self.typeList[-1].Bind(wx.EVT_COMBOBOX, self.dropdownUpdateLabels)
+
         self.columnList[-1].Add(self.buttonList[-1])
         self.columnList[-1].Add(self.typeList[-1])
         self.columnList[-1].Add(self.addrList[-1])
@@ -103,6 +106,8 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
             self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
             self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
+            self.typeList[-1].Bind(wx.EVT_COMBOBOX, self.dropdownUpdateLabels)
+            
             self.columnList[-1].Add(self.buttonList[-1])
             self.columnList[-1].Add(self.typeList[-1])
             self.columnList[-1].Add(self.addrList[-1])
@@ -183,6 +188,9 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
             elif self.typeList[id].GetValue() == "Hydrometric Survey Note" and self.addrList[id].GetValue() != "":
                 self.HSN_count += 1
                 self.labelList[id].ChangeValue(stnNum + "_" + dateVal + "_HSN" + str(self.HSN_count))
+
+    def dropdownUpdateLabels(self, evt):
+        self.updateLabels()
 
     def Browse(self, evt):
         id = self.browseList.index(evt.GetEventObject())
