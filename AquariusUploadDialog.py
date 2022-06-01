@@ -252,7 +252,7 @@ class AquariusUploadDialog(wx.Dialog):
         res = zipDlg.ShowModal()
         if res == wx.ID_YES:
             self.GetParent().attachment.zipAddr.SetValue(self.zipCtrl.GetValue())
-            self.GetParent().attachment.Zip(None, False)
+            self.GetParent().attachment.Zip(None)
             if not os.path.exists(self.GetParent().attachment.zipPath):
                 return
         else:
