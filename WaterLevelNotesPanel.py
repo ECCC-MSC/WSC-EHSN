@@ -67,7 +67,8 @@ class WaterLevelNotesPanel(wx.Panel):
         self.panel = WaterLevelTablePanel(self, "DEBUG", self, self, style=wx.SIMPLE_BORDER, size=(-1, 175))
 
         self.runSizer.Add(self.titleSizer, 0, wx.EXPAND)
-        self.runSizer.Add(self.panel, 0, wx.EXPAND)
+        # Set this to 1 to allow the water level table to grow to fit available space
+        self.runSizer.Add(self.panel, 1, wx.EXPAND)
         # sizer.Add(wlnp, wx.EXPAND)
         # self.runSizer.Add(sizer, 1, wx.EXPAND)
         self.circuitList.append(self.panel.returnCircuit())
