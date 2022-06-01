@@ -156,6 +156,19 @@ class WaterLevelNotesPanel(wx.Panel):
         if len(self.circuitList) <= 1:
             pass
         else:
+            # Confirm that this circuit will be deleted
+            dlg = wx.MessageDialog(self, "Are you sure you want to delete this circuit?", 'Remove', wx.YES_NO | wx.ICON_QUESTION)
+            res = dlg.ShowModal()
+
+            if res == wx.ID_YES:
+                dlg.Destroy()
+            elif res == wx.ID_NO:
+                dlg.Destroy()
+                return
+            else:
+                dlg.Destroy()
+                return
+
             del self.circuitList[self.current]
             del self.closureList[self.current]
             del self.uploadList[self.current]

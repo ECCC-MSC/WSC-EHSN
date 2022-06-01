@@ -202,6 +202,19 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
                              self.establishCheckList[-1].GetValue(), self.establishList[-1].GetValue()])
 
     def remove(self, evt):
+        # Confirm that this row will be deleted
+        dlg = wx.MessageDialog(self, "Are you sure you want to delete this row?", 'Remove', wx.YES_NO | wx.ICON_QUESTION)
+        res = dlg.ShowModal()
+
+        if res == wx.ID_YES:
+            dlg.Destroy()
+        elif res == wx.ID_NO:
+            dlg.Destroy()
+            return
+        else:
+            dlg.Destroy()
+            return
+
         id = self.buttonList.index(evt.GetEventObject())
         self.buttonList[id].Destroy()
         self.stationList[id].Destroy()
