@@ -52,6 +52,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.reviewMessage = "The notes are not reviewed"
         self.reviewTitle = "Missing Review"
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
+        self.originalPath = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.mmtFilesTitle = "Select the MMT Files Folder"
         self.loggerFilesTitle = "Select the Logger Files Folder"
         self.zipTitle = "Field Visit Package (zip file) save location"
@@ -176,7 +177,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.zipName = stnNum + "_" + date + "_FV" + ".zip"
 
         if openSaveDialog:
-            FileSaveDialog = wx.FileDialog(self, self.zipTitle, self.rootPath, self.zipName, 'FV Package (*.zip)|*.zip',
+            FileSaveDialog = wx.FileDialog(self, self.zipTitle, self.originalPath, self.zipName, 'FV Package (*.zip)|*.zip',
                                 style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
 
             if FileSaveDialog.ShowModal() == wx.ID_CANCEL:
