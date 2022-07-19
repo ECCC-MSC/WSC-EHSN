@@ -23,7 +23,6 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.columnList = []
         self.typeList = []
         self.type = ["Structures, Site Facilities", "Site", "Control Conditions", "Cableway", "Device", "Device Conditions", "Hydrometric Survey Note"]
-        self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
 
         # Counts for each type of photos and drawings
         self.SIT_count = 0
@@ -194,12 +193,15 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
     def Browse(self, evt):
         id = self.browseList.index(evt.GetEventObject())
-        fileOpenDialog = wx.FileDialog(self, "Select the File", self.rootPath, '',
+        fileOpenDialog = wx.FileDialog(self, "Select the File", self.parent.getRootPath(), '',
                                         self.func,
                                         style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
             fileOpenDialog.Destroy()
             return
+        
+        # Set the root path of the parent to be the new root path
+        self.parent.setRootPath(os.path.dirname(fileOpenDialog.GetPath()))
 
         self.addrList[id].ChangeValue(fileOpenDialog.GetPath())
 

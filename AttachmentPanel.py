@@ -151,6 +151,16 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.SetupScrolling()
         self.ShowScrollbars(wx.SHOW_SB_DEFAULT, wx.SHOW_SB_DEFAULT)
 
+    # Get the saved root path
+    # Used by AttachFolderBox, AttachBox, AttachFileFolderBox, and AttachPhotoBox
+    def getRootPath(self):
+        return self.rootPath
+
+    # Set a new root path
+    # Used by AttachFolderBox, AttachBox, AttachFileFolderBox, and AttachPhotoBox
+    def setRootPath(self, new_path):
+        self.rootPath = new_path
+
     # Create the FV package zip file
     def Zip(self, evt, openSaveDialog=True):
 
