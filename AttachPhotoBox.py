@@ -23,7 +23,6 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
         self.columnList = []
         self.typeList = []
         self.type = ["Structures, Site Facilities", "Site", "Control Conditions", "Cableway", "Device", "Device Conditions", "Hydrometric Survey Note"]
-        self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
 
         # Counts for each type of photos and drawings
         self.SIT_count = 0
@@ -54,6 +53,7 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
         self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
+        self.typeList[-1].Bind(wx.EVT_COMBOBOX, self.dropdownUpdateLabels)
 
         self.columnList[-1].Add(self.buttonList[-1])
         self.columnList[-1].Add(self.typeList[-1])
@@ -82,6 +82,8 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
         self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
         self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
+        self.typeList[-1].Bind(wx.EVT_COMBOBOX, self.dropdownUpdateLabels)
+
         self.columnList[-1].Add(self.buttonList[-1])
         self.columnList[-1].Add(self.typeList[-1])
         self.columnList[-1].Add(self.addrList[-1])
@@ -103,6 +105,8 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
 
             self.buttonList[-1].Bind(wx.EVT_BUTTON, self.add_remove)
             self.browseList[-1].Bind(wx.EVT_BUTTON, self.Browse)
+            self.typeList[-1].Bind(wx.EVT_COMBOBOX, self.dropdownUpdateLabels)
+            
             self.columnList[-1].Add(self.buttonList[-1])
             self.columnList[-1].Add(self.typeList[-1])
             self.columnList[-1].Add(self.addrList[-1])
@@ -184,14 +188,20 @@ class AttachPhotoBox(scrolled.ScrolledPanel):
                 self.HSN_count += 1
                 self.labelList[id].ChangeValue(stnNum + "_" + dateVal + "_HSN" + str(self.HSN_count))
 
+    def dropdownUpdateLabels(self, evt):
+        self.updateLabels()
+
     def Browse(self, evt):
         id = self.browseList.index(evt.GetEventObject())
-        fileOpenDialog = wx.FileDialog(self, "Select the File", self.rootPath, '',
+        fileOpenDialog = wx.FileDialog(self, "Select the File", self.parent.getRootPath(), '',
                                         self.func,
                                         style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
             fileOpenDialog.Destroy()
             return
+        
+        # Set the root path of the parent to be the new root path
+        self.parent.setRootPath(os.path.dirname(fileOpenDialog.GetPath()))
 
         self.addrList[id].ChangeValue(fileOpenDialog.GetPath())
 

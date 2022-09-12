@@ -25,7 +25,6 @@ class AttachBox(scrolled.ScrolledPanel):
         self.browseList = []
         self.columnList = []
         self.pathList = []
-        self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.count = 0
         self.InitUI()
 
@@ -153,7 +152,7 @@ class AttachBox(scrolled.ScrolledPanel):
 
     def Browse(self, evt):
         id = self.browseList.index(evt.GetEventObject())
-        fileOpenDialog = wx.FileDialog(self, "Select the File", self.rootPath, '',
+        fileOpenDialog = wx.FileDialog(self, "Select the File", self.parent.getRootPath(), '',
                                        self.func,
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
@@ -173,6 +172,10 @@ class AttachBox(scrolled.ScrolledPanel):
             info.ShowModal()
             return
         else:
+
+            # Set the root path of the parent to be the new root path
+            self.parent.setRootPath(os.path.dirname(filepath))
+
             self.pathList[id] = filepath
             self.addrList[id].ChangeValue(self.pathList[id])
             self.updateLabels()

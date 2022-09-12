@@ -48,7 +48,7 @@ class WaterLevelNotesPanel(wx.Panel):
                                       style=wx.SIMPLE_BORDER, size=(-1, self.headerRow))
         foresight = WaterTag("Foresight", "", (self.headerCol + 31, self.headerRow), self, style=wx.SIMPLE_BORDER,
                              size=(-1, self.headerRow))
-        elevated = WaterTag("Elevated [Surveyed]", "", (self.headerCol + 31, self.headerRow), self, style=wx.SIMPLE_BORDER,
+        elevated = WaterTag("Elevation [Surveyed]", "", (self.headerCol + 31, self.headerRow), self, style=wx.SIMPLE_BORDER,
                             size=(-1, self.headerRow))
         comments = WaterTag("Comments", "", ((self.headerCol * 2) + 64, self.headerRow), self, style=wx.SIMPLE_BORDER,
                             size=(-1, self.headerRow))
@@ -67,7 +67,8 @@ class WaterLevelNotesPanel(wx.Panel):
         self.panel = WaterLevelTablePanel(self, "DEBUG", self, self, style=wx.SIMPLE_BORDER, size=(-1, 175))
 
         self.runSizer.Add(self.titleSizer, 0, wx.EXPAND)
-        self.runSizer.Add(self.panel, 0, wx.EXPAND)
+        # Set this to 1 to allow the water level table to grow to fit available space
+        self.runSizer.Add(self.panel, 1, wx.EXPAND)
         # sizer.Add(wlnp, wx.EXPAND)
         # self.runSizer.Add(sizer, 1, wx.EXPAND)
         self.circuitList.append(self.panel.returnCircuit())
@@ -156,6 +157,19 @@ class WaterLevelNotesPanel(wx.Panel):
         if len(self.circuitList) <= 1:
             pass
         else:
+            # Confirm that this circuit will be deleted
+            dlg = wx.MessageDialog(self, "Are you sure you want to delete this circuit?", 'Remove', wx.YES_NO | wx.ICON_QUESTION)
+            res = dlg.ShowModal()
+
+            if res == wx.ID_YES:
+                dlg.Destroy()
+            elif res == wx.ID_NO:
+                dlg.Destroy()
+                return
+            else:
+                dlg.Destroy()
+                return
+
             del self.circuitList[self.current]
             del self.closureList[self.current]
             del self.uploadList[self.current]

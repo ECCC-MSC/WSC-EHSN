@@ -20,7 +20,7 @@ from os import environ
 from os.path import join
 from os.path import dirname
 import wx.lib.scrolledpanel as scrolled
-from shutil import make_archive
+from shutil import make_archive, copytree, rmtree
 
 def valid(path):
     if path != None and path != "" and not path.isspace():
@@ -52,6 +52,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.reviewMessage = "The notes are not reviewed"
         self.reviewTitle = "Missing Review"
         self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
+        self.originalPath = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.mmtFilesTitle = "Select the MMT Files Folder"
         self.loggerFilesTitle = "Select the Logger Files Folder"
         self.zipTitle = "Field Visit Package (zip file) save location"
@@ -151,6 +152,16 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.SetupScrolling()
         self.ShowScrollbars(wx.SHOW_SB_DEFAULT, wx.SHOW_SB_DEFAULT)
 
+    # Get the saved root path
+    # Used by AttachFolderBox, AttachBox, AttachFileFolderBox, and AttachPhotoBox
+    def getRootPath(self):
+        return self.rootPath
+
+    # Set a new root path
+    # Used by AttachFolderBox, AttachBox, AttachFileFolderBox, and AttachPhotoBox
+    def setRootPath(self, new_path):
+        self.rootPath = new_path
+
     # Create the FV package zip file
     def Zip(self, evt, openSaveDialog=True):
 
@@ -166,7 +177,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.zipName = stnNum + "_" + date + "_FV" + ".zip"
 
         if openSaveDialog:
-            FileSaveDialog = wx.FileDialog(self, self.zipTitle, self.rootPath, self.zipName, 'FV Package (*.zip)|*.zip',
+            FileSaveDialog = wx.FileDialog(self, self.zipTitle, self.originalPath, self.zipName, 'FV Package (*.zip)|*.zip',
                                 style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
 
             if FileSaveDialog.ShowModal() == wx.ID_CANCEL:
@@ -377,27 +388,45 @@ class AttachmentPanel(scrolled.ScrolledPanel):
             for folder in mmtFolder:
                 if valid(folder):
                     count += 1
-                    # Save the zipped folder in the temp directory
+                    # Copy the full folder into a new folder of the same name and save the zipped folder in the temp directory
+                    # This is done so the zipped folder contains a folder instead of loose files
                     zip_folder_name = stnNum + "_" + date + "_M" + str(count)
-                    make_archive(filePath + zip_folder_name, 'zip', folder)
+                    os.mkdir(filePath + zip_folder_name)
+                    copytree(folder, filePath + zip_folder_name + '\\' + zip_folder_name)
+                    make_archive(filePath + zip_folder_name, 'zip', filePath + zip_folder_name)
                     # Add this zipped folder to the main zip
                     zipfile.write(filePath + zip_folder_name + '.zip', Tag + "\\" + zip_folder_name + '.zip')
-                    # Remove the folder zip from temp
+                    # Remove the folder zip and copied folder from temp
                     if os.path.exists(filePath + zip_folder_name + '.zip'):
                         os.remove(filePath + zip_folder_name + '.zip')
+                    if os.path.exists(filePath + zip_folder_name):
+                        try:
+                            rmtree(filePath + zip_folder_name)
+                        except Exception as e:
+                            print('Unable to delete temp folder')
+                            print(str(e))
             # Logger folders
             count = 0
             for folder in loggerFolder:
                 if valid(folder):
                     count += 1
-                    # Save the zipped folder in the temp directory
+                    # Copy the full folder into a new folder of the same name and save the zipped folder in the temp directory
+                    # This is done so the zipped folder contains a folder instead of loose files
                     zip_folder_name = stnNum + "_" + date + "_LG" + str(count)
-                    make_archive(filePath + zip_folder_name, 'zip', folder)
+                    os.mkdir(filePath + zip_folder_name)
+                    copytree(folder, filePath + zip_folder_name + '\\' + zip_folder_name)
+                    make_archive(filePath + zip_folder_name, 'zip', filePath + zip_folder_name)
                     # Add this zipped folder to the main zip
                     zipfile.write(filePath + zip_folder_name + '.zip', Tag + "\\" + zip_folder_name + '.zip')
-                    # Remove the folder zip from temp
+                    # Remove the folder zip and copied folder from temp
                     if os.path.exists(filePath + zip_folder_name + '.zip'):
                         os.remove(filePath + zip_folder_name + '.zip')
+                    if os.path.exists(filePath + zip_folder_name):
+                        try:
+                            rmtree(filePath + zip_folder_name)
+                        except Exception as e:
+                            print('Unable to delete temp folder')
+                            print(str(e))
             for path in SIT:
                 if valid(path):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))

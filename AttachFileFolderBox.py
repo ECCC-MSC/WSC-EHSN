@@ -23,7 +23,6 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
         self.columnList = []
         self.typeList = []
         self.type = ["File", "Folder"]
-        self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
 
         # Counts for files and folders
         self.file_count = 0
@@ -160,11 +159,14 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
     def Browse(self, evt):
         id = self.browseList.index(evt.GetEventObject())
         if self.typeList[id].GetValue() == "Folder":
-            DirOpenDialog = wx.DirDialog(self, "Select the Folder", self.rootPath,
+            DirOpenDialog = wx.DirDialog(self, "Select the Folder", self.parent.getRootPath(),
                                          style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
             if DirOpenDialog.ShowModal() == wx.ID_CANCEL:
                 DirOpenDialog.Destroy()
                 return
+
+            # Set the root path of the parent to be the new root path
+            self.parent.setRootPath(os.path.dirname(DirOpenDialog.GetPath()))
 
             self.addrList[id].ChangeValue(DirOpenDialog.GetPath())
 
@@ -172,7 +174,7 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
             self.updateLabels()
 
         else:
-            fileOpenDialog = wx.FileDialog(self, "Select the File", self.rootPath, '',
+            fileOpenDialog = wx.FileDialog(self, "Select the File", self.parent.getRootPath(), '',
                                            self.func,
                                            style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
             if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
@@ -192,6 +194,10 @@ class AttachFileFolderBox(scrolled.ScrolledPanel):
                 info.ShowModal()
                 return
             else:
+                
+                # Set the root path of the parent to be the new root path
+                self.parent.setRootPath(os.path.dirname(filepath))
+
                 self.addrList[id].ChangeValue(filepath)
                 self.updateLabels()
 

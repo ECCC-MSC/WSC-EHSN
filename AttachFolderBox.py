@@ -22,7 +22,6 @@ class AttachFolderBox(wx.Panel):
         self.browseList = []
         self.columnList = []
         self.pathList = []
-        self.rootPath = os.path.dirname(os.path.realpath(sys.argv[0]))
         self.count = 0
 
         self.InitUI()
@@ -196,11 +195,14 @@ class AttachFolderBox(wx.Panel):
 
     def Browse(self, evt):
         id = self.browseList.index(evt.GetEventObject())
-        folderOpenDialog = wx.DirDialog(self, "Select the File", self.rootPath, 
+        folderOpenDialog = wx.DirDialog(self, "Select the File", self.parent.getRootPath(), 
                                         style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
         if folderOpenDialog.ShowModal() == wx.ID_CANCEL:
             folderOpenDialog.Destroy()
             return
+
+        # Set the root path of the parent to be the new root path
+        self.parent.setRootPath(os.path.dirname(folderOpenDialog.GetPath()))
 
         self.pathList[id] = folderOpenDialog.GetPath()
         self.addrList[id].ChangeValue(self.pathList[id])

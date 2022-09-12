@@ -88,6 +88,8 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         self.timeList.append(DropdownTime(False, parent=self, size=(-1, 18)))
         self.timeList[-1].hourCmbox.Bind(wx.EVT_TEXT, self.hourUpdate)
         self.timeList[-1].minuteCmbox.Bind(wx.EVT_TEXT, self.minuteUpdate)
+        self.timeList[-1].hourCmbox.Bind(wx.EVT_KEY_UP, self.keyTimeUpdate)
+        self.timeList[-1].minuteCmbox.Bind(wx.EVT_KEY_UP, self.keyTimeUpdate)
         self.timeList[-1].cBtn.Bind(wx.EVT_BUTTON, self.timeUpdate)
 
         self.bsList.append(MyTextCtrl(self, style= wx.TE_CENTRE))
@@ -200,6 +202,19 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
                              self.establishCheckList[-1].GetValue(), self.establishList[-1].GetValue()])
 
     def remove(self, evt):
+        # Confirm that this row will be deleted
+        dlg = wx.MessageDialog(self, "Are you sure you want to delete this row?", 'Remove', wx.YES_NO | wx.ICON_QUESTION)
+        res = dlg.ShowModal()
+
+        if res == wx.ID_YES:
+            dlg.Destroy()
+        elif res == wx.ID_NO:
+            dlg.Destroy()
+            return
+        else:
+            dlg.Destroy()
+            return
+
         id = self.buttonList.index(evt.GetEventObject())
         self.buttonList[id].Destroy()
         self.stationList[id].Destroy()
@@ -284,6 +299,20 @@ class WaterLevelTablePanel(scrolled.ScrolledPanel):
         self.timeList[id].SetToCurrent()
         self.circuit[id][1] = evt.GetEventObject().parent.hourCmbox.GetValue()
         self.circuit[id][2] = evt.GetEventObject().parent.minuteCmbox.GetValue()
+        evt.Skip()
+    
+    def keyTimeUpdate(self, evt):
+        keycode = evt.GetKeyCode()
+        if keycode == ord('R') or keycode == ord('C'):
+            id = self.timeList.index(evt.GetEventObject().parent)
+
+            if keycode == ord('R'):
+                self.timeList[id].Clear()
+            elif keycode == ord('C'):
+                self.timeList[id].SetToCurrent()
+                
+            self.circuit[id][1] = evt.GetEventObject().parent.hourCmbox.GetValue()
+            self.circuit[id][2] = evt.GetEventObject().parent.minuteCmbox.GetValue()
         evt.Skip()
 
     def bsUpdate(self, evt):
