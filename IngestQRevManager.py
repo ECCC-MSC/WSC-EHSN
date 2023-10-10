@@ -137,10 +137,10 @@ def GetExponent(filePath):
     return GetRoot(filePath).find('Processing').find('Extrapolation').find('Exponent').text
 
 def GetSDM(filePath):
-    return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('COV').text
+    return GetRoot(filePath).find('ChannelSummary').find('QRevUAUncertainty').find('COV').text
 
 def GetExtraUncer(filePath):
-    return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('Extrapolation').text
+    return GetRoot(filePath).find('ChannelSummary').find('QRevUAUncertainty').find('Extrapolation').text
 
 
 
@@ -274,6 +274,9 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
     exponent = GetExponent(filePath)
     sdm = GetSDM(filePath)
     extrap = GetExtraUncer(filePath)
+    mbCorrection = GetMBCorrection(filePath)
+    dis = GetDischarge(filePath)
+
     # print "extrap {0}".format(extrap)
 
     allTransects = GetAllTransects(filePath)
@@ -406,7 +409,12 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
     if extrap is not None:
         movingBoatManager.extrapUncerCtrl = extrap
         movingBoatManager.GetExtrapUncerCtrl().SetBackgroundColour(color)
-
+    if mbCorrection is not None:
+        movingBoatManager.mbCorrAppCtrl = mbCorrection
+        movingBoatManager.GetMbCorrAppCtrl().SetBackgroundColour(color)
+    if dis is not None:
+        movingBoatManager.finalDischCtrl = dis
+        movingBoatManager.GetFinalDischCtrl().SetBackgroundColour(color)
 
 
 
@@ -448,6 +456,7 @@ def AddDischargeSummary(filePath, disMeasManager):
     area = GetArea(filePath)
     vel = GetVelocity(filePath)
     dis = GetDischarge(filePath)
+
     uncert = str(round(float(GetUncertainty(filePath)), 2))
     # water = GetWaterTemp(filePath)
     mbCorrection = GetMBCorrection(filePath)
