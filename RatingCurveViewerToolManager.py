@@ -424,7 +424,7 @@ class RatingCurveViewerToolManager(object):
         if self.histData is None:
             return
 
-        print("Hist data is not None")
+        #print("Hist data is not None")
 
         # iterate through each hist value
         # for each, calc appropriate Shift and
