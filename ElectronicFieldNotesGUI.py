@@ -15,7 +15,7 @@ from WaterLevelRunPanel import *
 from FRChecklistPanel import *
 from MovingBoatMeasurementsPanel import *
 from MidSectionMeasurementsPanel import *
-from CalcPanel import *
+# from CalcPanel import *
 from AquariusUploadDialog import *
 
 from ConfigPanel import *
@@ -88,7 +88,7 @@ ID_IMPORT_SXSMMT = wx.NewId()
 ID_IMPORT_RSSDIS = wx.NewId()
 
 
-ID_TOOLS_CALC = wx.NewId()
+# ID_TOOLS_CALC = wx.NewId()
 ID_TOOLS_RCVT = wx.NewId()
 # ID_TOOLS_MAGN = wx.NewId()
 
@@ -209,10 +209,10 @@ class EHSNGui(wx.Frame):
         self.fSaveExitLabel = 'Save && Exit\tCtrl+E'
         self.fSaveExitDesc = 'Save and Exit'
         self.heHelpDesc = "Instructions for the completion of eHSN"
-        self.tCalcLabel = "Calculator\tCtrl+L"
+        # self.tCalcLabel = "Calculator\tCtrl+L"
         self.tMagnDesc = "Windows Magnifier"
         self.tMagnLabel = "Magnifier\tCtrl+M"
-        self.tCalcDesc = "A simple calculator."
+        # self.tCalcDesc = "A simple calculator."
         self.tScalLabel = "Scaling"
         self.tScalDesc = "Scaling"
         self.tScalSub1Label = "Size ++\tCtrl+="
@@ -362,7 +362,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
         self.RatingCurveViewerToolFrame = None
         self.ratingCurveExtraction = None
-        self.calc = None
+        # self.calc = None
         self.config = None
 
         self.manager = None
@@ -480,8 +480,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         toolMenu = wx.Menu()
         cAdet = toolMenu.Append(ID_CONF_ADET, self.cAdetLabel, self.cAdetDesc)
         tRcvt = toolMenu.Append(ID_TOOLS_RCVT, self.tRcvtLabel, self.tRcvtDesc)
-        toolMenu.AppendSeparator()
-        tCalc = toolMenu.Append(ID_TOOLS_CALC, self.tCalcLabel, self.tCalcDesc)
+        # toolMenu.AppendSeparator()
+        # tCalc = toolMenu.Append(ID_TOOLS_CALC, self.tCalcLabel, self.tCalcDesc)
         # tMagn = toolMenu.Append(ID_TOOLS_MAGN, self.tMagnLabel, self.tMagnDesc)
 
 
@@ -548,7 +548,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.Bind(wx.EVT_MENU, self.OnHelpAbout, habout)
         self.Bind(wx.EVT_MENU, self.OnHelpEHelp, hehelp)
         self.Bind(wx.EVT_CLOSE, self.OnFileExit)
-        self.Bind(wx.EVT_MENU, self.OnCalc, tCalc)
+        # self.Bind(wx.EVT_MENU, self.OnCalc, tCalc)
         # self.Bind(wx.EVT_MENU, self.OnMagn, tMagn)
 
         # self.Bind(wx.EVT_MENU, self.OnScal1, tScal1)
@@ -819,6 +819,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
     #Calling the calculator
+    '''
     def OnCalc(self,e):
         if self.calc is None:
             self.calc = CalcPanel(self)
@@ -830,6 +831,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
             self.calc.exit()
             self.calc = CalcPanel(self)
             _thread.start_new_thread(self.calc.mainloop, ())
+    '''
 
     def closeConfigWindow(self, event):
         self.config.Destroy() #This will close the app window.
@@ -1544,9 +1546,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                               wx.YES_NO | wx.ICON_QUESTION)
         res = dlg.ShowModal()
         if res == wx.ID_YES:
-            if self.calc is not None:
-                if not self.calc.quitFlag:
-                    self.calc.quit()
+            # if self.calc is not None:
+            #    if not self.calc.quitFlag:
+            #        self.calc.quit()
             dlg.Destroy()
             self.Destroy()
         else:
@@ -2342,9 +2344,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         if self.RatingCurveViewerToolFrame != None:
             self.RatingCurveViewerToolFrame.Destroy()
             self.RatingCurveViewerToolFrame = None
-        if self.calc != None:
-            self.calc.quit()
-            self.calc = None
+        # if self.calc != None:
+        #    self.calc.quit()
+        #    self.calc = None
         if self.config != None:
             self.config.Destroy()
             self.config = None
