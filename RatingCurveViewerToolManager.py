@@ -355,7 +355,7 @@ class RatingCurveViewerToolManager(object):
         json_filepath = str(filepath.replace('\\', '\\\\'))
         # print type(json_filepath),json_filepath
         try:
-            with open(json_filepath) as curves_data:
+            with open(json_filepath, encoding="utf8") as curves_data:
                 Curves = json.load(curves_data)
                 self.data = Curves
                 # print Curves
