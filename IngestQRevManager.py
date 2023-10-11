@@ -54,6 +54,7 @@ def GetUncertainty(filePath):
 def GetMBCorrection(filePath):
     return GetRoot(filePath).find('ChannelSummary').find('Discharge').find('MovingBedPercentCorrection').text
 
+# Does NOT work with xml files as of QRev Version 4.3.4 (Verification Temperature field does not exist)
 def GetWaterTemp(filePath):
     return GetRoot(filePath).find('QA').find('TemperatureCheck').find('VerificationTemperature').text
 
