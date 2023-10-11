@@ -219,14 +219,14 @@ def AddDischargeSummary(filePath, disMeasManager):
         disMeasManager.GetAirTempCtrl().SetBackgroundColour(color)
 
     if uncertainty is not None and uncertainty != "":
-        disMeasManager.uncertaintyCtrl = str(round(float(uncertainty), 2))
+        disMeasManager.uncertaintyCtrl = str(round(float(uncertainty)*2, 2))
         myEvent = wx.FocusEvent(eventType=wx.wxEVT_KILL_FOCUS, id=wx.NewId())
         myEvent.SetEventObject(disMeasManager.GetUncertaintyCtrl())
         wx.PostEvent(disMeasManager.GetUncertaintyCtrl(), myEvent)
         disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
 
         # Adding uncertainty text to Discharge Activity Remarks
-        dischargeUncertainty = '@ Uncertainty: ISO method, 2-sigma value (1 x Uncertainty Value reported in *.xml File). @'
+        dischargeUncertainty = '@ Uncertainty: ISO method, 2-sigma value (2 x Uncertainty Value reported in *.xml File). @'
         dischargeRemarks = disMeasManager.dischRemarksCtrl
         if dischargeRemarks != '':
             disMeasManager.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty
