@@ -1531,7 +1531,6 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     #ADCP Info
     #Frequency Control
     def GetFrequencyCmbo(self):
-
         return self.frequencyCmbo.GetValue()
 
     def SetFrequencyCmbo(self, frequencyCmbo):

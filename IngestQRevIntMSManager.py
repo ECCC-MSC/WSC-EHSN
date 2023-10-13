@@ -235,7 +235,7 @@ def AddDischargeDetail(filePath, instrDepManager):
             if "m" in freUnit.lower():
                 # frequency = str(float(frequency) * 1000)
                 frequency += "000"
-        instrDepManager.frequencyCmbo = frequency.split('.')[0]
+        instrDepManager.frequencyCmbo = frequency
         instrDepManager.GetFrequencyCmbo().SetBackgroundColour(color)
     if firmware is not None:
         instrDepManager.firmwareCmbo = firmware
