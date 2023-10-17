@@ -1,3 +1,4 @@
+import math
 from xml.etree import ElementTree
 import wx
 
@@ -573,7 +574,7 @@ def AddDischargeDetail(filePath, instrDepManager):
             if "m" in freUnit.lower():
                 # frequency = str(float(frequency) * 1000)
                 frequency += "000"
-        instrDepManager.frequencyCmbo = frequency
+        instrDepManager.frequencyCmbo = str(math.trunc(float(frequency)))
         instrDepManager.GetFrequencyCmbo().SetBackgroundColour(color)
     if firmware is not None:
         instrDepManager.firmwareCmbo = firmware
