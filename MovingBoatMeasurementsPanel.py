@@ -1002,6 +1002,9 @@ class MovingBoatMeasurementsPanel(wx.Panel):
     #On click current time
     def OnCurrent(self, evt):
         name = evt.GetEventObject().GetName()
+        if self.mode=="DEBUG":
+            for row in range(1, len(self.tableSizerV.GetChildren())):
+                print(str(row) + " name: " + self.tableSizerV.GetItem(row).GetSizer().GetItem(0).GetWindow().GetName())
         sizer = self.tableSizerV.GetItem(int(name)).GetSizer()
         timeCtrl = sizer.GetItem(4).GetWindow()
         time = str(dt.now().time())[:8]
@@ -1047,10 +1050,19 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         self.tableSizerV.Remove(index)
         self.entryNum -= 1      
 
-        for child in range(1, len(self.tableSizerV.GetChildren())):
+        for child in range(1, len(self.tableSizerV.GetChildren())): #Start at 1 because panel is 
             i = int(self.tableSizerV.GetItem(child).GetSizer().GetItem(0).GetWindow().GetName())
-            if i > index - 1:
+            if i > (index - 1): 
                 self.tableSizerV.GetItem(child).GetSizer().GetItem(0).GetWindow().SetName("%s" % (i - 1))
+                # decrease index of current row, which is stored in the name, by 1
+                if child != len(self.tableSizerV.GetChildren()) - 1:
+                    # Check if the index of the current row (via name of first child in each row, the "-" button)  
+                    # is greater than the index of the deleted row 
+                    # (subtract 1 because index of current row is zero-indexed/starts at 0)
+                    # if it is, change the name of the "C" button (which is NOT zero-indexed so we do NOT subtract 1)
+                    # to be 1 lower (since we removed a row)
+                    # since i is already 0 indexed, we just set the name of the "C" button to be i
+                    self.tableSizerV.GetItem(child).GetSizer().GetItem(5).GetWindow().SetName("%s" % i)
         self.Layout()
 
 
