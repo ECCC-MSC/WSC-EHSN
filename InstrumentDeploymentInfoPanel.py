@@ -1176,6 +1176,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.locatedTxt.Enable(en)
         self.metresCtrl.Enable(en)
         self.metresAboveTxt.Enable(en)
+
+        # disable weight radios
         self.weightRadBut2.Enable(en)
         self.weightRadBut1.Enable(en)
 
@@ -1188,6 +1190,12 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.metresCtrl.ChangeValue("")
             self.weightCtrl.ChangeValue("")
             self.numOfPanelsScroll.SetValue("")
+
+            # reset weight radios to default and reset and disable weight text
+            self.weightRadBut2.SetValue(True)
+            self.weightRadButBox.SetSelection(0)
+            self.EnableWeight(False)
+
             self.ResetBGColorMidSectionInfo()
 
 
@@ -1531,7 +1539,6 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     #ADCP Info
     #Frequency Control
     def GetFrequencyCmbo(self):
-
         return self.frequencyCmbo.GetValue()
 
     def SetFrequencyCmbo(self, frequencyCmbo):
