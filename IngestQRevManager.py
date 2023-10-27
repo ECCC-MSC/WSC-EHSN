@@ -1,3 +1,4 @@
+import math
 from xml.etree import ElementTree
 import wx
 
@@ -28,6 +29,9 @@ def GetDate(filePath):
 
     return dt
 
+def GetQRevVersion(filePath):
+    return GetRoot(filePath).attrib['QRevVersion'][5:]
+
 #Summary
 def GetStartTime(filePath):
     return GetRoot(filePath).find('Transect').find('StartDateTime').text[11:16]
@@ -54,6 +58,7 @@ def GetUncertainty(filePath):
 def GetMBCorrection(filePath):
     return GetRoot(filePath).find('ChannelSummary').find('Discharge').find('MovingBedPercentCorrection').text
 
+# Does NOT work with xml files as of QRev Version 4.3.4 (Verification Temperature field does not exist)
 def GetWaterTemp(filePath):
     return GetRoot(filePath).find('QA').find('TemperatureCheck').find('VerificationTemperature').text
 
@@ -137,11 +142,16 @@ def GetExponent(filePath):
     return GetRoot(filePath).find('Processing').find('Extrapolation').find('Exponent').text
 
 def GetSDM(filePath):
-    return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('COV').text
+    if float(GetQRevVersion(filePath)) >= 4.30: #this is for backwards compatability - transitioning from QRev 4.2.6 to 4.3.0, the file structure is different, and obtaining this field is different
+        return GetRoot(filePath).find('ChannelSummary').find('QRevUAUncertainty').find('COV').text
+    else:
+        return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('COV').text
 
 def GetExtraUncer(filePath):
-    return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('Extrapolation').text
-
+    if float(GetQRevVersion(filePath)) >= 4.30: #this is for backwards compatability - transitioning from QRev 4.2.6 to 4.3.0, the file structure is different, and obtaining this field is different
+        return GetRoot(filePath).find('ChannelSummary').find('QRevUAUncertainty').find('Extrapolation').text
+    else:
+        return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('Extrapolation').text
 
 
 def GetAllTransects(filePath):
@@ -274,6 +284,9 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
     exponent = GetExponent(filePath)
     sdm = GetSDM(filePath)
     extrap = GetExtraUncer(filePath)
+    mbCorrection = GetMBCorrection(filePath)
+    dis = GetDischarge(filePath)
+
     # print "extrap {0}".format(extrap)
 
     allTransects = GetAllTransects(filePath)
@@ -406,7 +419,12 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
     if extrap is not None:
         movingBoatManager.extrapUncerCtrl = extrap
         movingBoatManager.GetExtrapUncerCtrl().SetBackgroundColour(color)
-
+    if mbCorrection is not None:
+        movingBoatManager.mbCorrAppCtrl = mbCorrection
+        movingBoatManager.GetMbCorrAppCtrl().SetBackgroundColour(color)
+    if dis is not None:
+        movingBoatManager.finalDischCtrl = dis
+        movingBoatManager.GetFinalDischCtrl().SetBackgroundColour(color)
 
 
 
@@ -448,6 +466,7 @@ def AddDischargeSummary(filePath, disMeasManager):
     area = GetArea(filePath)
     vel = GetVelocity(filePath)
     dis = GetDischarge(filePath)
+
     uncert = str(round(float(GetUncertainty(filePath)), 2))
     # water = GetWaterTemp(filePath)
     mbCorrection = GetMBCorrection(filePath)
@@ -563,7 +582,7 @@ def AddDischargeDetail(filePath, instrDepManager):
             if "m" in freUnit.lower():
                 # frequency = str(float(frequency) * 1000)
                 frequency += "000"
-        instrDepManager.frequencyCmbo = frequency
+        instrDepManager.frequencyCmbo = str(math.trunc(float(frequency)))
         instrDepManager.GetFrequencyCmbo().SetBackgroundColour(color)
     if firmware is not None:
         instrDepManager.firmwareCmbo = firmware

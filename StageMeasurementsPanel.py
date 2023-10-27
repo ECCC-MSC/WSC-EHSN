@@ -1,6 +1,7 @@
 # All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
 # Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 
+from decimal import Decimal
 import wx
 import wx.lib.masked as masked
 import wx.lib.scrolledpanel as scrolledpanel
@@ -2501,7 +2502,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
             if result is not None:
 
-                result = float(str(result))
+                result = Decimal(str(result)) #use decimal cause float is inaccurate when multipling by 1000 and adds extra decimals
                 # Round to 3 sig figs while rounding the last sig fig up
                 result = str(ceil(1000 * result) / 1000)
                 digits = 3 - len(result.split(".")[-1])

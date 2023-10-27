@@ -27,6 +27,7 @@ import XMLManager
 import AquariusUploadManager
 
 import IngestQRevManager
+import IngestQRevIntMSManager
 import IngestFlowTrackerDisManager
 import IngestHfcManager
 import IngestFt2Manager
@@ -1307,6 +1308,19 @@ class ElectronicHydrometricSurveyNotes:
     #     IngestFlowTrackerDisManager.OpenDis(self.GetFlowTrackerDir(), self.disMeasManager, self.instrDepManager, evt)
     #     self.gui.disMeas.onTimeChange(evt)
 
+    #Ingest from QRevIntMS *.xml
+    def GetStationIDFromQRevIntMS(self):
+        return IngestQRevIntMSManager.GetStationID(self.GetQRevIntMSDir())
+
+    def GetDateFromQRevIntMS(self):
+        return IngestQRevIntMSManager.GetDate(self.GetQRevIntMSDir())
+    
+    def AddDischargeSummaryFromQRevIntMS(self):
+        IngestQRevIntMSManager.AddDischargeSummary(self.GetQRevIntMSDir(), self.disMeasManager)
+
+    def AddDischargeDetailFromQRevIntMS(self):
+        IngestQRevIntMSManager.AddDischargeDetail(self.GetQRevIntMSDir(), self.instrDepManager)
+
 
     #Ingest from FlowTracker *.dis
     def AddDischargeSummaryFromFT(self):
@@ -1514,6 +1528,9 @@ class ElectronicHydrometricSurveyNotes:
 
     def GetQRevDir(self):
         return self.gui.qRevDir
+    
+    def GetQRevIntMSDir(self):
+        return self.gui.qRevIntMSDir
 
     def GetFlowTrackerDir(self):
         return self.gui.flowTrackerDir

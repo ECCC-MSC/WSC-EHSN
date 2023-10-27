@@ -84,6 +84,7 @@ ID_IMPORT_HFC = wx.NewId()
 ID_IMPORT_FTDIS = wx.NewId()
 ID_IMPORT_FT2 = wx.NewId()
 ID_IMPORT_QRXML = wx.NewId()
+ID_IMPORT_QRIMXML = wx.NewId()
 ID_IMPORT_SXSMMT = wx.NewId()
 ID_IMPORT_RSSDIS = wx.NewId()
 
@@ -151,6 +152,7 @@ class EHSNGui(wx.Frame):
         self.ID_IMPORT_FTDIS = ID_IMPORT_FTDIS
         self.ID_IMPORT_FT2 = ID_IMPORT_FT2
         self.ID_IMPORT_QRXML = ID_IMPORT_QRXML
+        self.ID_IMPORT_QRIMXML = ID_IMPORT_QRIMXML
         self.ID_IMPORT_SXSMMT = ID_IMPORT_SXSMMT
         self.ID_IMPORT_RSSDIS = ID_IMPORT_RSSDIS
 
@@ -242,6 +244,8 @@ class EHSNGui(wx.Frame):
         self.iFtDisDesc = "Import FlowTracker (*.dis)"
         self.iQrXmlLabel = "Import QRev (*.xml)"
         self.iQrXmlDesc = "Import QRev (*.xml)"
+        self.iQrIntMSXmlLabel = "Import QRevIntMS (*.xml)"
+        self.iQrIntMSXmlDesc = "Import QRevIntMS (*.xml)"
         self.iSxsProMmtLabel = "Import SxS Pro mmt (*.xml)"
         self.iSxsProMmtDesc = "Import SxS Pro mmt (*.xml)"
         self.iRsslDisLabel = "Import RSSL (*.dis)"
@@ -400,6 +404,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
 
         self.qRevDir = ""
+        self.qRevIntMSDir = ""
         self.flowTrackerDir = ""
         self.hfcDir = ""
         self.ft2FtDir = ""
@@ -516,6 +521,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         menuImport.AppendSeparator()
         iQrxml = menuImport.Append(ID_IMPORT_QRXML, self.iQrXmlLabel, self.iQrXmlDesc)
         menuImport.AppendSeparator()
+        iQrIntMSxml = menuImport.Append(ID_IMPORT_QRIMXML, self.iQrIntMSXmlLabel, self.iQrIntMSXmlDesc)
+        menuImport.AppendSeparator()
         iSxsmmt = menuImport.Append(ID_IMPORT_SXSMMT, self.iSxsProMmtLabel, self.iSxsProMmtDesc)
         menuImport.AppendSeparator()
         iRssdis = menuImport.Append(ID_IMPORT_RSSDIS, self.iRsslDisLabel, self.iRsslDisDesc)
@@ -570,6 +577,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.Bind(wx.EVT_MENU, self.OnImport, iFtdis)
         self.Bind(wx.EVT_MENU, self.OnImport, iFt2)
         self.Bind(wx.EVT_MENU, self.OnImport, iQrxml)
+        self.Bind(wx.EVT_MENU, self.OnImport, iQrIntMSxml)
         self.Bind(wx.EVT_MENU, self.OnImport, iSxsmmt)
         self.Bind(wx.EVT_MENU, self.OnImport, iRssdis)
 
@@ -2377,6 +2385,12 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
             stId = self.manager.GetStationIDFromQRev()
             startDate = self.manager.GetDateFromQRev()
+        elif evt.GetId() == ID_IMPORT_QRIMXML:
+            if not self.QRevIntMSFileOpen():
+                return
+
+            stId = self.manager.GetStationIDFromQRevIntMS()
+            startDate = self.manager.GetDateFromQRevIntMS()
         elif evt.GetId() == ID_IMPORT_FTDIS:
             if not self.FlowTrackerOpen():
                 return
@@ -2525,6 +2539,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 fileName = fileOpenDialog.GetFilename()
                 # self.qRevFileName = fileName
                 self.qRevDir = path
+                self.qRevIntMSDir = ""
                 self.flowTrackerDir = ""
                 self.hfcDir = ""
                 self.ft2FtDir = ""
@@ -2536,6 +2551,41 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         fileOpenDialog.Destroy()
         return True
 
+
+    #Open the QRev file and save the directory of the file
+    def QRevIntMSFileOpen(self):
+        self.DestroySubWindows()
+
+        fileOpenDialog = wx.FileDialog(self, "Open QRevIntMS", self.rootPath, '',
+                            'QRev (*.xml)|*.xml|All Files (*.*)|*',
+                                       style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+
+        if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
+            fileOpenDialog.Destroy()
+            return  False
+
+        if self.manager is not None:
+            path = fileOpenDialog.GetPath()
+            if self.mode == "DEBUG":
+                print("path open")
+                print(path)
+
+            if path != "":
+                fileName = fileOpenDialog.GetFilename()
+                # self.qRevFileName = fileName
+                self.qRevDir = ""
+                self.qRevIntMSDir = path
+                self.flowTrackerDir = ""
+                self.hfcDir = ""
+                self.ft2FtDir = ""
+                self.ft2JsonDir = ""
+                self.sxsDir = ""
+                self.rsslDir = ""
+                self.ehsnMidDir = ""
+
+        fileOpenDialog.Destroy()
+        return True
+    
 
     #Open the dis file and save the directory of the file
     def FlowTrackerOpen(self):
@@ -2560,6 +2610,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 # self.qRevFileName = fileName
                 self.flowTrackerDir = path
                 self.qRevDir = ""
+                self.qRevIntMSDir = ""
                 self.hfcDir = ""
                 self.ft2FtDir = ""
                 self.ft2JsonDir = ""
@@ -2593,6 +2644,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 # self.qRevFileName = fileName
                 self.hfcDir = path
                 self.qRevDir = ""
+                self.qRevIntMSDir = ""
                 self.flowTrackerDir = ""
                 self.ft2FtDir = ""
                 self.ft2JsonDir = ""
@@ -2627,6 +2679,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 # self.qRevFileName = fileName
                 self.hfcDir = ""
                 self.qRevDir = ""
+                self.qRevIntMSDir = ""
                 self.flowTrackerDir = ""
                 self.ft2FtDir = ""
                 self.ft2JsonDir = ""
@@ -2660,6 +2713,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.ftFileName = fileName
                 self.ft2FtDir = path
                 self.qRevDir = ""
+                self.qRevIntMSDir = ""
                 self.flowTrackerDir = ""
                 self.hfcDir = ""
                 self.ft2JsonDir = ""
@@ -2684,6 +2738,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                     self.ft2JsonDir = self.ft2FtDir.rsplit('.',1)[0].rsplit('.',1)[0] + "\\DataFile.json"
 
                 self.qRevDir = ""
+                self.qRevIntMSDir = ""
                 self.flowTrackerDir = ""
                 self.hfcDir = ""
                 self.ft2FtDir = ""
@@ -2720,6 +2775,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 # self.ftFileName = fileName
                 self.sxsDir = path
                 self.qRevDir = ""
+                self.qRevIntMSDir = ""
                 self.flowTrackerDir = ""
                 self.hfcDir = ""
                 self.ft2FtDir = ""
@@ -2754,6 +2810,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 # self.ftFileName = fileName
                 self.rsslDir = path
                 self.qRevDir = ""
+                self.qRevIntMSDir = ""
                 self.flowTrackerDir = ""
                 self.hfcDir = ""
                 self.ft2FtDir = ""
