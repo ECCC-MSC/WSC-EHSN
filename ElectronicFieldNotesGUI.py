@@ -364,7 +364,7 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.sxsImportAttentionMsg = "Attention!\n\nThe xml file displays discharge to two decimal places; the calculated discharge and average velocity might be slightly different from the values viewed in SxS Pro software."
         self.sxsImportAttentionTitle = "Attention"
 
-        self.qrevImportAttentionMsg = "Attention!\n\nAlthough the QRev file version you have uploaded IS still supported, it is below the recommended QRev file version (Version 4.23)."
+        self.qrevImportAttentionMsg = "Attention!\n\nThe minimum recommended QRev version is 4.23. Please consider updating your QRev software at your earliest convenience."
         self.qrevImportAttentionTitle = "Attention"
 
         self.RatingCurveViewerToolFrame = None
