@@ -364,6 +364,9 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
         self.sxsImportAttentionMsg = "Attention!\n\nThe xml file displays discharge to two decimal places; the calculated discharge and average velocity might be slightly different from the values viewed in SxS Pro software."
         self.sxsImportAttentionTitle = "Attention"
 
+        self.qrevImportAttentionMsg = "Attention!\n\nAlthough the QRev file version you have uploaded IS still supported, it is below the recommended QRev file version (Version 4.23)."
+        self.qrevImportAttentionTitle = "Attention"
+
         self.RatingCurveViewerToolFrame = None
         self.ratingCurveExtraction = None
         self.calc = None
@@ -2500,6 +2503,14 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
             if evt.GetId() == ID_IMPORT_SXSMMT:
                 info = wx.MessageDialog(None, self.sxsImportAttentionMsg, self.sxsImportAttentionTitle,
+                                     wx.YES_NO | wx.ICON_INFORMATION)
+                info.SetYesNoLabels("Continue", "Cancel")
+                result = info.ShowModal()
+                if result != wx.ID_YES:
+                    return
+            
+            if evt.GetId() == ID_IMPORT_QRXML and self.manager.GetQRevVersionFromQRev() < 4.23:
+                info = wx.MessageDialog(None, self.qrevImportAttentionMsg, self.qrevImportAttentionTitle,
                                      wx.YES_NO | wx.ICON_INFORMATION)
                 info.SetYesNoLabels("Continue", "Cancel")
                 result = info.ShowModal()

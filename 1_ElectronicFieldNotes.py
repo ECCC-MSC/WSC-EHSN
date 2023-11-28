@@ -1290,6 +1290,9 @@ class ElectronicHydrometricSurveyNotes:
 
     def GetDateFromQRev(self):
         return IngestQRevManager.GetDate(self.GetQRevDir())
+    
+    def GetQRevVersionFromQRev(self):
+        return IngestQRevManager.GetQRevVersion(self.GetQRevDir())
 
 
 
