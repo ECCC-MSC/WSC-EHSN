@@ -244,8 +244,8 @@ class EHSNGui(wx.Frame):
         self.iFtDisDesc = "Import FlowTracker (*.dis)"
         self.iQrXmlLabel = "Import QRev (*.xml)"
         self.iQrXmlDesc = "Import QRev (*.xml)"
-        self.iQrIntMSXmlLabel = "Import QRevIntMS (*.xml)"
-        self.iQrIntMSXmlDesc = "Import QRevIntMS (*.xml)"
+        self.iQrIntMSXmlLabel = "Import QRevMS (*.xml)"
+        self.iQrIntMSXmlDesc = "Import QRevMS (*.xml)"
         self.iSxsProMmtLabel = "Import SxS Pro mmt (*.xml)"
         self.iSxsProMmtDesc = "Import SxS Pro mmt (*.xml)"
         self.iRsslDisLabel = "Import RSSL (*.dis)"
@@ -2567,8 +2567,8 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
     def QRevIntMSFileOpen(self):
         self.DestroySubWindows()
 
-        fileOpenDialog = wx.FileDialog(self, "Open QRevIntMS", self.rootPath, '',
-                            'QRev (*.xml)|*.xml|All Files (*.*)|*',
+        fileOpenDialog = wx.FileDialog(self, "Open QRevMS", self.rootPath, '',
+                            'QRevMS (*.xml)|*.xml|All Files (*.*)|*',
                                        style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
 
         if fileOpenDialog.ShowModal() == wx.ID_CANCEL:
