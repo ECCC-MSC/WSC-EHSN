@@ -216,7 +216,7 @@ def AddDischargeDetail(filePath, instrDepManager):
         instrDepManager.GetDiagTestCB().SetBackgroundColour(color)
 
             
-    if depth is not None:
+    if depth is not None and instrDepManager.GetDeploymentCmbo().GetValue() != "Ice Cover":
         instrDepManager.adcpDepthCtrl = depth
         instrDepManager.GetAdcpDepthCtrl().SetBackgroundColour(color)
     if magDeclination is not None:
