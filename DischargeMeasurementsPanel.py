@@ -178,7 +178,7 @@ All uncertainty values reported here are 2-sigma value
         self.controlLbl = "Control Condition"
         self.contCondLbl = "Condition"
         self.contCondList = ["", "Unspecified", "No Flow", "Clear", "Altered", "Debris",
-                             "Vegetation", "Fill", "Scour", "Ice"]
+                             "Vegetation", "Fill", "Scour", "Ice", "Beaver Affected"]
         # self.picturedLbl = "Site and/or control pictures were taken."
 
 
