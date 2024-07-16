@@ -14,7 +14,6 @@ import datetime
 import NumberControl
 from DropdownTime import *
 from pdb import set_trace
-from math import ceil
 
 
 
@@ -2503,8 +2502,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             if result is not None:
 
                 result = Decimal(str(result)) #use decimal cause float is inaccurate when multipling by 1000 and adds extra decimals
-                # Round to 3 sig figs while rounding the last sig fig up
-                result = str(ceil(1000 * result) / 1000)
+                # Round to 3 sig figs
+                result = str(round(result,3))
                 digits = 3 - len(result.split(".")[-1])
                 for i in range(digits):
                     result += "0"
