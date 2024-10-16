@@ -328,7 +328,7 @@ class PierPanel(wx.Panel):
             self.GetParent().GetParent().GetParent().Modify()
 
     def OnCancel(self, event):
-        print self.modify
+        print(self.modify)
         if self.modify != 2:
             
             if self.endEdgeRdBtn.GetValue():

@@ -23,7 +23,7 @@ class AquariusUploadDialog2(wx.Dialog):
 
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "Aquarius Upload Dialog 2"
+            print("Aquarius Upload Dialog 2")
 
         self.layoutSizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -101,13 +101,13 @@ def main():
     while val:
         re = AUD.ShowModal()
         if re == wx.ID_YES:
-            print "YES"
+            print("YES")
         else:
-            print "Cancel"
+            print("Cancel")
             val = False
             AUD.Destroy()
 
-    print "TEST"
+    print("TEST")
 
     AUD.Destroy()
 

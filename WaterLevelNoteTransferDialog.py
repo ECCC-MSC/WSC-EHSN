@@ -6,7 +6,7 @@ import wx
 class TransferDialog(wx.Dialog):
     def __init__(self, times, stations, elevations, estEles, closures, *args, **kwargs):
         super(TransferDialog, self).__init__(*args, **kwargs)
-        self.headerCol1Lbl = "Station"
+        self.headerCol1Lbl = "WL reference"
         self.headerCol2Lbl = "Difference between observed and established elevations (m)" 
         self.closureLbl = "Closure = "
         self.closureEmptyLbl = "Not Calculated"
@@ -93,7 +93,8 @@ class TransferDialog(wx.Dialog):
                     result = ""
                     if self.elevations[i][j] != "" and self.estEles[i][j] != "":
                         try:
-                            result = str(float(self.elevations[i][j]) - float(self.estEles[i][j]))
+                            # Round to 3 sig figs
+                            result = str(round(float(self.elevations[i][j]) - float(self.estEles[i][j]), 3))
                         except:
                             result = ""
                     stationTxt = wx.StaticText(secondPanel, label=result, size=(-1, self.height))

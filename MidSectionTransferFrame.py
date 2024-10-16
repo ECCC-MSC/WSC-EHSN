@@ -91,7 +91,7 @@ class MidSectionTransferFrame(wx.Frame):
 
 
     def OnCancel(self, evt):
-        print "OnCancelBtn"
+        print("OnCancelBtn")
         self.Destroy()
 
     def OnTransfer(self, evt):
@@ -144,6 +144,14 @@ class MidSectionTransferFrame(wx.Frame):
             uncertainty = str(round(float(self.GetParent().uncertainty2Ctrl.GetValue()), 2))
             dischargePanel.uncertaintyCtrl.SetValue(uncertainty)
             transferCommon = True
+
+            # Adding uncertainty text to Discharge Activity Remarks
+            dischargeUncertainty = '@ Uncertainty: IVE method, 2-sigma value (IVE Value). @'
+            dischargeRemarks = dischargePanel.dischRemarksCtrl.GetValue()
+            if dischargeRemarks != '':
+                dischargePanel.dischRemarksCtrl.SetValue(dischargeRemarks + '\n' + dischargeUncertainty)
+            else:
+                dischargePanel.dischRemarksCtrl.SetValue(dischargeUncertainty)
 
         if self.mmntTimeCkbox.GetValue() and self.GetParent().startTimeCtrl.GetValue() != "" \
                 and self.GetParent().endTimeCtrl.GetValue() != "":

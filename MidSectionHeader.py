@@ -46,10 +46,10 @@ class MidSectionHeader(wx.Panel):
         self.measSummLbl = "Measurement Summary"
         self.numPanelLbl = "Num. Panels"
         self.widthLbl = "Width (m)"
-        self.areaLbl = u"Area (m\N{SUPERSCRIPT TWO})"
+        self.areaLbl = "Area (m\N{SUPERSCRIPT TWO})"
         self.avgDepthLbl = "Avg Depth (m)"
         self.avgVelLbl = "Avg Velocity (m/s)"
-        self.totalDisLbl = u"Total Discharge (m\N{SUPERSCRIPT THREE}/s) "
+        self.totalDisLbl = "Total Discharge (m\N{SUPERSCRIPT THREE}/s) "
         self.uncertLbl = "Uncertainty (ISO)(%)"
         self.uncertLb2 = "Uncertainty (IVE)(%)"
         self.plotLbl = "Plot"
@@ -79,15 +79,15 @@ class MidSectionHeader(wx.Panel):
 
         self.color_cursor = "#33E6FF"
         self.color_body = "#91c7f7"
-	self.color_saved = "#32B4BF"
+        self.color_saved = "#32B4BF"
 
-	self.color_saved_ice = "#0F5D68"
-	self.color_highlighted_ice = "#9EABAD"
-	self.color_body_ice = "#5A6A6C"
+        self.color_saved_ice = "#0F5D68"
+        self.color_highlighted_ice = "#9EABAD"
+        self.color_body_ice = "#5A6A6C"
 
-	self.color_saved_slush = "#0F5D68"
-	self.color_highlighted_slush = "#0F5D68"
-	self.color_body_slush = "#e5e5e5"
+        self.color_saved_slush = "#0F5D68"
+        self.color_highlighted_slush = "#0F5D68"
+        self.color_body_slush = "#e5e5e5"
 
         if hasattr(sys, '_MEIPASS'):
             self.myBitmapFront = os.path.join(sys._MEIPASS, "backarrow.png")
@@ -296,11 +296,11 @@ class MidSectionHeader(wx.Panel):
 
         rightH10Sizer.Add(startTimeTxt, 0, wx.EXPAND)
         rightH10Sizer.Add((-1,-1), 1, wx.EXPAND)
-        rightH10Sizer.Add(self.startTimeCtrl, 0, wx.ALIGN_RIGHT)
+        rightH10Sizer.Add(self.startTimeCtrl, 0, wx.RIGHT)
 
         rightH11Sizer.Add(endTimeTxt, 0, wx.EXPAND)
         rightH11Sizer.Add((-1,-1), 1, wx.EXPAND)
-        rightH11Sizer.Add(self.endTimeCtrl, 0, wx.ALIGN_RIGHT)
+        rightH11Sizer.Add(self.endTimeCtrl, 0, wx.RIGHT)
 
         numOfPanelTxt = wx.StaticText(self, label=self.numPanelLbl)
         self.numOfPanelCtrl = wx.TextCtrl(self)
@@ -457,12 +457,10 @@ class MidSectionHeader(wx.Panel):
                 isIncreasing = False
 
 
-        width, height = wx.GetDisplaySize()
-
-        fig, self.ax = plt.subplots(2, facecolor="white", sharex=True, figsize=(width/80*0.8,height/80*0.8))
+        fig, self.ax = plt.subplots(2, facecolor="white", sharex=True)
         velo = self.ax[0].twinx()
 
-        
+        self.ax[0].tick_params(labelbottom=True)
 
         for tk in self.ax[0].get_xticklabels():
             tk.set_visible(True)
@@ -495,10 +493,10 @@ class MidSectionHeader(wx.Panel):
 
 
             if panelObjs[i].flow!="":
-                flowList.append(panelObjs[i].flow)
+                flowList.append(float(panelObjs[i].flow))
                 flowTagList.append(float(panelObjs[i].distance))
             if panelObjs[i].corrMeanVelocity!="":
-                veloList.append(panelObjs[i].corrMeanVelocity)
+                veloList.append(float(panelObjs[i].corrMeanVelocity))
                 veloTagList.append(float(panelObjs[i].distance))
             if isinstance(panelObjs[i], PanelObj):
                 if panelObjs[i].panelCondition == "Open" and panelObjs[i].openDepthRead != "":
@@ -648,7 +646,7 @@ class MidSectionHeader(wx.Panel):
         # observation points for panel
         for tagmark, depthObs in zip(panelTagmarkList, depthObsList):
             for point in depthObs:
-                lns6, = self.ax[1].plot(tagmark, point, "ro", marker="s", label="Obsevation Points")
+                lns6, = self.ax[1].plot(float(tagmark), float(point), "r", marker="s", label="Obsevation Points")
         # Lines
         if isIncreasing:
             
@@ -671,9 +669,9 @@ class MidSectionHeader(wx.Panel):
         else:
             aY = y
             aDepthList = depthList
-        aTuples = sorted(list(set(zip(aTagmarkLineList, aY) + zip(aDepthTagList, aDepthList))), \
+        aTuples = sorted(list(set(list(zip(aTagmarkLineList, aY)) + list(zip(aDepthTagList, aDepthList)))), \
                                                     key=lambda x: x[0])
-        unpackTuples = zip(*aTuples)
+        unpackTuples = list(zip(*aTuples))
         tags = unpackTuples[0]
         depths = unpackTuples[1]
 

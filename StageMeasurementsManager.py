@@ -18,7 +18,7 @@ class StageMeasurementsManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "StageMeasurementsControl"
+            print("StageMeasurementsControl")
 
     #HG
     @property
@@ -153,6 +153,22 @@ class StageMeasurementsManager(object):
     def SetWLSubSizerRVal(self, row, val):
         self.gui.SetWLSubSizerRVal(row, val)
 
+    # Surge
+    @property
+    def surgeSizer(self):
+        return self.gui.GetSurgeSizer()
+
+    @surgeSizer.setter
+    def surgeSizer(self, surgeSizer):
+        self.gui.SetSurgeSizer(surgeSizer)
+
+    # Surge Val Getter
+    def GetSurgeVal(self, row):
+        return self.gui.GetSurgeVal(row)
+
+    # Surge Val Setter
+    def SetSurgeVal(self, row, val):
+        self.gui.SetSurgeVal(row, val)
 
     #SRC col
     @property
@@ -452,8 +468,8 @@ class StageMeasurementsManager(object):
     def rowHasDataToUpload(self, row):
         return self.gui.rowHasDataToUpload(row)
 
-    def InsertEmptyEntry(self, index, time=None, logger1=None, logger2=None, wl1=None, wl2=None):
-        self.gui.InsertEmptyEntry(index, time, logger1, logger2, wl1, wl2)
+    def InsertEmptyEntry(self, index, time=None, logger1=None, logger2=None, wl1=None, wl2=None, surge=None):
+        self.gui.InsertEmptyEntry(index, time, logger1, logger2, wl1, wl2, surge)
     #return the mean time
     def CalculteMeanTime(self):
         return self.gui.CalculteMeanTime()

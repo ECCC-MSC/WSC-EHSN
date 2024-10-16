@@ -14,7 +14,7 @@ class MeasurementResultsManager(object):
         #Display id : parameter id
         self.sensorRef = {'Atmos Pres (kPa)':'PA',
                           'Battery Voltage Under Load (V)':'YBL',
-                          u'Internal Temp (\N{DEGREE SIGN}C)':'InternalTemp',
+                          'Internal Temp (\N{DEGREE SIGN}C)':'InternalTemp',
                           # 'Lake Area (km^2)':'LA',
                           # 'Lake Stage (m)':'HL',
                           'Open Water Extent (km)':'IO',
@@ -32,8 +32,8 @@ class MeasurementResultsManager(object):
                           # 'Sound Vel In Water (m/s)':'SoundVel',
                           'Tank Pressure(psi)':'YP',
                           'Wind Dir (deg)':'UD',
-                          'Water Temp (' + u'\u00B0' + 'C)': 'TW',
-                          u'Air Temp (\u00B0C)': 'TA',
+                          'Water Temp (' + '\u00B0' + 'C)': 'TW',
+                          'Air Temp (\u00B0C)': 'TA',
                           'Accumulated Precip (mm)': 'PC',
                           'Snow Water Equivalent (cm)': 'SW',
                           'Forward Power (W)': 'YF',
@@ -87,7 +87,7 @@ class MeasurementResultsManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "MeasurementResultsControl"
+            print("MeasurementResultsControl")
 
 
     # #Time stuff
@@ -465,26 +465,26 @@ class MeasurementResultsManager(object):
 
 
     def PrintAllMeasurements(self):
-        print "Time: %s" % self.timeCtrl
+        print("Time: %s" % self.timeCtrl)
         
-        print "Sensor Ref Entry 1: %s" % self.sensorRefEntry1
-        print "Sensor Ref Entry 2: %s" % self.sensorRefEntry2
-        print "Sensor Ref Entry 3: %s" % self.sensorRefEntry3
-        print "Sensor Ref Entry 4: %s" % self.sensorRefEntry4
+        print("Sensor Ref Entry 1: %s" % self.sensorRefEntry1)
+        print("Sensor Ref Entry 2: %s" % self.sensorRefEntry2)
+        print("Sensor Ref Entry 3: %s" % self.sensorRefEntry3)
+        print("Sensor Ref Entry 4: %s" % self.sensorRefEntry4)
         # print "Sensor Ref Entry 5: %s" % self.sensorRefEntry5
         # print "Sensor Ref Entry 6: %s" % self.sensorRefEntry6
 
-        print "Observed Value 1: %s" % self.observedVal1
-        print "Observed Value 2: %s" % self.observedVal2
-        print "Observed Value 3: %s" % self.observedVal3
-        print "Observed Value 4: %s" % self.observedVal4
+        print("Observed Value 1: %s" % self.observedVal1)
+        print("Observed Value 2: %s" % self.observedVal2)
+        print("Observed Value 3: %s" % self.observedVal3)
+        print("Observed Value 4: %s" % self.observedVal4)
         # print "Observed Value 5: %s" % self.observedVal5
         # print "Observed Value 6: %s" % self.observedVal6
 
-        print "Sensor Value 1: %s" % self.sensorVal1
-        print "Sensor Value 2: %s" % self.sensorVal2
-        print "Sensor Value 3: %s" % self.sensorVal3
-        print "Sensor Value 4: %s" % self.sensorVal4
+        print("Sensor Value 1: %s" % self.sensorVal1)
+        print("Sensor Value 2: %s" % self.sensorVal2)
+        print("Sensor Value 3: %s" % self.sensorVal3)
+        print("Sensor Value 4: %s" % self.sensorVal4)
         # print "Sensor Value 5: %s" % self.sensorVal5
         # print "Sensor Value 6: %s" % self.sensorVal6
 

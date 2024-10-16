@@ -16,6 +16,7 @@ from FRChecklistManager import *
 from MovingBoatMeasurementsManager import *
 from MidSectionMeasurementsManager import *
 # from RemarksManager import *
+from AttachmentManager import *
 
 from RatingCurveViewerToolManager import *
 
@@ -26,6 +27,7 @@ import XMLManager
 import AquariusUploadManager
 
 import IngestQRevManager
+import IngestQRevIntMSManager
 import IngestFlowTrackerDisManager
 import IngestHfcManager
 import IngestFt2Manager
@@ -37,7 +39,6 @@ from xml.etree.ElementTree import Element
 from xml.etree.ElementTree import SubElement
 from xml.dom import minidom
 
-from xhtml2pdf import pisa             # import python module
 from lxml import etree
 
 import os
@@ -46,7 +47,7 @@ from os import environ
 from os.path import join
 from os.path import dirname
 import sys
-import thread
+import _thread
 import suds
 
 import datetime
@@ -57,6 +58,13 @@ import re
 import json
 import shutil
 from zipfile import ZipFile
+import importlib
+
+from xhtml2pdf import pisa 
+
+# Aquarius Python Wrapper created by Doug Schmidt
+from timeseries_client import timeseries_client
+from requests.exceptions import HTTPError
 
 
 
@@ -85,7 +93,7 @@ if 0:
 
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v2.2.0"
+EHSN_VERSION = "v2.3.3"
 eHSN_WINDOW_SIZE = (1100, 730)
 
 # import wx.lib.inspection
@@ -95,8 +103,8 @@ eHSN_WINDOW_SIZE = (1100, 730)
 
 class ElectronicHydrometricSurveyNotes:
     def __init__(self):
-        reload(sys)
-        sys.setdefaultencoding('utf-8')
+        importlib.reload(sys)
+        #sys.setdefaultencoding('utf-8')
         self.headerTitle = "Hydrometric Survey Notes " + EHSN_VERSION
 
         # Label variables
@@ -130,13 +138,18 @@ class ElectronicHydrometricSurveyNotes:
 
     def InitUI(self):
         if mode == "DEBUG":
-            print "EHSN"
+            print("EHSN")
+
+        # Delete any existing iniPath.ini files stored in the temp directory
+        if os.path.exists('c:\\temp\\eHSN\\iniPath.ini'):
+            os.remove('c:\\temp\\eHSN\\iniPath.ini')
+
         app = wx.App()
         self.uploadRecord = None
         self.gui = EHSNGui(mode, EHSN_VERSION, None, title=self.headerTitle, size=eHSN_WINDOW_SIZE)
         self.SetupManagers()
         self.stageMeasManager.AddEntry()
-        self.waterLevelRunManager.AddRun()
+        self.stationBmUpdate()        
         # 6 Entries
         for i in range(9):
             self.movingBoatMeasurementsManager.AddEntry()
@@ -146,7 +159,6 @@ class ElectronicHydrometricSurveyNotes:
         self.midSectionDetailXml = {}
         self.midSectionRawData = None
 
-        self.gui.titleHeader.enteredInHWSCB.Bind(wx.EVT_CHECKBOX, self.LockEvent)
 
 
         # try:
@@ -193,6 +205,11 @@ class ElectronicHydrometricSurveyNotes:
     def GetLayout(self):
         return self.gui.layout
 
+    def stationBmUpdate(self):
+        for station in self.waterLevelRunManager.gui.levelNotes.panel.stationList:
+            station.Bind(wx.EVT_TEXT, self.gui.OnLevelNoteStationSelect)
+        for descButton in self.waterLevelRunManager.gui.levelNotes.panel.descList:
+            descButton.Bind(wx.EVT_BUTTON, self.gui.OnLevelNoteEstablishedBtn)
 
     # def OnExit(self):
     #     # if self.gui.fullname == '':
@@ -211,6 +228,7 @@ class ElectronicHydrometricSurveyNotes:
         self.envCondManager = EnvironmentConditionsManager(mode, self.gui.envCond, self)
         self.measResultsManager = MeasurementResultsManager(mode, self.gui.measResults, self)
         self.instrDepManager = InstrumentDeploymentInfoManager(mode, self.gui.instrDep, self)
+        self.attachmentManager = AttachmentManager(mode, self.gui.attachment, self)
         # self.remarksManager = RemarksManager(mode, self.gui.remarks, self)
         self.partyInfoManager = PartyInfoManager(mode, self.gui.partyInfo, self)
         self.waterLevelRunManager = WaterLevelRunManager(mode, self.gui.waterLevelRun, self)
@@ -244,20 +262,24 @@ class ElectronicHydrometricSurveyNotes:
 
     def ExportAsPDFWithoutOpen(self, filePath, xslPath):
         if mode == "DEBUG":
-            print "Saving PDF"
-
-##        pisa.showLogging()
-
+            print("Saving PDF")
 
         xml = self.EHSNToXML()
-        print xslPath
+        print(xslPath)
+        
+        self.gui.createProgressDialogPDF('PDF Creation In Progress...', 'Transform XML to HTML string')
+
         # transform = etree.XSLT(etree.parse(xslPath))
         transform = etree.XSLT(etree.parse(xslPath))
         result = transform(etree.fromstring(xml))
 
+        self.gui.updateProgressDialog('Set Logo and QR paths')
+
         # result = str(result).replace("%5C", "\\")
         result = str(result).replace("logo_path", self.gui.logo_path)
         result = result.replace("qr_path", self.gui.qr_path)
+
+        self.gui.updateProgressDialog('Converting HTML to PDF file')
 
         # open output file for writing (truncated binary)
         resultFile = open(filePath, "w+b")
@@ -267,13 +289,10 @@ class ElectronicHydrometricSurveyNotes:
                 src=result,                # the HTML to convert
                 dest=resultFile, show_error_as_pdf = True)           # file handle to receive result
 
-
-                # pisa.CreatePDF(
-                # src=result,                # the HTML to convert
-                # dest=resultFile,           # file handle to receive result
-                # encoding="UTF-8")
         resultFile.close()
 
+        self.gui.updateProgressDialog('Successfully created PDF file')
+        self.gui.deleteProgressDialog()
 
 
 
@@ -293,16 +312,19 @@ class ElectronicHydrometricSurveyNotes:
     #create pdf from a given xml file without open
     def ExportAsPDFFromXML(self, filePath, xslPath, xml):
         if mode == "DEBUG":
-            print "Saving PDF"
+            print("Saving PDF")
 
-##        pisa.showLogging()
-
+        self.gui.createProgressDialogPDF('PDF Creation In Progress...', 'Transform XML to HTML string')
 
         transform = etree.XSLT(etree.parse(xslPath))
         result = transform(etree.fromstring(xml))
 
+        self.gui.updateProgressDialog('Set Logo and QR paths')
+
         result = str(result).replace("logo_path", self.gui.logo_path)
         result = result.replace("qr_path", self.gui.qr_path)
+
+        self.gui.updateProgressDialog('Converting HTML to PDF file')
 
         # open output file for writing (truncated binary)
         resultFile = open(filePath, "w+b")
@@ -312,13 +334,12 @@ class ElectronicHydrometricSurveyNotes:
                 src=result,                # the HTML to convert
                 dest=resultFile, show_error_as_pdf = True)           # file handle to receive result
 
-        # pisa.CreatePDF(
-        #         src=result,                # the HTML to convert
-        #         dest=resultFile,           # file handle to receive result
-        #         encoding="UTF-8")
+        resultFile.close()
+
+        self.gui.updateProgressDialog('Successfully created PDF file')
+        self.gui.deleteProgressDialog()
         
 
-        resultFile.close()
 
     #After generating the pdf from xml, open the pdf
     def ExportAsPDFFromXMLOpen(self, filePath, xslPath, xml):
@@ -414,7 +435,7 @@ class ElectronicHydrometricSurveyNotes:
                         else:
                             val = []
                     else:
-                        print "Cancel"
+                        print("Cancel")
                         return "Cancelled out of field visit" + " %d" % locid
 
                     AMDUD.Destroy()
@@ -433,19 +454,19 @@ class ElectronicHydrometricSurveyNotes:
                     self.gui.deleteProgressDialog()
 
                     return export
-                except suds.WebFault, e:
+                except suds.WebFault as e:
                     self.gui.deleteProgressDialog()
 
-                    print e
+                    print(e)
                     return str(e)
-                except ValueError, e:
+                except ValueError as e:
                     self.gui.deleteProgressDialog()
 
                     return str(e)
             else:
                 if mode == "DEBUG":
-                    print "Field Visit for selected date"
-                    print val
+                    print("Field Visit for selected date")
+                    print(val)
 
                 paraList = AquariusUploadManager.GetParaIDByFV(val[0])
                 export = AquariusUploadManager.ExportToAquarius(mode, EHSN_VERSION, self, aq, fv, locid, discharge, levelNote, paraList, val[0], server)
@@ -458,46 +479,37 @@ class ElectronicHydrometricSurveyNotes:
         # export ehsn to ng
     def ExportToAquariusNg(self, server, username, password, fvPath, fvDate):
 
-        print "NG"
+        print("NG")
         self.gui.createProgressDialog(self.exportAQTitle, self.exportAQLoginMessage)
 
         # Login
-        s = requests.Session()
-        data = '{"Username": "' + username + '", "EncryptedPassword": "' + password + '", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = "https://" + server + "/AQUARIUS/Provisioning/v1/session"
         try:
-            s.get(url)
-            req = s.post(url, data = data, headers = headers)
-            token = req.text
-            try:
-                toMessage = req.json()
-                exists = False
-                self.gui.deleteProgressDialog()
-                return "The username or the password is incorrect."
-            except:
-                #print token
-                exists = True
-        except:
-            # print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
+            # Using Aquarius Python Wrapper created by Doug Schmidt
+            aq = timeseries_client('https://' + server, username, password)
+            exists = True
+        except HTTPError as e:
             exists = False
             self.gui.deleteProgressDialog()
-            return "Failed to login."
-            # print exists
-        print "login"
+            if e.response.status_code == 401:
+                return "The username or the password is incorrect."
+            else:
+                return "Failed to login."
+
+        print("login")
         if exists:
             try:
-                req = requests.get("https://" + server + "/AQUARIUS/Publish/v2/GetLocationDescriptionList?Token=" + token + "&LocationIdentifier=" + self.genInfoManager.stnNumCmbo)
+                parameters = {'LocationIdentifier': self.genInfoManager.stnNumCmbo}
+                req = aq.publish.get('/GetLocationDescriptionList', params=parameters)
                 try:
-                    locid = req.json()['LocationDescriptions'][0]['UniqueId']
+                    locid = req['LocationDescriptions'][0]['UniqueId']
                     exists = True
                     # print locid
                 except:
                     exists = False
-                    print "Id not exist1"
+                    print("Id not exist1")
             except:
                 exists = False
-                print "Id not exist"
+                print("Id not exist")
             if not exists:
                 self.gui.deleteProgressDialog()
                 return self.exportAQNoLoc
@@ -514,8 +526,9 @@ class ElectronicHydrometricSurveyNotes:
                     # get the field visit data from NG check if the fv already exist
                     # self.gui.updateProgressDialog(self.exportAQFVMessage)
                 try:
-                    req = requests.get("https://" + server + "/AQUARIUS/Publish/v2/GetFieldVisitDescriptionList?LocationIdentifier=" + self.genInfoManager.stnNumCmbo + "&QueryFrom=" + fvDate + "&QueryTo=" + fvDate1 + "&Token=" + token)
-                    fvexData = req.json()['FieldVisitDescriptions'][0]['Identifier']
+                    parameters = {'LocationIdentifier': self.genInfoManager.stnNumCmbo, 'QueryFrom': fvDate, 'QueryTo': fvDate1}
+                    req = aq.publish.get('/GetFieldVisitDescriptionList', params=parameters)
+                    fvexData = req['FieldVisitDescriptions'][0]['Identifier']
                     # print fvexData
                     exists = True
                 except:
@@ -528,68 +541,72 @@ class ElectronicHydrometricSurveyNotes:
                     return self.exportAQExist
                 else:
                     self.gui.updateProgressDialog("Uploading...")
-                    print fvPath
-                    dirName = fvPath[-19:]
-                    fvPath = fvPath.replace("\\", "\\\\")
-                    dirPath = fvPath.replace("\\", "/")
-                    fvPathPdf = fvPath.replace("\\", "\\\\")
-                    fvPath = fvPath + ".xml"
-                    fvPathPdf = fvPathPdf + ".pdf"
-                    xmlPath = fvPath[-23:]
-                    uploadDir = dirName + "_a"
-                    # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
+                    print(fvPath)
+                    # uploading the zip file
+                    if fvPath.endswith(".zip"):
+                        uploadZipDir = fvPath
+                    else:
+                        dirName = fvPath[-19:]
+                        fvPath = fvPath.replace("\\", "\\\\")
+                        dirPath = fvPath.replace("\\", "/")
+                        fvPathPdf = fvPath.replace("\\", "\\\\")
+                        fvPath = fvPath + ".xml"
+                        fvPathPdf = fvPathPdf + ".pdf"
+                        xmlPath = fvPath[-23:]
+                        uploadDir = dirName + "_a"
+                        # make an empty directory, move the pdf file in, create a directory with _a move the directory and xml file in
 
-                    if os.path.exists(dirName):
-                        shutil.rmtree(dirName)
-                    if os.path.exists(uploadDir):
-                        shutil.rmtree(uploadDir)
-                    if os.path.exists(uploadDir + ".zip"):
-                        os.remove(uploadDir + ".zip")
+                        if os.path.exists(dirName):
+                            shutil.rmtree(dirName)
+                        if os.path.exists(uploadDir):
+                            shutil.rmtree(uploadDir)
+                        if os.path.exists(uploadDir + ".zip"):
+                            os.remove(uploadDir + ".zip")
 
-                    try:
-                        os.mkdir(dirName)
-                        shutil.move(fvPathPdf, dirName)
-                        os.mkdir(uploadDir)
-                        shutil.move(dirName, uploadDir)
-                        shutil.move(fvPath, uploadDir)
-                        shutil.make_archive(uploadDir, 'zip', uploadDir)
-                    except:
-                        print 'Error occured while creating zip file for upload'
-                        self.gui.deleteProgressDialog()
-                        return None
-                    # create the zip file
-                    uploadZipDir = dirName + "_a.zip"
+                        try:
+                            os.mkdir(dirName)
+                            shutil.move(fvPathPdf, dirName)
+                            os.mkdir(uploadDir)
+                            shutil.move(dirName, uploadDir)
+                            shutil.move(fvPath, uploadDir)
+                            shutil.make_archive(uploadDir, 'zip', uploadDir)
+                        except:
+                            print('Error occured while creating zip file for upload')
+                            self.gui.deleteProgressDialog()
+                            return None
+                        # create the zip file
+                        uploadZipDir = dirName + "_a.zip"
 
                     # files = {'file': open(fvPath, 'rb')}
                     files = {'file': open(uploadZipDir, 'rb')}
+                    payload = {}
 
-                    print "Uploading"
-                    req = requests.post("https://" + server + "/AQUARIUS/Acquisition/v2/locations/" + locid + "/visits/upload/plugins?token=" + token, files=files)
-                    visitUris = req.json()
+                    print("Uploading")
                     try:
-                        visitUris = req.json()['ResponseStatus']['Message']
+                        req = aq.acquisition.post('/locations/' + locid + '/visits/upload/plugins', json=payload, files=files)
+                        visitUris = req
+                        try:
+                            visitUris = req['ResponseStatus']['Message']
+                            self.gui.deleteProgressDialog()
+                            return visitUris
+                        except:
+                            try:
+                                visitUris = visitUris['VisitUris'][0]
+                            except:
+                                self.gui.deleteProgressDialog()
+                                return "Failed"
+                    except HTTPError as e:
+                        visitUris = json.loads(e.response.text)['ResponseStatus']['Message']
                         self.gui.deleteProgressDialog()
                         return visitUris
-                    except:
-                        try:
-                            visitUris = visitUris['VisitUris'][0]
-                        except:
-                            self.gui.deleteProgressDialog()
-                            return "Failed"
                 # return self.exportAQWarning
         self.gui.deleteProgressDialog()
         return None
 
-    # Checks the "Entered in HWS" checkbox at top of front page
-    def ExportToAquariusSuccess(self):
-        self.titleHeaderManager.enteredInHWSCB = True
-        self.Lock()
 
     # Locks all the pages except the title header.
     def LockEvent(self, e):
-        if self.gui.titleHeader.enteredInHWSCB.GetValue():
-            self.Lock()
-        elif e is not None:
+        if e is not None:
             dlg = wx.MessageDialog(None, self.lockWarningMessage, self.lockWarningTitle, wx.YES_NO)
             res = dlg.ShowModal()
             if res==wx.ID_YES:
@@ -599,8 +616,6 @@ class ElectronicHydrometricSurveyNotes:
                 self.gui.form3.Enable()
                 self.gui.form4.Enable()
                 self.gui.form5.Enable()
-            else:
-                self.gui.titleHeader.enteredInHWSCB.SetValue(True)
         else:
             for widget in self.gui.form.GetChildren():
                 widget.Enable()
@@ -622,14 +637,14 @@ class ElectronicHydrometricSurveyNotes:
     # Writes to file based on filePath
     def ExportAsXML(self, filePath, msg):
         if mode == "DEBUG":
-            print "Saving File"
+            print("Saving File")
 
         #########################for testing without catching exceptions###################################
         pretty_xml = self.EHSNToXML() # Collects all info and puts into eTree
 
         if mode == "DEBUG":
-            print pretty_xml
-            print filePath
+            print(pretty_xml)
+            print(filePath)
 
         output = open(filePath, 'wb')
         output.write( pretty_xml.encode('utf-8') )
@@ -643,7 +658,7 @@ class ElectronicHydrometricSurveyNotes:
     # Puts in human readable format
     def EHSNToXML(self):
         if mode == "DEBUG":
-            print "To XML"
+            print("To XML")
 
         #Page 1
         #Create XML Tree structure
@@ -692,6 +707,10 @@ class ElectronicHydrometricSurveyNotes:
         #LevelNotes
         LevelNotes = SubElement(EHSN, 'LevelNotes')
 
+        # Conventional Leveling vs Total Station
+        ConventionalTotal = SubElement(LevelNotes, 'ConventionalTotal')
+        self.ConventionalTotalAsXMLTree(ConventionalTotal)
+
         #Level Checks
         LevelChecks = SubElement(LevelNotes, 'LevelChecks')
         self.LevelChecksAsXMLTree(LevelChecks)
@@ -716,6 +735,10 @@ class ElectronicHydrometricSurveyNotes:
         #Midsection Measurements
         MidsecMeas = SubElement(EHSN, "MidsecMeas", empty="False")
         self.MidsecMeasAsXMLTree(MidsecMeas)
+
+        # Page 6
+        Attachments = SubElement(EHSN, "Attachments")
+        self.AttachmentAsXMLTree(Attachments)
 
         #Imported
         #Midsection
@@ -751,7 +774,7 @@ class ElectronicHydrometricSurveyNotes:
     #Read from external xml files for moving boat
     def OpenMovingBoatMmt(self, filePath):
         if mode == "DEBUG":
-            print "Opening Moving Boat XML"
+            print("Opening Moving Boat XML")
 
         winRiver = ElementTree.parse(filePath).getroot()
         # siteInformation = winRiver.find('Project').find('Site_Information')
@@ -761,7 +784,7 @@ class ElectronicHydrometricSurveyNotes:
     def OpenEHSNMidsection(self, filePath):
 
         if mode == "DEBUG":
-            print "Opening File"
+            print("Opening File")
 
 
         EHSN = ElementTree.parse(filePath).getroot()
@@ -771,10 +794,11 @@ class ElectronicHydrometricSurveyNotes:
 
 
 
+
     #Read xml file and place each val into text fields in eHSN
     def OpenFile(self, filePath):
         if mode == "DEBUG":
-            print "Opening File"
+            print("Opening File")
         
         try:
             EHSN = ElementTree.parse(filePath).getroot()
@@ -842,6 +866,10 @@ class ElectronicHydrometricSurveyNotes:
         # for i in self.midsecMeasurementsManager.gui.table.panelObjs:
         #     i.ToString()
 
+        # Sixth Page
+        Attachments = EHSN.find('Attachments')
+        self.AttachmentFromXML(Attachments)
+
         #Upload Record
 
         self.uploadRecord = EHSN.find('AQ_Upload_Record')
@@ -901,10 +929,10 @@ class ElectronicHydrometricSurveyNotes:
 
 
     def InstrumentDepAsXMLTree(self, InstrumentDeployment):
-        XMLManager.InstrumentDepAsXMLTree(InstrumentDeployment, self.instrDepManager)
+        XMLManager.InstrumentDepAsXMLTree(InstrumentDeployment, self.instrDepManager, self.attachmentManager)
 
     def InstrumentDepFromXML(self, InstrumentDeployment):
-        XMLManager.InstrumentDepFromXML(InstrumentDeployment, self.instrDepManager)
+        XMLManager.InstrumentDepFromXML(InstrumentDeployment, self.instrDepManager, self.attachmentManager)
 
 
     def PartyInfoAsXMLTree(self, PartyInfo):
@@ -913,6 +941,9 @@ class ElectronicHydrometricSurveyNotes:
     def PartyInfoFromXML(self, PartyInfo):
         XMLManager.PartyInfoFromXML(PartyInfo, self.partyInfoManager)
 
+
+    def ConventionalTotalAsXMLTree(self, ConventionalTotal):
+        XMLManager.ConventionalTotalAsXMLTree(ConventionalTotal, self.waterLevelRunManager)
 
     def LevelChecksAsXMLTree(self, LevelChecks):
         XMLManager.LevelChecksAsXMLTree(LevelChecks, self.waterLevelRunManager)
@@ -949,6 +980,15 @@ class ElectronicHydrometricSurveyNotes:
     def MidsecMeasFromXML(self, MidsecMeas):
         XMLManager.MidsecMeasFromXML(MidsecMeas, self.midsecMeasurementsManager)
 
+    # Attachment
+    def AttachmentAsXMLTree(self, Attachment):
+        XMLManager.AttachmentAsXMLTree(Attachment, self.attachmentManager)
+
+    def AttachmentFromXML(self, Attachment):
+        XMLManager.AttachmentFromXML(Attachment, self.attachmentManager)
+
+    # Attachment
+
     def UploadInfoAsXMLTree(self, UploadInfo, uploadInfo):
         XMLManager.UploadInfoAsXMLTree(UploadInfo, uploadInfo)
 
@@ -970,7 +1010,7 @@ class ElectronicHydrometricSurveyNotes:
 
 
     def newEHSN(self):
-        thread.start_new_thread(self.startNewEHSN(), ("new-thread", ))
+        _thread.start_new_thread(self.startNewEHSN(), ("new-thread", ))
     def startNewEHSN(self):
         app = wx.App()
         ElectronicHydrometricSurveyNotes()
@@ -1032,6 +1072,10 @@ class ElectronicHydrometricSurveyNotes:
 
         # update rating curve dropdown in discharge measurements panel
         self.disMeasManager.SetCurveList(self.ratingCurveViewerToolManager.ratingCurveList)
+
+        # Set the index of the rating curve dropdown for the front page (if not already chosen by the user)
+        # to the curve that has a period of applicability that is not closed (if found, 0 by default)
+        self.disMeasManager.currentCurveIndex = self.ratingCurveViewerToolManager.currentCurveIndex
 
         # attempt to calculate
         self.disMeasManager.OnUpdateHGQValues()
@@ -1246,6 +1290,9 @@ class ElectronicHydrometricSurveyNotes:
 
     def GetDateFromQRev(self):
         return IngestQRevManager.GetDate(self.GetQRevDir())
+    
+    def GetQRevVersionFromQRev(self):
+        return IngestQRevManager.GetQRevVersion(self.GetQRevDir())
 
 
 
@@ -1263,6 +1310,19 @@ class ElectronicHydrometricSurveyNotes:
     # def OpenDisFromFlowTracker(self, evt):
     #     IngestFlowTrackerDisManager.OpenDis(self.GetFlowTrackerDir(), self.disMeasManager, self.instrDepManager, evt)
     #     self.gui.disMeas.onTimeChange(evt)
+
+    #Ingest from QRevIntMS *.xml
+    def GetStationIDFromQRevIntMS(self):
+        return IngestQRevIntMSManager.GetStationID(self.GetQRevIntMSDir())
+
+    def GetDateFromQRevIntMS(self):
+        return IngestQRevIntMSManager.GetDate(self.GetQRevIntMSDir())
+    
+    def AddDischargeSummaryFromQRevIntMS(self):
+        IngestQRevIntMSManager.AddDischargeSummary(self.GetQRevIntMSDir(), self.disMeasManager)
+
+    def AddDischargeDetailFromQRevIntMS(self):
+        IngestQRevIntMSManager.AddDischargeDetail(self.GetQRevIntMSDir(), self.instrDepManager)
 
 
     #Ingest from FlowTracker *.dis
@@ -1471,6 +1531,9 @@ class ElectronicHydrometricSurveyNotes:
 
     def GetQRevDir(self):
         return self.gui.qRevDir
+    
+    def GetQRevIntMSDir(self):
+        return self.gui.qRevIntMSDir
 
     def GetFlowTrackerDir(self):
         return self.gui.flowTrackerDir

@@ -19,7 +19,7 @@ class InstrumentDeploymentInfoManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "InstrumentDeploymentInfoControl"
+            print("InstrumentDeploymentInfoControl")
 
 
 
@@ -582,42 +582,42 @@ class InstrumentDeploymentInfoManager(object):
             check = checkList
 
             
-        print "Method: %s" %  check
-        print "Deployment: %s" % self.deploymentCmbo
-        print "Position: %s" % self.positionMethodCtrl
-        print "Instrument: %s" % self.instrumentCmbo
-        print "Serial/Meter Num: %s" % self.serialCmbo
-        print "Gauge1: %s" % self.gaugeCtrl
-        print "Length Radio Box: %s" % self.lengthRadButBox
-        print "Position Radio Box: %s" % self.posRadButBox
+        print("Method: %s" %  check)
+        print("Deployment: %s" % self.deploymentCmbo)
+        print("Position: %s" % self.positionMethodCtrl)
+        print("Instrument: %s" % self.instrumentCmbo)
+        print("Serial/Meter Num: %s" % self.serialCmbo)
+        print("Gauge1: %s" % self.gaugeCtrl)
+        print("Length Radio Box: %s" % self.lengthRadButBox)
+        print("Position Radio Box: %s" % self.posRadButBox)
         # print "Gauge2: %s" % self.gaugeCtrl2
 
-        print "\nMidsection Method"
-        print "Num of Panels: %s" % self.numOfPanelsScroll
-        print "Flow Angle: %s" % self.flowAngleCmbo
-        print "Coefficient: %s" % self.coEffCtrl
-        print "Method: %s" % self.methodCmbo
-        print "Located: %s" % self.metresCtrl
-        print "Metres above: %s" % self.weightCtrl
-        print "Weight Radio Box: %s" % self.weightRadButBox
+        print("\nMidsection Method")
+        print("Num of Panels: %s" % self.numOfPanelsScroll)
+        print("Flow Angle: %s" % self.flowAngleCmbo)
+        print("Coefficient: %s" % self.coEffCtrl)
+        print("Method: %s" % self.methodCmbo)
+        print("Located: %s" % self.metresCtrl)
+        print("Metres above: %s" % self.weightCtrl)
+        print("Weight Radio Box: %s" % self.weightRadButBox)
 
-        print "\nADCP Method"
-        print "Frequency: %s" % self.frequencyCtrl
-        print "Firmware: %s" % self.firmwareCmbo
-        print "Software: %s" % self.softwareCtrl
-        print "Config Combo: %s" % self.configCmbo
-        print "Config Ctrl: %s" % self.configCtrl
-        print "ADCP Set to Clock: %s" % self.adcpSetToClockCB
-        print "Diagnostic Test: %s" % self.diagTestCB
-        print "ADCP Depth: %s" % self.adcpDepthCtrl
-        print "Magnetic Decl: %s" % self.magnDeclCtrl
-        print "Compass Cali: %s" % self.compassCaliCB
-        print "Passed Field Rev: %s" % self.passedFieldRevCB
+        print("\nADCP Method")
+        print("Frequency: %s" % self.frequencyCtrl)
+        print("Firmware: %s" % self.firmwareCmbo)
+        print("Software: %s" % self.softwareCtrl)
+        print("Config Combo: %s" % self.configCmbo)
+        print("Config Ctrl: %s" % self.configCtrl)
+        print("ADCP Set to Clock: %s" % self.adcpSetToClockCB)
+        print("Diagnostic Test: %s" % self.diagTestCB)
+        print("ADCP Depth: %s" % self.adcpDepthCtrl)
+        print("Magnetic Decl: %s" % self.magnDeclCtrl)
+        print("Compass Cali: %s" % self.compassCaliCB)
+        print("Passed Field Rev: %s" % self.passedFieldRevCB)
 
-        print "\nControl"
+        print("\nControl")
         # print "Condition: %s" % self.controlConditionCmbo
-        print "Effect Cat: %s" % self.controlEffCatCmbo
-        print "Effect Sub-Cat: %s" % self.controlEffSubCatCmbo
+        print("Effect Cat: %s" % self.controlEffCatCmbo)
+        print("Effect Sub-Cat: %s" % self.controlEffSubCatCmbo)
         # print "Control Remarks: %s" % self.controlRemarksCtrl
         # print "Discharge Remarks: %s" % self.dischRemarksCtrl
         # print "Stage Remarks: %s" % self.stageRemarksCtrl

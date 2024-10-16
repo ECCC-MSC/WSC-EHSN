@@ -389,7 +389,6 @@
 				</xsl:choose>
 			</td>
 			<th>Review</th>
-			<th>Check</th>
 			<td><b>Review Comments </b>
 				<xsl:value-of select="dependencyType"/>
 				<xsl:text>    -    </xsl:text>
@@ -403,15 +402,6 @@
 				<td align="center" width="60">
 					<xsl:choose>
 						<xsl:when test="reviewed='True'">
-						<font size="4">&#x2714;</font>
-					</xsl:when>
-					<xsl:otherwise>
-						<font size="4">&#x2751;</font>
-						</xsl:otherwise>
-					</xsl:choose>
-				</td>
-				<td align="center" width="60"><xsl:choose>
-						<xsl:when test="checked='True'">
 						<font size="4">&#x2714;</font>
 					</xsl:when>
 					<xsl:otherwise>
@@ -459,7 +449,7 @@
 				<th>Area (m<sup>2</sup>)</th>
 				<th>Mean Velocity (m/s)</th>
 				<th>Corrected MGH (m)</th>
-				<th>Discharge1 (m<sup>3</sup>/s)</th>
+				<th>Discharge (m<sup>3</sup>/s)</th>
 			</tr>
 			<tr>
 				<td align="center"><xsl:value-of select="startTime"/></td>
@@ -1403,18 +1393,6 @@
 			<td class="noborder" style="padding-top:5px; width:350px " align="center">
 					<font size="5">Hydrometric Survey Note </font><font size="2"><xsl:value-of select="../@version"/></font>
 			</td>
-			<td class="noborder" align="right">
-				<H4  style="padding-top:13px" align="right">Data Entered in HWS?
-					<xsl:choose>
-					<xsl:when test="enteredInHWS='True'">
-						<font size="4">&#x2714;</font>
-					</xsl:when>
-					<xsl:otherwise>
-						<font size="4">&#x2751;</font>
-					</xsl:otherwise>
-					</xsl:choose>
-				</H4>
-			</td>
 		</tr>
 	</tbody>
 	</table>
@@ -1676,7 +1654,7 @@
 
 
 			</td>
-			<td class="noborder" style="text-align;vertical-align:bottom"><b>Checked by: </b> <xsl:value-of select="checked"/></td>
+			
 		</tr>
 	</tbody>
 	</table>

@@ -28,7 +28,7 @@ class AQUARIUSDataExtractionToolFrame(wx.Frame):
         self.urlLbl = "Server:"
         self.stnCkboxLbl = "Station Metadata {Station ID, Name, Time Zone} (stations.txt)"
         self.lvlCkboxLbl = "Benchmark/Reference Information {Station ID, Reference, Elevation, Description} (levels.txt)"
-        self.rcCkboxLbl = 'Rating Curves (StationID_ratingcurves.xml)'
+        self.rcCkboxLbl = 'Rating Curves (StationID_ratingcurves.json)'
         self.dataPeriodTxtLbl = "Historical Field Visits (StationID_FieldVisits.csv)"
         self.dataPeriodFromTxtLbl = "From"
         self.dataPeriodToTxtLbl = "To"
@@ -77,7 +77,7 @@ For example:\n\
 
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "AQUARIUS Data Extraction Tool Frame"
+            print("AQUARIUS Data Extraction Tool Frame")
 
         self.layoutSizer = wx.BoxSizer(wx.VERTICAL)
         basePanel = wx.Panel(self)
@@ -276,6 +276,9 @@ For example:\n\
         buttonsSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.ngExportChk = wx.CheckBox(basePanel, label=self.ngExportLabel, style=wx.ALIGN_LEFT)
         self.ngExportChk.SetValue(True)
+        # Hide this checkbox as AQUARIUS NG is now the only method of getting data
+        # So the checkbox will always be set to true
+        self.ngExportChk.Hide()
         self.runButton = wx.Button(basePanel, label=self.runButtonLbl)
         self.runButton.Bind(wx.EVT_BUTTON, self.OnRun)
         self.canButton = wx.Button(basePanel, label=self.canButtonLbl)
@@ -383,13 +386,13 @@ For example:\n\
     #Capitalization for station IDs
     def OnTextTypeStation(self, event):
         insertPoint = self.stationCtrl.GetInsertionPoint()
-        self.stationCtrl.ChangeValue(unicode.upper(self.stationCtrl.GetValue()))
+        self.stationCtrl.ChangeValue(str.upper(self.stationCtrl.GetValue()))
         self.stationCtrl.SetInsertionPoint(insertPoint)
 
     # Run Script
     def OnRun(self, e):
         if self.mode == "DEBUG":
-            print "Run Script"
+            print("Run Script")
         ########################################################################################################
         # try:
         #     self.manager.RunScript(self.path)
@@ -413,12 +416,12 @@ For example:\n\
                     break
                 # except socket.error:
                 except:
-                    print "error detected, reconnecting"
+                    print("error detected, reconnecting")
                     self.manager.RunScript(self.path)
             else:
-                print "disconnected by the server"
-                print "========================================="
-                print socket.error
+                print("disconnected by the server")
+                print("=========================================")
+                print(socket.error)
 
         #######################################################################################################
 
@@ -448,7 +451,7 @@ For example:\n\
                     self.manager.EHSNGui.OpenStationFile(self.manager.EHSNGui.ratingFileDir + '\\stations.txt')
                     self.manager.EHSNGui.savedStationsPath = self.manager.EHSNGui.ratingFileDir + '\\stations.txt'
                 except:
-                    print "error open station file --- OnRun extraction tool frame"
+                    print("error open station file --- OnRun extraction tool frame")
 
             if self.manager.EHSNGui.savedLevelsPath == self.manager.EHSNGui.ratingFileDir + '\\levels.txt':
 
@@ -456,7 +459,7 @@ For example:\n\
                     self.manager.EHSNGui.OpenLevelFile(self.manager.EHSNGui.ratingFileDir + '\\levels.txt')
                     self.manager.EHSNGui.savedLevelsPath = self.manager.EHSNGui.ratingFileDir + '\\levels.txt'
                 except:
-                    print "error open level file --- OnRun extraction tool frame"
+                    print("error open level file --- OnRun extraction tool frame")
         else:
             print("NG")
             for i in range(5):
@@ -466,12 +469,12 @@ For example:\n\
                     break
                 # except socket.error:
                 except:
-                    print "error detected, reconnecting"
+                    print("error detected, reconnecting")
                     self.manager.RunScriptNg(self.path)
             else:
-                print "disconnected by the server"
-                print "========================================="
-                print socket.error
+                print("disconnected by the server")
+                print("=========================================")
+                print(socket.error)
 
             self.manager.EHSNGui.ratingFileDir = self.path
             if self.manager.EHSNGui.savedStationsPath == self.manager.EHSNGui.ratingFileDir + '\\stations.txt':
@@ -480,7 +483,7 @@ For example:\n\
                     self.manager.EHSNGui.OpenStationFile(self.manager.EHSNGui.ratingFileDir + '\\stations.txt')
                     self.manager.EHSNGui.savedStationsPath = self.manager.EHSNGui.ratingFileDir + '\\stations.txt'
                 except:
-                    print "error open station file --- OnRun extraction tool frame"
+                    print("error open station file --- OnRun extraction tool frame")
 
             if self.manager.EHSNGui.savedLevelsPath == self.manager.EHSNGui.ratingFileDir + '\\levels.txt':
 
@@ -488,11 +491,11 @@ For example:\n\
                     self.manager.EHSNGui.OpenLevelFile(self.manager.EHSNGui.ratingFileDir + '\\levels.txt')
                     self.manager.EHSNGui.savedLevelsPath = self.manager.EHSNGui.ratingFileDir + '\\levels.txt'
                 except:
-                    print "error open level file --- OnRun extraction tool frame"
+                    print("error open level file --- OnRun extraction tool frame")
 
     def OnCancel(self, e):
         if self.mode == "DEBUG":
-            print "Cancel"
+            print("Cancel")
         self.EHSNGui.ratingCurveExtraction = None
         self.Destroy()
 
@@ -573,7 +576,7 @@ For example:\n\
         self.dialog.Update(1)
         self.dialog.Destroy()
         self.progressIsOpen = False
-        print 'destroyed'
+        print('destroyed')
 
     def ProgressDialogIsOpen(self):
         return self.progressIsOpen
@@ -620,8 +623,8 @@ For example:\n\
         path = fileOpenDialog.GetPath()
 
         if self.mode == "DEBUG":
-            print "path open"
-            print path
+            print("path open")
+            print(path)
 
         if path != "":
 

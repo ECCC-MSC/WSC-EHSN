@@ -31,16 +31,16 @@ class SubPanelObj():
 
 
     def ToString(self):
-        print "===============Print the object============="
+        print("===============Print the object=============")
 
-        print "panelNum:", self.panelNum
-        print "distance:", self.distance
-        print "width:", self.width
-        print "depth:", self.depth
-        print "pid:", self.pid
+        print("panelNum:", self.panelNum)
+        print("distance:", self.distance)
+        print("width:", self.width)
+        print("depth:", self.depth)
+        print("pid:", self.pid)
 
-        print "corrMeanVelocity:", self.corrMeanVelocity
-        print "============================================="
+        print("corrMeanVelocity:", self.corrMeanVelocity)
+        print("=============================================")
 
 
 

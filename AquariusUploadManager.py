@@ -3,7 +3,7 @@
 from suds.client import Client
 import suds
 import datetime
-import pytz
+#import pytz
 from AquariusMiscUploadDialogs import *
 from suds.xsd.doctor import Import, ImportDoctor
 
@@ -26,13 +26,13 @@ dischargeSensors = {'QR' : 'm^3/s',
                     'RiverSectionWidth' : 'm',
                     'WS' : 'ppt',
                     'SoundVel' : 'm/s',
-                    'TW' : u'\u00B0' + 'C',
+                    'TW' : '\u00B0' + 'C',
                     'WV' : 'm/s',
                     }
 
 stageSensors = {'HG' : 'm'}
 
-environmentSensors = {'TA' : u'\u00B0' + 'C',
+environmentSensors = {'TA' : '\u00B0' + 'C',
                       'PA' : 'kPa',
                       'IO' : 'km',
                       'PN' : 'mm',
@@ -41,13 +41,13 @@ environmentSensors = {'TA' : u'\u00B0' + 'C',
                       'SA' : '%',
                       'SD' : 'cm',
                       'UD' : 'deg',
-                      'TW' : u'\u00B0' + 'C',
+                      'TW' : '\u00B0' + 'C',
                       'US' : 'km/hr'
                       }
 
 stationhealthSensors = {'PA' : 'kPa',
                         'YBL' : 'V',
-                        'InternalTemp' : u'\u00B0' + 'C',
+                        'InternalTemp' : '\u00B0' + 'C',
                         'N2BubbleRate' : 'B./min',
                         'YR' : 'W',
                         'YSS' : 'dBm',
@@ -55,8 +55,8 @@ stationhealthSensors = {'PA' : 'kPa',
                         'YP' : 'psi',
                         'VB' : 'V',
                         'YP2' : 'psi',
-                        'TW' : u'\u00B0' + 'C',
-                        'TA' : u'\u00B0' + 'C',
+                        'TW' : '\u00B0' + 'C',
+                        'TA' : '\u00B0' + 'C',
                         'PC' : 'mm',
                         'SW' : 'cm',
                         'YF' : 'W',
@@ -113,9 +113,9 @@ def AquariusLogin(mode, server, username, password):
 
 
         return True, aq
-    except suds.WebFault, e:
+    except suds.WebFault as e:
         if mode == "DEBUG":
-            print str(e)
+            print(str(e))
         return False, str(e)
 
 
@@ -138,7 +138,7 @@ def AquariusCheckLocInfo(mode, aq, stationNum):
 
 
     if mode == "DEBUG":
-        print locinf
+        print(locinf)
 
     if locinf is not None:
         return True, locid
@@ -151,7 +151,7 @@ def AquariusFieldVisitExistsByDate(mode, aq, locid, fvDate):
     fvDate = datetime.datetime.strptime(str(fvDate), "%Y/%m/%d")
 
     if mode == "DEBUG":
-        print "Checking existance of Field Visit for given date"
+        print("Checking existance of Field Visit for given date")
 
     #Find all field visits based on locid
     fv = aq.service.GetFieldVisitsByLocation(locid)
@@ -165,9 +165,9 @@ def AquariusFieldVisitExistsByDate(mode, aq, locid, fvDate):
     # if fv[0][i].Measurements is not None:
         dt = datetime.datetime.strptime(str(visit.StartDate)[:19], "%Y-%m-%d %H:%M:%S")
         if mode == "DEBUG":
-            print dt
-            print unicode(dt.strftime("%Y/%m/%d"))
-            print fvDate
+            print(dt)
+            print(str(dt.strftime("%Y/%m/%d")))
+            print(fvDate)
 
         if dt.strftime("%Y/%m/%d") == fvDate.strftime("%Y/%m/%d"):
             if visit.Measurements is not None:
@@ -202,26 +202,26 @@ def GetParaIDByFV(discharge):
 # Creates the Field Visit object and sends to AQ
 def ExportToAquarius(mode, ver, EHSN, aq, FIELDVISIT, locid, discharge, levelNote, list, dischargeResult, server):
     if mode == "DEBUG":
-        print "Saving Field Visit in Aquarius"
+        print("Saving Field Visit in Aquarius")
     # try:
 
     visit = CreateFieldVisitObject(mode, ver, aq, locid, EHSN, FIELDVISIT, discharge, levelNote, list, dischargeResult, server)
 
     if mode == "DEBUG":
-        print "before field visit save"
-        print visit
+        print("before field visit save")
+        print(visit)
     try:
         fieldV = aq.service.SaveFieldVisit(visit)
     except Exception as e:
-        print str(e)
+        print(str(e))
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
+        print((exc_type, fname, exc_tb.tb_lineno))
         return -1
 
     if mode == "DEBUG":
-        print fieldV
-        print "after field visit save"
+        print(fieldV)
+        print("after field visit save")
 
     return None
 
@@ -239,7 +239,7 @@ def CreateFieldVisitObject(mode, ver, aq, locid, EHSN, FIELDVISIT, discharge, le
     src = "eHSN %s" % ver
 
     if mode == "DEBUG":
-        print "Creating Field Visit"
+        print("Creating Field Visit")
 
     tz = EHSN.genInfoManager.tzCmbo
 
@@ -336,7 +336,7 @@ def CreateFieldVisitObject(mode, ver, aq, locid, EHSN, FIELDVISIT, discharge, le
     if FIELDVISIT_ID != 0:
         visit.HistoryLog = FIELDVISIT.HistoryLog
         if mode == "DEBUG":
-            print FIELDVISIT.HistoryLog
+            print(FIELDVISIT.HistoryLog)
 
     visit.Measurements = aq.factory.create("ns0:ArrayOfFieldVisitMeasurement")
     visit.Measurements.FieldVisitMeasurement = []
@@ -492,7 +492,7 @@ def CheckFVVals(mode, EHSN):
     for index, sensorRefEntry in enumerate(EHSN.measResultsManager.sensorRefEntries):
 
         # Is this a "valid" measurement result that can be uploaded to Aquarius?
-        if EHSN.measResultsManager.sensorRef.has_key(sensorRefEntry.GetValue().strip()):
+        if sensorRefEntry.GetValue().strip() in EHSN.measResultsManager.sensorRef:
 
             try:
                 if EHSN.measResultsManager.observedVals[index].GetValue() != "":
@@ -533,7 +533,7 @@ def repChar(str):
 # Creates a FIeldVisitMeasurement with type WscFvtPlugin_ActivityTypeDischarge
 def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, isoStart, isoEnd, list, dischargeResult):
     if mode == "DEBUG":
-        print "Creating Discharge Measurements"
+        print("Creating Discharge Measurements")
 
     # Used to replace / modify existing Measurements
     if MEASUREMENT == 0:
@@ -578,7 +578,7 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
         dmeasurement.MeasurementType = "WscFvtPlugin_ActivityTypeDischarge"
         dmeasurement.MeasurementTime = isoStart
         dmeasurement.MeasurementEndTime = isoEnd
-        dmeasurement.LastModified = datetime.datetime(0001, 01, 01)
+        dmeasurement.LastModified = datetime.datetime(0o001, 0o1, 0o1)
 
         # dischargeDetails = CreateDischargeDetails(EHSN)
  
@@ -976,7 +976,7 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
                         aQR = str(aQR)
                         eQR = str(eQR)
 
-                        AUD = AquariusConflictUploadDialog("DEBUG", None, eQR + u" m\N{SUPERSCRIPT THREE}/s", aQR + u" m\N{SUPERSCRIPT THREE}/s", "Discharge", source, None, title="Upload Field Visit to Aquarius")
+                        AUD = AquariusConflictUploadDialog("DEBUG", None, eQR + " m\N{SUPERSCRIPT THREE}/s", aQR + " m\N{SUPERSCRIPT THREE}/s", "Discharge", source, None, title="Upload Field Visit to Aquarius")
 
                         while val:
                             re = AUD.ShowModal()
@@ -1055,7 +1055,7 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
                         aAR = str(aAR)
                         eAR = str(eAR)
 
-                        AUD = AquariusConflictUploadDialog("DEBUG", None, eAR + u" m\N{SUPERSCRIPT TWO}", aAR + u" m\N{SUPERSCRIPT TWO}", "Area", source, None, title="Upload Field Visit to Aquarius")
+                        AUD = AquariusConflictUploadDialog("DEBUG", None, eAR + " m\N{SUPERSCRIPT TWO}", aAR + " m\N{SUPERSCRIPT TWO}", "Area", source, None, title="Upload Field Visit to Aquarius")
 
                         while val:
                             re = AUD.ShowModal()
@@ -1413,7 +1413,7 @@ def CreateDischargeMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInf
 # Creates a FieldVisitMeasurement with type WscFvtPlugin_ActivityTypeStage
 def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, fvStartDate, server):
     if mode == "DEBUG":
-        print "Creating Stage Measurements"
+        print("Creating Stage Measurements")
 
     # # Used to replace / modify existing Measurements
     # if MEASUREMENT == 0:
@@ -1444,7 +1444,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
     smeasurement.MeasurementType = "WscFvtPlugin_ActivityTypeStage"
     smeasurement.MeasurementTime = fvStartDate
     smeasurement.MeasurementEndTime = fvStartDate
-    smeasurement.LastModified = datetime.datetime(0001, 01, 01)
+    smeasurement.LastModified = datetime.datetime(0o001, 0o1, 0o1)
     smeasurement.Remarks = EHSN.stageMeasManager.stageRemarksCtrl
     smeasurement.Remarks += "" if smeasurement.Remarks == "" else "\n"
     smeasurement.Remarks += "" if EHSN.envCondManager.levelsCtrl == "" else "Levels: " + str(EHSN.envCondManager.levelsCtrl)
@@ -1507,7 +1507,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
                 hasData = True
 
             if not hasData:
-                print "Row %d has no data, skipping upload..." % (row + 1)
+                print("Row %d has no data, skipping upload..." % (row + 1))
                 continue
 
             # get time value. Important to do this after checking to see if we have data
@@ -1866,7 +1866,7 @@ def CreateStageMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, f
 # Creates a FieldVisitMeasurement with type WscFvtPlugin_ActivityTypeStationHealth
 def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, fvStartDate):
     if mode == "DEBUG":
-        print "Creating Station Health Measurements"
+        print("Creating Station Health Measurements")
 
     # # Used to replace / modify existing Measurements
     # if MEASUREMENT == 0:
@@ -1894,7 +1894,7 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
     shmeasurement.MeasurementType = "WscFvtPlugin_ActivityTypeStationHealth"
     shmeasurement.MeasurementTime = fvStartDate
     shmeasurement.MeasurementEndTime = fvStartDate
-    shmeasurement.LastModified = datetime.datetime(0001, 01, 01)
+    shmeasurement.LastModified = datetime.datetime(0o001, 0o1, 0o1)
     shmeasurement.Remarks = ""
     shmeasurement.Remarks += EHSN.envCondManager.stationHealthRemarksCtrl
     shmeasurement.Remarks += "\nIntake Flushed @" + EHSN.envCondManager.intakeTimeCtrl if EHSN.envCondManager.intakeCB else ""
@@ -2199,10 +2199,10 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
             startTime=""
 
         #Is this a "valid" measurement result that can be uploaded to Aquarius?
-        if EHSN.measResultsManager.sensorRef.has_key(sensorRefEntry.GetValue().strip()):
+        if sensorRefEntry.GetValue().strip() in EHSN.measResultsManager.sensorRef:
 
             #Is this a discharge measurement?
-            if stationhealthSensors.has_key(EHSN.measResultsManager.sensorRef[sensorRefEntry.GetValue()]):
+            if EHSN.measResultsManager.sensorRef[sensorRefEntry.GetValue()] in stationhealthSensors:
                 ParamID = EHSN.measResultsManager.sensorRef[sensorRefEntry.GetValue()]
        
                 observed = 0.000 if EHSN.measResultsManager.observedVals[index].GetValue() == "" else float(EHSN.measResultsManager.observedVals[index].GetValue())
@@ -2269,7 +2269,7 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
 def CreateEnvironmentConditionsMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, fvStartDate):
 
     if mode == "DEBUG":
-        print "Creating Environment Conditions Measurements"
+        print("Creating Environment Conditions Measurements")
 
     # # Used to replace / modify existing Measurements
     # if MEASUREMENT == 0:
@@ -2298,7 +2298,7 @@ def CreateEnvironmentConditionsMeasurements(mode, src, aq, visit, MEASUREMENT, E
     ecmeasurement.MeasurementType = "WscFvtPlugin_ActivityTypeEnvCondition"
     ecmeasurement.MeasurementTime = fvStartDate
     ecmeasurement.MeasurementEndTime = fvStartDate
-    ecmeasurement.LastModified = datetime.datetime(0001, 01, 01)
+    ecmeasurement.LastModified = datetime.datetime(0o001, 0o1, 0o1)
     ecmeasurement.Remarks = ""
     if EHSN.envCondManager.cloudCoverCmbo != "":
         ecmeasurement.Remarks += "Cloud Cover: " + str(EHSN.envCondManager.cloudCoverCmbo) + "\n"
@@ -2464,7 +2464,7 @@ def GetBM(stationID, aq, server):
     line = []
     for bm in benchmarks:
        
-        bmName = unicode(bm.Name)
+        bmName = str(bm.Name)
     
         if bm.History is not None:
             history = bm.History[0]
@@ -2486,7 +2486,7 @@ def GetBM(stationID, aq, server):
 # Creates a FieldVisitMeasurement with type WscFvtPlugin_ActivityTypeEnvCondition
 def CreateLevelSurveyMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateInfo, server, fvStartDate):
     if mode == "DEBUG":
-        print "Creating Level Survey Measurements"
+        print("Creating Level Survey Measurements")
 
     # # Used to replace / modify existing Measurements
     # if MEASUREMENT == 0:
@@ -2518,7 +2518,7 @@ def CreateLevelSurveyMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateI
     levelSurvey.MeasurementType = "LevelSurvey"
     levelSurvey.MeasurementTime = fvStartDate
     levelSurvey.MeasurementEndTime = fvStartDate
-    levelSurvey.LastModified = datetime.datetime(0001, 01, 01)
+    levelSurvey.LastModified = datetime.datetime(0o001, 0o1, 0o1)
     levelSurvey.Results.FieldVisitResult = []
     levelSurvey.Remarks = EHSN.waterLevelRunManager.commentsCtrl
     bmList = []
@@ -2526,14 +2526,14 @@ def CreateLevelSurveyMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateI
     bms = GetBM(EHSN.genInfoManager.stnNumCmbo, aq, server)
     if bms is not None:
 
-        for index, run in enumerate(EHSN.waterLevelRunManager.runSizer.GetChildren()):
+        for index in range(len((EHSN.waterLevelRunManager.GetCircuitList()))):
             if EHSN.waterLevelRunManager.UploadIsChecked(index):
 
-                for rowIndex, entry in enumerate(EHSN.waterLevelRunManager.GetLevelNotesSizerV(index).GetChildren()):
+                for rowIndex in range(len(EHSN.waterLevelRunManager.GetLevelNotesSizerV(index))):
 
-                    if rowIndex < len(EHSN.waterLevelRunManager.GetLevelNotesSizerV(index).GetChildren()) - 1:
-                        if EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex).GetValue() != '':
-                            bm = EHSN.waterLevelRunManager.GetLevelNotesStation(index, rowIndex).GetValue()
+                    if rowIndex < len(EHSN.waterLevelRunManager.GetLevelNotesSizerV(index)) - 1:
+                        if EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex) != '':
+                            bm = EHSN.waterLevelRunManager.GetLevelNotesStation(index, rowIndex)
                             if "**" in bm:
                                 bm = bm[2:]
                             
@@ -2546,11 +2546,11 @@ def CreateLevelSurveyMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dateI
 
 
                                         levelSurveyResult = aq.factory.create("ns0:FieldVisitResult")
-                                        levelSurveyResult.CorrectedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex).GetValue())
+                                        levelSurveyResult.CorrectedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex))
                                         levelSurveyResult.Correction = 0.0
                                         levelSurveyResult.EndTime = None
                                         levelSurveyResult.MeasurementID = levelSurvey.MeasurementID
-                                        levelSurveyResult.ObservedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex).GetValue())
+                                        levelSurveyResult.ObservedResult = float(EHSN.waterLevelRunManager.GetLevelNotesElevation(index, rowIndex))
                                         levelSurveyResult.ParameterID = "LevelSurveyResult"
                                         levelSurveyResult.BenchmarkOrRefPointName = i
                                         # levelSurveyResult.PercentUncertainty = None

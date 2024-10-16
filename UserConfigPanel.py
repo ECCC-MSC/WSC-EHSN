@@ -35,7 +35,7 @@ class UserConfigPanel(wx.Panel):
 
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "In StationConfigPanel"
+            print("In StationConfigPanel")
 
 
         self.layoutSizerV = wx.BoxSizer(wx.VERTICAL)
@@ -228,7 +228,7 @@ class UserConfigPanel(wx.Panel):
         self.entryColButtonSizer.Add(button, 0, wx.EXPAND)
 
         if self.mode=="DEBUG":
-            print name
+            print(name)
 
 
         #Station Number col
@@ -279,7 +279,7 @@ class UserConfigPanel(wx.Panel):
         button = e.GetEventObject()
         index = int(button.GetName())
         if self.mode=="DEBUG":
-            print "index %s" % index
+            print("index %s" % index)
         
         self.RemoveEntry(index)
         
@@ -293,7 +293,7 @@ class UserConfigPanel(wx.Panel):
     # Reorder the list of entries
     def RemoveEntry(self, index):
         if self.mode=="DEBUG":
-            print "remove %s" % index
+            print("remove %s" % index)
 
         self.entryColButtonSizer.Hide(index)
         self.entryColButtonSizer.Remove(index)
@@ -331,7 +331,7 @@ class UserConfigPanel(wx.Panel):
     #convert to upper case
     def OnTextType(self, event):
         textCtr=event.GetEventObject()
-        textCtr.ChangeValue(unicode.upper(textCtr.GetValue()))
+        textCtr.ChangeValue(str.upper(textCtr.GetValue()))
         textCtr.SetInsertionPointEnd()
 
 
@@ -351,8 +351,8 @@ class UserConfigPanel(wx.Panel):
             path = fileOpenDialog.GetPath()
 
             if self.mode == "DEBUG":
-                print "path open"
-                print path
+                print("path open")
+                print(path)
                 
             if path != "":
           
@@ -402,7 +402,7 @@ class UserConfigPanel(wx.Panel):
             path = fileSaveDialog.GetPath()
             fileName = fileSaveDialog.GetFilename()
             if self.mode == "DEBUG":
-                print path
+                print(path)
             # if path != "":
             #     self.manager.ExportAsXML(path)
             self.stationTitleText.SetLabel(self.stationTitLbl + '\n' + path + '\\' + fileName)

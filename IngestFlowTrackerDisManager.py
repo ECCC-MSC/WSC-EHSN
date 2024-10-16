@@ -38,7 +38,7 @@ def GetStationID(path):
             return data[1][:7]
 
 
-    print "Unable to read the dis file"
+    print("Unable to read the dis file")
     return -1
 
 def GetDate(path):
@@ -101,7 +101,14 @@ def AddDischargeSummary(path, disMeasManager):
         myEvent.SetEventObject(disMeasManager.GetUncertaintyCtrl())
         wx.PostEvent(disMeasManager.GetUncertaintyCtrl(), myEvent)
         disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
-
+    
+        # Adding uncertainty text to Discharge Activity Remarks
+        dischargeUncertainty = '@ Uncertainty: IVE method, 2-sigma value (2 x Uncertainty Value reported in *.dis File). @'
+        dischargeRemarks = disMeasManager.dischRemarksCtrl
+        if dischargeRemarks != '':
+            disMeasManager.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty
+        else:
+            disMeasManager.dischRemarksCtrl = dischargeUncertainty
 
 def AddDischargeDetail(path, instrDepManager):
 
@@ -171,6 +178,7 @@ def GetInstrumentValues(path):
             elif data[0] == "Start_Edge":
                 startEdge = data[1]
             elif data[0] == "#_Stations" and finalData[index-1][0] == "Start_Edge":
+                # Two panels are subtracted as the edges do not need to be considered
                 numberOfPanels = str(int(data[1])-2)
 
             elif "ISO" in data[0] and finalData[index+1][0] == "Overall":
@@ -271,10 +279,6 @@ def ConvertToSerialDate(path):
     return (end-start).days + float((end-start).seconds)/86400
 
 
-def CreateDiscreteMeasurementDetailsXML():
-    imported = Element('Imported')
-    discreteMeasurementDetails = SubElement(imported, 'DiscreteMeasurementDetails')
-    enteredInHWS.text = str(titleHeaderManager.enteredInHWSCB)
 
 
 
@@ -288,9 +292,9 @@ def GetPanelDates(path):
             continue
         if readFromNext:
             res.append(GetDate(path) + "T" + i[1] + ":00")
-    print res
-    print len(res)
-    print "-----PanelDates"
+    print(res)
+    print(len(res))
+    print("-----PanelDates")
     return res
 
 def GetTaglinePositions(path):
@@ -303,9 +307,9 @@ def GetTaglinePositions(path):
             continue
         if readFromNext:
             res.append(i[2])
-    print res
-    print len(res)
-    print "----TaglinePositions"
+    print(res)
+    print(len(res))
+    print("----TaglinePositions")
     return res
 
 # def GetDistanceToShores(path):
@@ -333,9 +337,9 @@ def GetDepths(path):
             continue
         if readFromNext:
             res.append(i[3])
-    print res
-    print len(res)
-    print "----Depths"
+    print(res)
+    print(len(res))
+    print("----Depths")
     return res
 
 
@@ -349,9 +353,9 @@ def GetAreas(path):
             continue
         if readFromNext:
             res.append(i[17])
-    print res
-    print len(res)
-    print "----Areas"
+    print(res)
+    print(len(res))
+    print("----Areas")
     return res
 
 def GetWidths(path):
@@ -371,9 +375,9 @@ def GetWidths(path):
             # else:
             #     widths.append("0")
 
-    print widths
-    print len(widths)
-    print "-----Widths"
+    print(widths)
+    print(len(widths))
+    print("-----Widths")
     return widths
 
 
@@ -388,9 +392,9 @@ def GetAverageVelocities(path):
             continue
         if readFromNext:
             res.append(i[16])
-    print res
-    print len(res)
-    print "-----AverageVelocities"
+    print(res)
+    print(len(res))
+    print("-----AverageVelocities")
     return res
 
 
@@ -404,9 +408,9 @@ def GetDischarges(path):
             continue
         if readFromNext:
             res.append(i[18])
-    print res
-    print len(res)
-    print "------Discharges"
+    print(res)
+    print(len(res))
+    print("------Discharges")
     return res
 
 
@@ -470,9 +474,9 @@ def GetDistanceAboveWeights(path):
             continue
         if readFromNext:
             res.append(i[5])
-    print res
-    print len(res)
-    print "----DistanceAboveWeights"
+    print(res)
+    print(len(res))
+    print("----DistanceAboveWeights")
     return res
 
 
@@ -509,9 +513,9 @@ def GetDepthReadings(path):
     if len(depths) > 0:
         for i in range(len(depths)):
             res.append(str(float(depths[i]) * float(distances[i])))
-    print res
-    print len(res)
-    print "----DepthReadings"
+    print(res)
+    print(len(res))
+    print("----DepthReadings")
     return res
 
 
@@ -525,9 +529,9 @@ def GetVelocities(path):
             continue
         if readFromNext:
             res.append(i[9])
-    print res
-    print len(res)
-    print "----Velocities"
+    print(res)
+    print(len(res))
+    print("----Velocities")
     return res
 
 
@@ -541,9 +545,9 @@ def GetCounts(path):
             continue
         if readFromNext:
             res.append(i[7])
-    print res
-    print len(res)
-    print "----Counts"
+    print(res)
+    print(len(res))
+    print("----Counts")
     return res
 
 def GetIceCovereds(path):
@@ -556,9 +560,9 @@ def GetIceCovereds(path):
             continue
         if readFromNext:
             res.append(i[4])
-    print res
-    print len(res)
-    print "----Ice Covered"
+    print(res)
+    print(len(res))
+    print("----Ice Covered")
     return res
 
 
@@ -597,9 +601,9 @@ def GetMeanSectionWidths(path):
                 meanSectionWidths.append("0")
             else:
                 meanSectionWidths.append(str(abs((float(taglines[i]) - float(taglines[i-1])))))
-    print meanSectionWidths
-    print len(meanSectionWidths)
-    print "----meanSectionWidths"
+    print(meanSectionWidths)
+    print(len(meanSectionWidths))
+    print("----meanSectionWidths")
     return meanSectionWidths
 
 def GetStartTime(path):
@@ -624,7 +628,7 @@ def GetDateSpreadsheetFormat(path, eManager):
     # sec = time[2]
     start = datetime(1899, 12, 30)
     end = datetime(int(yy), int(mm), int(dd), int(hh), int(mi))
-    print (end-start).days + float((end-start).seconds)/86400
+    print((end-start).days + float((end-start).seconds)/86400)
     return str((end-start).days + float((end-start).seconds)/86400)
 
 # def GetDeploymentMethod(path):

@@ -11,7 +11,7 @@ from base64 import b64encode
 from base64 import b64decode
 import datetime
 
-import StringIO
+import io
 import csv
 
 import requests
@@ -23,12 +23,15 @@ import heapq
 from suds.xsd.doctor import Import, ImportDoctor
 from operator import itemgetter
 
+# Aquarius Python Wrapper created by Doug Schmidt
+from timeseries_client import timeseries_client
+from requests.exceptions import HTTPError
 
 
 from xml.etree import ElementTree
 
 try:
-    to_unicode = unicode
+    to_unicode = str
 except NameError:
     to_unicode = str
 
@@ -215,9 +218,6 @@ class AQUARIUSDataExtractionToolManager(object):
         #print "here"
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
-        Server = self.gui.GetURL()
-        #print Server + "<-- Server name"
-        #print Password + " <-- Password"
 
         if Login == "":
             self.gui.CreateErrorDialog("Username field cannot be left blank.  Please use your AQUARIUS username.")
@@ -231,31 +231,33 @@ class AQUARIUSDataExtractionToolManager(object):
             return
 
         # Login
-        s = requests.Session()
-        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
         try:
-            s.get(url)
-            aq = s.post(url, data=data, headers=headers)
-            print aq.status_code
-            token = aq.text
-            if aq.status_code != 200:
+            # Using Aquarius Python Wrapper created by Doug Schmidt
+            aq = timeseries_client('https://wsc.aquaticinformatics.net', Login, Password)
+        except HTTPError as e:
+            if e.response.status_code == 401:
                 result = "The username or the password is incorrect."
                 error = wx.MessageDialog(None, result, 'Error', wx.OK | wx.ICON_ERROR)
                 error.ShowModal()
                 return "The username or the password is incorrect."
-        except:
-            # print "http://" + server + "GetAuthToken?Username=" + username + "&EncryptedPassword=" + password
-            exists = False
-            self.gui.deleteProgressDialog()
-            return "Failed to login."
-            # print exists
-        print "login"
+            else:
+                self.gui.deleteProgressDialog()
+                return "Failed to login."
+        print("login")
 
         if not os.path.exists(path):
             os.makedirs(path)
 
+        # Remove previous error report if it exists
+        if os.path.exists(os.path.join(path, 'ExtractionErrorReport.txt')):
+            os.remove(os.path.join(path, 'ExtractionErrorReport.txt'))
+        
+        # Remove all previously created rating curve json files and field visit csv files
+        extracted_data_files = os.listdir(path)
+        for file in extracted_data_files:
+            if file.endswith(".json") or file.endswith(".csv"):
+                os.remove(os.path.join(path, file))
+        
         # Lists of stations that go wrong per method
         failedStnInfo = []
         failedLvlInfo = []
@@ -269,7 +271,6 @@ class AQUARIUSDataExtractionToolManager(object):
                                           'Collecting data for Station Information (stations.txt)')
 
             res = self.GetStationInfoNg(aq, path, failedStnInfo)
-            self.CheckReturn(res)
             if res == -1 or res == -2:
                 pass
                 self.gui.DeleteProgressDialog()
@@ -293,7 +294,6 @@ class AQUARIUSDataExtractionToolManager(object):
                                               'Collecting data for Levels Information (levels.txt)')
 
             res = self.GetLevelsInfoNg(aq, path, failedLvlInfo)
-            self.CheckReturn(res)
             if res == -1 or res == -2:
                 pass
             elif res != 0:
@@ -314,8 +314,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 self.gui.CreateProgressDialog('Extraction In Progress...',
                                               'Collecting Rating Curve Information (StationID_ratingcurves.xml)')
 
-            res = self.GetRatingInfoNg(path, failedRatingInfo)
-            self.CheckReturn(res)
+            res = self.GetRatingInfoNg(aq, path, failedRatingInfo)
             if res == -1 or res == -2:
                 pass
             elif res != 0:
@@ -340,8 +339,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 numMinMax = self.gui.GetNumOfMinMax()
             else:
                 numMinMax = None
-            res = self.GetFieldVisitNg(path, failedHistMmts, numMinMax)
-            self.CheckReturn(res)
+            res = self.GetFieldVisitNg(aq, path, failedHistMmts, numMinMax)
             if res == -1 or res == -2:
                 pass
             elif res != 0:
@@ -359,7 +357,7 @@ class AQUARIUSDataExtractionToolManager(object):
     def GetStationInfo(self, aq, path, failedStations):
         # SOAP Acquisition API
         # Check Auth
-        print "Get Station Info"
+        print("Get Station Info")
 
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
@@ -410,12 +408,12 @@ class AQUARIUSDataExtractionToolManager(object):
             # print "Sending command: " + command
             r = requests.get(command)
 
-            f = StringIO.StringIO(unicode(r.text).encode("utf8"))
+            f = io.StringIO(str(r.text).encode("utf8"))
             reader = csv.reader(f, delimiter=',')
 
-            reader.next()
+            next(reader)
             locationName = None
-            line = reader.next()
+            line = next(reader)
 
             # print line
             locationName = line[3]
@@ -437,8 +435,8 @@ class AQUARIUSDataExtractionToolManager(object):
 
             offsetVal = None
             if row_count > 1:
-                reader.next()
-                line = reader.next()
+                next(reader)
+                line = next(reader)
 
             #     # if station does not have any Data Sets (like meteorology stations)
             #     if not line:
@@ -467,10 +465,10 @@ class AQUARIUSDataExtractionToolManager(object):
                     fileExists = True
                     exportFile = open(path + '\\stations.txt', 'a+')
                 else:
-                    exportFile = open(path + '\\stations.txt', "wb")
+                    exportFile = open(path + '\\stations.txt', "w")
                 break
             except IOError:
-                print "Could not open file! Please close Excel!"
+                print("Could not open file! Please close Excel!")
 
                 self.gui.DeleteProgressDialog()
                 res = self.gui.CreateTryAgainDialog("Unable to write to file. Please close the file: stations.txt.\nTry again?")
@@ -505,7 +503,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
                         for row in readList:
                             if line[0] == row:
-                                print line[0] + " is in file"
+                                print(line[0] + " is in file")
                                 removeIndices.append(i)
                                 break
 
@@ -523,14 +521,14 @@ class AQUARIUSDataExtractionToolManager(object):
                     stationName = line[1]
                     timezone = line[2]
 
-                    outputLine = stationid + "," + unicode(stationName) + "," + timezone
+                    outputLine = stationid + "," + str(stationName) + "," + timezone
                     writeList.append(outputLine)
 
             exportFile.close()
             exportFile = open(path + '\\stations.txt', 'a+')
             for line in writeList:
                 exportFile.write("\n")
-                exportFile.write(line.encode('utf8'))
+                exportFile.write(line)
 
             exportFile.close()
 
@@ -538,27 +536,11 @@ class AQUARIUSDataExtractionToolManager(object):
 
     def GetStationInfoNg(self, aq, path, failedStations):
 
-        print "Get Station Info"
-
-        Login = self.gui.GetUsername()
-        Password = self.gui.GetPassword()
-        Server = self.gui.GetURL()
+        print("Get Station Info")
 
         authcode = None
 
         stationsList = []
-
-        s = requests.Session()
-        data = '{"Username": "'+Login+'", "EncryptedPassword": "'+Password+'", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
-        try:
-            s.get(url)
-            aq = s.post(url, data = data, headers = headers)
-            MyAuthCode = aq.text
-        except:
-            self.gui.CreateErrorDialog("User Login Failed, please use your AQUARIUS username and password.")
-            return -1
 
         # For each station in the stationlist
         locations = self.GetStationList()
@@ -567,12 +549,16 @@ class AQUARIUSDataExtractionToolManager(object):
         writeList = []
         for station in locations:
             # Check if real station
-            locid1 = requests.get(Server + "GetLocationData?Token=" + MyAuthCode + "&LocationIdentifier=" + station)
-            locid = locid1.json()
-            # print locid
-
-            if 'ResponseStatus' in locid:
-                print locid['ResponseStatus']['Message']
+            try:
+                parameters = {'LocationIdentifier': station}
+                locid = aq.publish.get('/GetLocationData', params=parameters)
+                # print locid
+    
+                if 'ResponseStatus' in locid:
+                    print(locid['ResponseStatus']['Message'])
+                    failedStations.append(station)
+                    continue
+            except:
                 failedStations.append(station)
                 continue
 
@@ -601,15 +587,10 @@ class AQUARIUSDataExtractionToolManager(object):
         exportFile = None
         while True:
             try:
-                if os.path.isfile(path + '\\stations.txt'):
-                    fileExists = True
-
-                    exportFile = open(path + '\\stations.txt', 'a+')
-                else:
-                    exportFile = open(path + '\\stations.txt', "wb")
+                exportFile = open(path + '\\stations.txt', "w")
                 break
             except IOError:
-                print "Could not open file! Please close Excel!"
+                print("Could not open file! Please close Excel!")
 
                 self.gui.DeleteProgressDialog()
                 res = self.gui.CreateTryAgainDialog(
@@ -622,47 +603,11 @@ class AQUARIUSDataExtractionToolManager(object):
                     return
 
         if exportFile is not None:
-            if not fileExists:
-                exportFile.write("STATION ID,STATION NAME,TIMEZONE")
-
-            else:
-                readList = []
-
-                with open(path + '\\stations.txt', 'a+') as f:
-                    reader = csv.reader(f, delimiter=",")
-                    for i, line in enumerate(reader):
-                        if i > 0:
-                            readList.append(line[0])
-
-                # print "-----------------"
-                # for j in readList:
-                #     print j
-                # print "-----------------"
-
-                removeIndices = []
-
-                for i in range(len(writeList)):
-
-                    if len(writeList[i]) > 2:
-
-                        for row in readList:
-                            if writeList[i][0] == row:
-                                print writeList[i][0] + " is in file"
-                                removeIndices.append(i)
-                                break
-
-                        # exportFile.seek(0)
-                        # reader = csv.reader(exportFile, delimiter=',')
-
-                removeIndices.reverse()
-                for i in removeIndices:
-                    writeList.remove(writeList[i])
-            exportFile.close()
-            exportFile = open(path + '\\stations.txt', 'a+')
+            exportFile.write("STATION ID,STATION NAME,TIMEZONE")
             for line in writeList:
                 exportFile.write("\n")
                 lineData = line[0] + ',' + line[1] + ',' + line[2]
-                exportFile.write(lineData.encode('utf8'))
+                exportFile.write(lineData)
 
             exportFile.close()
 
@@ -677,7 +622,7 @@ class AQUARIUSDataExtractionToolManager(object):
             for cell in row:
                 if isinstance(cell, str):
                     cell = cell.decode('utf8')
-                row_data.append(unicode(cell))
+                row_data.append(str(cell))
 
             yield row_data
 
@@ -687,7 +632,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
 
     def GetLevelsInfo(self, aq, path, failedStations):
-        print "Level Info Checked"
+        print("Level Info Checked")
 
         Login = self.gui.GetUsername()
         Password = self.gui.GetPassword()
@@ -705,7 +650,7 @@ class AQUARIUSDataExtractionToolManager(object):
             # aq2 = Client(Server + '/AQUARIUS/AquariusDataService.svc?wsdl')
             aq2 = Client(Server + '/AQUARIUS/AquariusDataService.svc?wsdl', doctor=doctor)
         except:
-            print "Client(Server + '/AQUARIUS/AquariusDataService.svc?wsdl', doctor=doctor)"
+            print("Client(Server + '/AQUARIUS/AquariusDataService.svc?wsdl', doctor=doctor)")
             return
 
         # for each station
@@ -738,11 +683,11 @@ class AQUARIUSDataExtractionToolManager(object):
                 line = []
                 addedBM = False
 
-                bmName = unicode(bm.Name)
+                bmName = str(bm.Name)
                 desc = bm.LongName
                 if isinstance(desc, str):
                     desc = desc.decode('utf8')
-                desc = unicode(desc)
+                desc = str(desc)
                 latestBM = None
                 if bm.History is not None:
                     history = bm.History[0]
@@ -795,7 +740,7 @@ class AQUARIUSDataExtractionToolManager(object):
                     exportFile = open(path + '\\levels.txt', "wb")
                 break
             except IOError:
-                print "Could not open file! Please close Excel!"
+                print("Could not open file! Please close Excel!")
                 self.gui.DeleteProgressDialog()
                 res = self.gui.CreateTryAgainDialog("Unable to write to file. Please close the file: levels.txt.\nTry again?")
                 if res == 0:
@@ -870,7 +815,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 desc = bm[3]
                 desc = desc.replace("\"", "\"\"")
 
-                outputLine = unicode(stationid) + "," + unicode(reference) + "," + unicode(elevation) + ",\"" + unicode(desc) + "\""
+                outputLine = str(stationid) + "," + str(reference) + "," + str(elevation) + ",\"" + str(desc) + "\""
                 writeList.append(outputLine)
                 # print stationid + ", " + reference + ", " + elevation + ", " + desc
 
@@ -879,44 +824,29 @@ class AQUARIUSDataExtractionToolManager(object):
             for line in writeList:
                 # print line.encode("utf8")
                 line += '\n'
-                exportFile.write(line.encode('utf8'))
+                exportFile.write(line)
 
             exportFile.close()
 
         return 0
 
     def GetLevelsInfoNg(self, aq, path, failedStations):
-        print "Level Info Checked"
-
-        Login = self.gui.GetUsername()
-        Password = self.gui.GetPassword()
-        Server = self.gui.GetURL()
+        print("Level Info Checked")
 
         totalBenchmarkList = []
         extractedBenchmarkList = []
         inactiveBMList = []
 
-        # Login
-        s = requests.Session()
-        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
-        try:
-            s.get(url)
-            aq = s.post(url, data=data, headers=headers)
-            token = aq.text
-        except:
-            return -1
-
         # for each station
         locations = self.GetStationList()
         for station in locations:
             try:
-                req = requests.get(Server + "GetLocationData?LocationIdentifier=" + station + "&token=" + token)
+                parameters = {'LocationIdentifier': station}
+                req = aq.publish.get('/GetLocationData', params=parameters)
+                staInfo = req['ReferencePoints']
             except:
                 failedStations.append(station)
-                return -1
-            staInfo = req.json()['ReferencePoints']
+                continue
             # print staInfo
             for benchMark in staInfo:
                 benchMarkInfo = []
@@ -943,7 +873,13 @@ class AQUARIUSDataExtractionToolManager(object):
 
                         try:
                             refPoint = benchMark['ReferencePointPeriods']
+                            # Get the most recent reference point elevation
                             staElevation = refPoint[len(refPoint) - 1]['Elevation']
+                            # If the elevation has a precision of more than 5 decimal places
+                            # then it should be rounded to 3 decimal places
+                            if "." in str(staElevation):
+                                if len(str(staElevation).split(".")[1]) > 5:
+                                    staElevation = round(staElevation, 3)
                         except:
                             refPoint = ''
                             print("The elevation is empty.")
@@ -978,7 +914,7 @@ class AQUARIUSDataExtractionToolManager(object):
                     exportFile = open(path + '\\levels.txt', "wb")
                 break
             except IOError:
-                print "Could not open file! Please close Excel!"
+                print("Could not open file! Please close Excel!")
                 self.gui.DeleteProgressDialog()
                 res = self.gui.CreateTryAgainDialog(
                     "Unable to write to file. Please close the file: levels.txt.\nTry again?")
@@ -1038,15 +974,14 @@ class AQUARIUSDataExtractionToolManager(object):
                 exportFile.write("\n")
                 lineData = line[0] + ',' + line[1] + ',' + line[2] + ',' + line[3]
                 # print lineData
-                exportFile.write(lineData.encode('utf8'))
-
+                exportFile.write(lineData)
             exportFile.close()
 
         return 0
 
     def GetRatingInfo(self, path, failedStations):
         if self.mode == "DEBUG":
-            print "Manager Run Script"
+            print("Manager Run Script")
 
         FNULL = open(os.devnull, 'w')    #use this if you want to suppress output to stdout from the subprocess
         stationList = self.GetStationList()
@@ -1066,7 +1001,7 @@ class AQUARIUSDataExtractionToolManager(object):
             arg = base_arg + " /station:" + station + " /url:" + "\"" + url + "\""
 
             if self.mode == "DEBUG":
-                print arg
+                print(arg)
 
             CREATE_NO_WINDOW = 0x08000000
             re = subprocess.call(arg, creationflags=CREATE_NO_WINDOW)
@@ -1083,46 +1018,35 @@ class AQUARIUSDataExtractionToolManager(object):
 
         return 0
 
-    def GetRatingInfoNg(self, path, failedStations):
+    def GetRatingInfoNg(self, aq, path, failedStations):
         if self.mode == "DEBUG":
-            print "Manager Run Script"
+            print("Manager Run Script")
 
         stationList = self.GetStationList()
-        Server = self.gui.GetURL()
         path = self.gui.GetPath()
-        Login = self.gui.GetUsername()
-        Password = self.gui.GetPassword()
 
-        # Login
-        s = requests.Session()
-        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
-        try:
-            s.get(url)
-            aq = s.post(url, data=data, headers=headers)
-            token = aq.text
-        except:
-            return -1
 
         for station in stationList:
             # Get rating curve Id
             try:
-                req = requests.get(
-                    Server + "GetRatingModelDescriptionList?LocationIdentifier=" + station + "&token=" + token)
-                ratingCurveId = req.json()['RatingModelDescriptions'][0]['Identifier']
+                parameters = {'LocationIdentifier': station}
+                req = aq.publish.get('/GetRatingModelDescriptionList', params=parameters)
+                for desc in req['RatingModelDescriptions']:
+                    if desc['Identifier'][0:29] == "Stage-Discharge.Rating Curve@":
+                        ratingCurveId = desc['Identifier']
+                        break
             except:
                 failedStations.append(station)
                 continue
 
             # Get rating curve data
             try:
-                req = requests.get(
-                    Server + "GetRatingCurveList?RatingModelIdentifier=" + ratingCurveId + "&token=" + token)
+                parameters = {'RatingModelIdentifier': ratingCurveId}
+                req = aq.publish.get('/GetRatingCurveList', params=parameters)
             except:
                 failedStations.append(station)
                 continue
-            ratingCurveData = req.json()
+            ratingCurveData = req
 
             with io.open(path + '\\' + station + "_ratingcurves.json", 'w', encoding='utf8') as outfile:
                 str_ = json.dumps(ratingCurveData, indent=4, sort_keys=True, separators=(',', ': '), ensure_ascii=False)
@@ -1174,11 +1098,11 @@ class AQUARIUSDataExtractionToolManager(object):
             try:
                 endDatetime = datetime.datetime.strptime(end, "%d/%m/%Y %H:%M:%S")
             except ValueError as e:
-                print e
+                print(e)
                 try:
                     endDatetime = datetime.datetime.strptime(end, "%m/%d/%Y %H:%M:%S")
                 except ValueError as e:
-                    print e
+                    print(e)
                     endDatetime = datetime.datetime.strptime(end, "%m/%d/%y %H:%M:%S")
 
             # print endDatetime
@@ -1189,7 +1113,7 @@ class AQUARIUSDataExtractionToolManager(object):
                 try:
                     fv=aq.service.GetFieldVisitsByLocation(locid)
                 except:
-                    print "no fv in the location", locid
+                    print("no fv in the location", locid)
                     continue
             else:
                 minMaxList = None
@@ -1216,7 +1140,7 @@ class AQUARIUSDataExtractionToolManager(object):
                                     for fvr in mea.Results.FieldVisitResult:
                                         if fvr.ParameterID == 'HG':
                                             if fvr.StartTime == None:
-                                                print fvr
+                                                print(fvr)
                                             if fvr.ResultType == 1 or fvr.ResultType == 2147483647 or fvr.ResultType == None:
                                             # if fvr.ResultType == 1:
 
@@ -1229,7 +1153,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
                                         elif fvr.ParameterID == 'QR':
                                             if fvr.StartTime == None:
-                                                print fvr
+                                                print(fvr)
                                             if fvr.ResultType == 1  or fvr.ResultType == 2147483647 or fvr.ResultType == None:
                                             # if fvr.ResultType == 1 or fvr.ResultType == 2147483647:
 
@@ -1327,14 +1251,14 @@ class AQUARIUSDataExtractionToolManager(object):
                 while True:
                     try:
                         outputfile = open(path + '\\' + location + "_FieldVisits.csv","wb")
-                        outputfile.write('Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n')
+                        outputfile.write('Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n'.encode("utf8"))
                         for m in table:
                             for n in m:
-                                outputfile.write(n)
+                                outputfile.write(n.encode("utf8"))
                         outputfile.close()
                         break
                     except IOError:
-                        print "Could not open file! Please close Excel!"
+                        print("Could not open file! Please close Excel!")
 
                         self.gui.DeleteProgressDialog()
                         res = self.gui.CreateTryAgainDialog("Unable to write to file. Please close the file: " + location + "_FieldVisits.csv.\nTry again?")
@@ -1350,23 +1274,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
         return 0
 
-    def GetFieldVisitNg(self, path, failedStations, numMinMax):
-
-        Server = self.gui.GetURL()
-        Login = self.gui.GetUsername()
-        Password = self.gui.GetPassword()
-
-        # Login
-        s = requests.Session()
-        data = '{"Username": "' + Login + '", "EncryptedPassword": "' + Password + '", "Locale": ""}'
-        headers = {'Content-Type': 'application/json', 'Accept': 'application/json'}
-        url = 'https://wsc.aquaticinformatics.net/AQUARIUS/Provisioning/v1/session'
-        try:
-            s.get(url)
-            aq = s.post(url, data=data, headers=headers)
-            token = aq.text
-        except:
-            return -1
+    def GetFieldVisitNg(self, aq, path, failedStations, numMinMax):
 
         locations = self.GetStationList()
         timeFrom = str(self.gui.GetDataPeriodFrom()).replace("/", "-")
@@ -1384,8 +1292,9 @@ class AQUARIUSDataExtractionToolManager(object):
         for location in locations:
             dataEmpty = True
             try:
-                req = requests.get(Server + 'GetFieldVisitDataByLocation?LocationIdentifier=' + location + '&token=' + token)
-                fieldDescriptions = req.json()['FieldVisitData']
+                parameters = {'LocationIdentifier': location}
+                req = aq.publish.get('/GetFieldVisitDataByLocation', params=parameters)
+                fieldDescriptions = req['FieldVisitData']
             except:
                 failedStations.append(location)
                 continue
@@ -1557,14 +1466,14 @@ class AQUARIUSDataExtractionToolManager(object):
                     try:
                         outputfile = open(path + '\\' + location + "_FieldVisits.csv", "wb")
                         outputfile.write(
-                            'Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n')
+                            'Date/Time, Stage|m, Discharge|m^3/s, Width|m, Area|m^2, Velocity|m/s, Remarks\n'.encode("utf8"))
                         for m in fieldVisitInfoList:
                             for n in m:
-                                outputfile.write(n)
+                                outputfile.write(n.encode("utf8"))
                         outputfile.close()
                         break
                     except IOError:
-                        print "Could not open file! Please close Excel!"
+                        print("Could not open file! Please close Excel!")
 
                         self.gui.DeleteProgressDialog()
                         res = self.gui.CreateTryAgainDialog(
@@ -1598,7 +1507,7 @@ class AQUARIUSDataExtractionToolManager(object):
 
     def ReportOnFailedStations(self, failedStnInfo, failedLvlInfo, failedRatingInfo, failedHistMmts, path):
         # report on which stations failed
-        report = "Oh dear, some data was not successfully extracted:\n"
+        report = "Data extraction failed for the following:\n"
         stationTab = "          "
         stations = self.GetStationList()
         failedStations = set()
@@ -1607,8 +1516,8 @@ class AQUARIUSDataExtractionToolManager(object):
 
         if len(failedStnInfo) > 0:
             failed = True
-            print "Locations that failed while getting station info:"
-            print failedStnInfo
+            print("Locations that failed while getting station info:")
+            print(failedStnInfo)
 
             report += "  1. Station metadata (stations.txt):\n" + stationTab
             for i, station in enumerate(failedStnInfo):
@@ -1622,8 +1531,8 @@ class AQUARIUSDataExtractionToolManager(object):
 
         if len(failedLvlInfo) > 0:
             failed = True
-            print "Locations that failed while getting levelling info:"
-            print failedLvlInfo
+            print("Locations that failed while getting levelling info:")
+            print(failedLvlInfo)
 
             report += "  2. Benchmark/Reference Information (levels.txt):\n" + stationTab
             for i, station in enumerate(failedLvlInfo):
@@ -1637,8 +1546,8 @@ class AQUARIUSDataExtractionToolManager(object):
 
         if len(failedRatingInfo) > 0:
             failed = True
-            print "Locations that failed while getting rating info:"
-            print failedRatingInfo
+            print("Locations that failed while getting rating info:")
+            print(failedRatingInfo)
 
             report += "  3. Rating Curves (StationID_ratingcurves.xml):\n" + stationTab
             for i, station in enumerate(failedRatingInfo):
@@ -1652,8 +1561,8 @@ class AQUARIUSDataExtractionToolManager(object):
 
         if len(failedHistMmts) > 0:
             failed = True
-            print "Locations that failed while getting historical mmts:"
-            print failedHistMmts
+            print("Locations that failed while getting historical mmts:")
+            print(failedHistMmts)
 
             report += "  4. Historical Field Visits (StationID_FieldVisits.csv):\n" + stationTab
             for i, station in enumerate(failedHistMmts):
@@ -1684,11 +1593,11 @@ class AQUARIUSDataExtractionToolManager(object):
 
 
             with open(path + "\\ExtractionErrorReport.txt","wb") as errorFile:
-                errorFile.write(report)
+                errorFile.write(report.encode("utf8"))
 
             return -1
         else:
-            self.gui.CreateMessageDialog("Success! All data successfully extracted for all stations! The files are saved to " + path, "AQUARIUS Extraction Summary")
+            self.gui.CreateMessageDialog("All data successfully extracted for all stations! The files are saved to " + path, "AQUARIUS Extraction Summary")
             return 0
 
 
@@ -1697,10 +1606,10 @@ class AQUARIUSDataExtractionToolManager(object):
         end = str(end)
 
         if end == "None":
-            print "end is none"
+            print("end is none")
             return start
         elif start == "None":
-            print "start is none"
+            print("start is none")
             return end
         hour = int(start[11:13])
         minute = int(start[14:16])

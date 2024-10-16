@@ -16,7 +16,7 @@ class AnnualLevellingManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "AnnualLevellingControl"
+            print("AnnualLevellingControl")
 
 
     @property
@@ -87,14 +87,14 @@ class AnnualLevellingManager(object):
 
     #Table Row info
     def OnEnter(self, row):
-        print "\n%s" % row
-        print "Station: %s" % self.GetTableValue(int(row), 0)
-        print "Backsight: %s" % self.GetTableValue(int(row), 1)
-        print "Height of Instr: %s" % self.GetTableValue(int(row), 2)
-        print "Foresight: %s" % self.GetTableValue(int(row), 3)
-        print "Elevation: %s" % self.GetTableValue(int(row), 4)
-        print "Phys Desc: %s" % self.GetTableValue(int(row), 5)
-        print "Comments: %s" % self.GetTableValue(int(row), 6)
+        print("\n%s" % row)
+        print("Station: %s" % self.GetTableValue(int(row), 0))
+        print("Backsight: %s" % self.GetTableValue(int(row), 1))
+        print("Height of Instr: %s" % self.GetTableValue(int(row), 2))
+        print("Foresight: %s" % self.GetTableValue(int(row), 3))
+        print("Elevation: %s" % self.GetTableValue(int(row), 4))
+        print("Phys Desc: %s" % self.GetTableValue(int(row), 5))
+        print("Comments: %s" % self.GetTableValue(int(row), 6))
 
     
     #On Enter in text field, set specified cell

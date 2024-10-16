@@ -5,17 +5,22 @@ All works in this repository have been curated by ECCC and licensed under the GN
 
 # ENVIRONMENT
 
-Python 2.7.14
+Python 3.8.2
 
 Packages:  
-wxpython (this is the pheonix version)  
-matplotlib  
-requests  
-qrcode  
-lxml  
-html2pdf (version 0.0.6)  
+wxPython (Phoenix, version 4.0.7)  
+matplotlib (version 3.5.1)  
+requests (version 2.27.1)  
+qrcode (version 7.3.1)  
+lxml (version 4.7.1)  
 suds-jurko (version 0.6)  
-html5lib (version 1.0b8)  
+XlsxWriter (version 3.0.2)  
+pywin32 (version 303)  
+xhtml2pdf (version 0.2.5)  
+
+See requirements.txt for full package list.  
+Note: An older version of wxPython (4.0.7) is required as later versions cause an error related to unknown locales.  
+Note: The pytz and pyRFC3339 packages are also required to properly use the Aquarius Python Wrapper created by Doug Schmidt.  
 
 # EXCLUDED FILES
 
@@ -33,16 +38,14 @@ Once the environment is created, the file 1_ElectronicFieldNotes.py runs the pro
 
 We use pyinstaller but of course you can use whatever you like.
 
-If using pyinstaller, navigate to your local clone of WSC-EHSN and use the command:   
-pyinstaller 1_ElectronicFieldNotes.py  
+If using pyinstaller to create a testing exe, navigate to your local clone of WSC-EHSN and use the command:   
+pyinstaller create_ehsn_exe.spec  
 
-Move the image files:  
-"downarrow.png"  
-"backarrow.png"  
-"icon_transparent.ico"   
-into the "1_ElectronicFieldNotes" folder (found in the newly created "dist" folder)
+This will create a single executable in the "dist" folder called WSC_eHSN_Python_test.exe with all required files included.  
+If your virtual environment where the packages are installed is not called 'env', then you must modify the pathex variable in create_ehsn_exe.spec.  
+You will have to copy the Aquarius Python Wrapper code (timeseries_client.py) created by Doug Schmidt into your local clone of WSC-EHSN as well.  
 
-You can now run the program using 1_ElectronicFieldNotes.exe
+
 # MANUAL
 
 User manual is available upon request.

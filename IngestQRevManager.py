@@ -1,3 +1,4 @@
+import math
 from xml.etree import ElementTree
 import wx
 
@@ -13,7 +14,7 @@ def GetStationID(filePath):
         stationID = channel.find('SiteInformation').find('SiteID').text
         return stationID
     except:
-        print "Unable to read the xml file"
+        print("Unable to read the xml file")
         return -1
 
 
@@ -27,6 +28,10 @@ def GetDate(filePath):
     dt = date[6:10] + "/" + date[:5]
 
     return dt
+
+def GetQRevVersion(filePath):
+    QRevVer = GetRoot(filePath).attrib['QRevVersion']
+    return float(QRevVer[(len(QRevVer) - 5):])
 
 #Summary
 def GetStartTime(filePath):
@@ -54,6 +59,7 @@ def GetUncertainty(filePath):
 def GetMBCorrection(filePath):
     return GetRoot(filePath).find('ChannelSummary').find('Discharge').find('MovingBedPercentCorrection').text
 
+# Does NOT work with xml files as of QRev Version 4.3.4 (Verification Temperature field does not exist)
 def GetWaterTemp(filePath):
     return GetRoot(filePath).find('QA').find('TemperatureCheck').find('VerificationTemperature').text
 
@@ -137,11 +143,16 @@ def GetExponent(filePath):
     return GetRoot(filePath).find('Processing').find('Extrapolation').find('Exponent').text
 
 def GetSDM(filePath):
-    return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('COV').text
+    if GetQRevVersion(filePath) >= 4.30: #this is for backwards compatability - transitioning to QRev 4.3.0, the file structure is different, and obtaining this field is different
+        return GetRoot(filePath).find('ChannelSummary').find('QRevUAUncertainty').find('COV').text
+    else:
+        return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('COV').text
 
 def GetExtraUncer(filePath):
-    return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('Extrapolation').text
-
+    if GetQRevVersion(filePath) >= 4.30: #this is for backwards compatability - transitioning to QRev 4.3.0, the file structure is different, and obtaining this field is different
+        return GetRoot(filePath).find('ChannelSummary').find('QRevUAUncertainty').find('Extrapolation').text
+    else:
+        return GetRoot(filePath).find('ChannelSummary').find('Uncertainty').find('Extrapolation').text
 
 
 def GetAllTransects(filePath):
@@ -274,6 +285,9 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
     exponent = GetExponent(filePath)
     sdm = GetSDM(filePath)
     extrap = GetExtraUncer(filePath)
+    mbCorrection = GetMBCorrection(filePath)
+    dis = GetDischarge(filePath)
+
     # print "extrap {0}".format(extrap)
 
     allTransects = GetAllTransects(filePath)
@@ -307,11 +321,18 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
 
         movingBoatManager.SetTableValue(row, 4, tran[2])
 
-        movingBoatManager.SetTableValue(row, 6, tran[3])
-        movingBoatManager.SetTableColor(row, 6, color)
+        if tran[1][0] == "L":
+            movingBoatManager.SetTableValue(row, 6, tran[3])
+            movingBoatManager.SetTableColor(row, 6, color)
 
-        movingBoatManager.SetTableValue(row, 7, tran[4])
-        movingBoatManager.SetTableColor(row, 7, color)
+            movingBoatManager.SetTableValue(row, 7, tran[4])
+            movingBoatManager.SetTableColor(row, 7, color)
+        else:
+            movingBoatManager.SetTableValue(row, 6, tran[4])
+            movingBoatManager.SetTableColor(row, 6, color)
+
+            movingBoatManager.SetTableValue(row, 7, tran[3])
+            movingBoatManager.SetTableColor(row, 7, color)
 
         movingBoatManager.SetTableValue(row, 8, tran[5])
         movingBoatManager.SetTableColor(row, 8, color)
@@ -399,7 +420,12 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
     if extrap is not None:
         movingBoatManager.extrapUncerCtrl = extrap
         movingBoatManager.GetExtrapUncerCtrl().SetBackgroundColour(color)
-
+    if mbCorrection is not None:
+        movingBoatManager.mbCorrAppCtrl = mbCorrection
+        movingBoatManager.GetMbCorrAppCtrl().SetBackgroundColour(color)
+    if dis is not None:
+        movingBoatManager.finalDischCtrl = dis
+        movingBoatManager.GetFinalDischCtrl().SetBackgroundColour(color)
 
 
 
@@ -424,7 +450,7 @@ def AddMovingBoat(filePath, movingBoatManager, evt):
     # print movingBoatManager.GetCommentsCtrl().GetValue()
 
     if movingBoatManager.commentsCtrl != "":
-        print "not empty comments"
+        print("not empty comments")
         movingBoatManager.commentsCtrl += "\n"
     movingBoatManager.commentsCtrl += 'Moving Bed Test Message: ' +  message + '\n\n' if message is not None else ""
     movingBoatManager.commentsCtrl += 'QRev Message: ' +  qRevMessage + '\n\n' if qRevMessage is not None else ''
@@ -441,6 +467,7 @@ def AddDischargeSummary(filePath, disMeasManager):
     area = GetArea(filePath)
     vel = GetVelocity(filePath)
     dis = GetDischarge(filePath)
+
     uncert = str(round(float(GetUncertainty(filePath)), 2))
     # water = GetWaterTemp(filePath)
     mbCorrection = GetMBCorrection(filePath)
@@ -485,8 +512,14 @@ def AddDischargeSummary(filePath, disMeasManager):
         myEvent.SetEventObject(disMeasManager.GetUncertaintyCtrl())
         wx.PostEvent(disMeasManager.GetUncertaintyCtrl(), myEvent)
         disMeasManager.GetUncertaintyCtrl().SetBackgroundColour(color)
-
-
+    
+        # Adding uncertainty text to Discharge Activity Remarks
+        dischargeUncertainty = '@ Uncertainty: QRev Uncertainty Analysis (DS Mueller, 2016), 2-sigma value (1 x Uncertainty Value reported in *.xml File). @'
+        dischargeRemarks = disMeasManager.dischRemarksCtrl
+        if dischargeRemarks != '':
+            disMeasManager.dischRemarksCtrl = dischargeRemarks + '\n' + dischargeUncertainty
+        else:
+            disMeasManager.dischRemarksCtrl = dischargeUncertainty
 
     # if water is not None:
     #     disMeasManager.waterTempCtrl = water
@@ -550,8 +583,11 @@ def AddDischargeDetail(filePath, instrDepManager):
             if "m" in freUnit.lower():
                 # frequency = str(float(frequency) * 1000)
                 frequency += "000"
-        instrDepManager.frequencyCmbo = frequency
-        instrDepManager.GetFrequencyCmbo().SetBackgroundColour(color)
+        try:
+            instrDepManager.frequencyCmbo = str(math.trunc(float(frequency)))
+            instrDepManager.GetFrequencyCmbo().SetBackgroundColour(color)
+        except:
+            print("Frequency in QRev File is NOT a number, value: ", frequency)
     if firmware is not None:
         instrDepManager.firmwareCmbo = firmware
         instrDepManager.GetFirmwareCmbo().SetBackgroundColour(color)

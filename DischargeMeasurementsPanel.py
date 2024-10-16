@@ -5,6 +5,7 @@ import wx
 import wx.lib.masked as masked
 import NumberControl
 from DropdownTime import *
+import math
 
 
 from wx import ComboPopup
@@ -128,14 +129,14 @@ class DischargeMeasurementsPanel(wx.Panel):
 
         self.startTimeLbl = "Start Time"
         self.endTimeLbl = "End Time"
-        self.airTempLbl = u"Air Temp. \n(\N{DEGREE SIGN}C)"
-        self.waterTempLbl = u"Water Temp. \n(\N{DEGREE SIGN}C)"
+        self.airTempLbl = "Air Temp. \n(\N{DEGREE SIGN}C)"
+        self.waterTempLbl = "Water Temp. \n(\N{DEGREE SIGN}C)"
         self.widthLbl = "Width\n(m)"
-        self.areaLbl = u"Area\n(m\N{SUPERSCRIPT TWO})"
+        self.areaLbl = "Area\n(m\N{SUPERSCRIPT TWO})"
         self.meanVelLbl = "Mean Velocity (m/s)"
         self.mghLbl = "M.G.H. (m)"
-        self.dischLbl = u"Discharge (m\N{SUPERSCRIPT THREE}/s)"
-        self.uncertaintyLbl = u"Uncertainty (%)"
+        self.dischLbl = "Discharge (m\N{SUPERSCRIPT THREE}/s)"
+        self.uncertaintyLbl = "Uncertainty (%)"
         self.mmtLbl = "Mmt Mean Time"
         self.shiftLbl = "Calc. Shift Base Curve (m)"
         self.diffLbl = "Difference Base Curve (%)"
@@ -158,8 +159,8 @@ class DischargeMeasurementsPanel(wx.Panel):
 All uncertainty values reported here are 2-sigma value
 - FlowTracker (2 x Uncertainty Value reported in *.dis File)
 - FlowTracker2 (2 x Uncertainty Value reported in *.ft File)
-- SxS Pro (1 x Uncertainty Value reported in *.xml File)
-- RSSL(2 x Uncertainty Value reported in *.dis File)
+- SxS Pro (2 x Uncertainty Value reported in *.xml File)
+- RSSL (2 x Uncertainty Value reported in *.dis File)
 - QRev (1 x Uncertainty Value reported in *.xml File)
 - eHSN Mid-section (IVE Value)
 """
@@ -177,7 +178,7 @@ All uncertainty values reported here are 2-sigma value
         self.controlLbl = "Control Condition"
         self.contCondLbl = "Condition"
         self.contCondList = ["", "Unspecified", "No Flow", "Clear", "Altered", "Debris",
-                             "Vegetation", "Fill", "Scour", "Ice"]
+                             "Vegetation", "Fill", "Scour", "Ice", "Beaver Affected"]
         # self.picturedLbl = "Site and/or control pictures were taken."
 
 
@@ -204,7 +205,7 @@ All uncertainty values reported here are 2-sigma value
 
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "In DischargeMeasurementsPanel"
+            print("In DischargeMeasurementsPanel")
         self.layoutSizer = wx.GridBagSizer(0, 0)
         self.locale = wx.Locale(self.lang)
 
@@ -458,6 +459,7 @@ All uncertainty values reported here are 2-sigma value
         self.shiftCtrl = MyTextCtrl(shiftPanel, 22, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(70, self.ctrlHeight))
         self.shiftCtrl.Bind(wx.EVT_TEXT, self.FloatNumberControl)
         self.shiftCtrl.Bind(wx.EVT_TEXT, self.OnChangeUpdateMovingBoat)
+        self.shiftCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
 
         shiftSizerH.Add(shiftTxt, 1, wx.EXPAND)
         shiftSizerH.Add(self.shiftCtrl, 1, wx.EXPAND)
@@ -642,11 +644,11 @@ All uncertainty values reported here are 2-sigma value
             totalMinute = (startHour + endHour) * 60 + startMinute + endMinute
             meanMinute = totalMinute / 2
 
-            meanHour = meanMinute / 60 % 24
+            meanHour = math.floor(meanMinute / 60 % 24)
             if meanHour < 10:
                 meanHour = "0" + str(meanHour)
 
-            meanMinute = meanMinute % 60
+            meanMinute = math.floor(meanMinute % 60)
             if meanMinute < 10:
                 meanMinute = "0" + str(meanMinute)
 

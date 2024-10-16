@@ -9,7 +9,7 @@ from pdb import set_trace
 # import wx.lib.plot as plt
 import matplotlib.pyplot as plt
 import numpy as np
-import mpld3
+#import mpld3
 from wx.lib.scrolledpanel import ScrolledPanel
 
 class MidsectionImportPanel(ScrolledPanel):

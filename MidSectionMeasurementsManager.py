@@ -17,7 +17,7 @@ class MidSectionMeasurementsManager(object):
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "Midsection Measurements Manager"
+            print("Midsection Measurements Manager")
 
 
 

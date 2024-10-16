@@ -667,7 +667,7 @@ def GetVelocitys(path):
     result = []
 
     for i in dataSet:
-        print i
+        print(i)
 
     for index, i in enumerate(dataSet):
         if "%D" in i[0]:

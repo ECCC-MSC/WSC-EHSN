@@ -70,12 +70,15 @@ class RatingCurveViewerToolManager(object):
 
         self.ratingCurveList = []
         self.rcIndex = 0
+        # Variable to store the curve index 
+        # for the curve that has a period of applicability that is not closed
+        self.currentCurveIndex = 0
 
         self.Init()
 
     def Init(self):
         if self.mode == "DEBUG":
-            print "RatingCurveViewerToolControl"
+            print("RatingCurveViewerToolControl")
 
         # self.locale = wx.Locale(self.lang)
 
@@ -161,7 +164,7 @@ class RatingCurveViewerToolManager(object):
     def LoadRatingFile(self):
         shouldClearGui = False
 
-        if self.stnNum is not "":
+        if self.stnNum != "":
             xmlfilepath = self.path + "\\" + self.stnNum + "_ratingcurves.xml"
             jsonfilepath = self.path + "\\" + self.stnNum + "_ratingcurves.json"
             txtfilepath = self.path + "\\" + self.stnNum + "_RatingTable.txt"
@@ -193,12 +196,12 @@ class RatingCurveViewerToolManager(object):
     def LoadHistoricalData(self):
         shouldClearGui = False
 
-        if self.stnNum is not "":
+        if self.stnNum != "":
             fvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits.csv"
             jsonfvFilePath = self.path + "\\" + self.stnNum + "_FieldVisits.csv"
             csvfilepath = self.path + "\\" + self.stnNum + "_FieldVisitExport.csv"
 
-            print fvFilePath
+            print(fvFilePath)
             if os.path.isfile(fvFilePath):
                 self.OpenHistDataFile(os.path.abspath(fvFilePath))
             elif os.path.isfile(jsonfvFilePath):
@@ -219,11 +222,11 @@ class RatingCurveViewerToolManager(object):
 
     def DetFileType(self, filepath):
         if self.mode == "DEBUG":
-            print "Determining File Type"
+            print("Determining File Type")
 
         extension = filepath.strip().split('.')[-1]
         if self.mode == "DEBUG":
-            print "RC file is ", extension
+            print("RC file is ", extension)
 
         if extension.lower() == "txt" or extension.lower() == "xml" or extension.lower() == "json":
             self.extension = extension
@@ -239,7 +242,7 @@ class RatingCurveViewerToolManager(object):
     #called when browse button is clicked
     def ParseRatingXMLFile(self, filepath):
         if self.mode == "DEBUG":
-            print "Parsing XML File"
+            print("Parsing XML File")
 
         # Changing data stuff, reset self.data to None
         self.data = None
@@ -303,7 +306,7 @@ class RatingCurveViewerToolManager(object):
 
     def ParseRatingTXTFile(self, filepath):
         if self.mode == "DEBUG":
-            print "Parsing TXT File"
+            print("Parsing TXT File")
 
         # Changing data stuff, reset self.data to None
         self.data = None
@@ -335,14 +338,13 @@ class RatingCurveViewerToolManager(object):
 
     def ParseRatingJsonFile(self, filepath):
         if self.mode == "DEBUG":
-            print "Parsing Json File"
+            print("Parsing Json File")
         # print"under constraction!!"
         # Changing data stuff, reset self.data to None
         self.data = None
         self.period = None
         self.curveNum = None
         self.shiftDiffDisch = None
-        self.periodData = []
         self.curveIdList = []
 
         # Clear old table
@@ -353,12 +355,12 @@ class RatingCurveViewerToolManager(object):
         json_filepath = str(filepath.replace('\\', '\\\\'))
         # print type(json_filepath),json_filepath
         try:
-            with open(json_filepath) as curves_data:
+            with open(json_filepath, encoding="utf8") as curves_data:
                 Curves = json.load(curves_data)
                 self.data = Curves
                 # print Curves
         except:
-            print "Json file can't read."
+            print("Json file can't read.")
 
         curves_data = Curves['RatingCurves']
         # print len(curves_data)
@@ -369,37 +371,50 @@ class RatingCurveViewerToolManager(object):
             curvePeriod = curv['PeriodsOfApplicability']
             idNum = 1
             self.ratingCurveList.append(curveId)
-            if self.gui is not None:
-                for curvPeriod in curvePeriod:
-                    curveFromDate = datetime.strptime(str(curvPeriod['StartTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
-                    if int(curveFromDate.strftime("%Y")) < 1800 or int(curveFromDate.strftime("%Y")) > 2500:
-                        convertedFromDate = ''
-                    else:
-                        convertedFromDate = curveFromDate.strftime("%B %d %Y")
-                    # curveFromDate = curvPeriod['StartTime']
 
-                    curveToDate = datetime.strptime(str(curvPeriod['EndTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
-                    if int(curveToDate.strftime("%Y")) < 1800 or int(curveToDate.strftime("%Y")) > 2500:
-                        convertedToDate = ''
-                    else:
-                        convertedToDate = curveToDate.strftime("%B %d %Y")
-                    # curveToDate = curvPeriod['EndTime']
-                    if idNum != 1:
-                        curveNewId = curveId + '(' + str(idNum) + ')'
-                    else:
-                        curveNewId = curveId
-                    idNum = idNum + 1
-                    # print curveNewId,convertedFromDate,convertedToDate
+            for curvPeriod in curvePeriod:
+                curveFromDate = datetime.strptime(str(curvPeriod['StartTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
+                if int(curveFromDate.strftime("%Y")) < 1800 or int(curveFromDate.strftime("%Y")) > 2500:
+                    convertedFromDate = ''
+                else:
+                    convertedFromDate = curveFromDate.strftime("%B %d %Y")
+                # curveFromDate = curvPeriod['StartTime']
 
+                curveToDate = datetime.strptime(str(curvPeriod['EndTime'])[0:-14], "%Y-%m-%dT%H:%M:%S")
+                if int(curveToDate.strftime("%Y")) < 1800 or int(curveToDate.strftime("%Y")) > 2500:
+                    convertedToDate = ''
+                else:
+                    convertedToDate = curveToDate.strftime("%B %d %Y")
+                # curveToDate = curvPeriod['EndTime']
+                if idNum != 1:
+                    curveNewId = curveId + '(' + str(idNum) + ')'
+                else:
+                    curveNewId = curveId
+                idNum = idNum + 1
+                # print curveNewId,convertedFromDate,convertedToDate
+
+                # If convertedToDate is an empty string
+                # Then this curve has a period of applicability that is not closed
+                # Save the index value of this curve
+                if convertedToDate == '':
+                    self.currentCurveIndex = self.ratingCurveList.index(curveId)
+                
+                if self.gui is not None:
+                    # Add row to the table in the rating curve viewer tool
                     self.gui.AddRowToAppRange(curveNewId, convertedFromDate, convertedToDate)
 
-                    curvPeriData = []
-                    curvPeriData.append(str(curveNewId))
-                    curvPeriData.append(str(convertedFromDate))
-                    curvPeriData.append(str(convertedToDate))
+        if self.gui is not None:
+            # If a curve was found that has a period of applicability that is not closed
+            # and rcIndex is not already equal to the index of this curve
+            if self.rcIndex != self.currentCurveIndex:
+                # Set rcIndex to the index of the curve chosen by the user in the front page
+                self.rcIndex = self.disMeasManager.GetCurrentCurveIndexInList(self.ratingCurveList)
+                # If this index is not in the list, then set rcIndex to the index of the curve
+                self.rcIndex = self.rcIndex if self.rcIndex >= 0 and self.rcIndex < len(self.ratingCurveList) else self.currentCurveIndex
+            
+            # Set the curve value in the dropdown in the rating curve viewer tool
+            self.gui.SetCurveCombo(self.ratingCurveList, self.rcIndex)
 
-                    self.periodData.append(curvPeriData)
-                    self.gui.SetCurveCombo(self.ratingCurveList, self.rcIndex)
         return self.ratingCurveList
 
     def OnRCUpdate(self, selectedCurveIndex):
@@ -409,7 +424,7 @@ class RatingCurveViewerToolManager(object):
         if self.histData is None:
             return
 
-        print "Hist data is not None"
+        #print("Hist data is not None")
 
         # iterate through each hist value
         # for each, calc appropriate Shift and
@@ -874,7 +889,7 @@ class RatingCurveViewerToolManager(object):
 
     def ParseHistCSVFile(self, filepath):
         if self.mode == "DEBUG":
-            print "Parsing CSV Historical Data File"
+            print("Parsing CSV Historical Data File")
 
         # Reset Historical Data
         self.histData = None
@@ -913,7 +928,7 @@ class RatingCurveViewerToolManager(object):
 
     def CalculateShiftDisch(self, Hobserved, Qobserved, selectedCurveIndex):
         if self.mode == "DEBUG":
-            print "Calculating Shift and Discharge"
+            print("Calculating Shift and Discharge")
 
         errorMessage = None
         if self.extension is None:
@@ -1013,25 +1028,25 @@ class RatingCurveViewerToolManager(object):
         errorMessage = None
         if self.obsStage < hg_low:
             if self.mode == "DEBUG":
-                print "Observed Stage is below the minimum rating point"
+                print("Observed Stage is below the minimum rating point")
 
             errorMessage = "Observed Stage is below the minimum rating point"
 
         elif self.obsStage > hg_high:
             if self.mode == "DEBUG":
-                print "Observed Stage is above the maximum rating point"
+                print("Observed Stage is above the maximum rating point")
 
             errorMessage = "Observed Stage is above the maximum rating point"
             
         if self.obsDisch < q_low:
             if self.mode == "DEBUG":
-                print "Observed Discharge is below the minimum rating point"
+                print("Observed Discharge is below the minimum rating point")
 
             errorMessage = "Observed Discharge is below the minimum rating point"
 
         elif self.obsDisch > q_high:
             if self.mode == "DEBUG":
-                print "Observed Discharge is above the maximum rating point"
+                print("Observed Discharge is above the maximum rating point")
 
             errorMessage = "Observed Discharge is above the maximum rating point"
 
@@ -1237,7 +1252,7 @@ class RatingCurveViewerToolManager(object):
 
     def PlotData(self):
         if self.mode == "DEBUG":
-            print "Plotting Data"
+            print("Plotting Data")
             return None
 
         # If historical data exists
@@ -1251,8 +1266,8 @@ class RatingCurveViewerToolManager(object):
             for i, hd in enumerate(histData):
                 hd[0] = hd[0].split()[0] # Only the YYYY-MM-DD part
                 hd[0] = datetime.strptime(hd[0], "%Y-%m-%d")
-                print hd
-                print self.histData[i]
+                print(hd)
+                print(self.histData[i])
 
             if self.period is not None:
                 self.validHistPoints = [x for x in histData if x[0] < self.period[1] and x[0] > self.period[0]]
@@ -1287,7 +1302,7 @@ class RatingCurveViewerToolManager(object):
 
     def FetchStageDischarge(self):
         if self.mode == "DEBUG":
-            print "Getting Stage and Discharge"
+            print("Getting Stage and Discharge")
 
         if self.disMeasManager is None:
             return

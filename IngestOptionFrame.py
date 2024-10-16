@@ -14,6 +14,7 @@ class IngestOptionFrame(wx.Frame):
         self.ID_FT = self.GetParent().ID_IMPORT_FTDIS
         self.ID_FT2 = self.GetParent().ID_IMPORT_FT2
         self.ID_QREV = self.GetParent().ID_IMPORT_QRXML
+        self.ID_QREVINTMS = self.GetParent().ID_IMPORT_QRIMXML
         self.ID_MMT = self.GetParent().ID_IMPORT_SXSMMT
         self.ID_RSSL = self.GetParent().ID_IMPORT_RSSDIS
 
@@ -90,7 +91,7 @@ class IngestOptionFrame(wx.Frame):
         self.layoutSizer.Add(sizerH3, 0, wx.EXPAND|wx.TOP, 15)
         self.layoutSizer.Add(self.buttonSizer, 0, wx.EXPAND|wx.ALL, 10)
 
-        if self.inType == self.ID_FT or self.inType == self.ID_HFC or self.inType == self.ID_FT2 or self.inType == self.ID_MMT or self.inType == self.ID_RSSL:
+        if self.inType == self.ID_FT or self.inType == self.ID_HFC or self.inType == self.ID_FT2 or self.inType == self.ID_MMT or self.inType == self.ID_RSSL or self.inType == self.ID_QREVINTMS:
             self.movingBoatCkbox.Enable(False)
             self.movingBoatCkbox.Hide()
             self.movingBoatCkbox.SetValue(False)
@@ -110,6 +111,8 @@ class IngestOptionFrame(wx.Frame):
         if self.summaryCkbox.IsChecked():
             if self.inType == self.ID_QREV:
                 self.GetParent().manager.AddDischargeSummaryFromQRev()
+            elif self.inType == self.ID_QREVINTMS:
+                self.GetParent().manager.AddDischargeSummaryFromQRevIntMS()
             elif self.inType == self.ID_FT:
                 self.GetParent().manager.AddDischargeSummaryFromFT()
             elif self.inType == self.ID_HFC:
@@ -125,7 +128,7 @@ class IngestOptionFrame(wx.Frame):
         
         overwrite = False
         if self.dischargeDetailCkbox.IsChecked():
-            if self.inType == self.ID_QREV:
+            if self.inType == self.ID_QREV or self.inType == self.ID_QREVINTMS:
                 # self.GetParent().manager.instrDepManager.GetMethodCBListBox().Check(0)
                 overwrite = self.GetParent().instrDep.DeploymentCheckListCBCkecking4MovingBoat()
 
@@ -137,6 +140,8 @@ class IngestOptionFrame(wx.Frame):
             if overwrite:
                 if self.inType == self.ID_QREV:
                     self.GetParent().manager.AddDischargeDetailFromQRev()
+                if self.inType == self.ID_QREVINTMS:
+                    self.GetParent().manager.AddDischargeDetailFromQRevIntMS()
                 if self.inType == self.ID_FT:
                     self.GetParent().manager.AddDischargeDetailFromFT()
 

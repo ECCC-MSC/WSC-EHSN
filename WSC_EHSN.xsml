@@ -32,9 +32,9 @@
 		</TITLE>
 		<style>
 			table  {margin-left: 10mm Auto;
-						margin-right: 10mm Auto; color:#111111; font-family: Arial, Sans-Serif; font-size: 8.5px; border: .1em solid #111111; }
+						margin-right: 10mm Auto; color:#111111; font-family: Arial, Sans-Serif; font-size: 8.5px; border: 1px solid #111111; border-collapse: collapse;}
 
-			th, tr, td { border:.01em solid black;vertical-align: middle;
+			th, tr, td { border: 1px solid black; border-collapse: collapse; vertical-align: middle;
 				padding-left: .1em ; padding-top: .2em; word-wrap: break-all;
 			}
 			@page {
@@ -182,8 +182,10 @@
 
 					<xsl:apply-templates select="EHSN/InstrumentDeployment/SiteConditions"/>
 					<xsl:apply-templates select="EHSN/PartyInfo"/>
+					<xsl:apply-templates select="EHSN/Attachments"/>
 				</td>
 			</tr>
+
 
 <!-->>>End of Front Page -->
 			<!-- <div class="page-break"/> -->
@@ -296,7 +298,8 @@
 			<th rowspan="2">Corrected Water Level</th>
 			<th>HG</th>
 			<th>HG2</th>
-			<th rowspan="2">Surge Comment</th>
+			<th rowspan="2">Surge</th>
+			<th rowspan="2">Comment</th>
 		</tr>
 		<tr>
 			<th><xsl:value-of select="LevelChecks/loggerName"/></th>
@@ -315,6 +318,7 @@
 				<td><xsl:value-of select="loggerReading"/></td>
 				<td><xsl:value-of select="loggerReading2"/></td>
 				<td align="left"><xsl:value-of select="surge"/></td>
+				<td align="left"><xsl:value-of select="Comment"/></td>
 			</tr>
 		</xsl:for-each>
 		</tbody>
@@ -362,7 +366,6 @@
 				</xsl:choose>
 			</td>
 			<th>Review</th>
-			<th>Check</th>
 			<td><b>Review Comments </b>
 				<xsl:value-of select="dependencyType"/>
 				<xsl:text>    -    </xsl:text>
@@ -376,15 +379,6 @@
 				<td align="center" width="60">
 					<xsl:choose>
 						<xsl:when test="reviewed='True'">
-						<font size="4">&#x2714;</font>
-					</xsl:when>
-					<xsl:otherwise>
-						<font size="4">&#x2751;</font>
-						</xsl:otherwise>
-					</xsl:choose>
-				</td>
-				<td align="center" width="60"><xsl:choose>
-						<xsl:when test="checked='True'">
 						<font size="4">&#x2714;</font>
 					</xsl:when>
 					<xsl:otherwise>
@@ -556,7 +550,7 @@
 				<td><xsl:value-of select="condition"/></td>
 				<th align="center" colspan = "2">Control Condition Remarks</th>
 
-				<td class="noborder" style="text-align:left;vertical-align:top;word-wrap:break-word" colspan = "5">
+				<td style="text-align:left;vertical-align:top;word-wrap:break-word" colspan = "6">
 					<xsl:call-template name="LFsToBRs">
 						<xsl:with-param name="input" select="controlConditionRemark"/>
 					</xsl:call-template>
@@ -591,7 +585,7 @@
 	
 						<td algin="center" colspan="2"><b>WL References (m)</b></td>
 
-
+                        <th rowspan="2">Surge</th>
 						<th rowspan="2">Sensor Reset Corr.</th>
 						<th rowspan="2"><font>Action Taken</font></th>
 						<th rowspan="2">Reading Type</th>
@@ -612,6 +606,7 @@
 							<td  align="center"><xsl:value-of select="HG2"/></td>
 							<td  align="center"><xsl:value-of select="WL1"/></td>
 							<td  align="center"><xsl:value-of select="WL2"/></td>
+							<td  align="center"><xsl:value-of select="Surge"/></td>
 							<td  align="center"><font color="blue"><xsl:value-of select="SRC"/></font></td>
 							<td align="center">
 								<xsl:choose>
@@ -661,11 +656,13 @@
 							<td  align="center"></td>
 							<td  align="center"></td>
 							<td  align="center"></td>
+							<td  align="center"></td>
 							<td align="center"></td>
 							<td align="center"></td>
 					</tr>
 					<tr>
 							<td  align="center" colspan="2">&#160;</td>
+							<td  align="center"></td>
 							<td  align="center"></td>
 							<td  align="center"></td>
 							<td  align="center"></td>
@@ -681,7 +678,7 @@
 						<td  align="center"><font color="blue"><xsl:value-of select="MGHHG2"/></font></td>
 						<td  align="center" ><font color="blue"><xsl:value-of select="MGHWL1"/></font></td>
 						<td  align="center" ><font color="blue"><xsl:value-of select="MGHWL2"/></font></td>
-						<td  align="center" colspan="3"><b>MGH Aggr. Method:</b></td>
+						<td  align="center" colspan="4"><b>MGH Aggr. Method:</b></td>
 
 						<!-- <td class="noborder" bgcolor="#C8C8C8">
 						<xsl:attribute name="style">
@@ -708,7 +705,7 @@
 							background-color: #C8C8C8;
 						</xsl:attribute>
 						</td> -->
-						<td align="center" colspan="3"><xsl:value-of select="MghMethod"/></td>
+						<td align="center" colspan="4"><xsl:value-of select="MghMethod"/></td>
 						<!-- <td class="noborder" bgcolor="#C8C8C8">
 						<xsl:attribute name="style">
 							background-color: #C8C8C8;
@@ -726,7 +723,7 @@
 						<td align="center"><xsl:value-of select="GCHG2"/></td>
 						<td align="center"><xsl:value-of select="GCWL1"/></td>
 						<td align="center"><xsl:value-of select="GCWL2"/></td>
-						<td class="noborder" bgcolor="#C8C8C8" colspan="3">
+						<td class="noborder" bgcolor="#C8C8C8" colspan="4">
 							<xsl:attribute name="style">
 								background-color: #C8C8C8;
 							</xsl:attribute>
@@ -743,7 +740,7 @@
 						<td align="center"><font color="blue"><xsl:value-of select="CMGHHG2"/></font></td>
 						<td align="center"><font color="blue"><xsl:value-of select="CMGHWL1"/></font></td>
 						<td align="center"><font color="blue"><xsl:value-of select="CMGHWL2"/></font></td>
-						<td class="noborder" bgcolor="#C8C8C8" colspan="3">
+						<td class="noborder" bgcolor="#C8C8C8" colspan="4">
 							<xsl:attribute name="style">
 								background-color: #C8C8C8;
 							</xsl:attribute>
@@ -756,7 +753,7 @@
 					</tr>
 					<tr>
 						<th colspan="2">Stage Activity<br/>Summary Remarks</th>
-						<td colspan="7" style="text-align:left;vertical-align:top;word-wrap:break-word">
+						<td colspan="8" style="text-align:left;vertical-align:top;word-wrap:break-word">
 							<xsl:call-template name="LFsToBRs">
 								<xsl:with-param name="input" select="stageRemark"/>
 							</xsl:call-template>
@@ -804,7 +801,7 @@
 						<td class="noborder"><b>Departure</b></td>
 					</tr>
 					<tr class="noborder">
-						<td class="noborder" align="left"><font size="2"><b>Gas: Cyl.</b></font></td>
+						<td class="noborder" align="left"><b>Gas: Cyl.</b></td>
 						<td class="noborder"><xsl:value-of select="gasSys"/>@<xsl:value-of select="gasArrTime"/></td>
 						<td class="noborder"><xsl:value-of select="gasSysDepCtrl"/>@<xsl:value-of select="gasDepTime"/></td>
 					</tr>
@@ -1808,18 +1805,6 @@
 			<td class="noborder" style="padding-top:5px; width:350px " align="center">
 					<font size="5">Hydrometric Survey Note </font><font size="2"><xsl:value-of select="../@version"/></font>
 			</td>
-			<td class="noborder" align="right">
-				<H4  style="padding-top:13px" align="right">Data Entered in HWS?
-					<xsl:choose>
-					<xsl:when test="enteredInHWS='True'">
-						<font size="4">&#x2714;</font>
-					</xsl:when>
-					<xsl:otherwise>
-						<font size="4">&#x2751;</font>
-					</xsl:otherwise>
-					</xsl:choose>
-				</H4>
-			</td>
 		</tr>
 	</tbody>
 	</table>
@@ -1848,6 +1833,145 @@
 </xsl:template>
 
 
+<xsl:template match="EHSN/Attachments">
+    <h2>Attachments</h2>
+	<table style="height: 92px;" width="750">
+	    <td style="width:68%; height=125%">
+	        <b style="font-size:13px">Folders and Files</b>
+	        <ul style="list-style-type:none;">
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="loggerFiles!='' or loggerFolder!='' or logData != 'False'">
+					        <font size="4">&#x2714;</font><c>Logger Data files or folder   </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Logger Data files or folder   </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="loggerDiagnostic!='' or logDiagnostic != 'False'">
+					        <font size="4">&#x2714;</font><c>Logger Diagnostic files    </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Logger Diagnostic files    </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="loggerProgram!='' or logProgram != 'False'">
+					        <font size="4">&#x2714;</font><c>Logger Program files     </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Logger Program files     </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="mmtFiles!='' or mmtFolders!=''">
+					        <font size="4">&#x2714;</font><c>Discharge Measurement files or folder    </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Discharge Measurement files or folder    </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="mmtSummary!=''">
+					        <font size="4">&#x2714;</font><c>Discharge Measurement Summary files    </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Discharge Measurement Summary files    </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <br></br><br></br>
+            </ul>
+        </td>
+        <td>
+            <b style="font-size:13px">Photos and Drawings (.jpg, .DWG, etc.)</b>
+	        <ul style="list-style-type:none;">
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="SIT!=''">
+					        <font size="4">&#x2714;</font><c>Site (general view of the monitoring area)     </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Site (general view of the monitoring area)     </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="STR!=''">
+					        <font size="4">&#x2714;</font><c>Structures, Site Facilities (includes construction)     </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Structures, Site Facilities (includes construction)     </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+                <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="COL!=''">
+					        <font size="4">&#x2714;</font><c>Control Conditions (view of channel)     </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Control Conditions (view of channel)     </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="CBL!=''">
+					        <font size="4">&#x2714;</font><c>Cableway    </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Cableway    </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="EQP!=''">
+					        <font size="4">&#x2714;</font><c>Device (general view of monitoring equipment deployed)   </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Device (general view of monitoring equipment deployed)   </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="CDT!=''">
+					        <font size="4">&#x2714;</font><c>Device Conditions (includes details for vandalism)     </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Device Conditions (includes details for vandalism)     </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <li style="text-align:left;">
+                    <xsl:choose>
+			            <xsl:when test="HSN!=''">
+					        <font size="4">&#x2714;</font><c>Hydrometric Survey Note   </c>
+			            </xsl:when>
+			            <xsl:otherwise>
+				            <font size="4">&#x2751;</font><c>Hydrometric Survey Note   </c>
+			            </xsl:otherwise>
+		            </xsl:choose>
+		        </li>
+		        <br></br>
+            </ul>
+        </td>
+	</table>
+
+</xsl:template>
+
 <xsl:template match="EHSN/InstrumentDeployment/GeneralInfo">
 <h3>Deployment and Instrument Information</h3>
 
@@ -1872,10 +1996,10 @@
             <td class="noborder" align="left">
                 <xsl:choose>
                     <xsl:when test="methodType='Other Methods'">
-                        <b>Structure Type: </b><xsl:value-of select="otherMethods/structureType"/>
+                        <b>Structure Type: </b><xsl:value-of select="monitoringMethod"/>
                     </xsl:when>
                     <xsl:when test="methodType='Engineered Structures'">
-                        <b>Engineered Structure: </b><xsl:value-of select="engineeredStructures/monitoringMethod"/>
+                        <b>Engineered Structure: </b><xsl:value-of select="structureType"/>
                     </xsl:when>
                     <xsl:otherwise>
                     </xsl:otherwise>
@@ -2197,6 +2321,18 @@
 				<font size="4">&#x2751;</font></td>
 			</xsl:otherwise>
 		</xsl:choose>
+		<xsl:choose>
+			<xsl:when test="attached='True'">
+				<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+					<b>Attachment included.   </b>
+				<font size="4">&#x2714;</font></td>
+			</xsl:when>
+			<xsl:otherwise>
+				<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
+					<b>Attachment included.   </b>
+				<font size="4">&#x2751;</font></td>
+			</xsl:otherwise>
+		</xsl:choose>
 	</tr>
 
 	<tr class="noborder">
@@ -2204,6 +2340,7 @@
 			<b>Pre-use Cableway Inspection: </b>
 			<xsl:value-of select="preUseCable"/>
 		</td>
+		<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4"></td>
 	</tr>
 	</table>
 </xsl:template>
@@ -2291,7 +2428,7 @@
 
 
 			</td>
-			<td class="noborder" style="text-align;vertical-align:bottom"><b>Checked by: </b> <xsl:value-of select="checked"/></td>
+			
 		</tr>
 	</tbody>
 	</table>

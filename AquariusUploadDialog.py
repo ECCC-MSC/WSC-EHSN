@@ -13,7 +13,7 @@ class AquariusUploadDialog(wx.Dialog):
         super(AquariusUploadDialog, self).__init__(*args, **kwargs)
 
         self.config_path = self.GetParent().config_path
-   
+
         self.configFile = ElementTree.parse(self.config_path).getroot().find('AquariusUploadDialog')
 
 
@@ -40,11 +40,13 @@ class AquariusUploadDialog(wx.Dialog):
          (e.g. HFC 3, WinRiver II, FlowTracker)"""
 
         self.dir = dir if dir is not None else str(os.getcwd())
-        self.header = "The survey note will be saved as xml and a pdf will be created at the time of upload"
+        self.header = "Field Visit Package (zip file) will be saved to:"
         self.desc = "All eHSN files must be saved at the time of upload. Where would you like this file to be saved?"
         self.changeButtonDesc = "Change"
         self.changeTitleLbl = "Choose directory & change name for xml and pdf file"
         self.uploadConfirm = "Are you sure you want to upload this file?"
+        self.zipConfirm = "Yes, create a new field visit package in "
+        self.zipCancel = "No, select existing field visit package"
         self.autoOpenLbl = "Auto Open PDF?"
         self.uploadLevelNotesLbl = 'Upload Level Notes'
 
@@ -58,15 +60,15 @@ class AquariusUploadDialog(wx.Dialog):
 
     def InitUI(self):
         if self.mode == "DEBUG":
-            print "Aquarius Upload Dialog"
+            print("Aquarius Upload Dialog")
 
         self.layoutSizer = wx.BoxSizer(wx.VERTICAL)
 
         serverSizer = wx.BoxSizer(wx.HORIZONTAL)
         serverSubSizer = wx.BoxSizer(wx.HORIZONTAL)
         serverTxt = wx.StaticText(self, label=self.serverLbl)
-        self.serverCmbo = wx.ComboBox(self, choices=sorted(self.servers.keys(), reverse=False),
-                                      value=sorted(self.servers.keys(), reverse=False)[0], style=wx.CB_READONLY)
+        self.serverCmbo = wx.ComboBox(self, choices=sorted(list(self.servers.keys()), reverse=False),
+                                      value=sorted(list(self.servers.keys()), reverse=False)[0], style=wx.CB_READONLY)
         # serverSubSizer.Add((-1, -1), 1, wx.EXPAND)
         serverSubSizer.Add(serverTxt, 0, wx.EXPAND|wx.RIGHT|wx.TOP, 6)
         serverSizer.Add(serverSubSizer, 1, wx.EXPAND)
@@ -103,7 +105,7 @@ class AquariusUploadDialog(wx.Dialog):
         buttonSizer.Add(self.cancelButton, 0, wx.EXPAND|wx.ALL, 3)
 
         self.uploadButton.SetDefault()
-        self.uploadButton.Bind(wx.EVT_BUTTON, self.UploadToAquarius)
+        self.uploadButton.Bind(wx.EVT_BUTTON, self.UploadAQ)
         self.cancelButton.Bind(wx.EVT_BUTTON, self.Cancel)
 
         disSizerH = wx.BoxSizer(wx.HORIZONTAL)
@@ -135,15 +137,25 @@ class AquariusUploadDialog(wx.Dialog):
         # font2 = wx.Font(13, wx.ROMAN, wx.NORMAL, wx.NORMAL)
         # descTxt.SetFont(font2)
 
-        changePanel = wx.Panel(self, style=wx.BORDER_NONE)
-        changeSizer = wx.BoxSizer(wx.HORIZONTAL)
-        changePanel.SetSizer(changeSizer)
-        self.changeCtrl = wx.TextCtrl(changePanel, style=wx.TE_READONLY)
-        self.changeCtrl.SetValue(self.dir + "\\" + self.GetParent().name)
-        changeBtn = wx.Button(changePanel, label=self.changeButtonDesc)
-        changeBtn.Bind(wx.EVT_BUTTON, self.OnChange)
-        changeSizer.Add(self.changeCtrl, 2, wx.EXPAND)
-        changeSizer.Add(changeBtn, 1, wx.EXPAND)
+        # changePanel = wx.Panel(self, style=wx.BORDER_NONE)
+        # changeSizer = wx.BoxSizer(wx.HORIZONTAL)
+        # changePanel.SetSizer(changeSizer)
+        # self.changeCtrl = wx.TextCtrl(changePanel, style=wx.TE_READONLY)
+        # self.changeCtrl.SetValue(self.dir + "\\" + self.GetParent().name)
+        # changeBtn = wx.Button(changePanel, label=self.changeButtonDesc)
+        # changeBtn.Bind(wx.EVT_BUTTON, self.OnChange)
+        # changeSizer.Add(self.changeCtrl, 3, wx.EXPAND)
+        # changeSizer.Add(changeBtn, 1, wx.EXPAND)
+
+        # zipping
+        zipPanel = wx.Panel(self, style=wx.BORDER_NONE)
+        zipSizer = wx.BoxSizer(wx.HORIZONTAL)
+        zipPanel.SetSizer(zipSizer)
+        self.zipCtrl = wx.TextCtrl(zipPanel, style=wx.TE_READONLY)
+        selcetBtn = wx.Button(zipPanel, label="SELECT")
+        zipSizer.Add(self.zipCtrl, 3, wx.EXPAND)
+        zipSizer.Add(selcetBtn, 1, wx.EXPAND)
+        selcetBtn.Bind(wx.EVT_BUTTON, self.selectAddr)
 
 
 
@@ -157,7 +169,8 @@ class AquariusUploadDialog(wx.Dialog):
         self.layoutSizer.Add(self.levelNoteCkbox, 0, wx.EXPAND|wx.ALL, 5)
         self.layoutSizer.Add((-1, 10), 0, wx.EXPAND)
         self.layoutSizer.Add(headerTxt, 0, wx.EXPAND|wx.ALL, 5)
-        self.layoutSizer.Add(changePanel, 0, wx.EXPAND|wx.ALL, 5)
+        # self.layoutSizer.Add(changePanel, 0, wx.EXPAND | wx.ALL, 5)
+        self.layoutSizer.Add(zipPanel, 0, wx.EXPAND | wx.ALL, 5)
 
         # self.layoutSizer.Add((-1, 10), 0, wx.EXPAND)
         # self.layoutSizer.Add(self.errorMessage, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 5)
@@ -167,6 +180,19 @@ class AquariusUploadDialog(wx.Dialog):
 
 
         self.SetSizer(self.layoutSizer)
+
+    def selectAddr(self, e):
+        DirOpenDialog = wx.DirDialog(self, self.GetParent().attachment.zipTitle, self.GetParent().attachment.rootPath,
+                                     style=wx.DD_DEFAULT_STYLE | wx.DD_DIR_MUST_EXIST)
+        if DirOpenDialog.ShowModal() == wx.ID_CANCEL:
+            DirOpenDialog.Destroy()
+            return
+
+        self.zipPath = DirOpenDialog.GetPath()
+        self.zipCtrl.ChangeValue(DirOpenDialog.GetPath())
+        self.GetParent().attachment.zipAddr.ChangeValue(DirOpenDialog.GetPath())
+
+        DirOpenDialog.Destroy()
 
     def OnChange(self, e):
         if self.GetParent().name=='':
@@ -218,7 +244,27 @@ class AquariusUploadDialog(wx.Dialog):
         self.uploadButton.Enable(en)
         self.cancelButton.Enable(en)
 
-    def UploadToAquarius(self, evt):
+    # Implementing Zip
+    def UploadAQ(self, evt):
+        chosenFile = ""
+        zipDlg = wx.MessageDialog(self, self.zipConfirm + self.zipCtrl.GetValue() + "\n \n" + self.zipCancel,
+                                  'Creation of Field Visit Package (zip file)', wx.YES_NO)
+        res = zipDlg.ShowModal()
+        if res == wx.ID_YES:
+            self.GetParent().attachment.zipAddr.SetValue(self.zipCtrl.GetValue())
+            self.GetParent().attachment.Zip(None, False)
+            if not os.path.exists(self.GetParent().attachment.zipPath):
+                return
+        else:
+            zipFolderOpenDialog = wx.FileDialog(self, "Select the Zip File", self.zipCtrl.GetValue(), '',
+                                                wildcard="zip files (*.zip)|*.zip",
+                                                style=wx.FD_OPEN | wx.FD_CHANGE_DIR)
+            if zipFolderOpenDialog.ShowModal() == wx.ID_CANCEL:
+                zipFolderOpenDialog.Destroy()
+                return
+            chosenFile = zipFolderOpenDialog.GetPath()
+            
+            
         if self.serverCmbo.GetValue() != '1. AQUARIUS NG' and self.serverCmbo.GetValue() != '2. Aquarius NG Dev [for Testing Only]':
             try:
                 self.EnableButtons(False)
@@ -254,7 +300,7 @@ class AquariusUploadDialog(wx.Dialog):
                                     return
 
                             else:
-                                print "Error: %s" % result
+                                print("Error: %s" % result)
                                 show_error = True
                                 uploadInfo.append("Failed")
                                 uploadInfo.append(str(datetime.datetime.now()))
@@ -273,14 +319,13 @@ class AquariusUploadDialog(wx.Dialog):
 
 
                         else:
-                            self.GetParent().manager.ExportToAquariusSuccess()
 
                             self.EnableButtons(True)
 
                             self.GetParent().savedServer = self.serverCmbo.GetValue()
                             self.GetParent().savedName = username
                             self.GetParent().savedPassword = password
-                            self.GetParent().ResetUploadSaveIni(self.changeCtrl.GetValue())
+                            self.GetParent().ResetUploadSaveIni(self.GetParent().attachment.zipPath)
                             uploadInfo.append("Successful")
                             uploadInfo.append(str(datetime.datetime.now()))
                             uploadInfo.append(username)
@@ -290,7 +335,6 @@ class AquariusUploadDialog(wx.Dialog):
                                 self.GetParent().manager.uploadRecord = Element('AQ_Upload_Record')
                             self.GetParent().manager.UploadInfoAsXMLTree(self.GetParent().manager.uploadRecord, uploadInfo)
 
-                            self.GetParent().SaveAsPDFAndXML4Upload(self.GetParent().uploadSaveDir, True)
                             self.EndModal(wx.ID_CANCEL)
 
                             return
@@ -309,10 +353,10 @@ class AquariusUploadDialog(wx.Dialog):
                     self.EnableButtons(True)
 
             except Exception as e:
-                print str(e)
+                print(str(e))
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
+                print((exc_type, fname, exc_tb.tb_lineno))
                 self.EnableButtons(True)
 
         # Upload for NG
@@ -327,27 +371,27 @@ class AquariusUploadDialog(wx.Dialog):
                         username = self.usernameCtrl.GetValue()
                         password = self.passwordCtrl.GetValue()
                         fvDate = self.GetParent().manager.genInfoManager.datePicker
-                        name = self.GetParent().SaveAsXMLNg(self.GetParent().uploadSaveDir)
-                        self.GetParent().SaveAsPDFAndXML4UploadJson(self.GetParent().uploadSaveDir, True)
                         # print self.GetParent().uploadSaveDir, name
-                        fvPath = self.GetParent().uploadSaveDir+"\\"+name
-                        print fvPath
+                        if chosenFile != "":
+                            fvPath = chosenFile
+                        else:
+                            fvPath = self.GetParent().attachment.zipPath
+                        print(fvPath)
                         result = self.GetParent().manager.ExportToAquariusNg(server, username, password, fvPath, fvDate)
                         if result != None:
                             error = wx.MessageDialog(None,  result, 'Error',
                                                     wx.OK | wx.ICON_ERROR)
                             error.ShowModal()
                         else:
-                            succ = wx.MessageDialog(None, 'Upload successful!', "Finish",
+                            succ = wx.MessageDialog(None, 'Upload successful! You can now safely exit eHSN; your xml is already saved within the FV Package.', "Finish",
                                                     wx.OK | wx.ICON_NONE)
-                            self.GetParent().manager.ExportToAquariusSuccess()
                             succ.ShowModal()
                 self.EnableButtons(True)
             except Exception as e:
-                print str(e)
+                print(str(e))
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
+                print((exc_type, fname, exc_tb.tb_lineno))
                 self.EnableButtons(True)
 
 
@@ -377,9 +421,9 @@ def main():
     while val:
         re = AUD.ShowModal()
         if re == wx.ID_YES:
-            print "YES"
+            print("YES")
         else:
-            print "Cancel"
+            print("Cancel")
             val = False
             AUD.Destroy()
 

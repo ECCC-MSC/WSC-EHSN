@@ -27,19 +27,25 @@ def FloatNumberControl(evt):
             ctrl.preValue = ''
             # ctrl.SetInsertionPoint(insertPoint + digits)
         elif ctrl.GetValue() == '.':
+            ctrl.SetValue('0.')
             ctrl.preValue = '.'
+            ctrl.SetInsertionPoint(-1)
             # ctrl.SetInsertionPoint(insertPoint + digits)
         elif ctrl.GetValue() == '-':
             ctrl.preValue = '-'
             # ctrl.SetInsertionPoint(insertPoint + digits)
         elif ctrl.GetValue() == '-.':
+            ctrl.SetValue('-0.')
             ctrl.preValue = '-.'
+            ctrl.SetInsertionPoint(-1)
             # ctrl.SetInsertionPoint(insertPoint + digits)
         elif ctrl.GetValue() == '+':
             ctrl.preValue = '+'
             # ctrl.SetInsertionPoint(insertPoint + digits)
         elif ctrl.GetValue() == '+.':
+            ctrl.SetValue('+0.')
             ctrl.preValue = '+.'
+            ctrl.SetInsertionPoint(-1)
             # ctrl.SetInsertionPoint(insertPoint + digits)
         else:
             # insertPoint = ctrl.GetInsertionPoint() - digits

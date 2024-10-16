@@ -1,6 +1,7 @@
 # All works in this code have been curated by ECCC and licensed under the GNU General Public License v3.0. 
 # Read more: https://www.gnu.org/licenses/gpl-3.0.en.html
 
+from decimal import Decimal
 import wx
 import wx.lib.masked as masked
 import wx.lib.scrolledpanel as scrolledpanel
@@ -118,6 +119,7 @@ class StageMeasurementsPanel(wx.Panel):
         self.srcChoices = ['', 'Reset (RS)', 'No Reset (NR)', 'Flushed (FL)', 'Found (FD)', 'Purged  (PU)', 'Recovered (RC)', 'Maintenance (MT)', 'G.C. Applied (GCA)', 'CTRL Cleared (CC)', 'DWL', 'Changed Tank (CT)']
         self.BMs = []
         self.mghCalBtnLbl = "Calculate M.G.H."
+        self.surgeTxtLbl = "Surge\n(+/- m)"
         self.factors = ""
         self.incompleteDischargeTimeMsg = """The discharge mmt time is not complete. As a result, the MGH calculation has not
                      taken the discharge mmt time into account."""
@@ -140,9 +142,9 @@ class StageMeasurementsPanel(wx.Panel):
 
 
         self.weightMGHBtnHint = "*Always enter Weighted M.G.H even if its the same as Corrected M.G.H.*\nYou should always\
-enter Weighted M.G.H even if it is the same as Corrected M.G.H since Corrected M.G.H. is automatically calculated \
-in Aquarius.\n\n 1. The value of the Weighted M.G.H. + S.R.C. is put in the 'Observed Value' column of the Discharge \
-Activity table in Aquarius\n2. The Gauge Correction is put in the 'Correction' column in Aquarius\n3. Aquarius adds \
+ enter Weighted M.G.H even if it is the same as Corrected M.G.H since Corrected M.G.H. is automatically calculated \
+in Aquarius.\n\n1. The value of the Weighted M.G.H. is put in the 'Observed gauge height' of the Mean Gauge Height section\
+ within the Discharge page of Aquarius\n2. The Gauge Correction and S.R.C. are put in the 'Adjustment' column in Aquarius\n3. Aquarius adds \
 these numbers together to get the Corrected M.G.H.\n\nSince Corrected M.G.H. is auto-calculated in Aquarius and will \
 be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field here."
         # self.correctMGHBtnHint = "Corrected MGH is not directly uploaded to Aquarius, ensure values are entered as Weighted MGH + S.R.C. and Gauge Correction."
@@ -176,7 +178,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
     def InitUI(self):
         if self.mode=="DEBUG":
-            print "In StageMeasurementsPanel"
+            print("In StageMeasurementsPanel")
 
         self.layoutSizerV = wx.BoxSizer(wx.VERTICAL)
         self.locale = wx.Locale(self.lang)
@@ -416,7 +418,6 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.wlColumnSizer.Add(wlValPanel, 0, wx.EXPAND)
 
 
-
         #SRC column
         self.srcColumnSizer = wx.BoxSizer(wx.VERTICAL)
         self.srcColumnSizerH = wx.BoxSizer(wx.HORIZONTAL)
@@ -514,6 +515,27 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         mghAggColumnSizer.Add(mghAggHeaderPanel, 0, wx.EXPAND)
         mghAggColumnSizer.Add(self.mghAggValPanel, 0, wx.EXPAND)
 
+        # Surge column
+        self.surgeColumnSizer = wx.BoxSizer(wx.VERTICAL)
+
+        surgeLabelPanel = wx.Panel(self.measurementsScrollPanel, style=wx.SIMPLE_BORDER)
+        surgeLabelSizer = wx.BoxSizer(wx.HORIZONTAL)
+        surgeLabelPanel.SetSizer(surgeLabelSizer)
+
+        surgeLabelTxt = wx.StaticText(surgeLabelPanel, label=self.surgeTxtLbl, style=wx.ALIGN_CENTRE_HORIZONTAL,
+                                     size=(self.colHeaderWidth, self.colHeaderHeight))
+        ##        timeLabelTxt.Wrap(self.wrapLength)
+        surgeLabelSizer.Add(surgeLabelTxt, 1, wx.EXPAND)
+
+        # Create new panel and sizer for dynamic entries
+        self.surgeValPanel = wx.Panel(self.measurementsScrollPanel, style=wx.SIMPLE_BORDER)
+        self.surgeValSizer = wx.BoxSizer(wx.VERTICAL)
+        self.surgeValPanel.SetSizer(self.surgeValSizer)
+
+        # Add all to the Time
+        self.surgeColumnSizer.Add(surgeLabelPanel, 0, wx.EXPAND)
+        self.surgeColumnSizer.Add(self.surgeValPanel, 0, wx.EXPAND)
+
 
 
 
@@ -530,6 +552,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.measurementsSizer.Add(self.srcAppColumnPanel, 1, wx.EXPAND)
         self.measurementsSizer.Add(self.readingTypeColumnpanel, 1, wx.EXPAND)
         self.measurementsSizer.Add(self.mghAggColumnPanel, 0, wx.EXPAND)
+        self.measurementsSizer.Add(self.surgeColumnSizer, 0, wx.EXPAND)
 
         self.measurementsSizerV.Add(self.measurementsSizer, 1, wx.EXPAND)
         self.measurementsScrollPanel.SetSizer(self.measurementsSizerV)
@@ -849,7 +872,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             if evt.GetEventObject() == self.bmLeft:
                 self.bmRight.SetFocus()
             if evt.GetEventObject() == self.bmRight:
-                print self.entryNum
+                print(self.entryNum)
             if evt.GetId()/100 == 2:
                 for s in self.stageColumnPanel.GetChildren():
                     for t in s.GetChildren():
@@ -886,7 +909,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
     def OnAddPress(self, e):
         if self.mode=="DEBUG":
-            print "add"
+            print("add")
 
         self.AddEntry()
 
@@ -916,7 +939,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
 
         if self.mode=="DEBUG":
-            print name
+            print(name)
         #Time col
         # tc = masked.TimeCtrl(self.timeValPanel, size=(self.colHeaderWidth, self.rowHeight), displaySeconds=False, name=otherName, style=wx.TE_CENTRE, fmt24hr=True)
         # tc.SetValue(wx.DateTime_Now().FormatTime())
@@ -1034,6 +1057,13 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         # checkbox.Bind(wx.EVT_CHECKBOX, self.OnCheckbox)
         self.mghAggValSizer.Add(checkboxPanel, 1, wx.EXPAND)
 
+        #Surge stuff
+        surge = MyTextCtrl(self.surgeValPanel, style=wx.TE_PROCESS_ENTER | wx.TE_CENTRE,
+                           size=(self.colHeaderWidth, self.rowHeight), name=otherName)
+        surge.Bind(wx.EVT_TEXT, self.NumberControl)
+        surge.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        self.surgeValSizer.Add(surge, 0, wx.EXPAND | wx.BOTTOM | wx.TOP)
+
         self.layoutSizerV.Layout()
         self.Update()
 
@@ -1047,6 +1077,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             src.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             srcApp.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             checkbox.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
+            surge.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
 
         if self.entryNum > 4:
             self.Refresh()
@@ -1063,7 +1094,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         button = e.GetEventObject()
         index = int(button.GetName())
         if self.mode=="DEBUG":
-            print "index %s" % index
+            print("index %s" % index)
 
         if not self.IsEmptyRow(index):
             dlg = wx.MessageDialog(self, "Are you sure you want to delete the row with data entered?", 'Remove',
@@ -1090,7 +1121,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
     # Reorder the list of entries
     def RemoveEntry(self, index):
         if self.mode=="DEBUG":
-            print "remove %s" % index
+            print("remove %s" % index)
 
         self.entryColButtonSizer.Hide(index)
         self.entryColButtonSizer.Remove(index)
@@ -1113,7 +1144,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         self.wlValLeftSizer.Remove(index)
         self.wlValRightSizer.Hide(index)
         self.wlValRightSizer.Remove(index)
-
+        
         #SRC stuff
         self.srcSizer.Hide(index)
         self.srcSizer.Remove(index)
@@ -1125,6 +1156,10 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         #MGH Agg
         self.mghAggValSizer.Hide(index)
         self.mghAggValSizer.Remove(index)
+
+        #Surge stuff
+        self.surgeValSizer.Hide(index)
+        self.surgeValSizer.Remove(index)
 
         #reading type
         self.readingTypeValSizer.Hide(index)
@@ -1173,7 +1208,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         else:
             return False
     #insert a empty line at position index
-    def InsertEmptyEntry(self, index, time=None, logger1=None, logger2=None, wl1=None, wl2=None):
+    def InsertEmptyEntry(self, index, time=None, logger1=None, logger2=None, wl1=None, wl2=None, surgeVal=None):
         self.RemoveAllEmpties()
 
         if index < 0:
@@ -1244,7 +1279,6 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         wlR.Bind(wx.EVT_KILL_FOCUS, self.OnWlr2CalculateMGH)
         self.wlValRightSizer.Insert(index, wlR, 0, wx.EXPAND)
 
-
         #SRC stuff
         src = MyTextCtrl(self.srcPanel, style=wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(self.colHeaderWidth, self.rowHeight), name=str(index))
         # src.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
@@ -1290,6 +1324,13 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         # checkbox.Bind(wx.EVT_CHECKBOX, self.OnCheckbox)
         self.mghAggValSizer.Insert(index, checkboxPanel, 1, wx.EXPAND)
 
+        # Surge stuff
+        surge = MyTextCtrl(self.surgeValPanel, style=wx.TE_PROCESS_ENTER | wx.TE_CENTRE,
+                         size=(self.colHeaderWidth, self.rowHeight), name=str(index))
+        surge.Bind(wx.EVT_TEXT, self.NumberControl)
+        surge.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round3)
+        self.surgeValSizer.Insert(index, surge, 0, wx.EXPAND | wx.BOTTOM | wx.TOP)
+
 
         # tc.Bind(wx.EVT_TEXT, self.OnTimeChange)
         #set the transferred value for each field
@@ -1301,6 +1342,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             wlL.SetValue(wl1)
         if wl2 != None:
             wlR.SetValue(wl2)
+        if surgeVal != None:
+            surge.SetValue(surgeVal)
 
         #calculate the src for the new row
         self.RefreshSRC()
@@ -1318,6 +1361,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
             src.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             srcApp.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
             checkbox.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
+            surge.Bind(wx.EVT_KILL_FOCUS, self.manager.manager.gui.OnAutoSave)
 
 
         self.Refresh()
@@ -1378,25 +1422,25 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
     def PrintNames(self):
         for child in self.entryColButtonSizer.GetChildren():
-            print "button col" + child.GetWindow().GetName()
+            print("button col" + child.GetWindow().GetName())
         for child in self.timeValSizer.GetChildren():
-            print "time col" + child.GetWindow().GetName()
+            print("time col" + child.GetWindow().GetName())
         for child in self.stageSizer.GetChildren():
-            print "stage1 col" + child.GetWindow().GetName()
+            print("stage1 col" + child.GetWindow().GetName())
         for child in self.stageSizer2.GetChildren():
-            print "stage2 col" + child.GetWindow().GetName()
+            print("stage2 col" + child.GetWindow().GetName())
         for child in self.wlValLeftSizer.GetChildren():
-            print "wll col" + child.GetWindow().GetName()
+            print("wll col" + child.GetWindow().GetName())
         for child in self.wlValRightSizer.GetChildren():
-            print "wlr col" + child.GetWindow().GetName()
+            print("wlr col" + child.GetWindow().GetName())
         for child in self.srcSizer.GetChildren():
-            print "src col" + child.GetWindow().GetName()
+            print("src col" + child.GetWindow().GetName())
         for child in self.srcAppSizer.GetChildren():
-            print "srcApp col" + child.GetWindow().GetName()
+            print("srcApp col" + child.GetWindow().GetName())
         for child in self.readingTypeValSizer.GetChildren():
-            print "readingType col" + child.GetWindow().GetName()
+            print("readingType col" + child.GetWindow().GetName())
         for child in self.mghAggValSizer.GetChildren():
-            print "MGH Agg col" + child.GetWindow().GetSizer().GetItem(1).GetWindow().GetName()
+            print("MGH Agg col" + child.GetWindow().GetSizer().GetItem(1).GetWindow().GetName())
 
     def RemoveAllEmpties(self):
 
@@ -1607,7 +1651,31 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         sizerItem = self.GetWlSubSizerR().GetItem(row).GetWindow()
         sizerItem.SetValue(val)
 
+    #Surge
+    def GetSurgeSizer(self):
+        return self.surgeValSizer
 
+    def SetSurgeSizer(self, surgeSizer):
+        self.surgeValSizer = surgeSizer
+
+    #Surge Val Getter
+    def GetSurgeVal(self, row):
+        maxrow = len(self.GetSurgeSizer().GetChildren())
+        if row >= maxrow:
+            row = maxrow - 1
+
+        sizerItem = self.GetSurgeSizer().GetItem(row).GetWindow()
+        return sizerItem.GetValue()
+
+    #Surge Val Setter
+    def SetSurgeVal(self, row, val):
+        maxrow = len(self.GetSurgeSizer().GetChildren())
+        if row >= maxrow:
+            row = maxrow - 1
+
+        sizerItem = self.GetSurgeSizer().GetItem(row).GetWindow()
+        sizerItem.SetValue(val)
+        
     #SRC col
     def GetSrcSizer(self):
         return self.srcSizer
@@ -2086,7 +2154,7 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
         if length == 0:
             return
         elif length == 1:
-            return  timeValues[timeValues.keys()[0]]
+            return  timeValues[list(timeValues.keys())[0]]
         elif length == 2:
             startTime = self.manager.manager.disMeasManager.startTimeCtrl
             endTime = self.manager.manager.disMeasManager.endTimeCtrl
@@ -2123,11 +2191,11 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
                 # if startTime != "00:00" and endTime != "00:00":
                 if startTimeCtrl.IsCompleted() and endTimeCtrl.IsCompleted():
                     #find the mgh for start time
-                    print "Find 'start time': ", times
+                    print("Find 'start time': ", times)
                     firstClosest, secondClosest = self.FindClosestTime(times, startTime)
 
-                    print firstClosest
-                    print secondClosest
+                    print(firstClosest)
+                    print(secondClosest)
 
                     if firstClosest != secondClosest:
                         if self.GetIntervalMinute(firstClosest, secondClosest) < 0:
@@ -2136,19 +2204,19 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
                             secondClosest = temp
 
                         slop1 = (timeValues[secondClosest] - timeValues[firstClosest]) / self.GetIntervalMinute(firstClosest, secondClosest)
-                        print "slop1 ", slop1
+                        print("slop1 ", slop1)
                         start = slop1 * self.GetIntervalMinute(firstClosest, startTime) + timeValues[firstClosest]
                         timeValues[startTime] = start
 
 
                     #find the mgh for end time
                     times = sorted(timeValues.keys())
-                    print "Find 'end time': ", times
+                    print("Find 'end time': ", times)
 
                     firstClosest, secondClosest = self.FindClosestTime(times, endTime)
 
-                    print firstClosest
-                    print secondClosest
+                    print(firstClosest)
+                    print(secondClosest)
 
                     if firstClosest != secondClosest:
                         if self.GetIntervalMinute(firstClosest, secondClosest) < 0:
@@ -2156,13 +2224,13 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
                             firstClosest = secondClosest
                             secondClosest = temp
                         slop2 = (timeValues[secondClosest] - timeValues[firstClosest]) / self.GetIntervalMinute(firstClosest, secondClosest)
-                        print "slop2 ", slop2
+                        print("slop2 ", slop2)
                         end = slop2 * self.GetIntervalMinute(firstClosest, endTime) + timeValues[firstClosest]
                         timeValues[endTime] = end
 
                     times = sorted(timeValues.keys())
-                    print "Sorting all selected times including start and end"
-                    print times
+                    print("Sorting all selected times including start and end")
+                    print(times)
 
                     #remove the times out of the start and end boundary
                     startIndex = times.index(startTime)
@@ -2176,8 +2244,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
                         # print timeValues[i]
                         self.factors += (str(timeValues[i]) + "\n")
                     # print "****************"
-                    print "All factors involved"
-                    print self.factors
+                    print("All factors involved")
+                    print(self.factors)
                     if times[0] == times[-1]:
                         return
 
@@ -2433,7 +2501,8 @@ be available in Aquarius, it is NOT uploaded from the Corrected M.G.H. field her
 
             if result is not None:
 
-                result = float(str(result))
+                result = Decimal(str(result)) #use decimal cause float is inaccurate when multipling by 1000 and adds extra decimals
+                # Round to 3 sig figs
                 result = str(round(result,3))
                 digits = 3 - len(result.split(".")[-1])
                 for i in range(digits):
