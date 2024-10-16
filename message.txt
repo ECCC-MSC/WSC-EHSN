@@ -1,10 +1,10 @@
-V2.3.2
+V2.3.3
 3
 
 ****************************************************************************************************
 
-eHSN 2.3 has many new features and bug fixes, which are detailed in the Release Notes on Confluence: 
-https://watersurveyofcanada.atlassian.net/wiki/spaces/WSCan/pages/2952527873/eHSN+v2.3+Release+notes
+eHSN 2.3.3 has many new features and bug fixes, which are detailed in the Release Notes on Confluence: 
+https://watersurveyofcanada.atlassian.net/wiki/spaces/WSCan/pages/3427729409/eHSN+2.3.3+Required+starting+1+October+2024
 
 ****************************************************************************************************
 
