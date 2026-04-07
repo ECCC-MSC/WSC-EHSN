@@ -29,7 +29,7 @@ pywin32==303
 pywin32-ctypes==0.2.0
 qrcode==7.3.1
 reportlab==3.6.5
-requests==2.27.1
+requests==2.33.0
 six==1.16.0
 suds-jurko==0.6
 tzdata==2025.2
