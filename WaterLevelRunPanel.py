@@ -145,8 +145,8 @@ class WaterLevelRunPanel(wx.Panel):
         self.loggerLbl2 = "HG2"
         self.cwlLbl = "Corrected Water Level"
         self.hintLbl = "Transfer selected elevation and reference station to Direct Water Level table"
-        self.correctCmtBtnHint = 'Please note that these comments are uploaded to the to "Activity Remarks Management" section of Leveling Activity in AQUARIUS' \
-                + 'and these comments are also printed for Benchmark History Report.'
+        self.correctCmtBtnHint = 'Please note that these comments are uploaded to the "Activity Remarks Management" section of Leveling Activity in AQUARIUS' \
+                + ' and these comments are also printed for Benchmark History Report.'
         self.transferSumLbl = "Transfer to Front Page"
         self.transferConfirmationMsg = "Corrected water level  and logger values have been transfered"
         self.transferToFrontHintLbl = "Transfer to front page"
@@ -161,7 +161,6 @@ class WaterLevelRunPanel(wx.Panel):
         self.transferToFrontLbl = "Transfer to Front Page Stage Table"
         self.wls = ["", "WLR1", "WLR2"]
         self.hgs = ["", "HG", "HG2"]
-        self.addRunButLbl = "Add Circuit"
         self.miniFrame = None
         self.dir = dir
         if hasattr(sys, '_MEIPASS'):
@@ -273,12 +272,8 @@ class WaterLevelRunPanel(wx.Panel):
         secondSplitSizer.Add(bar, 0, wx.EXPAND)
         secondSplitSizer.Add(addRunSizer, 0, wx.EXPAND)
 
-        self.addRunButton = wx.Button(self.secondSplitPanel, label=self.addRunButLbl, size=(-1, 50))
-        self.addRunButton.Bind(wx.EVT_BUTTON, self.levelNotes.add)
-
         self.transferSizer = wx.BoxSizer(wx.HORIZONTAL)
         addRunSizer.Add(self.transferSizer, 5, wx.EXPAND|wx.ALL, 5)
-        addRunSizer.Add(self.addRunButton, 0, wx.RIGHT, 5)
 
 
 
@@ -1219,7 +1214,7 @@ class WaterLevelRunPanel(wx.Panel):
             if ckbox.GetWindow().IsChecked():
                 counter += 1
 
-        if (counter == 1 and wl1Name == "") or (counter > 1 and (wl1Name == "" or wl2Name == "")):
+        if (counter == 1 and (wl1Name == "" and wl2Name == "")) or (counter > 1 and (wl1Name == "" or wl2Name == "")):
             dlg = wx.MessageDialog(self, "Water Level Reference column name is not selected, do you want to continue without transfer wlr value?", 'None', wx.YES_NO)
             res = dlg.ShowModal()
             if res == wx.ID_YES:

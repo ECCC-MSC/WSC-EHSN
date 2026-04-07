@@ -201,6 +201,28 @@ class EnvironmentConditionsManager(object):
         self.gui.SetDataCB(dataCB)
 
 
+    
+    #Pre-Use Harness Assessment CB
+    @property
+    def harnessCB(self):
+        return self.gui.GetHarnessCB()
+
+    @harnessCB.setter
+    def harnessCB(self, harnessCB):
+        self.gui.SetHarnessCB(harnessCB)
+
+
+    
+    #Pre-Use Cableway Assessment CB
+    @property
+    def cablewayCB(self):
+        return self.gui.GetCablewayCB()
+
+    @cablewayCB.setter
+    def cablewayCB(self, cablewayCB):
+        self.gui.SetCablewayCB(cablewayCB)
+
+
 
     #Data Period From
     @property
@@ -359,6 +381,12 @@ class EnvironmentConditionsManager(object):
 
     def GetDataCB(self):
         return self.gui.dataCB
+    
+    def GetHarnessCB(self):
+        return self.gui.harnessCB
+    
+    def GetCablewayCB(self):
+        return self.gui.cablewayCB
 
     def GetDataPeriodFromPicker(self):
         return self.gui.dataPeriodFromPicker

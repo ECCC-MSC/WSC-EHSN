@@ -26,6 +26,9 @@ class InstrumentDeploymentInfoManager(object):
     def OnInstrumentChange(self, val):
         self.manager.FieldReviewChecklistUpdate(val)
 
+    def OnMonitoringChange(self, choice):
+        self.manager.InnovTechChecklistUpdate(choice)
+
     #Method Type Checkbox
     @property
     def methodCBListBox(self):

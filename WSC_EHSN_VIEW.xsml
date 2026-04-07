@@ -129,6 +129,9 @@
 					</xsl:if>
 					</xsl:if>
 					<xsl:apply-templates select="EHSN/FieldReview"/>
+					<xsl:if test="EHSN/InnovTech/@empty='False'">
+						<xsl:apply-templates select="EHSN/InnovTech"/>
+					</xsl:if>
 				    <xsl:apply-templates select="EHSN/Attachments"/>
 
 
@@ -352,6 +355,7 @@
 							<td  align="center"><font color="blue"><xsl:value-of select="SRC"/></font></td>
 							<td align="center"><font color="black">
 								<xsl:choose>
+									<xsl:when test="contains(SRCApp, 'CT')">CT</xsl:when>
 									<xsl:when test="contains(SRCApp, 'RS')">RS</xsl:when>
 									<xsl:when test="contains(SRCApp, 'NR')">NR</xsl:when>
 									<xsl:when test="contains(SRCApp, 'FL')">FL</xsl:when>
@@ -577,6 +581,31 @@
 			<b>Downloaded Data? </b>
 				<xsl:choose>
 					<xsl:when test="downloadedData='True'">
+						<font size="4">&#x2714;</font>
+					</xsl:when>
+					<xsl:otherwise>
+						<font size="4">&#x2751;</font>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+
+		</tr>
+		<tr class="noborder">
+			<td colspan = "2" align="left" class="noborder">
+			<b>Pre-Use Harness Assessment? </b>
+				<xsl:choose>
+					<xsl:when test="harnessAssessment='True'">
+						<font size="4">&#x2714;</font>
+					</xsl:when>
+					<xsl:otherwise>
+						<font size="4">&#x2751;</font>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td colspan = "2" class="noborder" align="left">
+			<b>Pre-Use Cableway Assessment? </b>
+				<xsl:choose>
+					<xsl:when test="cablewayAssessment='True'">
 						<font size="4">&#x2714;</font>
 					</xsl:when>
 					<xsl:otherwise>
@@ -1106,7 +1135,7 @@
 
 	<tr class="noborder">
 		<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4">
-			<b>Pre-use Cableway Inspection: </b>
+			<b>Pre-use Cableway Assessment: </b>
 			<xsl:value-of select="preUseCable"/>
 		</td>
 		<td class="noborder" align="left" style="border:none; margin: 0 auto;" colspan="4"></td>
@@ -1384,6 +1413,36 @@
 			<td align="left" colspan="3" height="80"><b>Plan Notes: </b><br/>
 				<xsl:call-template name="LFsToBRs">
 					<xsl:with-param name="input" select="planNotes"/>
+				</xsl:call-template>
+			</td>
+		</tr>
+		</table>
+</xsl:template>
+
+
+
+<xsl:template match="EHSN/InnovTech">
+<h2 style="padding-top:15px">Innovation Technology</h2>
+        <table width="100%">
+		<tr>
+			<td width="40%"><b>Details: </b>
+				<xsl:value-of select="monitoringType"/>
+			</td>
+			<td width="60%"><b>Comments: </b>
+			</td>
+		</tr>
+        		
+		<xsl:for-each select="InnovTechTable/InnovTechTableRow">
+			<tr>
+				<td align="left" width="40%"><xsl:value-of select="label"/></td>
+				<td align="left" width="60%"><font color="black"><xsl:value-of select="text"/></font></td>
+			</tr>
+		</xsl:for-each>
+		
+		<tr>
+			<td align="left" colspan="2" height="80"><b>Comments: </b><br/>
+				<xsl:call-template name="LFsToBRs">
+					<xsl:with-param name="input" select="notes"/>
 				</xsl:call-template>
 			</td>
 		</tr>
@@ -2215,10 +2274,10 @@
                 <li style="text-align:left;">
                     <xsl:choose>
 			            <xsl:when test="SIT!=''">
-					        <font size="4">&#x2714;</font><c>Site (general view of the monitoring area)     </c>
+					        <font size="4">&#x2714;</font><c>Site (general view of monitoring area)     </c>
 			            </xsl:when>
 			            <xsl:otherwise>
-				            <font size="4">&#x2751;</font><c>Site (general view of the monitoring area)     </c>
+				            <font size="4">&#x2751;</font><c>Site (general view of monitoring area)     </c>
 			            </xsl:otherwise>
 		            </xsl:choose>
 		        </li>

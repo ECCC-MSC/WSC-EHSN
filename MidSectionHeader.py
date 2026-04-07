@@ -1493,9 +1493,12 @@ class MidSectionHeader(wx.Panel):
                     worksheet.write(row,35,str(id2))
 
                     #Sd/di
-                    sd = float(math.sqrt( (1/(float(panelCount)-3))*sumd))
-                    sddi = float(sd / effectiveDepthList[count])
-                    worksheet.write(row,36,str(sddi))
+                    if effectiveDepthList[count] != 0:
+                        sd = float(math.sqrt( (1/(float(panelCount)-3))*sumd))
+                        sddi = float(sd / effectiveDepthList[count])
+                        worksheet.write(row,36,str(sddi))
+                    else:
+                        worksheet.write(row,36,"N/A")
 
                 #Panels
                 if isinstance(obj,PanelObj):
@@ -1524,9 +1527,12 @@ class MidSectionHeader(wx.Panel):
                     worksheet.write(row,35,str(id2))
 
                     #Sd/di
-                    sd = float(math.sqrt( (1/(float(panelCount)-3))*sumd))
-                    sddi = float(sd / effectiveDepthList[count])
-                    worksheet.write(row,36,str(sddi))
+                    if effectiveDepthList[count] != 0:
+                        sd = float(math.sqrt( (1/(float(panelCount)-3))*sumd))
+                        sddi = float(sd / effectiveDepthList[count])
+                        worksheet.write(row,36,str(sddi))
+                    else:
+                        worksheet.write(row,36,"N/A")
 
                     #Vi,est
                     if (meanVelocityList[count-1] != 0 and meanVelocityList[count+1] != 0):

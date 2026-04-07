@@ -21,7 +21,7 @@ class AttachmentManager(object):
 
     def returnAttachment(self):
         boxList = [self.gui.attachBox1, self.gui.attachBox2, self.gui.attachBox3, self.gui.attachBox4, self.gui.attachBox5,
-                   self.gui.attachBox6, self.gui.attachBox7]
+                   self.gui.attachBox6, self.gui.attachBox7, self.gui.attachBox8]
         for box in boxList:
             if box.returnPath() != []:
                 return True
@@ -68,6 +68,24 @@ class AttachmentManager(object):
 
     def returnHSN(self):
         return str(self.gui.attachBox7.returnHSN())[1:-1].replace('\\\\', '\\')
+    
+    def returnSCSFolder(self):
+        return str(self.gui.attachBox8.returnSCSFolder())[1:-1].replace('\\\\', '\\')
+
+    def returnSCSFile(self):
+        return str(self.gui.attachBox8.returnSCSFile())[1:-1].replace('\\\\', '\\')
+    
+    def returnSVRFolder(self):
+        return str(self.gui.attachBox8.returnSVRFolder())[1:-1].replace('\\\\', '\\')
+    
+    def returnSVRFile(self):
+        return str(self.gui.attachBox8.returnSVRFile())[1:-1].replace('\\\\', '\\')
+    
+    def returnGRPFolder(self):
+        return str(self.gui.attachBox8.returnGRPFolder())[1:-1].replace('\\\\', '\\')
+    
+    def returnGRPFile(self):
+        return str(self.gui.attachBox8.returnGRPFile())[1:-1].replace('\\\\', '\\')
 
     def returnZip(self):
         return self.gui.zipAddr.GetValue()

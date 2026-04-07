@@ -13,6 +13,7 @@ from AttachBox import *
 from AttachFileFolderBox import *
 from AttachFolderBox import *
 from AttachPhotoBox import *
+from AttachOtherBox import *
 import ntpath
 import tempfile
 from os import chdir
@@ -67,11 +68,11 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.SetSizer(self.layout)
 
         sizerList = []
-        for i in range(10):
+        for i in range(11):
             sizerList.append(wx.BoxSizer(wx.HORIZONTAL))
 
         spaceList = []
-        for x in range(10):
+        for x in range(11):
             spaceList.append(wx.StaticText(self, label=""))
         note = wx.StaticText(self, label="The Field Visit Package (ZIP file) will include the eHSN xml and pdf, as well as the below attachments.")
 
@@ -96,6 +97,9 @@ class AttachmentPanel(scrolled.ScrolledPanel):
 
         Txt7 = AttachTag("Photos and Drawings", "(.jpg, .DWG, etc.)", self, size=self.tagSize)
         self.attachBox7 = AttachPhotoBox(self, "*", self, size=(955, 200), style=wx.SIMPLE_BORDER)
+
+        Txt8 = AttachTag("Other", "", self, size=self.tagSize)
+        self.attachBox8 = AttachOtherBox(self, "*", self, size=(955, 100), style=wx.SIMPLE_BORDER)
 
         self.zipAddr = wx.TextCtrl(self, size=self.barSize)
         self.zipAddr.SetValue(self.rootPath)
@@ -138,14 +142,18 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         sizerList[7].Add(Txt7, 1, wx.EXPAND | wx.ALL, 5)
         sizerList[7].Add(self.attachBox7)
 
-        sizerList[8].Add(self.zipSpace)
-        sizerList[8].Add(self.zipper)
+        sizerList[8].Add(self.indent)
+        sizerList[8].Add(Txt8, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[8].Add(self.attachBox8)
+
+        sizerList[9].Add(self.zipSpace)
+        sizerList[9].Add(self.zipper)
 
         # Hidden text field
-        sizerList[9].Add(self.zipAddr)
+        sizerList[10].Add(self.zipAddr)
 
         self.layout.Add(TitlePanel, 0, wx.EXPAND | wx.ALL, 3)
-        for i in range(10):
+        for i in range(11):
             self.layout.Add(spaceList[i])
             self.layout.Add(sizerList[i])
         
@@ -153,12 +161,12 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.ShowScrollbars(wx.SHOW_SB_DEFAULT, wx.SHOW_SB_DEFAULT)
 
     # Get the saved root path
-    # Used by AttachFolderBox, AttachBox, AttachFileFolderBox, and AttachPhotoBox
+    # Used by AttachFolderBox, AttachBox, AttachFileFolderBox, AttachPhotoBox, and AttachOtherBox
     def getRootPath(self):
         return self.rootPath
 
     # Set a new root path
-    # Used by AttachFolderBox, AttachBox, AttachFileFolderBox, and AttachPhotoBox
+    # Used by AttachFolderBox, AttachBox, AttachFileFolderBox, AttachPhotoBox, and AttachOtherBox
     def setRootPath(self, new_path):
         self.rootPath = new_path
 
@@ -210,7 +218,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
 
         Tag = stnNum + "_" + date + "_FV"
         filePath = "c:\\temp\\eHSN\\"
-        boxList = [self.attachBox1, self.attachBox2, self.attachBox3, self.attachBox4, self.attachBox5, self.attachBox6, self.attachBox7]
+        boxList = [self.attachBox1, self.attachBox2, self.attachBox3, self.attachBox4, self.attachBox5, self.attachBox6, self.attachBox7, self.attachBox8]
         pathList = []
         for box in boxList:
             pathList.append(box.returnPath())
@@ -241,6 +249,13 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         EQP = self.attachBox7.returnEQP()
         CDT = self.attachBox7.returnCDT()
         HSN = self.attachBox7.returnHSN()
+
+        SVR_File = self.attachBox8.returnSVRFile()
+        SVR_Folder = self.attachBox8.returnSVRFolder()
+        SCS_File = self.attachBox8.returnSCSFile()
+        SCS_Folder = self.attachBox8.returnSCSFolder()
+        GRP_File = self.attachBox8.returnGRPFile()
+        GRP_Folder = self.attachBox8.returnGRPFolder()
 
         dir_temp = tempfile.mkdtemp()
 
@@ -352,6 +367,33 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_HSN" + str(count) + extension
                 shutil.copy(HSN[i], dir_temp + "\\" + rename)
                 HSN[i] = dir_temp + "\\" + rename
+        # Surface velocity radar files
+        count = 0
+        for i in range(len(SVR_File)):
+            if valid(SVR_File[i]):
+                count += 1
+                name, extension = os.path.splitext(SVR_File[i])
+                rename = stnNum + "_" + date + "_SVR" + str(count) + extension
+                shutil.copy(SVR_File[i], dir_temp + "\\" + rename)
+                SVR_File[i] = dir_temp + "\\" + rename
+        # Surveyed cross section files
+        count = 0
+        for i in range(len(SCS_File)):
+            if valid(SCS_File[i]):
+                count += 1
+                name, extension = os.path.splitext(SCS_File[i])
+                rename = stnNum + "_" + date + "_SCS" + str(count) + extension
+                shutil.copy(SCS_File[i], dir_temp + "\\" + rename)
+                SCS_File[i] = dir_temp + "\\" + rename
+        # Ground reference point files
+        count = 0
+        for i in range(len(GRP_File)):
+            if valid(GRP_File[i]):
+                count += 1
+                name, extension = os.path.splitext(GRP_File[i])
+                rename = stnNum + "_" + date + "_GRP" + str(count) + extension
+                shutil.copy(GRP_File[i], dir_temp + "\\" + rename)
+                GRP_File[i] = dir_temp + "\\" + rename
 
         self.parent.manager.ExportAsXML(xmlPath, None)
         try:
@@ -448,6 +490,102 @@ class AttachmentPanel(scrolled.ScrolledPanel):
             for path in HSN:
                 if valid(path):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            
+            # Surface velocity radar folders
+            count = 0
+            for folder in SVR_Folder:
+                if valid(folder):
+                    count += 1
+                    # Copy the full folder into a new folder of the same name and save the zipped folder in the temp directory
+                    # This is done so the zipped folder contains a folder instead of loose files
+                    zip_folder_name = stnNum + "_" + date + "_SVR" + str(count)
+                    os.mkdir(filePath + zip_folder_name)
+                    copytree(folder, filePath + zip_folder_name + '\\' + zip_folder_name)
+                    make_archive(filePath + zip_folder_name, 'zip', filePath + zip_folder_name)
+                    # Add this zipped folder to the main zip
+                    zipfile.write(filePath + zip_folder_name + '.zip', Tag + "\\" + zip_folder_name + '.zip')
+                    # Remove the folder zip and copied folder from temp
+                    if os.path.exists(filePath + zip_folder_name + '.zip'):
+                        os.remove(filePath + zip_folder_name + '.zip')
+                    if os.path.exists(filePath + zip_folder_name):
+                        try:
+                            rmtree(filePath + zip_folder_name)
+                        except Exception as e:
+                            print('Unable to delete temp folder')
+                            print(str(e))
+            
+            # Surveyed cross section folders
+            count = 0
+            for folder in SCS_Folder:
+                if valid(folder):
+                    count += 1
+                    # Copy the full folder into a new folder of the same name and save the zipped folder in the temp directory
+                    # This is done so the zipped folder contains a folder instead of loose files
+                    zip_folder_name = stnNum + "_" + date + "_SCS" + str(count)
+                    os.mkdir(filePath + zip_folder_name)
+                    copytree(folder, filePath + zip_folder_name + '\\' + zip_folder_name)
+                    make_archive(filePath + zip_folder_name, 'zip', filePath + zip_folder_name)
+                    # Add this zipped folder to the main zip
+                    zipfile.write(filePath + zip_folder_name + '.zip', Tag + "\\" + zip_folder_name + '.zip')
+                    # Remove the folder zip and copied folder from temp
+                    if os.path.exists(filePath + zip_folder_name + '.zip'):
+                        os.remove(filePath + zip_folder_name + '.zip')
+                    if os.path.exists(filePath + zip_folder_name):
+                        try:
+                            rmtree(filePath + zip_folder_name)
+                        except Exception as e:
+                            print('Unable to delete temp folder')
+                            print(str(e))
+            
+            # Ground reference point folders
+            count = 0
+            for folder in GRP_Folder:
+                if valid(folder):
+                    count += 1
+                    # Copy the full folder into a new folder of the same name and save the zipped folder in the temp directory
+                    # This is done so the zipped folder contains a folder instead of loose files
+                    zip_folder_name = stnNum + "_" + date + "_GRP" + str(count)
+                    os.mkdir(filePath + zip_folder_name)
+                    copytree(folder, filePath + zip_folder_name + '\\' + zip_folder_name)
+                    make_archive(filePath + zip_folder_name, 'zip', filePath + zip_folder_name)
+                    # Add this zipped folder to the main zip
+                    zipfile.write(filePath + zip_folder_name + '.zip', Tag + "\\" + zip_folder_name + '.zip')
+                    # Remove the folder zip and copied folder from temp
+                    if os.path.exists(filePath + zip_folder_name + '.zip'):
+                        os.remove(filePath + zip_folder_name + '.zip')
+                    if os.path.exists(filePath + zip_folder_name):
+                        try:
+                            rmtree(filePath + zip_folder_name)
+                        except Exception as e:
+                            print('Unable to delete temp folder')
+                            print(str(e))
+            
+            for path in SVR_File:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in SCS_File:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in GRP_File:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            
+            # Adding the details from the Inventory Management tab
+            # This generates a markdown file and returns the filepath
+            # Running this three times deliberately as some changes are not caught in initial call
+            inventory_text_filepath = self.parent.inventoryManagement.printChangesOutput()
+            inventory_text_filepath = self.parent.inventoryManagement.printChangesOutput()
+            inventory_text_filepath = self.parent.inventoryManagement.printChangesOutput()
+
+            if inventory_text_filepath != "":
+
+                # Write the file to the zip
+                if valid(inventory_text_filepath):
+                    zipfile.write(inventory_text_filepath, Tag + "\\" + stnNum + "_" + date + "_Inventory.md")
+                
+                # Delete the file once it is in the zip
+                if os.path.exists(inventory_text_filepath):
+                    os.remove(inventory_text_filepath)
 
             zipfile.close()
             if openSaveDialog:

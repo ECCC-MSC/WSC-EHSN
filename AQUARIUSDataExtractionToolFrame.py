@@ -44,6 +44,7 @@ class AQUARIUSDataExtractionToolFrame(wx.Frame):
         self.minMaxHistLbl = "Include Hist. Min/Max?"
         self.minMaxHint = "Number of historical minimum and maximum discharge you would like to include!"
         self.ngExportLabel = "Export the Data from AQUARIUS NG?"
+        self.hydexDataLbl = "HYDEX Device Report (requires VPN)"
         self.runButtonLbl = "Run"
         self.canButtonLbl = "Close"
 
@@ -195,6 +196,11 @@ For example:\n\
         minMaxSizer.Add(self.minMaxHintBtn, 0, wx.EXPAND|wx.TOP|wx.RIGHT, 5)
         dataPeriodSizer.Add(minMaxSizer, 0, wx.EXPAND)
 
+        # Hydex data download Checkbox
+        hydexCkboxSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.hydexCkbox = wx.CheckBox(basePanel, label=self.hydexDataLbl, style=wx.ALIGN_LEFT)
+        self.hydexCkbox.SetValue(True)
+        hydexCkboxSizer.Add(self.hydexCkbox, 0, wx.EXPAND)
 
         # Location Selector
         locSizer = wx.BoxSizer(wx.VERTICAL)
@@ -306,6 +312,8 @@ For example:\n\
         self.layoutSizer.Add(rcCkboxSizer, 0, wx.EXPAND|wx.ALL, 4)
         self.layoutSizer.Add((-1, 1), 0, wx.EXPAND)
         self.layoutSizer.Add(dataPeriodSizer, 0, wx.EXPAND|wx.ALL, 4)
+        self.layoutSizer.Add((-1, 1), 0, wx.EXPAND)
+        self.layoutSizer.Add(hydexCkboxSizer, 0, wx.EXPAND|wx.ALL, 4)
         self.layoutSizer.Add((-1, 1), 0, wx.EXPAND)
         self.layoutSizer.Add(locSizer, 0, wx.EXPAND|wx.ALL, 4)
 
@@ -608,6 +616,9 @@ For example:\n\
 
     def GetNumOfMinMax(self):
         return self.minMaxSpinCtrl.GetValue()
+
+    def HydexIsChecked(self):
+        return self.hydexCkbox.IsChecked()
 
     #Select the file contains the station IDs to be extracted
     def OnStationBrowse(self, event):

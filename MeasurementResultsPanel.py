@@ -141,9 +141,9 @@ class MeasurementResultsPanel(wx.Panel):
         self.loggerTimeLbl = "Logger Time"
 
         self.loggerTimeTxtLbl = "Logger"
-        self.loggers = ["HG", "HG2"]
+        self.loggers = ["", "HG", "HG2"]
         self.remarkTxtLbl = "Remarks"
-        self.remarkChoice = ["Reset"]
+        self.remarkChoice = ["", "Reset"]
 
         
         self.sensorRef = ['Atmos Pres',
@@ -422,7 +422,7 @@ class MeasurementResultsPanel(wx.Panel):
         col1Panel = wx.Panel(loggerTimeTablePanel, style=wx.SIMPLE_BORDER)
         col1Panel.SetSizer(col1Sizer)
 
-        self.col1Combo = wx.ComboBox(col1Panel, style=wx.CB_DROPDOWN, choices=self.loggers)
+        self.col1Combo = wx.ComboBox(col1Panel, style=wx.CB_READONLY, choices=self.loggers)
         col1Sizer.Add(self.col1Combo, 1, wx.EXPAND)
 
 
@@ -431,7 +431,7 @@ class MeasurementResultsPanel(wx.Panel):
         col2Panel = wx.Panel(loggerTimeTablePanel, style=wx.SIMPLE_BORDER)
         col2Panel.SetSizer(col2Sizer)
 
-        self.col2Combo = wx.ComboBox(col2Panel, style=wx.CB_DROPDOWN, choices=self.loggers)
+        self.col2Combo = wx.ComboBox(col2Panel, style=wx.CB_READONLY, choices=self.loggers)
         col2Sizer.Add(self.col2Combo, 1, wx.EXPAND)
 
         #Time label
@@ -448,7 +448,7 @@ class MeasurementResultsPanel(wx.Panel):
         reset1Panel = wx.Panel(loggerTimeTablePanel, style=wx.SIMPLE_BORDER)
         reset1Panel.SetSizer(reset1Sizer)
 
-        self.reset1Combo = wx.ComboBox(reset1Panel, style=wx.CB_DROPDOWN, choices=self.remarkChoice)
+        self.reset1Combo = wx.ComboBox(reset1Panel, style=wx.CB_READONLY, choices=self.remarkChoice)
         reset1Sizer.Add(self.reset1Combo, 1, wx.EXPAND)
 
         #Reset Column 2
@@ -456,7 +456,7 @@ class MeasurementResultsPanel(wx.Panel):
         reset2Panel = wx.Panel(loggerTimeTablePanel, style=wx.SIMPLE_BORDER)
         reset2Panel.SetSizer(reset2Sizer)
 
-        self.reset2Combo = wx.ComboBox(reset2Panel, style=wx.CB_DROPDOWN, choices=self.remarkChoice)
+        self.reset2Combo = wx.ComboBox(reset2Panel, style=wx.CB_READONLY, choices=self.remarkChoice)
         reset2Sizer.Add(self.reset2Combo, 1, wx.EXPAND)
 
         #Oberserved label

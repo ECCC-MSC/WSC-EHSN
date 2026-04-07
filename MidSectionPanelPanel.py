@@ -1245,8 +1245,9 @@ class MidSectionPanelPanel(wx.Panel):
             if self.velocityGrid.GetCellValue(i, 1) == "0.00":
                 self.velocityGrid.SetCellValue(i, 1, "")
 
-            if self.velocityGrid.GetCellValue(i, 2) == "0":
-                self.velocityGrid.SetCellValue(i, 2, "")
+            # Commented out to allow for 0 rev values
+            #if self.velocityGrid.GetCellValue(i, 2) == "0":
+            #    self.velocityGrid.SetCellValue(i, 2, "")
 
             if self.velocityGrid.GetCellValue(i, 3) == "0.0":
                 self.velocityGrid.SetCellValue(i, 3, "")

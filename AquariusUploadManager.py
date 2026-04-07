@@ -1901,6 +1901,8 @@ def CreateStationHealthMeasurements(mode, src, aq, visit, MEASUREMENT, EHSN, dat
     shmeasurement.Remarks += "\nOrifice Purged @" + EHSN.envCondManager.orificeTimeCtrl if EHSN.envCondManager.orificeCB else ""
     shmeasurement.Remarks += "\nDownloaded Program" if EHSN.envCondManager.programCB else ""
     shmeasurement.Remarks += "\nDownloaded Data" if EHSN.envCondManager.dataCB else ""
+    shmeasurement.Remarks += "\nPre-Use Harness Assessment" if EHSN.envCondManager.harnessCB else ""
+    shmeasurement.Remarks += "\nPre-Use Cableway Assessment" if EHSN.envCondManager.cablewayCB else ""
 
     if 'rot' in str(EHSN.envCondManager.bpmrotCmbo).lower() and str(EHSN.envCondManager.bpmrotCtrl) != "":
         shmeasurement.Remarks += "\nRot: " + str(EHSN.envCondManager.bpmrotCtrl)

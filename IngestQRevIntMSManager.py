@@ -1,6 +1,7 @@
 import math
 from xml.etree import ElementTree
 import wx
+from datetime import datetime as dt
 
 
 def GetRoot(filePath):
@@ -47,8 +48,14 @@ def GetStartTime(filePath):
     return GetRoot(filePath).find('./VerticalDetails/Vertical/StartDateTime').text[11:16]
 
 def GetEndTime(filePath):
-    # find last vertical that has a EndDateTime field
-    return GetRoot(filePath).findall('./VerticalDetails/Vertical/EndDateTime')[-1].text[11:16]
+    # find the vertical that has the oldest EndDateTime field
+    end_time = GetRoot(filePath).find('./VerticalDetails/Vertical/StartDateTime').text[11:16]
+    all_endtimes = GetRoot(filePath).findall('./VerticalDetails/Vertical/EndDateTime')
+    for item in all_endtimes:
+        time_text = item.text[11:16]
+        if dt.strptime(time_text, "%H:%M").time() > dt.strptime(end_time, "%H:%M").time():
+            end_time = time_text
+    return end_time
 
 
 #Detail
@@ -232,11 +239,14 @@ def AddDischargeDetail(filePath, instrDepManager):
         instrDepManager.modelCmbo = model
         instrDepManager.GetModelCmbo().SetBackgroundColour(color)
     if frequency is not None:
-        if freUnit is not None:
-            if "m" in freUnit.lower():
-                # frequency = str(float(frequency) * 1000)
-                frequency += "000"
-        instrDepManager.frequencyCmbo = str(math.trunc(float(frequency)))
+        if frequency == 'Multi':
+            instrDepManager.frequencyCmbo = frequency
+        else:
+            if freUnit is not None:
+                if "m" in freUnit.lower():
+                    # frequency = str(float(frequency) * 1000)
+                    frequency += "000"
+            instrDepManager.frequencyCmbo = str(math.trunc(float(frequency)))
         instrDepManager.GetFrequencyCmbo().SetBackgroundColour(color)
     if firmware is not None:
         instrDepManager.firmwareCmbo = firmware

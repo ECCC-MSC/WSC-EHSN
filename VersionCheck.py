@@ -33,7 +33,8 @@ def Check(version, parent, alwaysShow):
 
         lines = msg.splitlines()
         currentVersion = lines[0][1:]
-        rank = int(lines[1])
+        # Rank is currently unused and kept as default value
+        rank = 3
 
         myVersions = myVersion[1:].split('.')
         currentVersions = currentVersion.split('.')

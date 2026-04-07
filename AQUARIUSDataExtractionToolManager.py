@@ -10,6 +10,8 @@ from suds.client import Client
 from base64 import b64encode
 from base64 import b64decode
 import datetime
+import pandas as pd
+from datetime import datetime as dt
 
 import io
 import csv
@@ -345,6 +347,22 @@ class AQUARIUSDataExtractionToolManager(object):
             elif res != 0:
                 self.gui.DeleteProgressDialog()
                 self.gui.CreateErrorDialog("Getting Field Visit from AQUARIUS Failed")
+        
+        # if HYDEX device checked
+        if self.gui.HydexIsChecked():
+            if self.gui.ProgressDialogIsOpen():
+                self.gui.UpdateProgressDialog('Collecting HYDEX Device Information')
+            else:
+                self.gui.CreateProgressDialog('Extraction In Progress...',
+                                              'Collecting HYDEX Device Information')
+
+            res = self.GetHydexDeviceInfo()
+            if res != 0:
+                # unplanned response
+                self.gui.DeleteProgressDialog()
+                self.gui.CreateErrorDialog(
+                    "Unable to collect HYDEX Device Information \n" + \
+                    "If you wish to collect HYDEX Device Information, please ensure you are connected to VPN.")
 
         if self.gui.ProgressDialogIsOpen():
             self.gui.DeleteProgressDialog()
@@ -1284,12 +1302,12 @@ class AQUARIUSDataExtractionToolManager(object):
         #print "time from:" + formatdateFrom
         #print "time to:" + formatdateTo
 
-        if numMinMax is not None:
-            minMaxList = []
-        else:
-            minMaxList = None
-
         for location in locations:
+            if numMinMax is not None:
+                minMaxList = []
+            else:
+                minMaxList = None
+
             dataEmpty = True
             try:
                 parameters = {'LocationIdentifier': location}
@@ -1485,6 +1503,24 @@ class AQUARIUSDataExtractionToolManager(object):
                         else:
                             failedStations.append(location)
                             break
+        return 0
+
+    def GetHydexDeviceInfo(self):
+        if self.mode == "DEBUG":
+            print("Manager Run Script")
+
+        hydex_url = 'https://wsc-internal.edc-mtl.ec.gc.ca/hydex/en/reports/network/current/entire/devices'
+        path = self.gui.GetPath()
+        
+        try:
+            response = requests.get(hydex_url, verify=False, allow_redirects=True).content
+            full_hydex_devices = pd.read_csv(io.StringIO(response.decode('utf-8')))
+            current_date = dt.now()
+            filename = 'hydex_current_status_entire_network_devices_' + current_date.strftime("%Y-%m-%d") + '_en.csv'
+            full_hydex_devices.to_csv(path + '\\' + filename, index=False)
+
+        except Exception as e:
+            return 1
         return 0
 
     def CheckReturn(self, res):

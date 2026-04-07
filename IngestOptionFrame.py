@@ -128,12 +128,12 @@ class IngestOptionFrame(wx.Frame):
         
         overwrite = False
         if self.dischargeDetailCkbox.IsChecked():
-            if self.inType == self.ID_QREV or self.inType == self.ID_QREVINTMS:
+            if self.inType == self.ID_QREV:
                 # self.GetParent().manager.instrDepManager.GetMethodCBListBox().Check(0)
                 overwrite = self.GetParent().instrDep.DeploymentCheckListCBCkecking4MovingBoat()
 
                     
-            # elif self.inType == self.ID_FT or self.inType == self.ID_HFC or self.inType == self.ID_FT2 or self.inType == self.ID_MMT or self.inType == self.ID_RSSL:
+            # elif self.inType == self.ID_QREVINTMS or self.inType == self.ID_FT or self.inType == self.ID_HFC or self.inType == self.ID_FT2 or self.inType == self.ID_MMT or self.inType == self.ID_RSSL:
             else:
                 # self.GetParent().manager.instrDepManager.GetMethodCBListBox().Check(1)
                 overwrite = self.GetParent().instrDep.DeploymentCheckListCBCkecking4MidSection()

@@ -490,7 +490,7 @@ All uncertainty values reported here are 2-sigma value
         curveTxt = wx.StaticText(curvePanel, 25, label=self.curveLbl, style=wx.ALIGN_CENTRE_HORIZONTAL, size=(-1, self.height))
         curveTxt.Wrap(self.wrapLength)
         
-        self.curveCtrl = wx.ComboBox(curvePanel, 26, choices=self.curveList, style=wx.CB_DROPDOWN|wx.TE_PROCESS_ENTER|wx.TE_CENTRE, size=(120, self.ctrlHeight))
+        self.curveCtrl = wx.ComboBox(curvePanel, 26, choices=self.curveList, style=wx.CB_READONLY, size=(120, self.ctrlHeight))
         self.curveCtrl.Bind(wx.EVT_TEXT, self.FloatNumberControl)
         self.curveCtrl.Bind(wx.EVT_TEXT, self.OnRCText)
         self.curveCtrl.Bind(wx.EVT_KILL_FOCUS, self.OnRCKillFocus)
@@ -836,7 +836,7 @@ All uncertainty values reported here are 2-sigma value
 
 
     def SetCurveCtrl(self, curveCtrl):
-        self.curveCtrl.ChangeValue(curveCtrl)
+        self.curveCtrl.SetValue(curveCtrl)
 
 
     def SetCurveCombo(self, rcList):

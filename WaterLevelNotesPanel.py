@@ -125,6 +125,9 @@ class WaterLevelNotesPanel(wx.Panel):
         self.pageBox.Bind(wx.EVT_COMBOBOX, self.jumpPage)
         self.pageBox.Bind(wx.EVT_MOUSEWHEEL, self.NoScrolling)
 
+        self.addButton = wx.Button(pageBar, label="Add Circuit", size=(100, -1))
+        self.addButton.Bind(wx.EVT_BUTTON, self.add)
+
         pageBarSizer.Add((550, -1))
         pageBarSizer.Add(self.prevButton)
         pageBarSizer.Add((20, -1))
@@ -135,6 +138,8 @@ class WaterLevelNotesPanel(wx.Panel):
         pageBarSizer.Add(jump, 0, wx.EXPAND | wx.TOP | wx.LEFT, 5)
         pageBarSizer.Add((10, -1))
         pageBarSizer.Add(self.pageBox)
+        pageBarSizer.Add((40, -1))
+        pageBarSizer.Add(self.addButton)
 
         self.runSizer.Add(pageBar, 0, wx.EXPAND)
 

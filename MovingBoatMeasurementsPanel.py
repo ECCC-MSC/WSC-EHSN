@@ -667,7 +667,6 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         corrMeanGHPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
         corrMeanGHSizer = wx.BoxSizer(wx.HORIZONTAL)
         corrMeanGHTxt = wx.StaticText(corrMeanGHPanel, label=self.corrMeanGHLbl, style=wx.ALIGN_LEFT, size=(100, -1))
-
         corrMeanGHSizer.Add(corrMeanGHTxt, 1, wx.EXPAND)
         corrMeanGHPanel.SetSizer(corrMeanGHSizer)
 
@@ -679,11 +678,8 @@ class MovingBoatMeasurementsPanel(wx.Panel):
         #Standard Dev
         standDevMeanDischPanel = wx.Panel(self, style=wx.SIMPLE_BORDER)
         standDevMeanDischSizer = wx.BoxSizer(wx.HORIZONTAL)
-        # standDevMeanDischTxt = wx.StaticText(standDevMeanDischPanel, label=self.standDevMeanDischLbl, style=wx.ALIGN_LEFT, size=(110, -1))
-        standDevMeanDischBtn = wx.Button(standDevMeanDischPanel, label=self.standDevMeanDischLbl, style=wx.ALIGN_LEFT, size=(110, -1))
-        standDevMeanDischBtn.SetFont(wx.Font(8, wx.DEFAULT, wx.NORMAL, wx.NORMAL, 0, 'Consolas'))
-        # standDevMeanDischBtn.Bind(wx.EVT_BUTTON, self.OnStandardDev)
-        standDevMeanDischSizer.Add(standDevMeanDischBtn, 1, wx.EXPAND)
+        standDevMeanDischTxt = wx.StaticText(standDevMeanDischPanel, label=self.standDevMeanDischLbl, style=wx.ALIGN_LEFT, size=(110, -1))
+        standDevMeanDischSizer.Add(standDevMeanDischTxt, 1, wx.EXPAND)
         standDevMeanDischPanel.SetSizer(standDevMeanDischSizer)
 
         #Standard Dev Val
@@ -954,12 +950,12 @@ class MovingBoatMeasurementsPanel(wx.Panel):
 
 
         button.Bind(wx.EVT_BUTTON, self.OnAddPress)
-        transectCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
-        startDistanceCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
-        endDistanceCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
-        rawDischCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
+        #transectCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
+        #startDistanceCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
+        #endDistanceCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
+        #rawDischCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
         # finalDisCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
-        remarksCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
+        #remarksCtrl.Bind(wx.EVT_TEXT, self.OnTextEnter)
 
 
         selectCheckbox.Bind(wx.EVT_CHECKBOX, self.OnCheckbox)

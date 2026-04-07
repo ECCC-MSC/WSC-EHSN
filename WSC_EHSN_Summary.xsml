@@ -301,6 +301,7 @@
 							<td  align="center"><font color="blue"><xsl:value-of select="SRC"/></font></td>
 							<td align="center"><font color="black">
 								<xsl:choose>
+									<xsl:when test="contains(SRCApp, 'CT')">CT</xsl:when>
 									<xsl:when test="contains(SRCApp, 'RS')">RS</xsl:when>
 									<xsl:when test="contains(SRCApp, 'NR')">NR</xsl:when>
 									<xsl:when test="contains(SRCApp, 'FL')">FL</xsl:when>
@@ -523,6 +524,31 @@
 			<b>Downloaded Data? </b>
 				<xsl:choose>
 					<xsl:when test="downloadedData='True'">
+						<font size="4">&#x2714;</font>
+					</xsl:when>
+					<xsl:otherwise>
+						<font size="4">&#x2751;</font>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+
+		</tr>
+		<tr class="noborder">
+			<td colspan = "2" align="left" class="noborder">
+			<b>Pre-Use Harness Assessment? </b>
+				<xsl:choose>
+					<xsl:when test="harnessAssessment='True'">
+						<font size="4">&#x2714;</font>
+					</xsl:when>
+					<xsl:otherwise>
+						<font size="4">&#x2751;</font>
+					</xsl:otherwise>
+				</xsl:choose>
+			</td>
+			<td colspan = "2" class="noborder" align="left">
+			<b>Pre-Use Cableway Assessment? </b>
+				<xsl:choose>
+					<xsl:when test="cablewayAssessment='True'">
 						<font size="4">&#x2714;</font>
 					</xsl:when>
 					<xsl:otherwise>

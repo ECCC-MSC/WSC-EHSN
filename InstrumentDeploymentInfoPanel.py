@@ -32,8 +32,9 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.structureTypesLbl = 'Structure Type'
         self.structureTypes = ['', 'Weir', 'Flume']
         self.monitoringMethodsLbl = 'Monitoring Methods'
-        self.monitoringMethods = ['', 'Estimated', 'Volumetric', 'Salt Dilution', 'Tracer-dry', ]
+        self.monitoringMethods = ['', 'Estimated', 'Volumetric', 'Salt Dilution', 'Dye Dilution', 'Image Velocimetry​']
         self.savedMeasurementMethodIndex = 0
+        self.savedMonitoringMethodIndex = 0
 
         self.deploymentLbl = "Deployment"
         self.deploymentMidsecList = ["", "Wading", "Bridge Upstream", "Bridge Downstream",
@@ -50,7 +51,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.gaugeLbl = "gauge"
         self.selectedGauge = self.gaugeLbl
         self.instrumentLbl = "Instrument Type"
-        self.instrumentList = ["", "ADCP", "ADV", "Current Meter"]
+        self.instrumentList = ["", "ADCP", "ADV", "Current Meter", "Conductivity Probe", "Camera"]
         self.instruments = []
         self.models = []
         self.modelLbl = "Model"
@@ -63,8 +64,14 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.modelList3 = ["", "FlowTracker"]
         self.modelListSontek = ["", "Rio Grande", "RiverRay", "StreamPro", "RiverPro"]
         self.modelListTRDI = ["", "M9", "S5"]
+        self.modelListSommer = ["", "TQ-Tracer"]
+        self.modelListAXIS = ["", "P1378", "P1388", "M1137", "Other"]
+        self.modelListDJI = ["", "Mini2", "Mini3", "Mini4", "Other"]
+        self.modelListSamsung = ["", "S21", "S22", "S23", "Other"]
+        self.modelListApple = ["", "Iphone 12 mini", "Iphone 14", "Iphone 15"]
+        self.modelListOther = [""]
         self.manufactureLbl = "Manufacturer"
-        self.manufactureList = ["", 'SonTek', 'TRDI']
+        self.manufactureList = ["", 'SonTek', 'TRDI', 'Sommer', 'AXIS', 'DJI', 'Samsung', 'Apple', 'Other']
         self.serialNumLbl = "Serial/Meter Number"
         self.serialNumList = []
         self.frequnecies = []
@@ -78,7 +85,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.coEffLbl = "Coefficient"
         self.coefficientList = ["","-1", "1", "0.88"]
         self.methodLbl = "Method"
-        self.methodList = ["", "0.6", "0.2/0.8", "0.6+0.2/0.8", "0.5", "0.5+0.2/0.8", "Surface", "0.2/0.6/0.8", "0.2/0.5/0.8", "ADCP"]
+        self.methodList = ["", "0.6", "0.2/0.8", "0.6+0.2/0.8", "0.6+0.5", "0.5", "0.5+0.2/0.8", "Surface", "0.2/0.6/0.8", "0.2/0.5/0.8", "ADCP"]
         self.locatedLbl = "Located"
         self.metresAboveLbl = "metres above"
         self.weightList = ["", "15", "30", "50", "75", "100", "150", "300"]
@@ -105,14 +112,14 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.contCondList = ["", "Not Observed", "No Flow", "Clear", "Altered", "Debris", "Algae",
                              "Weeds", "Fill", "Scour", "Shore Ice",
                              "Complete Ice Cover", "Anchor Ice"]
-        self.deploymentWarning = "Unselecting %s will cause loss of entered data such as field review. Are you sure you want to unselect this selection? "
+        self.deploymentWarning = "Unselecting %s will cause loss of entered data such as field review and innovation technology. Are you sure you want to unselect this selection? "
+        self.monitoringWarning = "Unselecting %s will cause loss of entered data such as innovation technology. Are you sure you want to unselect this selection? "
         self.positionMethods = ["", "Tagline", "Marked bridge railing"]
         self.locatedList = ["On Rod"]
         self.numberOfPanelsList = []
         self.picturedLbl = "Site and/or control pictures were taken."
-        self.preUseCableLbl = "Pre-use Cableway Inspection"
+        self.preUseCableLbl = "Pre-use Cableway Assessment"
         self.preUseCableList = ["Not-required", "Passed", "Failed"]
-        self.measureInfoMsg = 'Engineered structure and Other methods will be uploaded to Mid-section at this time.'
 
         self.numberRange = list(range(20, 51))
         for i in self.numberRange:
@@ -182,13 +189,9 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.methodCBListBox = wx.ComboBox(self, size=(-1, -1), style=wx.CB_READONLY, choices=self.measurementMethods)
         self.methodCBListBox.Bind(wx.EVT_COMBOBOX, self.OnDeploymentCheckListCB)
         # self.methodCBListBox.Bind(wx.EVT_TEXT, self.OnDeploymentCheckListCB)
-        self.measureInfoButton = wx.Button(self, size=(20, 20), label="!")
-        self.measureInfoButton.SetForegroundColour('red')
-        self.measureInfoButton.Bind(wx.EVT_BUTTON, self.OnMeasureInfoBtn)
 
         methodListSizerH = wx.BoxSizer(wx.HORIZONTAL)
         methodListSizerH.Add(self.methodCBListBox, 0, wx.EXPAND)
-        methodListSizerH.Add(self.measureInfoButton, 0, wx.EXPAND)
 
         methodListSizer.Add(self.methodCBListBoxLbl, 1, wx.EXPAND)
         methodListSizer.Add(methodListSizerH, 0, wx.EXPAND)
@@ -199,6 +202,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.monitoringMethodTxt = wx.StaticText(self, label=self.monitoringMethodsLbl,\
                                             style=wx.ALIGN_CENTRE_HORIZONTAL|wx.ALIGN_CENTRE_VERTICAL)
         self.monitoringMethodCombo = wx.ComboBox(self, size=(155, 23), style=wx.CB_READONLY, choices=self.monitoringMethods)
+        self.monitoringMethodCombo.Bind(wx.EVT_COMBOBOX, self.OnMonitoringChangeCB)
         self.monitoringMethodSizer.Add(self.monitoringMethodTxt, 0, wx.EXPAND)
         self.monitoringMethodSizer.Add(self.monitoringMethodCombo, 0, wx.EXPAND)
 
@@ -438,7 +442,6 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         #frequency text and ctrl
         self.frequencyTxt = wx.StaticText(self, label=self.freqLbl, style=wx.ALIGN_LEFT)
         self.frequencyCmbo = MyComboBox(self, size=(180, -1), choices=self.frequnecies, style=wx.CB_DROPDOWN)
-        self.frequencyCmbo.Bind(wx.EVT_TEXT, self.OnIntText)
         self.frequencyCmbo.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
 
         #firmware text and ctrl
@@ -895,7 +898,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             # self.methodCBListBox.Check(i, check=False)
 
 
-    #After import from the *.dis, double checking the overwriting, and updating corresponding instrument panel and Field reveiw checklist 
+    #After import from the *.dis, double checking the overwriting, and updating corresponding instrument panel and Field reveiw checklist and InnovTech checklist
     def DeploymentCheckListCBCkecking4MidSection(self):
 
         # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
@@ -926,7 +929,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             return True
 
 
-    #After import from the *.dis, double checking the overwriting, and updating corresponding instrument panel and Field reveiw checklist 
+    #After import from the *.dis, double checking the overwriting, and updating corresponding instrument panel and Field reveiw checklist and InnovTech checklist 
     def DeploymentCheckListCBCkecking4MovingBoat(self):
 
         # if len(list(self.methodCBListBox.GetCheckedItems())) > 1:
@@ -972,6 +975,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             self.horizontalSizer1.Hide(self.monitoringMethodSizer, True)
             # self.monitoringMethodCombo.SetValue('')
             self.SetMonitoringMethodCombo('')
+            self.savedMonitoringMethodIndex = self.monitoringMethods.index(self.monitoringMethodCombo.GetValue())
         else:
             self.horizontalSizer1.Show(self.monitoringMethodSizer, True)
 
@@ -979,7 +983,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
 
 
     # Called when the deployment method is changed
-    # update the FRChecklist to appropriate list
+    # update the FRChecklist and InnovTechChecklist to appropriate list
     # Enable the appropriate fields according to Deployment Type
     def OnDeploymentCheckListCB(self, e):
         # selection = [self.adcpByMovingBoatLbl, self.midsectionLbl]
@@ -1012,8 +1016,30 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
             e.Skip()
         
 
+    # Called when the monitoring method is changed
+    # update the InnovTechChecklist to appropriate list
+    def OnMonitoringChangeCB(self, e):
+        selection = self.monitoringMethods
+        obj = e.GetEventObject()
+        flag = True
+        if obj.GetCurrentSelection() != self.savedMonitoringMethodIndex and (self.savedMonitoringMethodIndex == 3 or self.savedMonitoringMethodIndex == 5):
+            dlg = wx.MessageDialog(self, self.monitoringWarning%selection[self.savedMonitoringMethodIndex], 'Warning',
+                              wx.YES_NO | wx.ICON_QUESTION)
+            res = dlg.ShowModal()
+            if res == wx.ID_YES:
+                dlg.Destroy()
+            else:
+                dlg.Destroy()
+                self.monitoringMethodCombo.SetSelection(self.savedMonitoringMethodIndex)
+                flag = False
 
+        if flag:
+            self.savedMonitoringMethodIndex = selection.index(obj.GetValue())
 
+            if self.manager is not None:
+                self.manager.OnMonitoringChange(obj.GetValue())
+
+            e.Skip()
 
 
 
@@ -1043,6 +1069,8 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
                     if self.manager.manager is not None:
                         self.manager.manager.FlatNoteBook.GetPage(2).Enable(False)
                         self.manager.manager.FlatNoteBook.GetPage(3).Enable(True)
+            else:
+                self.UpdateComboBox(self.instrumentCmbo, self.instrumentList)
 
         else:
             self.InfoUpdate(None)
@@ -1307,6 +1335,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         if self.instrumentCmbo.GetValue() == 'ADCP':
             self.UpdateComboBox(self.modelCmbo, self.modelList1)
             self.EnableAdcpInfo(True)
+            self.metresCtrl.SetValue('')
             if(self.methodCBListBox.GetValue()==self.measurementMethods[2]):
                 self.EnableMidsectionInfo(False)
             else:
@@ -1318,6 +1347,9 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         elif self.instrumentCmbo.GetValue() == 'ADV':
             self.UpdateComboBox(self.modelCmbo, self.modelList3)
             self.modelCmbo.SetValue('FlowTracker')
+            self.metresCtrl.SetValue('')
+            if self.deploymentCmbo.GetValue() == 'Wading':
+                self.metresCtrl.SetValue('On Rod')
             self.manufactureCmbo.SetValue('SonTek')
             self.EnableAdcpInfo(False)
             self.EnableMidsectionInfo(True)
@@ -1325,6 +1357,9 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
                 self.manager.OnInstrumentChange(2)
         elif self.instrumentCmbo.GetValue() == 'Current Meter':
             self.UpdateComboBox(self.modelCmbo, self.modelList2)
+            self.metresCtrl.SetValue('')
+            if self.deploymentCmbo.GetValue() == 'Wading':
+                self.metresCtrl.SetValue('On Rod')
             self.manufactureCmbo.SetValue('')
             self.EnableAdcpInfo(False)
             self.EnableMidsectionInfo(True)
@@ -1334,6 +1369,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         else:
 
             self.UpdateComboBox(self.modelCmbo, self.modelList2)
+            self.metresCtrl.SetValue('')
             self.manufactureCmbo.SetValue('')
             # if self.methodCBListBox.IsChecked(1):
             if self.methodCBListBox.GetValue() == self.measurementMethods[1]:
@@ -1360,6 +1396,24 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
                 self.UpdateComboBox(self.modelCmbo, self.modelListTRDI)
             elif self.manufactureCmbo.GetValue().lower() == 'trdi':
                 self.UpdateComboBox(self.modelCmbo, self.modelListSontek)
+            else:
+                self.UpdateComboBox(self.modelCmbo, self.modelList1)
+        if self.instrumentCmbo.GetValue().lower() == 'conductivity probe':
+            if self.manufactureCmbo.GetValue().lower() == 'sommer':
+                self.UpdateComboBox(self.modelCmbo, self.modelListSommer)
+            else:
+                self.UpdateComboBox(self.modelCmbo, self.modelList1)
+        if self.instrumentCmbo.GetValue().lower() == 'camera':
+            if self.manufactureCmbo.GetValue().lower() == 'axis':
+                self.UpdateComboBox(self.modelCmbo, self.modelListAXIS)
+            elif self.manufactureCmbo.GetValue().lower() == 'dji':
+                self.UpdateComboBox(self.modelCmbo, self.modelListDJI)
+            elif self.manufactureCmbo.GetValue().lower() == 'samsung':
+                self.UpdateComboBox(self.modelCmbo, self.modelListSamsung)
+            elif self.manufactureCmbo.GetValue().lower() == 'apple':
+                self.UpdateComboBox(self.modelCmbo, self.modelListApple)
+            elif self.manufactureCmbo.GetValue().lower() == 'other':
+                self.UpdateComboBox(self.modelCmbo, self.modelListOther)
             else:
                 self.UpdateComboBox(self.modelCmbo, self.modelList1)
 
@@ -1870,16 +1924,6 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
     # def OnDiagTestCB(self, evt):
     #     ctrl = evt.GetEventObject()
 
-    #information button on measurement method
-    def OnMeasureInfoBtn(self, event):
-        dlg = wx.MessageDialog(self, self.measureInfoMsg, 'Information', wx.OK)
-
-        res = dlg.ShowModal()
-        if res == wx.ID_OK:
-            dlg.Destroy()
-        else:
-            dlg.Destroy()
-        return
 
 
 def main():

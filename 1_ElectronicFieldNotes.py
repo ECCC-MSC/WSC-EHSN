@@ -13,6 +13,7 @@ from PartyInfoManager import *
 from WaterLevelRunManager import *
 # from AnnualLevellingManager import *
 from FRChecklistManager import *
+from InnovTechChecklistManager import *
 from MovingBoatMeasurementsManager import *
 from MidSectionMeasurementsManager import *
 # from RemarksManager import *
@@ -93,7 +94,7 @@ if 0:
 
 ##mode = "DEBUG"
 mode = "PRODUCTION"
-EHSN_VERSION = "v2.3.3"
+EHSN_VERSION = "v2.4.1"
 eHSN_WINDOW_SIZE = (1100, 730)
 
 # import wx.lib.inspection
@@ -234,6 +235,7 @@ class ElectronicHydrometricSurveyNotes:
         self.waterLevelRunManager = WaterLevelRunManager(mode, self.gui.waterLevelRun, self)
         # self.annualLevelNotesManager = AnnualLevellingManager(mode, self.gui.annualLevelNotes, self)
         self.frChecklistManager = FRChecklistManager(mode, self.gui.frChecklist, self)
+        self.innovTechChecklistManager = InnovTechChecklistManager(mode, self.gui.innovTechChecklist, self)
         self.movingBoatMeasurementsManager = MovingBoatMeasurementsManager(mode, self.gui.movingBoatMeasurements, self)
         self.midsecMeasurementsManager = MidSectionMeasurementsManager(mode, self.gui.midsecMeasurements, self)
         # self.ratingCurveExtractionToolmanager = RatingCurveExtractionToolManager()
@@ -252,13 +254,17 @@ class ElectronicHydrometricSurveyNotes:
 
 
 
-    # Update the Field Review Checklist with the value of depType
+    # Update the Field Review Checklist and the InnovTech Checklist with the value of depType
     def DeploymentUpdate(self, depType):
         self.frChecklistManager.changeDepType(depType)
+        self.innovTechChecklistManager.changeDepType(depType)
 
 
     def FieldReviewChecklistUpdate(self, val):
         self.frChecklistManager.onInstrumentType(val)
+
+    def InnovTechChecklistUpdate(self, choice):
+        self.innovTechChecklistManager.onMonitoringType(choice)
 
     def ExportAsPDFWithoutOpen(self, filePath, xslPath):
         if mode == "DEBUG":
@@ -725,6 +731,9 @@ class ElectronicHydrometricSurveyNotes:
         FieldReview = SubElement(EHSN, "FieldReview")
         self.FieldReviewAsXMLTree(FieldReview)
 
+        #InnovTech Checklist
+        InnovTechData = SubElement(EHSN, "InnovTech")
+        self.InnovTechAsXMLTree(InnovTechData)
 
         #Page 4
         #ADCP Measurements
@@ -870,6 +879,10 @@ class ElectronicHydrometricSurveyNotes:
         Attachments = EHSN.find('Attachments')
         self.AttachmentFromXML(Attachments)
 
+        #Seventh Page
+        InnovTechData = EHSN.find('InnovTech')
+        self.InnovTechFromXML(InnovTechData)
+
         #Upload Record
 
         self.uploadRecord = EHSN.find('AQ_Upload_Record')
@@ -965,6 +978,12 @@ class ElectronicHydrometricSurveyNotes:
 
     def FieldReviewFromXML(self, FieldReview):
         XMLManager.FieldReviewFromXML(FieldReview, self.frChecklistManager)
+
+    def InnovTechAsXMLTree(self, InnovTechData):
+        XMLManager.InnovTechAsXMLTree(InnovTechData, self.innovTechChecklistManager)
+
+    def InnovTechFromXML(self, InnovTechData):
+        XMLManager.InnovTechFromXML(InnovTechData, self.innovTechChecklistManager)
 
 
     def MovingBoatMeasAsXMLTree(self, MovingBoatMeas):
@@ -1150,6 +1169,8 @@ class ElectronicHydrometricSurveyNotes:
         self.envCondManager.GetOrificeCB().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.envCondManager.GetProgramCB().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.envCondManager.GetDataCB().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+        self.envCondManager.GetHarnessCB().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+        self.envCondManager.GetCablewayCB().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.envCondManager.GetDataPeriodFromPicker().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
         self.envCondManager.GetDataPeriodToPicker().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
 
@@ -1271,6 +1292,9 @@ class ElectronicHydrometricSurveyNotes:
         #frChecklistManager
         self.frChecklistManager.GetSiteNotesCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
 
+        #innovTechChecklistManager
+        self.innovTechChecklistManager.GetNotesCtrl().Bind(wx.EVT_KILL_FOCUS, self.gui.OnAutoSave)
+
 
     def BindCorrectedMGH(self):
         self.disMeasManager.GetStartTimeCtrl().GetHourCtrl().Bind(wx.EVT_COMBOBOX, self.stageMeasManager.gui.CalculateAllMGH)
@@ -1283,6 +1307,8 @@ class ElectronicHydrometricSurveyNotes:
         self.disMeasManager.GetEndTimeCtrl().GetHourCtrl().Bind(wx.EVT_KEY_DOWN, self.stageMeasManager.gui.CalculateAllMGH)
         self.disMeasManager.GetEndTimeCtrl().GetMinuteCtrl().Bind(wx.EVT_KEY_DOWN, self.stageMeasManager.gui.CalculateAllMGH)
 
+        # Have this triggered from entering a discharge value as well
+        self.disMeasManager.GetDischCtrl().Bind(wx.EVT_KILL_FOCUS, self.stageMeasManager.gui.CalculateAllMGH)
 
     #Ingest from QRev *.xml
     def GetStationIDFromQRev(self):
