@@ -16,7 +16,7 @@ numpy==1.22.1
 packaging==21.3
 pandas==2.0.0
 pefile==2021.9.3
-Pillow==9.0.0
+Pillow==12.2.0
 pyinstaller==4.9
 pyinstaller-hooks-contrib==2022.2
 pyparsing==3.0.6
