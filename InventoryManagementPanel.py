@@ -465,11 +465,21 @@ class HelpDialog(wx.Dialog):
         Lbl5 = wx.StaticText(self, label='Device listed here not at station: ')
         Itm5 = wx.StaticText(self, label='Transfer to known warehouse; if unknown, set inactive with remark "location unknown".')
 
+        Lbl6 = wx.StaticText(self, label='Communication device types: ')
+        # Text field needed to allow for copy/paste
+        Itm6 = wx.TextCtrl(self, size=(-1, 82), value='CAMERA - IP OR PDT\n\
+EXTERNAL MODEM\n\
+IMAGE VELOCIMETRY CAMERA SYSTEM\n\
+NETWORK - CELL IP\n\
+SATELLITE - GOES - HDR', style=wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_NO_VSCROLL)
+        Itm6.SetBackgroundColour((225, 225, 225))
+
         Lbl1.SetFont(fontTitle)
         Lbl2.SetFont(fontTitle)
         Lbl3.SetFont(fontTitle)
         Lbl4.SetFont(fontTitle)
         Lbl5.SetFont(fontTitle)
+        Lbl6.SetFont(fontTitle)
 
         # Wrapping text
         Itm1.Wrap(240)
@@ -494,6 +504,8 @@ class HelpDialog(wx.Dialog):
         popupSizer.Add(Itm4, 0, wx.ALL | wx.EXPAND, 5)
         popupSizer.Add(Lbl5, 0, wx.ALL | wx.EXPAND, 5)
         popupSizer.Add(Itm5, 0, wx.ALL | wx.EXPAND, 5)
+        popupSizer.Add(Lbl6, 0, wx.ALL | wx.EXPAND, 5)
+        popupSizer.Add(Itm6, 0, wx.ALL | wx.EXPAND, 5)
 
         buttonsSizer = self.CreateButtonSizer(wx.OK | wx.CANCEL)
         popupSizer.Add(buttonsSizer, 0, wx.ALL | wx.EXPAND, 5)
@@ -676,6 +688,7 @@ class InventoryManagementPanel(wx.Panel):
         self.inventoryManageLbl = "Inventory Management"
         self.helpBtnLbl = "Help"
         self.resetBtnLbl = "Reset Tables"
+        self.exportBtnLbl = "Export Changes"
 
         # Labels for table
         self.stationIDLbl = "Station ID"
@@ -788,10 +801,14 @@ class InventoryManagementPanel(wx.Panel):
         #self.resetTabBtn.Bind(wx.EVT_BUTTON, self.printChangesOutputTesting)
         self.resetTabBtn.Bind(wx.EVT_BUTTON, self.OnReset)
 
+        self.exportBtn = wx.Button(self.titlePanel, label=self.exportBtnLbl)
+        self.exportBtn.Bind(wx.EVT_BUTTON, self.OnExport)
+
         titleSizer = wx.BoxSizer(wx.HORIZONTAL)
         titleSizer.Add(self.inventoryManageTxt, 1, wx.EXPAND|wx.LEFT|wx.RIGHT, 130)
         titleSizer.Add(self.helpBtn, 0, wx.EXPAND|wx.ALL|wx.RIGHT, 5)
         titleSizer.Add(self.resetTabBtn, 0, wx.EXPAND|wx.ALL|wx.RIGHT, 5)
+        titleSizer.Add(self.exportBtn, 0, wx.EXPAND|wx.ALL|wx.RIGHT, 5)
 
         self.titlePanel.SetSizer(titleSizer)
 
@@ -1663,17 +1680,23 @@ class InventoryManagementPanel(wx.Panel):
     def OnAddPressTop(self, e):
         if self.mode == "DEBUG":
             print("add")
+        
+        if self.top_table_dataframe.empty:
+            dlg = wx.MessageDialog(self, "No Station selected above, please choose a station on the front page", 'Error', wx.OK)
+            res = dlg.ShowModal()
+            if res == wx.ID_OK:
+                dlg.Destroy()
+            return
 
         self.AddEntryTop(True)
 
         # Add an empty blank row to the dataframe for the top table
         # Set the station ID and set the new index
-        if not self.top_table_dataframe.empty:
-            self.top_table_dataframe.loc[self.top_table_dataframe.shape[0]] = [""] * self.top_table_dataframe.shape[1]
-            self.top_table_dataframe.at[self.top_table_dataframe.shape[0]-1, 'Station ID'] = self.topStation
-            self.top_table_dataframe.at[self.top_table_dataframe.shape[0]-1, 'dataset_index_marker'] = str(self.top_table_dataframe.shape[0]-1) + '_new'
-            if self.mode == "DEBUG":
-                print(self.top_table_dataframe)
+        self.top_table_dataframe.loc[self.top_table_dataframe.shape[0]] = [""] * self.top_table_dataframe.shape[1]
+        self.top_table_dataframe.at[self.top_table_dataframe.shape[0]-1, 'Station ID'] = self.topStation
+        self.top_table_dataframe.at[self.top_table_dataframe.shape[0]-1, 'dataset_index_marker'] = str(self.top_table_dataframe.shape[0]-1) + '_new'
+        if self.mode == "DEBUG":
+            print(self.top_table_dataframe)
 
         # Update and refresh
         self.invenManTopSizerV.Layout()
@@ -2739,7 +2762,15 @@ class InventoryManagementPanel(wx.Panel):
     def getCurrentTime(self):
         timestamp = dt.now()
         return timestamp.strftime('%Y-%m-%d %H:%M:%S')
-    
+
+    def getFormattedTime(self):
+        timestamp = dt.now()
+        return timestamp.strftime('%Y%m%d')
+
+    def valid(self, path):
+        if path != None and path != "" and not path.isspace():
+            return True
+        return False
 
     def textTooltip(self, event):
         textCtr=event.GetEventObject()
@@ -2859,8 +2890,15 @@ class InventoryManagementPanel(wx.Panel):
             for index, ckbox in enumerate(self.selectTopSizer.GetChildren()):
                 if ckbox.GetWindow().IsChecked():
                     
-                    # Get the saved index and the cateogry type
+                    # Get the saved index
                     dataset_index = self.top_table_dataframe.at[index, 'dataset_index_marker']
+
+                    # If the user is setting communication details for a new row (_new)
+                    # then update the row in the dataframe based on the current values in the table
+                    if 'new' in str(dataset_index):
+                        self.updateDataframeRow(index)
+                    
+                    # Get the saved cateogry type
                     device_type = self.top_table_dataframe.at[index, 'Category']
 
                     # If a device has been transferred to a warehouse, then it shouldn't be modifiable
@@ -2881,7 +2919,7 @@ class InventoryManagementPanel(wx.Panel):
                             return
                         
                         elif device_type not in self.commTypes.keys():
-                            dlg = wx.MessageDialog(self, "Device is not a communication device", 'Error', wx.OK)
+                            dlg = wx.MessageDialog(self, "Device is not a communication device, see Help for communication device types", 'Error', wx.OK)
                             res = dlg.ShowModal()
                             if res == wx.ID_OK:
                                 dlg.Destroy()
@@ -3019,6 +3057,12 @@ class InventoryManagementPanel(wx.Panel):
         # Populate the top table
         # The returned value isn't used here
         returned_val = self.inputStationData(True, self.topStation, "", "", "", "", 'Top')
+
+
+
+    # Export the saved state
+    def OnExport(self, evt):
+        self.exportChangesOutput("")
 
 
 
@@ -4176,6 +4220,55 @@ class InventoryManagementPanel(wx.Panel):
         
         else:
             return ""
+    
+
+
+    def exportChangesOutput(self, savedFilePath):
+
+        # This generates a markdown file and returns the filepath
+        # Running this three times deliberately as some changes are not caught in initial call
+        inventory_text_filepath = self.printChangesOutput()
+        inventory_text_filepath = self.printChangesOutput()
+        inventory_text_filepath = self.printChangesOutput()
+
+        # If the filepath is not empty (nothing to save) and is a valid filepath
+        if inventory_text_filepath != "":
+            if self.valid(inventory_text_filepath):
+
+                default_filename = self.topStation + "_" + self.getFormattedTime() + "_Inventory.md"
+                
+                if savedFilePath == "":
+                    # Save file dialog box
+                    FileSaveDialog = wx.FileDialog(self, "Inventory Management File save location", os.path.dirname(os.path.realpath(sys.argv[0])), default_filename, 'Markdown File (*.md)|*.md',
+                                        style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT | wx.FD_CHANGE_DIR)
+
+                    # If the user cancels the choice, destroy the dialog and remove the saved file
+                    if FileSaveDialog.ShowModal() == wx.ID_CANCEL:
+                        FileSaveDialog.Destroy()
+                        if os.path.exists(inventory_text_filepath):
+                            os.remove(inventory_text_filepath)
+                        return
+
+                    # Get the saved filename and filepath
+                    savedFilePath = FileSaveDialog.GetPath()
+
+                    FileSaveDialog.Destroy()
+                
+                else:
+                    savedFilePath = os.path.join(savedFilePath, default_filename)
+
+                # If a filename of the same name exists at the location, then delete this first
+                if os.path.exists(savedFilePath):
+                    os.remove(savedFilePath)
+
+                # Transfer the file from the prior location to the new location
+                os.rename(inventory_text_filepath, savedFilePath)
+
+                # Remove the old file
+                if os.path.exists(inventory_text_filepath):
+                    os.remove(inventory_text_filepath)
+
+                return
 
 
     ########################################################################

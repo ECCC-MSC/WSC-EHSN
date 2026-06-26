@@ -83,7 +83,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.flowAngleLbl = "Flow Angle"
         self.flowAngleList = ["", "Perpendicular", "Varied"]
         self.coEffLbl = "Coefficient"
-        self.coefficientList = ["","-1", "1", "0.88"]
+        self.coefficientList = ["","-1", "1", "0.88", "0.88+1.00"]
         self.methodLbl = "Method"
         self.methodList = ["", "0.6", "0.2/0.8", "0.6+0.2/0.8", "0.6+0.5", "0.5", "0.5+0.2/0.8", "Surface", "0.2/0.6/0.8", "0.2/0.5/0.8", "ADCP"]
         self.locatedLbl = "Located"
@@ -505,7 +505,7 @@ class InstrumentDeploymentInfoPanel(wx.Panel):
         self.coEffCtrl = MyComboBox(self.midsectionMethodInfoPanel, choices=self.coefficientList, style=wx.CB_DROPDOWN, size=(180, -1))
         # self.coEffCtrl = wx.TextCtrl(self.midsectionMethodInfoPanel, style=wx.TE_PROCESS_ENTER, size=(180, -1))
         # self.coEffCtrl.Bind(wx.EVT_TEXT, NumberControl.FloatNumberControl)
-        self.coEffCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
+        # self.coEffCtrl.Bind(wx.EVT_KILL_FOCUS, NumberControl.Round2)
         self.coEffCtrl.Bind(wx.EVT_TEXT, self.OnChangeResetBGColour)
         mmiHorizontalSizer1.Add(self.numOfPanelsTxt, 0, wx.EXPAND|wx.TOP|wx.RIGHT, 5)
         mmiHorizontalSizer1.Add(self.numOfPanelsScroll, 0, wx.EXPAND|wx.LEFT|wx.RIGHT, 5)

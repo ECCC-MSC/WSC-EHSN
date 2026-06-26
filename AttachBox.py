@@ -83,6 +83,14 @@ class AttachBox(scrolled.ScrolledPanel):
 
     def add_remove(self, evt):
         if evt.GetEventObject().GetLabel() == "+":
+
+            # Only allow for one submission of an inventory management file
+            if self.name == "InventoryManagement" and len(self.buttonList) > 0:
+                info = wx.MessageDialog(self, 'Only one Inventory Management file may be included.', 'Unable to add additonal file',
+                                wx.OK | wx.ICON_ERROR)
+                info.ShowModal()
+                return
+            
             self.columnList.append(wx.BoxSizer(wx.HORIZONTAL))
             self.buttonList.append(wx.Button(self, label="-", size=self.buttonSize))
             self.addrList.append(wx.TextCtrl(self, size=self.barSize))
@@ -149,6 +157,9 @@ class AttachBox(scrolled.ScrolledPanel):
             elif self.name == "DischargeSummary" and self.addrList[id].GetValue() != "":
                 self.count += 1
                 self.labelList[id].ChangeValue(stnNum + "_" + dateVal + "_M" + str(self.count))
+            # There can only ever be one submission for inventory management
+            elif self.name == "InventoryManagement" and self.addrList[id].GetValue() != "":
+                self.labelList[id].ChangeValue(stnNum + "_" + dateVal + "_Inventory")
 
     def Browse(self, evt):
         id = self.browseList.index(evt.GetEventObject())
@@ -168,6 +179,12 @@ class AttachBox(scrolled.ScrolledPanel):
         # If the discharge summary file is not a pdf, then display a warning to the user
         if extension != '.pdf' and self.name == "DischargeSummary":
             info = wx.MessageDialog(self, 'The Discharge Measurement Summary File type must be PDF.', 'Incorect file type',
+                                wx.OK | wx.ICON_ERROR)
+            info.ShowModal()
+            return
+        # If the inventory management file is not a pdf, then display a warning to the user
+        if extension != '.md' and self.name == "InventoryManagement":
+            info = wx.MessageDialog(self, 'The Inventory Management File type must be Markdown.', 'Incorect file type',
                                 wx.OK | wx.ICON_ERROR)
             info.ShowModal()
             return

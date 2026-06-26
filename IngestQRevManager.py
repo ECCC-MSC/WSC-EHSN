@@ -31,7 +31,9 @@ def GetDate(filePath):
 
 def GetQRevVersion(filePath):
     QRevVer = GetRoot(filePath).attrib['QRevVersion']
-    return float(QRevVer[(len(QRevVer) - 5):])
+    versionFull = QRevVer.split()[1]
+    values = versionFull.split('.')
+    return float(values[0] + '.' + values[1])
 
 #Summary
 def GetStartTime(filePath):

@@ -82,13 +82,19 @@ def GetFrequencyUnit(filePath):
     return GetRoot(filePath).find('Instrument').find('Frequency').attrib['unitsCode']
 
 def GetADCPDepth(filePath):
-    return GetRoot(filePath).find('VerticalDetails/Vertical/Processing/Depth/ADCPDepth').text
+    try:
+        return GetRoot(filePath).find('VerticalDetails/Vertical/Processing/Depth/ADCPDepth').text
+    except:
+        return ""
 
 def GetDiagTest(filePath):
     return GetRoot(filePath).find('QA').find('DiagnosticTestResult').text
 
 def GetMagDeclination(filePath):
-    return GetRoot(filePath).find('VerticalDetails/Vertical/Processing/Navigation/MagneticVariation').text
+    try:
+        return GetRoot(filePath).find('VerticalDetails/Vertical/Processing/Navigation/MagneticVariation').text
+    except:
+        return ""
 
 
 #Calculate the mean time

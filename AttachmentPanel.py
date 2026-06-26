@@ -14,6 +14,7 @@ from AttachFileFolderBox import *
 from AttachFolderBox import *
 from AttachPhotoBox import *
 from AttachOtherBox import *
+from SiteVisitOptimizationBox import *
 import ntpath
 import tempfile
 from os import chdir
@@ -68,11 +69,11 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         self.SetSizer(self.layout)
 
         sizerList = []
-        for i in range(11):
+        for i in range(15):
             sizerList.append(wx.BoxSizer(wx.HORIZONTAL))
 
         spaceList = []
-        for x in range(11):
+        for x in range(15):
             spaceList.append(wx.StaticText(self, label=""))
         note = wx.StaticText(self, label="The Field Visit Package (ZIP file) will include the eHSN xml and pdf, as well as the below attachments.")
 
@@ -100,6 +101,17 @@ class AttachmentPanel(scrolled.ScrolledPanel):
 
         Txt8 = AttachTag("Other", "", self, size=self.tagSize)
         self.attachBox8 = AttachOtherBox(self, "*", self, size=(955, 100), style=wx.SIMPLE_BORDER)
+
+        Txt9 = AttachTag("Inventory Management", "Markdown Files (.md)", self, size = self.tagSize)
+        self.attachBox9 = AttachBox(self, "InventoryManagement", self, size=(955, 100), style=wx.SIMPLE_BORDER)
+
+        self.largeSpacer = wx.StaticText(self, size=(955, 20), label="")
+        self.SVOHeader = wx.StaticText(self, label="Site Visit Optimization:", style=wx.ALIGN_CENTRE_VERTICAL)
+        font = wx.Font(12, wx.ROMAN, wx.FONTSTYLE_NORMAL, wx.BOLD, False)
+        self.SVOHeader.SetFont(font)
+
+        Txt10 = AttachTag("", "", self, size=self.tagSize)
+        self.attachBox10 = SVOPanel(self, "*", self, size=(955, 530), style=wx.SIMPLE_BORDER)
 
         self.zipAddr = wx.TextCtrl(self, size=self.barSize)
         self.zipAddr.SetValue(self.rootPath)
@@ -139,21 +151,35 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         sizerList[6].Add(self.attachBox6)
 
         sizerList[7].Add(self.indent)
-        sizerList[7].Add(Txt7, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[7].Add(self.attachBox7)
+        sizerList[7].Add(Txt9, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[7].Add(self.attachBox9)
 
         sizerList[8].Add(self.indent)
-        sizerList[8].Add(Txt8, 1, wx.EXPAND | wx.ALL, 5)
-        sizerList[8].Add(self.attachBox8)
+        sizerList[8].Add(Txt7, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[8].Add(self.attachBox7)
 
-        sizerList[9].Add(self.zipSpace)
-        sizerList[9].Add(self.zipper)
+        sizerList[9].Add(self.indent)
+        sizerList[9].Add(Txt8, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[9].Add(self.attachBox8)
+
+        sizerList[10].Add(self.noteIndent)
+        sizerList[10].Add(self.largeSpacer)
+
+        sizerList[11].Add(self.noteIndent)
+        sizerList[11].Add(self.SVOHeader)
+
+        sizerList[12].Add(self.indent)
+        sizerList[12].Add(Txt10, 1, wx.EXPAND | wx.ALL, 5)
+        sizerList[12].Add(self.attachBox10)
+
+        sizerList[13].Add(self.zipSpace)
+        sizerList[13].Add(self.zipper)
 
         # Hidden text field
-        sizerList[10].Add(self.zipAddr)
+        sizerList[14].Add(self.zipAddr)
 
         self.layout.Add(TitlePanel, 0, wx.EXPAND | wx.ALL, 3)
-        for i in range(11):
+        for i in range(15):
             self.layout.Add(spaceList[i])
             self.layout.Add(sizerList[i])
         
@@ -218,7 +244,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
 
         Tag = stnNum + "_" + date + "_FV"
         filePath = "c:\\temp\\eHSN\\"
-        boxList = [self.attachBox1, self.attachBox2, self.attachBox3, self.attachBox4, self.attachBox5, self.attachBox6, self.attachBox7, self.attachBox8]
+        boxList = [self.attachBox1, self.attachBox2, self.attachBox3, self.attachBox4, self.attachBox5, self.attachBox6, self.attachBox9, self.attachBox7, self.attachBox8]
         pathList = []
         for box in boxList:
             pathList.append(box.returnPath())
@@ -241,6 +267,7 @@ class AttachmentPanel(scrolled.ScrolledPanel):
         mmtPdf = self.attachBox6.returnPath()
         mmtFile = self.attachBox5.returnFilePath()
         mmtFolder = self.attachBox5.returnFolderPath()
+        inventoryFiles = self.attachBox9.returnPath()
 
         SIT = self.attachBox7.returnSIT()
         STR = self.attachBox7.returnSTR()
@@ -304,6 +331,14 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 rename = stnNum + "_" + date + "_M" + str(count) + extension
                 shutil.copy(mmtFile[i], dir_temp + "\\" + rename)
                 mmtFile[i] = dir_temp + "\\" + rename
+        # Inventory management markdown files
+        for i in range(len(inventoryFiles)):
+            if valid(inventoryFiles[i]):
+                name, extension = os.path.splitext(inventoryFiles[i])
+                # Do not include the count in the file name
+                rename = stnNum + "_" + date + "_Inventory" + extension
+                shutil.copy(inventoryFiles[i], dir_temp + "\\" + rename)
+                inventoryFiles[i] = dir_temp + "\\" + rename
         # Photos and drawings
         count = 0
         for i in range(len(SIT)):
@@ -422,6 +457,9 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 if valid(path):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
             for path in mmtFile:
+                if valid(path):
+                    zipfile.write(path, Tag + "\\" + ntpath.basename(path))
+            for path in inventoryFiles:
                 if valid(path):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
             
@@ -570,22 +608,26 @@ class AttachmentPanel(scrolled.ScrolledPanel):
                 if valid(path):
                     zipfile.write(path, Tag + "\\" + ntpath.basename(path))
             
-            # Adding the details from the Inventory Management tab
-            # This generates a markdown file and returns the filepath
-            # Running this three times deliberately as some changes are not caught in initial call
-            inventory_text_filepath = self.parent.inventoryManagement.printChangesOutput()
-            inventory_text_filepath = self.parent.inventoryManagement.printChangesOutput()
-            inventory_text_filepath = self.parent.inventoryManagement.printChangesOutput()
+            # Only add the inventory management file if the user has not added their own
+            inventory_pathname = Tag + "/" + stnNum + "_" + date + "_Inventory.md"
+            if not inventory_pathname in zipfile.namelist():
 
-            if inventory_text_filepath != "":
+                # Adding the details from the Inventory Management tab
+                # This generates a markdown file and returns the filepath
+                # Running this three times deliberately as some changes are not caught in initial call
+                inventory_text_filepath = self.parent.inventoryManagement.printChangesOutput()
+                inventory_text_filepath = self.parent.inventoryManagement.printChangesOutput()
+                inventory_text_filepath = self.parent.inventoryManagement.printChangesOutput()
 
-                # Write the file to the zip
-                if valid(inventory_text_filepath):
-                    zipfile.write(inventory_text_filepath, Tag + "\\" + stnNum + "_" + date + "_Inventory.md")
-                
-                # Delete the file once it is in the zip
-                if os.path.exists(inventory_text_filepath):
-                    os.remove(inventory_text_filepath)
+                if inventory_text_filepath != "":
+
+                    # Write the file to the zip
+                    if valid(inventory_text_filepath):
+                        zipfile.write(inventory_text_filepath, Tag + "\\" + stnNum + "_" + date + "_Inventory.md")
+                    
+                    # Delete the file once it is in the zip
+                    if os.path.exists(inventory_text_filepath):
+                        os.remove(inventory_text_filepath)
 
             zipfile.close()
             if openSaveDialog:

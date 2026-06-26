@@ -1,8 +1,8 @@
-V2.4.1
+V2.4.2
 
 ****************************************************************************************************
 
-eHSN 2.4.1 has many new features and bug fixes, which are detailed in the Release Notes on Confluence: https://watersurveyofcanada.atlassian.net/wiki/spaces/WSCan/pages/4226187318/eHSN+2.4.1+Release+Notes
+eHSN 2.4.2 has many new features and bug fixes, which are detailed in the Release Notes on Confluence: https://watersurveyofcanada.atlassian.net/wiki/spaces/WSCan/pages/4290445319/eHSN+2.4.2+Mandatory+Release
 
 ****************************************************************************************************
 

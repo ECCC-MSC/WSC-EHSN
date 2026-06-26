@@ -1008,6 +1008,11 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
 
                 self.manager.ExportAsXML(self.fullname, None)
                 print("File saved")
+                
+                # Export the markdown file from inventory management
+                savedFilePath = os.path.dirname(os.path.abspath(self.fullname))
+                self.inventoryManagement.exportChangesOutput(savedFilePath)
+                
                 return True
         return False
 
@@ -1050,6 +1055,11 @@ Note: The FlowTracker2 date and time is stored as UTC along with an offset for l
                 self.fullname = path
                 # self.ResetSaveAsIni(path)
                 print("XML file saved")
+
+                # Export the markdown file from inventory management
+                savedFilePath = os.path.dirname(os.path.abspath(self.fullname))
+                self.inventoryManagement.exportChangesOutput(savedFilePath)
+
                 return True
 
 
